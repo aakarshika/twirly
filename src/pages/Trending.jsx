@@ -1,0 +1,299 @@
+import React, { useState, useEffect } from 'react';
+import { Sparkles, TrendingUp, Users, Clock, ThumbsUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
+import InfiniteScroll from 'react-infinite-scroll-component';
+
+const Trending = () => {
+  const [trendingComparisons, setTrendingComparisons] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [imageErrors, setImageErrors] = useState({});
+  const [imageLoading, setImageLoading] = useState({});
+  const navigate = useNavigate();
+
+  const fetchTrendingComparisons = async (pageNum = 1, category = 'All', isInitialLoad = false) => {
+    try {
+      if (isInitialLoad) {
+        setLoading(true);
+      }
+      
+      // Base query
+      let query = supabase
+        .from('comparison_sets')
+        .select(`
+          id,
+          name,
+          category_id,
+          created_at,
+          categories(name),
+          comparison_set_items(
+            item_id,
+            items(
+              id,
+              name,
+              description,
+              image_url,
+              company_id,
+              companies(name),
+              item_metrics(
+                views,
+                comparisons,
+                reviews,
+                rating
+              )
+            )
+          )
+        `)
+        .order('created_at', { ascending: false })
+        .range((pageNum - 1) * 4, pageNum * 4 - 1);
+
+      // Add category filter if not 'All'
+      if (category !== 'All') {
+        query = query.eq('categories.name', category);
+      }
+
+      const { data, error, count } = await query;
+
+      if (error) throw error;
+
+      // Transform the data to match our UI structure
+      const transformedData = data.map(comparison => {
+        const items = comparison.comparison_set_items?.map(setItem => setItem.items) || [];
+        return {
+          id: comparison.id,
+          title: comparison.name,
+          category: comparison.categories?.name || 'Uncategorized',
+          votes: Math.floor(Math.random() * 2000), // TODO: Replace with actual votes from votes table
+          participants: Math.floor(Math.random() * 1500), // TODO: Replace with actual participants
+          timeAgo: formatTimeAgo(comparison.created_at),
+          image1: items[0]?.image_url || 'https://placehold.co/400x300/1a1a1a/ffffff?text=No+Image',
+          image2: items[1]?.image_url || 'https://placehold.co/400x300/1a1a1a/ffffff?text=No+Image',
+          items: items.map(item => ({
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            image: item.image_url,
+            category: comparison.categories?.name || 'Uncategorized',
+            votes: 0,
+            reviews: [],
+            metrics: item.item_metrics
+          }))
+        };
+      });
+
+      setHasMore(data.length === 4);
+      if (pageNum === 1) {
+        setTrendingComparisons(transformedData);
+      } else {
+        setTrendingComparisons(prev => [...prev, ...transformedData]);
+      }
+    } catch (error) {
+      console.error('Error fetching trending comparisons:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatTimeAgo = (dateString) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return 'less than an hour ago';
+    if (diffInHours < 24) return `${diffInHours} hours ago`;
+    if (diffInHours < 48) return '1 day ago';
+    return `${Math.floor(diffInHours / 24)} days ago`;
+  };
+
+  useEffect(() => {
+    fetchTrendingComparisons(1, selectedCategory, true);
+  }, [selectedCategory]);
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
+    setPage(1);
+    setTrendingComparisons([]);
+  };
+
+  const handleComparisonClick = (comparison) => {
+    navigate(`/comparison/${comparison.id}`);
+  };
+
+  const handleImageLoad = (comparisonId, imageKey) => {
+    setImageLoading(prev => ({
+      ...prev,
+      [`${comparisonId}-${imageKey}`]: false
+    }));
+  };
+
+  const handleImageError = (comparisonId, imageKey) => {
+    setImageErrors(prev => ({
+      ...prev,
+      [`${comparisonId}-${imageKey}`]: true
+    }));
+    setImageLoading(prev => ({
+      ...prev,
+      [`${comparisonId}-${imageKey}`]: false
+    }));
+  };
+
+  const fetchMoreData = () => {
+    if (!hasMore) return;
+    setPage(prev => prev + 1);
+    fetchTrendingComparisons(page + 1, selectedCategory);
+  };
+
+  return (
+    <div className="min-h-screen bg-black text-white p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header Section */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-4 flex items-center justify-center">
+            <TrendingUp className="mr-3 text-amber-400" size={32} />
+            Trending Comparisons
+          </h1>
+          <p className="text-gray-400">See what's hot in the community right now</p>
+        </div>
+
+        {/* Categories Filter */}
+        <div className="flex justify-center gap-4 mb-8">
+          {['All', 'Technology', 'Entertainment', 'Lifestyle', 'Food', 'Gaming'].map((category) => (
+            <button
+              key={category}
+              onClick={() => handleCategoryChange(category)}
+              className={`px-4 py-2 rounded-full ${
+                selectedCategory === category
+                  ? 'bg-amber-400 text-black'
+                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white'
+              } transition-colors`}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+
+        {/* Loading State for Initial Load */}
+        {loading && page === 1 && (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-400 mx-auto"></div>
+          </div>
+        )}
+
+        {/* Infinite Scroll Component */}
+        <InfiniteScroll
+          dataLength={trendingComparisons.length}
+          next={fetchMoreData}
+          hasMore={hasMore}
+          loader={
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-400 mx-auto"></div>
+            </div>
+          }
+          endMessage={
+            <div className="text-center py-8 text-gray-400">
+              <p>No more comparisons to load</p>
+            </div>
+          }
+        >
+          {/* Trending Comparisons Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
+            {trendingComparisons.map((comparison) => (
+              <div
+                key={comparison.id}
+                onClick={() => handleComparisonClick(comparison)}
+                className="bg-gray-900 rounded-xl overflow-hidden hover:transform hover:scale-[1.02] transition-transform duration-200 cursor-pointer"
+              >
+                <div className="p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="px-3 py-1 bg-amber-400/10 text-amber-400 rounded-full text-sm">
+                      {comparison.category}
+                    </span>
+                    <span className="text-gray-400 text-sm flex items-center">
+                      <Clock className="mr-1" size={14} />
+                      {comparison.timeAgo}
+                    </span>
+                  </div>
+
+                  <h3 className="text-xl font-semibold mb-4">{comparison.title}</h3>
+
+                  <div className="flex gap-4 mb-6">
+                    <div className="flex-1">
+                      {!imageErrors[`${comparison.id}-image1`] ? (
+                        <div className="relative w-full h-48">
+                          {imageLoading[`${comparison.id}-image1`] !== false && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-gray-800 rounded-lg">
+                              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-amber-400"></div>
+                            </div>
+                          )}
+                          <img
+                            src={comparison.image1}
+                            alt={comparison.items[0]?.name || 'Item 1'}
+                            className={`w-full h-48 object-cover rounded-lg transition-opacity duration-300 ${
+                              imageLoading[`${comparison.id}-image1`] !== false ? 'opacity-0' : 'opacity-100'
+                            }`}
+                            loading="lazy"
+                            onLoad={() => handleImageLoad(comparison.id, 'image1')}
+                            onError={() => handleImageError(comparison.id, 'image1')}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-full h-48 flex items-center justify-center bg-gray-800 rounded-lg">
+                          <h3 className="text-xl font-bold text-center px-4 line-clamp-3 text-gray-300">
+                            {comparison.items[0]?.name || 'Item 1'}
+                          </h3>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      {!imageErrors[`${comparison.id}-image2`] ? (
+                        <div className="relative w-full h-48">
+                          {imageLoading[`${comparison.id}-image2`] !== false && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-gray-800 rounded-lg">
+                              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-amber-400"></div>
+                            </div>
+                          )}
+                          <img
+                            src={comparison.image2}
+                            alt={comparison.items[1]?.name || 'Item 2'}
+                            className={`w-full h-48 object-cover rounded-lg transition-opacity duration-300 ${
+                              imageLoading[`${comparison.id}-image2`] !== false ? 'opacity-0' : 'opacity-100'
+                            }`}
+                            loading="lazy"
+                            onLoad={() => handleImageLoad(comparison.id, 'image2')}
+                            onError={() => handleImageError(comparison.id, 'image2')}
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-full h-48 flex items-center justify-center bg-gray-800 rounded-lg">
+                          <h3 className="text-xl font-bold text-center px-4 line-clamp-3 text-gray-300">
+                            {comparison.items[1]?.name || 'Item 2'}
+                          </h3>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center text-gray-400">
+                    <div className="flex items-center gap-2">
+                      <ThumbsUp size={16} />
+                      <span>{comparison.votes} votes</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Users size={16} />
+                      <span>{comparison.participants} participants</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </InfiniteScroll>
+      </div>
+    </div>
+  );
+};
+
+export default Trending; 
