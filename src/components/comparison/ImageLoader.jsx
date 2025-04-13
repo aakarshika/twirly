@@ -2,15 +2,23 @@ import React, { useState } from 'react';
 import { COMPARISON_COLOR_SET } from '../../lib/constants';
 import VotingProgress from './VotingProgress';
 
-const ImageLoader = ({ item, index, isPressing, progress, userVoted, itemId, handleVote, startVoting, cancelVoting, votedItemId  }) => {
+const ImageLoader = ({ item, index, isPressing, progress, userVoted, itemId, handleVote, startVoting, cancelVoting, votedItemId, height }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
 
+  const heightValue = height; 
+
+  // Extract the numeric part and convert it to a number
+  const numericHeight = parseFloat(heightValue); 
+  
+  // Divide by 4
+  const newHeight = (numericHeight / 4) + 'vh'; 
+  const newHeightHalf = (numericHeight / 8) + 'vh'; 
   return (
     <div className="relative">
       <div className="relative h-60">
         {!imageError ? (
-          <div className="relative w-full h-full">
+          <div className="relative w-full h-full" style={{ height: newHeight }}>
             {imageLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
                 <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-amber-400"></div>
@@ -41,7 +49,7 @@ const ImageLoader = ({ item, index, isPressing, progress, userVoted, itemId, han
               }}
             />
             {/* Text Overlay */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent" style={{ background: userVoted ? COMPARISON_COLOR_SET[index] : 'rgba(22, 22, 22, 0.5)'  }}>
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent" style={{ background: userVoted ? COMPARISON_COLOR_SET[index] : 'rgba(22, 22, 22, 0.5)' , zIndex: 10, overflow: 'visible', height: newHeightHalf }}>
               <h3 className="text-xl font-bold text-white line-clamp-1">{item.name}</h3>
               <p className="text-gray-200 text-sm line-clamp-2">{item.description}</p>
 

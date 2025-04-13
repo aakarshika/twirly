@@ -6,12 +6,16 @@ import { useComparison } from '../../contexts/ComparisonContext';
 import ItemCard from './ItemCard';
 import Button from '../common/Button';
 import ReviewForm from './ReviewForm';
+
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 
 /**
  * Grid component to display comparison items
  */
-const ComparisonGrid = ({ title, height }) => {
+const ComparisonGrid = ({ title,nextPollId, height }) => {
+  
   const { 
     items, 
     userVoted, 
@@ -19,11 +23,18 @@ const ComparisonGrid = ({ title, height }) => {
     completedSets,
     currentSetIndex
   } = useComparison();
-  console.log("height in grid",height);
+  // console.log("height in grid",height);
 
   const { currentTheme } = useTheme();
 
-  console.log('Height in ComparisonGrid:', height); // Check if height is logged correctly
+  const navigate = useNavigate();
+
+  const handleNextPoll = () => {
+    if (nextPollId) {
+      navigate(`/comparison/${nextPollId}`);
+    }
+  };
+  // console.log('Height in ComparisonGrid:', height); // Check if height is logged correctly
 
   // Get the current winner if voting has occurred
   const getWinner = () => {
@@ -35,13 +46,33 @@ const ComparisonGrid = ({ title, height }) => {
   const isLastSet = currentSetIndex === 2; // Assuming 3 sets (0-indexed)
   
   return (
-    <div className="space-y-8  m-4" style={{  color: currentTheme.colors.primary }}>
+    <div className="space-y-4  m-4" style={{  color: currentTheme.colors.primary }}>
       {/* Poll Title */}
-      <div className="text-center mb-8">
-        <h1 style={{  color: currentTheme.colors.primary }} className="text-3xl font-bold text-white">
+
+    <div style={{  color: currentTheme.colors.text }}>
+      <div className="flex justify-between items-center ">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex text-sm items-center gap-2 text-gray-400 hover:text-white"
+        >
+          <ArrowLeft size={14} />
+          Back
+        </button>
+        
+        <span style={{  color: currentTheme.colors.primary }} className="text-lg font-bold text-white">
           {title || 'Untitled Comparison'}
-        </h1>
+        </span>
+        {nextPollId && (
+          <button
+            onClick={handleNextPoll}
+            className="flex text-sm items-center gap-2 px-2 py-1 bg-amber-400 text-black rounded-full font-semibold hover:bg-amber-300 transition-colors"
+          >
+            Next Poll
+            <ArrowRight size={14} />
+          </button>
+        )}
       </div>
+    </div>
 
 
       {/* Items Grid */}
@@ -53,7 +84,7 @@ const ComparisonGrid = ({ title, height }) => {
       
       {/* Results Announcement when voted */}
       {userVoted && winner && (
-        <div className="text-center mb-8">
+        <div className="text-center ">
         </div>
       )}
       

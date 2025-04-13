@@ -2,23 +2,33 @@ import React, { useEffect, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 import ComparisonGrid from './ComparisonGrid';
-import ComparisonHeader from './ComparisonHeader';
 
 const PollGrid = ({ title, items, onVote, votedItemId, userVoted, nextPollId }) => {
   const { currentTheme } = useTheme();
   const { scrollY } = useScroll();
   const [mounted, setMounted] = useState(false);
+  const [height, setHeight] = useState('100vh'); // State to hold the height
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Transform scroll position into height value with a more gradual range
-  const height = useTransform(
+  // Define the transform outside of the subscription
+  const heightTransform = useTransform(
     scrollY,
-    [0, window.innerHeight * 0.85], // More gradual contraction
-    ['100vh', '20vh'] // Higher minimum height
+    [0, window.innerHeight * 0.85],
+    ['100vh', '20vh']
   );
+
+  useEffect(() => {
+    // Update height based on scroll position
+    const unsubscribe = scrollY.onChange((latest) => {
+      const newHeight = heightTransform.get(); // Get the transformed height
+      setHeight(newHeight); // Update the height state
+    });
+
+    return () => unsubscribe(); // Clean up the subscription
+  }, [scrollY, heightTransform]);
 
   return (
     <motion.div 
@@ -30,10 +40,11 @@ const PollGrid = ({ title, items, onVote, votedItemId, userVoted, nextPollId }) 
         top: '64px', // Account for header height
       }}
     >
-      <ComparisonHeader nextPollId={nextPollId} />
+      {/* <ComparisonHeader nextPollId={nextPollId} /> */}
       <div className="h-full flex flex-col">
         <div className="flex-1">
           <ComparisonGrid 
+            nextPollId={nextPollId}
             height={height} 
             title={title}
             items={items}

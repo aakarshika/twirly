@@ -62,15 +62,15 @@ const ItemCard = ({ item, i, height }) => {
   const handleReviewButtonClick = (itemId) => {
     setActiveReviewItem(itemId);
   };
-  const heightValue = height.current; 
+  const heightValue = height; 
 
   // Extract the numeric part and convert it to a number
   const numericHeight = parseFloat(heightValue); 
   
   // Divide by 4
-  const newHeight = ((numericHeight / 4)) + 'vh'; 
+  const newHeight = (numericHeight / 4) + 'vh'; 
   
-  console.log("height",height);
+  console.log("height",height,newHeight);
   return (
     <div className="" style={{ height: newHeight }}>
       <div className="relative h-full" >
@@ -96,7 +96,7 @@ const ItemCard = ({ item, i, height }) => {
               name={item.name} 
               item={item}
               index={i} 
-
+              height={height}
               isPressing={isPressing} 
               progress={progress} 
               userVoted={userVoted} 
