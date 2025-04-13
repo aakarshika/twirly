@@ -238,16 +238,16 @@ const ItemCard = ({ item ,i }) => {
                 </div>
               </div>
             )}
-            <span className="absolute top-2 left-2 bg-black/80 border border-gray-800 text-xs px-2 py-1 rounded">
+            {/* <span className="absolute top-2 left-2 bg-black/80 border border-gray-800 text-xs px-2 py-1 rounded">
               {item.category}
-            </span>
+            </span> */}
           </div>
         </div>
         
           {/* Vote Count - Only show if user has voted */}
           {userVoted && (
             <div className="p-4 space-y-4 text-sm text-gray-400">
-              {item.votes} {item.votes === 1 ? 'vote' : 'votes'} {topMetrics[0].totalReviews} {item.votes === 1 ? 'review' : 'reviews'}
+              {item.votes} {item.votes === 1 ? 'vote' : 'votes'} 
             </div>
           )}
           

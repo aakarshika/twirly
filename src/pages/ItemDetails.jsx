@@ -13,7 +13,7 @@ import { TEMP_USER_ID } from '../lib/constants';
 import { useComparisonDetails } from '../hooks/useComparisonDetails';
 import { useTheme } from '../contexts/ThemeContext';
 import BarChart from '../components/results/visualizations/BarChart';
-
+import ComparisonSetCommentsSection from '../components/comparison/ComparisonSetCommentsSection';
 const ItemDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -224,6 +224,11 @@ const ItemDetails = () => {
         {/* Box for BarChart with same margins as ComparisonGrid */}
         <div className="max-w-4xl mx-auto bg-gray-800 rounded-lg p-4 mt-4" style={{ backgroundColor: currentTheme.colors.background }}>
           <BarChart items={items} />
+        </div>
+
+        {/* Comments section */}
+        <div className="max-w-4xl mx-auto bg-gray-800 rounded-lg p-4 mt-4" style={{ backgroundColor: currentTheme.colors.background }}>
+          <ComparisonSetCommentsSection setId={currentSetId} />
         </div>
 
         {/* Show review modal when active */}
