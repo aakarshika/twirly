@@ -15,6 +15,7 @@ import ItemDetails from './pages/ItemDetails';
 import PollScreen from './pages/PollScreen';
 import ProductDetails from './pages/ProductDetails';
 import PollResults from './pages/PollResults';
+import UserDashboard from './pages/UserDashboard';
 
 // Placeholder component for settings
 const Settings = () => <div className="p-8 text-center">Settings Page</div>;
@@ -40,6 +41,7 @@ const App = () => {
                 <Route path="/comparison/:id" element={<PollScreen />} />
                 <Route path="/product/:itemId" element={<ProductDetails />} />
                 <Route path="/pollresult/:id" element={<PollResults />} />
+                <Route path="/dashboard" element={<UserDashboard />} />
               </Routes>
             </main>
             <Footer />
