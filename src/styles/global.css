@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #3B82F6;
+  --color-secondary: #10B981;
+  --color-background: #FFFFFF;
+  --color-text: #1F2937;
+  --color-card: #F3F4F6;
+  --color-border: #E5E7EB;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+/* Theme-aware utility classes */
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.bg-secondary {
+  background-color: var(--color-secondary);
+}
+
+.text-secondary {
+  color: var(--color-secondary);
+}
+
+.bg-card {
+  background-color: var(--color-card);
+}
+
+.border-theme {
+  border-color: var(--color-border);
+}
+
+/* Add any other theme-aware utility classes as needed */ 

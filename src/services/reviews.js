@@ -234,7 +234,11 @@ export const getUserReviews = async (userId) => {
         likes,
         created_at,
         updated_at,
-        item_id,
+        review_metrics (
+          id,
+          metric_name,
+          value
+        ),
         items (
           id,
           name,
@@ -261,6 +265,7 @@ export const getUserReviews = async (userId) => {
       content: review.text,
       date: review.created_at,
       likes: review.likes,
+      metrics: review.review_metrics || [],
       category: review.items.comparison_set_items[0]?.comparison_sets.categories?.name || 'Uncategorized'
     }));
   } catch (error) {

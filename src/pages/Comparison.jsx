@@ -3,7 +3,6 @@
 import React from 'react';
 import { useComparison } from '../contexts/ComparisonContext';
 import ComparisonGrid from '../components/comparison/ComparisonGrid';
-import ResultsPanel from '../components/comparison/ResultsPanel';
 import CustomForm from '../components/comparison/CustomForm';
 import ReviewModal from '../components/comparison/ReviewModal';
 

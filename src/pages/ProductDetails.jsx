@@ -151,6 +151,21 @@ const ProductDetails = () => {
                 <HandThumbUpIcon className="h-4 w-4 mr-1" />
                 <span>{review.review_likes?.length || 0} likes</span>
               </div>
+              {/* Metrics Section */}
+              <div className="review-metrics mt-2">
+                <strong>Metrics:</strong>
+                {Array.isArray(review.review_metrics) && review.review_metrics.length > 0 ? (
+                  <div className="mt-2">
+                    {review.review_metrics.map(metric => (
+                      <div key={metric.id} className="metric-item text-gray-400">
+                        <span>{metric.metric_name}: <strong>{metric.value}</strong></span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-gray-500">No metrics available</div>
+                )}
+              </div>
             </div>
           ))}
         </div>

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import ComparisonGrid from '../components/comparison/ComparisonGrid';
+import ResultsPanel from '../components/comparison/ResultsPanel';
 import ReviewModal from '../components/comparison/ReviewModal';
 import ComparisonHeader from '../components/comparison/ComparisonHeader';
 import ComparisonGridSkeleton from '../components/skeletons/ComparisonGridSkeleton';
@@ -12,7 +13,6 @@ import { getVoteCount, hasUserVoted } from '../services/voting';
 import { TEMP_USER_ID } from '../lib/constants';
 import { useComparisonDetails } from '../hooks/useComparisonDetails';
 import { useTheme } from '../contexts/ThemeContext';
-import BarChart from '../components/results/visualizations/BarChart';
 
 const ItemDetails = () => {
   const { id } = useParams();
@@ -208,23 +208,16 @@ const ItemDetails = () => {
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background, color: currentTheme.colors.text }}>
-      <main className="p-6 w-full flex-1">
+      <main className="p-6 max-w-6xl mx-auto w-full flex-1">
         <ComparisonHeader nextPollId={nextPollId} />
 
         {/* Show completed results if any exist */}
         {completedSets.length > 0 && !customMode && (
           <ResultsPanel />
         )}
-
+        
         {/* Show comparison grid with title */}
-        <div className="max-w-4xl mx-auto">
-          <ComparisonGrid title={comparisonName} />
-        </div>
-
-        {/* Box for BarChart with same margins as ComparisonGrid */}
-        <div className="max-w-4xl mx-auto bg-gray-800 rounded-lg p-4 mt-4" style={{ backgroundColor: currentTheme.colors.background }}>
-          <BarChart items={items} />
-        </div>
+        <ComparisonGrid title={comparisonName} />
 
         {/* Show review modal when active */}
         <ReviewModal />

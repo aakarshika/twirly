@@ -3,6 +3,7 @@ import { Sparkles, TrendingUp, Users, Clock, ThumbsUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { useTheme } from '../contexts/ThemeContext';
 
 const Trending = () => {
   const [trendingComparisons, setTrendingComparisons] = useState([]);
@@ -13,6 +14,7 @@ const Trending = () => {
   const [imageErrors, setImageErrors] = useState({});
   const [imageLoading, setImageLoading] = useState({});
   const navigate = useNavigate();
+  const { currentTheme } = useTheme();
 
   const fetchTrendingComparisons = async (pageNum = 1, category = 'All', isInitialLoad = false) => {
     try {
@@ -147,12 +149,11 @@ const Trending = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
+    <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background, color: currentTheme.colors.text }}>
+      <div className="max-w-7xl mx-auto p-6">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-bold mb-4 flex items-center justify-center">
-            <TrendingUp className="mr-3 text-amber-400" size={32} />
+            <TrendingUp className="mr-3" style={{ color: currentTheme.colors.primary }} size={32} />
             Trending Comparisons
           </h1>
           <p className="text-gray-400">See what's hot in the community right now</p>
@@ -204,9 +205,15 @@ const Trending = () => {
               <div
                 key={comparison.id}
                 onClick={() => handleComparisonClick(comparison)}
-                className="bg-gray-900 rounded-xl overflow-hidden hover:transform hover:scale-[1.02] transition-transform duration-200 cursor-pointer"
+                className="rounded-xl overflow-hidden hover:transform hover:scale-[1.02] transition-transform duration-200 cursor-pointer"
+                style={{
+                  backgroundColor: currentTheme.colors.card,
+                  borderColor: currentTheme.colors.border,
+                  borderWidth: '1px',
+                  borderStyle: 'solid',
+                }}
               >
-                <div className="p-6">
+                <div className="p-6" style={{ color: currentTheme.colors.text }}>
                   <div className="flex items-center gap-2 mb-4">
                     <span className="px-3 py-1 bg-amber-400/10 text-amber-400 rounded-full text-sm">
                       {comparison.category}

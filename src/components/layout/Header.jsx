@@ -5,6 +5,8 @@ import { Sparkles, RefreshCw, PlusCircle, Menu, X, Sun, Moon, Home, BarChart2, S
 import { useComparison } from '../../contexts/ComparisonContext';
 import Button from '../common/Button';
 import { Link } from 'react-router-dom';
+import ThemeSwitcher from '../ThemeSwitcher';
+import { useTheme } from '../../contexts/ThemeContext';
 
 /**
  * Header component with app title, navigation, and main actions
@@ -17,12 +19,7 @@ const Header = () => {
   } = useComparison();
   
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(true);
-
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-    // Add theme switching logic here
-  };
+  const { currentTheme } = useTheme();
 
   const navItems = [
     { name: 'Home', icon: <Home size={20} />, path: '/' },
@@ -33,14 +30,20 @@ const Header = () => {
   ];
 
   return (
-    <header className="sticky top-0 bg-black border-b border-gray-800 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header
+      className="sticky top-0 z-40 w-full border-b"
+      style={{
+        backgroundColor: currentTheme.colors.background,
+        borderColor: currentTheme.colors.border,
+      }}
+    >
+      <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo and Title */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <Sparkles className="text-amber-400" size={24} />
-              <h1 className="ml-2 text-2xl font-bold text-white">TWIRLY</h1>
+              <h1 className="ml-2 text-2xl font-bold" style={{ color: currentTheme.colors.text }}>TWIRLY</h1>
             </Link>
           </div>
 
@@ -50,7 +53,8 @@ const Header = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className="text-gray-300 hover:text-white flex items-center space-x-1"
+                className="flex items-center space-x-1"
+                style={{ color: currentTheme.colors.text }}
               >
                 {item.icon}
                 <span>{item.name}</span>
@@ -60,19 +64,13 @@ const Header = () => {
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-4">
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-full text-gray-400 hover:text-white hover:bg-gray-700"
-            >
-              {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
+            <ThemeSwitcher />
 
             {!customMode && (
               <>
                 <Button
                   variant="primary"
                   onClick={() => setCustomMode(true)}
-                  leftIcon={<PlusCircle size={16} />}
                   className="hidden md:flex"
                 >
                   Create Custom
@@ -81,7 +79,6 @@ const Header = () => {
                 <Button
                   variant="outline"
                   onClick={resetToDefault}
-                  leftIcon={<RefreshCw size={16} />}
                   className="hidden md:flex"
                 >
                   Reset
@@ -108,7 +105,11 @@ const Header = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className="flex items-center px-3 py-2 text-base font-medium text-gray-300 hover:text-white hover:bg-gray-700 rounded-md"
+                className="flex items-center px-3 py-2 text-base font-medium rounded-md"
+                style={{
+                  color: currentTheme.colors.text,
+                  backgroundColor: currentTheme.colors.card,
+                }}
               >
                 {item.icon}
                 <span className="ml-3">{item.name}</span>
@@ -119,7 +120,6 @@ const Header = () => {
                 <Button
                   variant="primary"
                   onClick={() => setCustomMode(true)}
-                  leftIcon={<PlusCircle size={16} />}
                   className="w-full"
                 >
                   Create Custom
@@ -127,7 +127,6 @@ const Header = () => {
                 <Button
                   variant="outline"
                   onClick={resetToDefault}
-                  leftIcon={<RefreshCw size={16} />}
                   className="w-full"
                 >
                   Reset

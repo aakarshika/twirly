@@ -6,11 +6,12 @@ import { useComparison } from '../../contexts/ComparisonContext';
 import { getItemReviews } from '../../services/reviews';
 import Metrics from '../common/Metrics';
 import Button from '../common/Button';
-
+import { useTheme } from '../../contexts/ThemeContext';
+import { COMPARISON_COLOR_SET } from '../../lib/constants';
 /**
  * Card component for displaying a single comparison item
  */
-const ItemCard = ({ item }) => {
+const ItemCard = ({ item ,i }) => {
   const { 
     userVoted, 
     handleVote, 
@@ -19,6 +20,7 @@ const ItemCard = ({ item }) => {
     handleReviewLike,
     votedItemId
   } = useComparison();
+  console.log(i);
 
   const [progress, setProgress] = useState(0);
   const [isPressing, setIsPressing] = useState(false);
@@ -81,6 +83,8 @@ const ItemCard = ({ item }) => {
       loadReviews(1);
     }
   }, [showReviews]);
+  
+  const { currentTheme } = useTheme();
 
   const startVoting = () => {
     if (userVoted) {
@@ -137,9 +141,21 @@ const ItemCard = ({ item }) => {
     };
   }, []);
 
+  const handleReviewButtonClick = (itemId) => {
+    setActiveReviewItem(itemId); // Set the active review item
+    console.log('Current item:', item);
+  };
+
   return (
     <div className="relative">
       <div 
+        style={{ 
+          backgroundColor: currentTheme.colors.card,
+          borderColor: currentTheme.colors.border,
+          borderWidth: '1px',
+          borderStyle: 'solid',
+          color: currentTheme.colors.text
+        }}
         className={`relative border border-gray-800 rounded-lg overflow-hidden transition-all bg-gray-900 pb-16 ${
           votedItemId === item.id ? 'border-amber-400' : ''
         }`}
@@ -186,184 +202,56 @@ const ItemCard = ({ item }) => {
         </div>
         
         {/* Item Header with Image */}
-        <div className="relative h-48">
-          {!imageError ? (
-            <div className="relative w-full h-full">
-              {imageLoading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
-                  <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-amber-400"></div>
+        <div className="relative">
+          <div className="relative h-48">
+            {!imageError ? (
+              <div className="relative w-full h-full">
+                {imageLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
+                    <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-amber-400"></div>
+                  </div>
+                )}
+                <img 
+                  src={item.image} 
+                  alt={item.name}
+                  className={`w-full h-full object-cover transition-opacity duration-300 ${
+                    imageLoading ? 'opacity-0' : 'opacity-100'
+                  }`}
+                  loading="lazy"
+                  onLoad={() => setImageLoading(false)}
+                  onError={() => {
+                    setImageError(true);
+                    setImageLoading(false);
+                  }}
+                />
+                {/* Text Overlay */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent" style={{ background: COMPARISON_COLOR_SET[i]  }}>
+                  <h3 className="text-xl font-bold text-white line-clamp-1">{item.name}</h3>
+                  <p className="text-gray-200 text-sm line-clamp-2">{item.description}</p>
                 </div>
-              )}
-              <img 
-                src={item.image} 
-                alt={item.name}
-                className={`w-full h-full object-cover transition-opacity duration-300 ${
-                  imageLoading ? 'opacity-0' : 'opacity-100'
-                }`}
-                loading="lazy"
-                onLoad={() => setImageLoading(false)}
-                onError={() => {
-                  setImageError(true);
-                  setImageLoading(false);
-                }}
-              />
-            </div>
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-800">
-              <h3 className="text-xl font-bold text-center px-4 line-clamp-3 text-gray-300">
-                {item.name}
-              </h3>
-            </div>
-          )}
-          <span className="absolute top-2 left-2 bg-black/80 border border-gray-800 text-xs px-2 py-1 rounded">
-            {item.category}
-          </span>
+              </div>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gray-800" style={{ background: COMPARISON_COLOR_SET[i]  }}>
+                <div className="text-center px-4" >
+                  <h3 className="text-xl font-bold text-gray-300 mb-2">{item.name}</h3>
+                  <p className="text-gray-400 text-sm">{item.description}</p>
+                </div>
+              </div>
+            )}
+            <span className="absolute top-2 left-2 bg-black/80 border border-gray-800 text-xs px-2 py-1 rounded">
+              {item.category}
+            </span>
+          </div>
         </div>
         
-        {/* Item Content */}
-        <div className="p-4 space-y-4">
-          <div>
-            <h3 className="text-xl font-bold mb-1 line-clamp-1">{item.name}</h3>
-            <p className="text-gray-400 text-sm line-clamp-2">{item.description}</p>
-          </div>
-          
           {/* Vote Count - Only show if user has voted */}
           {userVoted && (
-            <div className="text-sm text-gray-400">
-              {item.votes} {item.votes === 1 ? 'vote' : 'votes'}
+            <div className="p-4 space-y-4 text-sm text-gray-400">
+              {item.votes} {item.votes === 1 ? 'vote' : 'votes'} {topMetrics[0].totalReviews} {item.votes === 1 ? 'review' : 'reviews'}
             </div>
           )}
           
-          {/* Metrics Section - Only show if user has voted */}
-          {userVoted && topMetrics.length > 0 && (
-            <div className="p-1 space-y-3">
-              <div className="flex items-center gap-2 text-gray-400">
-                <BarChart size={16} />
-                <span className="text-sm font-medium">Average Ratings</span>
-              </div>
-              <div className="text-xs text-gray-500">
-                Based on {topMetrics[0].totalReviews} reviews
-              </div>
-              <div className="space-y-2">
-                {(showAllMetrics ? topMetrics : topMetrics.slice(0, 3)).map((metric) => (
-                  <div key={metric.title} className="space-y-1">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm text-gray-300 capitalize">{metric.title}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium">{metric.value.toFixed(1)}</span>
-                        <div className="flex">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Star
-                              key={star}
-                              size={12}
-                              className={`${
-                                star <= Math.round(metric.value)
-                                  ? 'text-amber-400 fill-current'
-                                  : 'text-gray-600'
-                              }`}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="h-1 bg-gray-800 rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-amber-400"
-                        style={{ width: `${(metric.value / 5) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              {topMetrics.length > 3 && (
-                <button
-                  onClick={() => setShowAllMetrics(!showAllMetrics)}
-                  className="w-full text-sm text-gray-400 hover:text-white transition-colors relative z-10"
-                >
-                  {showAllMetrics ? 'Show Less' : 'Show More Metrics'}
-                </button>
-              )}
-            </div>
-          )}
           
-          {/* Reviews Section */}
-          {userVoted && (
-            <div className="mt-4 relative z-20">
-              {/* <button
-                onClick={() => setShowReviews(!showReviews)}
-                className="w-full flex items-center justify-between p-3 bg-black/50 hover:bg-black/70 transition-colors rounded-lg"
-              >
-                <span className="text-sm font-medium">
-                  {showReviews ? 'Hide Reviews' : 'Show Reviews'}
-                </span>
-                <ChevronDown
-                  className={`w-4 h-4 transition-transform ${
-                    showReviews ? 'rotate-180' : ''
-                  }`}
-                />
-              </button> */}
-              {showReviews && (
-                <div className="mt-2 space-y-4">
-                  {reviews.map((review) => (
-                    <div
-                      key={review.id}
-                      className="p-4 bg-white/5 rounded-lg space-y-2"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-medium">
-                          {review.username}
-                        </span>
-                        <span className="text-xs text-gray-400">
-                          {new Date(review.timestamp).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                          })}
-                        </span>
-                      </div>
-                      <p className="text-sm text-gray-300">{review.text}</p>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleReviewLike(item.id, review.id);
-                          }}
-                          className="flex items-center gap-1 text-xs text-gray-400 hover:text-amber-400"
-                        >
-                          <Heart
-                            className={`w-4 h-4 ${
-                              review.liked ? 'fill-amber-400 text-amber-400' : ''
-                            }`}
-                          />
-                          {review.likes}
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                  {loadingReviews && (
-                    <div className="flex justify-center py-4">
-                      <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-amber-400"></div>
-                    </div>
-                  )}
-                  {hasMoreReviews && !loadingReviews && (
-                    <button
-                      onClick={loadMoreReviews}
-                      className="w-full text-sm text-gray-400 hover:text-white transition-colors"
-                    >
-                      Load More Reviews
-                    </button>
-                  )}
-                  {!loadingReviews && reviews.length === 0 && (
-                    <p className="text-sm text-gray-400 text-center py-4">
-                      No reviews yet. Be the first to review!
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
       </div>
 
       {/* Review Button */}
@@ -378,7 +266,7 @@ const ItemCard = ({ item }) => {
             votedItemId,
             activeReviewItem
           });
-          setActiveReviewItem(item.id);
+          handleReviewButtonClick(item.id);
         }}
       >
         <MessageSquare size={14} />

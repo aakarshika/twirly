@@ -1,0 +1,14 @@
+.review-card {
+    transition: transform 0.2s;
+  }
+  
+  .review-card:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .metric-item {
+    margin-top: 5px;
+    font-size: 14px;
+    color: #aaa;
+  }

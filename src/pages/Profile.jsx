@@ -5,6 +5,7 @@ import { getUserVotes } from '../services/voting';
 import { getUserReviews } from '../services/reviews';
 import { getUserPolls } from '../services/polls';
 import { TEMP_USER_ID } from '../lib/constants';
+import './Profile.css'; // Assuming you have a CSS file for styles
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState('votes');
@@ -52,6 +53,7 @@ const Profile = () => {
           setReviewsLoading(true);
           try {
             const reviews = await getUserReviews(TEMP_USER_ID);
+            console.log(reviews);
             setUserReviews(reviews);
           } catch (err) {
             console.error('Failed to fetch user reviews:', err);
@@ -126,8 +128,8 @@ const Profile = () => {
         return (
           <div className="space-y-4">
             {userReviews.map((review) => (
-              <div key={review.id} className="bg-gray-900 rounded-lg p-4">
-                <h3 className="font-semibold mb-2">{review.title}</h3>
+              <div key={review.id} className="review-card bg-gray-900 rounded-lg p-4">
+                <h3 className="font-semibold text-lg mb-2">{review.title}</h3>
                 <p className="text-gray-300 mb-3">{review.content}</p>
                 <div className="flex justify-between items-center text-sm">
                   <div className="flex items-center text-gray-400">
@@ -138,6 +140,20 @@ const Profile = () => {
                     <Heart size={14} className="mr-1" />
                     {review.likes}
                   </div>
+                </div>
+                <div className="review-metrics mt-2">
+                  <strong>Metricsssss:</strong>
+                  {Array.isArray(review.metrics) && (review.metrics).length > 0 ? (
+                    <div className="mt-2">
+                      {review.metrics.map(metric => (
+                        <div key={metric.id} className="metric-item text-gray-400">
+                          <span>{metric.metric_name}: <strong>{metric.value}</strong></span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-gray-500">No metrics available</div>
+                  )}
                 </div>
               </div>
             ))}
