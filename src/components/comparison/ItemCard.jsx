@@ -7,7 +7,9 @@ import { getItemReviews } from '../../services/reviews';
 import Metrics from '../common/Metrics';
 import Button from '../common/Button';
 import { useTheme } from '../../contexts/ThemeContext';
-import { COMPARISON_COLOR_SET } from '../../lib/constants';
+import ImageLoader from './ImageLoader';
+import VotingProgress from './VotingProgress';
+import './ItemCard.css';
 /**
  * Card component for displaying a single comparison item
  */
@@ -165,88 +167,30 @@ const ItemCard = ({ item ,i }) => {
         onTouchStart={!userVoted ? startVoting : undefined}
         onTouchEnd={!userVoted ? cancelVoting : undefined}
       >
-        {/* Progress Indicator Container */}
-        <div className="absolute inset-0">
-          {/* Progress Fill */}
-          <div 
-            className={`absolute inset-0 transition-all duration-100 ${
-              votedItemId === item.id ? 'bg-amber-400/30' : 'bg-primary-500/30'
-            }`}
-            style={{ 
-              width: votedItemId === item.id ? '100%' : `${progress}%`,
-              clipPath: 'none'
-            }}
-          />
-          
-          {/* Progress Marker */}
-          <div className="absolute top-0 right-0 w-1 h-full bg-primary-500/50" />
-          
-          {/* Progress Text */}
-          {isPressing && !userVoted && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="bg-black/50 backdrop-blur-sm px-4 py-2 rounded-full text-white text-sm font-medium">
-                Hold to vote ({Math.round(progress)}%)
-              </div>
-            </div>
-          )}
-
-          {/* Already Voted Indicator */}
-          {userVoted && votedItemId === item.id && (
-            <div className="absolute top-4 right-4 z-10">
-              <div className="bg-amber-400/20 backdrop-blur-sm px-3 py-1.5 rounded-full text-amber-400 text-sm font-medium flex items-center gap-2 border border-amber-400/30">
-                <ThumbsUp size={14} />
-                <span>Your Vote</span>
-              </div>
-            </div>
-          )}
-        </div>
         
-        {/* Item Header with Image */}
-        <div className="relative">
-          <div className="relative h-48">
-            {!imageError ? (
-              <div className="relative w-full h-full">
-                {imageLoading && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
-                    <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-amber-400"></div>
-                  </div>
-                )}
-                <img 
-                  src={item.image} 
-                  alt={item.name}
-                  className={`w-full h-full object-cover transition-opacity duration-300 ${
-                    imageLoading ? 'opacity-0' : 'opacity-100'
-                  }`}
-                  loading="lazy"
-                  onLoad={() => setImageLoading(false)}
-                  onError={() => {
-                    setImageError(true);
-                    setImageLoading(false);
-                  }}
-                />
-                {/* Text Overlay */}
-                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent" style={{ background: COMPARISON_COLOR_SET[i]  }}>
-                  <h3 className="text-xl font-bold text-white line-clamp-1">{item.name}</h3>
-                  <p className="text-gray-200 text-sm line-clamp-2">{item.description}</p>
-                </div>
-              </div>
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-800" style={{ background: COMPARISON_COLOR_SET[i]  }}>
-                <div className="text-center px-4" >
-                  <h3 className="text-xl font-bold text-gray-300 mb-2">{item.name}</h3>
-                  <p className="text-gray-400 text-sm">{item.description}</p>
-                </div>
-              </div>
-            )}
-            {/* <span className="absolute top-2 left-2 bg-black/80 border border-gray-800 text-xs px-2 py-1 rounded">
-              {item.category}
-            </span> */}
-          </div>
-        </div>
+        <VotingProgress 
+          isPressing={isPressing} 
+          progress={progress} 
+          userVoted={userVoted} 
+          itemId={item.id} 
+          handleVote={handleVote} 
+          startVoting={startVoting} 
+          cancelVoting={cancelVoting} 
+          votedItemId={votedItemId}
+        />
+        
+        <ImageLoader 
+          image={item.image} 
+          name={item.name} 
+          item={item}
+          description={item.description} 
+          index={i} 
+        />
+        
         
           {/* Vote Count - Only show if user has voted */}
           {userVoted && (
-            <div className="p-4 space-y-4 text-sm text-gray-400">
+            <div className="p-4 text-sm text-gray-400">
               {item.votes} {item.votes === 1 ? 'vote' : 'votes'} 
             </div>
           )}

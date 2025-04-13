@@ -227,8 +227,8 @@ const ItemDetails = () => {
         </div>
 
         {/* Comments section */}
-        <div className="max-w-4xl mx-auto bg-gray-800 rounded-lg p-4 mt-4" style={{ backgroundColor: currentTheme.colors.background }}>
-          <ComparisonSetCommentsSection setId={currentSetId} />
+        <div className="max-w-4xl mx-auto bg-gray-800 rounded-lg" style={{ backgroundColor: currentTheme.colors.background }}>
+          <ComparisonSetCommentsSection setId={currentSetId} items={items} />
         </div>
 
         {/* Show review modal when active */}

@@ -1,0 +1,18 @@
+.highlighted-mention-user {
+  background-color: #f5feff; /* Light blue background */
+  color: #00796b; /* Dark teal text */
+  font-weight: bold; /* Bold text */
+  text-decoration: underline;
+  text-decoration-color: #69c3cf;
+  border-radius: 5px; /* Rounded corners */
+  padding: 2px 5px; /* Padding around the text */
+}
+.highlighted-mention-product {
+  background-color: #fffaf5; /* Light blue background */
+  color: #974900; /* Dark teal text */
+  font-weight: bold; /* Bold text */
+  text-decoration: underline;
+  text-decoration-color: #ecb683;
+  border-radius: 3px; /* Rounded corners */
+  padding: 2px 4px; /* Padding around the text */
+}

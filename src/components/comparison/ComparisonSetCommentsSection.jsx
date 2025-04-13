@@ -4,13 +4,14 @@ import { TEMP_USER_ID } from '../../lib/constants';
 import CommentForm from './CommentForm';
 import CommentList from './CommentList';
 
-const ComparisonSetCommentsSection = ({ setId }) => {
+const ComparisonSetCommentsSection = ({ setId , items}) => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [newComment, setNewComment] = useState('');
   const [replyingTo, setReplyingTo] = useState(null);
   const [replyText, setReplyText] = useState('');
+  const [products, setProducts] = useState([]);
   const [commentVisibility, setCommentVisibility] = useState({});
 
   const fetchComments = async () => {
@@ -25,7 +26,7 @@ const ComparisonSetCommentsSection = ({ setId }) => {
           replies:comparison_set_comment_replies(*,user:users(username))
         `)
         .eq('set_id', setId)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: true });
 
       if (error) throw error;
 
@@ -36,6 +37,14 @@ const ComparisonSetCommentsSection = ({ setId }) => {
       }));
       console.log('Success fetching comments:', processedComments);
 
+      if (data) {
+        data.forEach(comment => {
+          if (comment.replies) {
+            comment.replies.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)); // Sort replies by created_at descending
+          }
+        });
+      }
+
       setComments(processedComments || []);
     } catch (err) {
       console.error('Error fetching comments:', err);
@@ -45,9 +54,16 @@ const ComparisonSetCommentsSection = ({ setId }) => {
     }
   };
 
+  const initializeProducts = () => {
+    const products = items.map(item => item.name);
+    return products;
+  }
+
   useEffect(() => {
     if (setId) {
       fetchComments();
+      console.log('items', items);
+      setProducts(initializeProducts());
     }
   }, [setId]);
 
@@ -70,7 +86,7 @@ const ComparisonSetCommentsSection = ({ setId }) => {
 
       if (error) throw error;
 
-      setComments(prev => [data, ...prev]);
+      setComments(prev => [ data, ...prev]);
       setNewComment('');
     } catch (err) {
       console.error('Error posting comment:', err);
@@ -143,7 +159,7 @@ const ComparisonSetCommentsSection = ({ setId }) => {
         if (c.id === commentId) {
           return {
             ...c,
-            replies: [...c.replies, data] // Add the new reply to the existing replies
+            replies: [data, ...c.replies] // Add the new reply to the existing replies
           };
         }
         return c;
@@ -175,9 +191,9 @@ const ComparisonSetCommentsSection = ({ setId }) => {
   }
 
   return (
-    <div className="space-y-6">
+    <div >
       <CommentForm newComment={newComment} setNewComment={setNewComment} handleSubmitComment={handleSubmitComment} />
-      <div className="space-y-4">
+      <div className="space-y-2">
         {comments.map((comment) => (
           <div key={comment.id} className="border-b border-gray-300 dark:border-gray-600 pb-4">
             <CommentList
@@ -186,6 +202,7 @@ const ComparisonSetCommentsSection = ({ setId }) => {
               handleReply={handleReply}
               commentVisibility={commentVisibility}
               setCommentVisibility={setCommentVisibility}
+              products={products}
             />
           </div>
         ))}

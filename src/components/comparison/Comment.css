@@ -1,0 +1,27 @@
+.suggestions-list {
+    background-color: white; /* or dark:bg-gray-800 for dark mode */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    max-height: 150px; /* Limit height */
+    overflow-y: auto; /* Scroll if too many suggestions */
+    z-index: 1000; /* Ensure it appears above other elements */
+    list-style-type: none; /* Remove default list styling */
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margin */
+}
+
+.suggestions-list li {
+    padding: 8px; /* Add some padding */
+    cursor: pointer; /* Change cursor on hover */
+}
+
+.suggestions-list li:hover {
+    background-color: #f0f0f0; /* Highlight on hover */
+}
+
+.mention {
+    background-color: #e0f7fa; /* Light blue background */
+    color: #00796b; /* Dark teal text */
+    padding: 2px 4px; /* Padding around the mention */
+    border-radius: 4px; /* Rounded corners */
+}
