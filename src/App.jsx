@@ -12,6 +12,7 @@ import Profile from './pages/Profile';
 import CompanyProfile from './pages/CompanyProfile';
 import Test from './pages/TestPage';
 import ItemDetails from './pages/ItemDetails';
+import PollScreen from './pages/PollScreen';
 import ProductDetails from './pages/ProductDetails';
 import PollResults from './pages/PollResults';
 
@@ -36,7 +37,7 @@ const App = () => {
                 <Route path="/company" element={<CompanyProfile />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/test" element={<Test />} />
-                <Route path="/comparison/:id" element={<ItemDetails />} />
+                <Route path="/comparison/:id" element={<PollScreen />} />
                 <Route path="/product/:itemId" element={<ProductDetails />} />
                 <Route path="/pollresult/:id" element={<PollResults />} />
               </Routes>
