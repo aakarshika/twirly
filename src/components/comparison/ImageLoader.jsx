@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { COMPARISON_COLOR_SET } from '../../lib/constants';
+import VotingProgress from './VotingProgress';
 
-const ImageLoader = ({ item, index }) => {
+const ImageLoader = ({ item, index, isPressing, progress, userVoted, itemId, handleVote, startVoting, cancelVoting, votedItemId  }) => {
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
 
   return (
     <div className="relative">
-      <div className="relative h-48">
+      <div className="relative h-60">
         {!imageError ? (
           <div className="relative w-full h-full">
             {imageLoading && (
@@ -15,6 +16,17 @@ const ImageLoader = ({ item, index }) => {
                 <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-amber-400"></div>
               </div>
             )}
+
+        <VotingProgress 
+          isPressing={isPressing} 
+          progress={progress} 
+          userVoted={userVoted} 
+          itemId={item.id} 
+          handleVote={handleVote} 
+          startVoting={startVoting} 
+          cancelVoting={cancelVoting} 
+          votedItemId={votedItemId}
+        />
             <img 
               src={item.image} 
               alt={item.name}
@@ -29,16 +41,30 @@ const ImageLoader = ({ item, index }) => {
               }}
             />
             {/* Text Overlay */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent" style={{ background: COMPARISON_COLOR_SET[index] }}>
+            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent" style={{ background: userVoted ? COMPARISON_COLOR_SET[index] : 'rgba(22, 22, 22, 0.5)'  }}>
               <h3 className="text-xl font-bold text-white line-clamp-1">{item.name}</h3>
               <p className="text-gray-200 text-sm line-clamp-2">{item.description}</p>
+
+              {userVoted && (
+                <div className="text-sm text-white-400">
+                  {item.votes} {item.votes === 1 ? 'vote' : 'votes'}
+                </div>
+              )}
             </div>
+
+
           </div>
+          
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gray-800" style={{ background: COMPARISON_COLOR_SET[index] }}>
+          <div className="w-full h-full flex items-center justify-center bg-gray-800" style={{ background: userVoted ? COMPARISON_COLOR_SET[index] : 'rgba(22, 22, 22, 0.5)'   }}>
             <div className="text-center px-4">
-              <h3 className="text-xl font-bold text-gray-300 mb-2">{item.name}</h3>
-              <p className="text-gray-400 text-sm">{item.description}</p>
+            <h3 className="text-xl font-bold text-white line-clamp-1">{item.name}</h3>
+              <p className="text-gray-200 text-sm line-clamp-2">{item.description}</p>
+              {userVoted && (
+                <div className="text-sm text-white-400">
+                  {item.votes} {item.votes === 1 ? 'vote' : 'votes'}
+                </div>
+              )}
             </div>
           </div>
         )}

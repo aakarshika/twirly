@@ -11,7 +11,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 /**
  * Grid component to display comparison items
  */
-const ComparisonGrid = ({ title }) => {
+const ComparisonGrid = ({ title, height }) => {
   const { 
     items, 
     userVoted, 
@@ -19,10 +19,11 @@ const ComparisonGrid = ({ title }) => {
     completedSets,
     currentSetIndex
   } = useComparison();
+  console.log("height in grid",height);
 
   const { currentTheme } = useTheme();
 
-  console.log('ComparisonGrid received title:', title);
+  console.log('Height in ComparisonGrid:', height); // Check if height is logged correctly
 
   // Get the current winner if voting has occurred
   const getWinner = () => {
@@ -34,7 +35,7 @@ const ComparisonGrid = ({ title }) => {
   const isLastSet = currentSetIndex === 2; // Assuming 3 sets (0-indexed)
   
   return (
-    <div className="space-y-8" style={{  color: currentTheme.colors.primary }}>
+    <div className="space-y-8  m-4" style={{  color: currentTheme.colors.primary }}>
       {/* Poll Title */}
       <div className="text-center mb-8">
         <h1 style={{  color: currentTheme.colors.primary }} className="text-3xl font-bold text-white">
@@ -46,7 +47,7 @@ const ComparisonGrid = ({ title }) => {
       {/* Items Grid */}
       <div className="grid grid-cols-2 gap-6">
         {items.map((item, i) => (
-          <ItemCard key={item.id} item={item} i={i} />
+          <ItemCard key={item.id} item={item} i={i} height={height} />
         ))}
       </div>
       

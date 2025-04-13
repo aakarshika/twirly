@@ -16,7 +16,7 @@ const BarChart = ({ items }) => {
   const metrics = Array.from(allMetrics);
 
   return (
-    <div className="w-full" style={{ backgroundColor: currentTheme.colors.background, marginTop: '10vh' }}>
+    <div className="w-full" style={{ backgroundColor: currentTheme.colors.background, marginTop: '1vh' }}>
       <h2 className="text-2xl font-bold mb-4" style={{ color: currentTheme.colors.text }}>Comparison Results</h2>
       {metrics.map(metric => (
         <div key={metric} className="w-full">
