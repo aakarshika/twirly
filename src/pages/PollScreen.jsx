@@ -59,11 +59,12 @@ const PollScreen = () => {
   }
 
   return (
-    <div className="min-h-screen relative" style={{ backgroundColor: currentTheme.colors.background }}>
+    <div className="min-h-screen relative " style={{ backgroundColor: currentTheme.colors.background }}>
       <PollGrid 
         title={comparisonName}
         items={items}
         votedItemId={votedItemId}
+        currentId={id}
         userVoted={userVoted}
       />
 

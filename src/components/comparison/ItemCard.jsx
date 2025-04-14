@@ -73,19 +73,18 @@ const ItemCard = ({ item, i, height }) => {
   const numericHeight = parseFloat(heightValue); 
   
   // Divide by 4
-  const newHeight = (numericHeight / 4) + 'vh'; 
+  const newHeight = (numericHeight / 3) + 'vh'; 
   
   return (
-    <div className="" style={{ height: newHeight }}
-    onClick={() => handleItemClick()}>
-      <div className="relative h-full" >
+    <div className="w-full" style={{ height: newHeight }}>
+      <div className="relative h-full w-full">
         <div 
           style={{ 
             backgroundColor: currentTheme.colors.card,
             borderColor: currentTheme.colors.border,
             color: currentTheme.colors.text
           }}
-          className={`relative h-full flex flex-col border rounded-lg overflow-hidden transition-all ${
+          className={`relative h-full w-full flex flex-col border rounded-lg overflow-hidden transition-all ${
             votedItemId === item.id ? 'border-amber-400' : 'border-gray-800'
           }`}
           onMouseDown={!userVoted ? startVoting : undefined}
@@ -94,25 +93,19 @@ const ItemCard = ({ item, i, height }) => {
           onTouchStart={!userVoted ? startVoting : undefined}
           onTouchEnd={!userVoted ? cancelVoting : undefined}
         >
-          
-          <div className="flex-1">
-            <ImageLoader 
-              image={item.image} 
-              name={item.name} 
-              item={item}
-              index={i} 
-              height={height}
-              isPressing={isPressing} 
-              progress={progress} 
-              userVoted={userVoted} 
-              itemId={item.id} 
-              handleVote={handleVote} 
-              startVoting={startVoting} 
-              cancelVoting={cancelVoting} 
-              votedItemId={votedItemId}
-              />
-          </div>
-
+          <ImageLoader 
+            item={item}
+            index={i} 
+            height={newHeight}
+            isPressing={isPressing} 
+            progress={progress} 
+            userVoted={userVoted} 
+            itemId={item.id} 
+            handleVote={handleVote} 
+            startVoting={startVoting} 
+            cancelVoting={cancelVoting} 
+            votedItemId={votedItemId}
+          />
         </div>
       </div>
     </div>

@@ -3,14 +3,11 @@ import { useTheme } from '../contexts/ThemeContext';
 import ProfileHeader from '../components/dashboard/ProfileHeader';
 import ActivityOverview from '../components/dashboard/ActivityOverview';
 import ContentTabs from '../components/dashboard/ContentTabs';
-import SettingsPanel from '../components/dashboard/SettingsPanel';
 import { getUserProfile } from '../services/users';
 import { getWeeklyActivity, getCategoryDistribution, getRecentActivities, getActivityTrends } from '../services/activity';
-
 const UserDashboard = () => {
   const { currentTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('products');
-  const [showSettings, setShowSettings] = useState(false);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -125,14 +122,6 @@ const UserDashboard = () => {
           />
         </div>
 
-        {showSettings && (
-          <div className="mt-8">
-            <SettingsPanel 
-              userData={userData}
-              onClose={() => setShowSettings(false)} 
-            />
-          </div>
-        )}
       </div>
     </div>
   );

@@ -45,10 +45,8 @@ const Header = () => {
   }, [lastScrollY, setIsHeaderVisible]);
 
   const navItems = [
-    { name: 'Home', icon: <Home size={20} />, path: '/' },
-    { name: 'Trending', icon: <BarChart2 size={20} />, path: '/trending' },
-    { name: 'Profile', icon: <User size={20} />, path: '/profile' },
-    { name: 'Company', icon: <Building2 size={20} />, path: '/company' },
+    { name: 'Trending', icon: <Home size={20} />, path: '/' },
+    { name: 'Dashboard', icon: <User size={20} />, path: '/dashboard' },
     { name: 'Settings', icon: <Settings size={20} />, path: '/settings' },
   ];
 
@@ -90,7 +88,6 @@ const Header = () => {
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-4">
-            <ThemeSwitcher />
 
 
             {/* Mobile menu button */}
@@ -110,6 +107,7 @@ const Header = () => {
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {navItems.map((item) => (
               <Link
+                onClick={() => setIsMenuOpen(false)}
                 key={item.name}
                 to={item.path}
                 className="flex items-center px-3 py-2 text-base font-medium rounded-md"

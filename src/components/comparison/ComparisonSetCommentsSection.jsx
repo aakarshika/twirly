@@ -159,7 +159,7 @@ const ComparisonSetCommentsSection = ({ setId , items}) => {
         if (c.id === commentId) {
           return {
             ...c,
-            replies: [data, ...c.replies] // Add the new reply to the existing replies
+            replies: [data, ...c?.replies] // Add the new reply to the existing replies
           };
         }
         return c;

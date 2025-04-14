@@ -42,7 +42,7 @@ const PollGrid = ({ title, items, onVote, votedItemId, userVoted, currentId }) =
       }}
     >
       {/* ComparisonHeader  */}
-      <div className="h-full flex flex-col">
+      <div className="h-full flex flex-col max-w-4xl mx-auto">
         <div className="flex-1">
           <ComparisonGrid 
             currentId={currentId}

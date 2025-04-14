@@ -10,11 +10,10 @@ import PollScreen from './PollScreen';
 import ProductDetails from './ProductDetails';
 import UserDashboard from './UserDashboard';
 import { useTheme } from '../contexts/ThemeContext';
-
+import Settings from './Settings';
 
 // Placeholder component for settings
 
-const Settings = () => <div className="p-8 text-center">Settings Page</div>;
 
 /**
  * Main App component that wraps the application with necessary providers and routing
