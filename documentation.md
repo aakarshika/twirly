@@ -3,16 +3,55 @@
 ## Overview
 Twirly is a web application built with React and Node.js that allows users to compare items, vote on comparisons, and write reviews. The application uses Supabase as its backend database and follows a modern React architecture with context-based state management.
 
+## Context Management
+
+### Core Contexts
+
+1. **ThemeContext**
+   - Manages application-wide theme settings
+   - Handles dark/light mode switching
+   - Provides theme colors and styles to components
+
+2. **HeaderContext**
+   - Controls header visibility and behavior
+   - Manages header state during scrolling
+   - Coordinates with scroll-based animations
+
+3. **ComparisonContext**
+   - Manages comparison-related state
+   - Handles comparison data fetching and updates
+   - Coordinates voting and comparison interactions
+
+4. **AuthContext**
+   - Manages user authentication state
+   - Handles login/logout functionality
+   - Provides user session information
+
+## Scroll Behavior
+
+### PollGrid Component
+- Uses Framer Motion's `useScroll` and `useTransform` for scroll-based animations
+- Height changes directly proportional to scroll position
+- No smoothing or spring effects for precise control
+- Real-time updates during scrolling
+
+### Scroll Implementation
+```javascript
+const { scrollY } = useScroll();
+const heightTransform = useTransform(
+  scrollY,
+  [0, window.innerHeight * 0.7],
+  ['100vh', '30vh'],
+  { clamp: false }
+);
+```
+
 ## Database Schema
 
 ### Core Tables
 1. **Users**
    - Stores user information (username, email, password)
    - Tracks user activity through relationships with other tables
-
-2. **Companies**
-   - Stores company information (name, industry, website)
-   - Related to items through company_id
 
 3. **Categories**
    - Organizes items into categories

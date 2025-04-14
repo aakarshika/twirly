@@ -1,33 +1,34 @@
 import React, { useEffect, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useHeader } from '../../contexts/HeaderContext';
 import ComparisonGrid from './ComparisonGrid';
 
 const PollGrid = ({ title, items, onVote, votedItemId, userVoted, nextPollId }) => {
   const { currentTheme } = useTheme();
+  const { isHeaderVisible } = useHeader();
   const { scrollY } = useScroll();
   const [mounted, setMounted] = useState(false);
-  const [height, setHeight] = useState('100vh'); // State to hold the height
+  const [height, setHeight] = useState('100vh');
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Define the transform outside of the subscription
+  // Direct transform from scroll position to height
   const heightTransform = useTransform(
     scrollY,
-    [0, window.innerHeight * 0.85],
-    ['100vh', '20vh']
+    [0, window.innerHeight * 0.7],
+    ['100vh', '30vh'],
+    { clamp: false }
   );
 
   useEffect(() => {
-    // Update height based on scroll position
-    const unsubscribe = scrollY.onChange((latest) => {
-      const newHeight = heightTransform.get(); // Get the transformed height
-      setHeight(newHeight); // Update the height state
+    // Subscribe to scroll changes with no smoothing
+    return scrollY.onChange((latest) => {
+      const newHeight = heightTransform.get();
+      setHeight(newHeight);
     });
-
-    return () => unsubscribe(); // Clean up the subscription
   }, [scrollY, heightTransform]);
 
   return (
@@ -37,7 +38,7 @@ const PollGrid = ({ title, items, onVote, votedItemId, userVoted, nextPollId }) 
         backgroundColor: currentTheme.colors.background,
         overflow: 'hidden',
         height,
-        top: '64px', // Account for header height
+        top: isHeaderVisible ? '64px' : '0px',
       }}
     >
       {/* <ComparisonHeader nextPollId={nextPollId} /> */}

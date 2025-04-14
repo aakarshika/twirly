@@ -19,9 +19,6 @@ export const getUserProducts = async () => {
         ),
         categories (
           name
-        ),
-        companies (
-          name
         )
       `)
       .eq('user_id', TEMP_USER_ID)
@@ -94,7 +91,6 @@ export const createProduct = async (productData) => {
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       category_id: productData.category_id || null,
-      company_id: productData.company_id || null,
       price: productData.price ? parseFloat(productData.price) : null
     };
 
@@ -122,6 +118,33 @@ export const createProduct = async (productData) => {
     return data;
   } catch (error) {
     console.error('Error creating product:', error);
+    throw error;
+  }
+};
+
+/**
+ * Search for products by name
+ * @param {string} query - The search query
+ * @returns {Promise<Array>} List of matching products
+ */
+export const searchProducts = async (query) => {
+  try {
+    const { data, error } = await supabase
+      .from('items')
+      .select(`
+        *,
+        categories (
+          name
+        )
+      `)
+      .ilike('name', `%${query}%`)
+      .order('created_at', { ascending: false })
+      .limit(10);
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Error searching products:', error);
     throw error;
   }
 }; 

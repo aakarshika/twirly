@@ -1,8 +1,9 @@
 // File: src/components/layout/Header.jsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sparkles, RefreshCw, PlusCircle, Menu, X, Sun, Moon, Home, BarChart2, Settings, User, Building2 } from 'lucide-react';
 import { useComparison } from '../../contexts/ComparisonContext';
+import { useHeader } from '../../contexts/HeaderContext';
 import Button from '../common/Button';
 import { Link } from 'react-router-dom';
 import ThemeSwitcher from '../ThemeSwitcher';
@@ -19,7 +20,29 @@ const Header = () => {
   } = useComparison();
   
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const { isHeaderVisible, setIsHeaderVisible } = useHeader();
   const { currentTheme } = useTheme();
+
+  useEffect(() => {
+    const controlHeader = () => {
+      const currentScrollY = window.scrollY;
+      
+      if (currentScrollY > lastScrollY) { // scrolling down
+        setIsHeaderVisible(false);
+      } else { // scrolling up
+        setIsHeaderVisible(true);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', controlHeader);
+
+    return () => {
+      window.removeEventListener('scroll', controlHeader);
+    };
+  }, [lastScrollY, setIsHeaderVisible]);
 
   const navItems = [
     { name: 'Home', icon: <Home size={20} />, path: '/' },
@@ -29,9 +52,12 @@ const Header = () => {
     { name: 'Settings', icon: <Settings size={20} />, path: '/settings' },
   ];
 
+  const pageName = 'TWIRLY';
   return (
     <header
-      className="sticky top-0 z-40 w-full border-b"
+      className={`sticky top-0 z-40 w-full border-b transition-transform duration-300 ${
+        isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
+      }`}
       style={{
         backgroundColor: currentTheme.colors.background,
         borderColor: currentTheme.colors.border,
@@ -43,7 +69,7 @@ const Header = () => {
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
               <Sparkles className="text-amber-400" size={24} />
-              <h1 className="ml-2 text-2xl font-bold" style={{ color: currentTheme.colors.text }}>TWIRLY</h1>
+              <h1 className="ml-2 text-lg font-bold" style={{ color: currentTheme.colors.text }}>{pageName}</h1>
             </Link>
           </div>
 

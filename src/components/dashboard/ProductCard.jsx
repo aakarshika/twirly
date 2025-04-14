@@ -102,7 +102,7 @@ const ProductCard = ({ product, onUpdate, onDelete }) => {
         </div>
       </div>
       
-      <div className="p-4">
+      <div className="p-4" style={{ backgroundColor: currentTheme.colors.card }}>
         {isEditing ? (
           <input
             type="text"
@@ -123,10 +123,10 @@ const ProductCard = ({ product, onUpdate, onDelete }) => {
           </h3>
         )}
         
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center" >
           <span 
             className="text-sm"
-            style={{ color: currentTheme.colors.textSecondary }}
+            style={{ color: 'gray' }}
           >
             {product.categories?.name || 'Uncategorized'}
           </span>

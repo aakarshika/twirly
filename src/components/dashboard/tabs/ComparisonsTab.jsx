@@ -1,105 +1,111 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
-
-const ComparisonCard = ({ comparison }) => {
-  const { currentTheme } = useTheme();
-
-  return (
-    <div 
-      className="rounded-lg overflow-hidden"
-      style={{ backgroundColor: currentTheme.colors.cardBackground }}
-    >
-      <div className="p-4">
-        <h3 
-          className="font-semibold text-lg mb-2"
-          style={{ color: currentTheme.colors.text }}
-        >
-          {comparison.name}
-        </h3>
-        <p 
-          className="text-sm mb-4"
-          style={{ color: currentTheme.colors.textSecondary }}
-        >
-          {comparison.category}
-        </p>
-        <div className="flex justify-between items-center">
-          <div className="flex space-x-2">
-            <span 
-              className="text-sm"
-              style={{ color: currentTheme.colors.textSecondary }}
-            >
-              {comparison.items} items
-            </span>
-            <span 
-              className="text-sm"
-              style={{ color: currentTheme.colors.textSecondary }}
-            >
-              {comparison.votes} votes
-            </span>
-          </div>
-          <div className="flex space-x-2">
-            <button className="p-2 rounded-full hover:bg-gray-100">
-              <span className="text-sm">📊</span>
-            </button>
-            <button className="p-2 rounded-full hover:bg-gray-100">
-              <span className="text-sm">✏️</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
+import { Plus, Trash2, ExternalLink, MessageSquare, ThumbsUp } from 'lucide-react';
+import { getUserComparisonSets, deleteComparisonSet } from '../../../services/comparisons';
+import { TEMP_USER_ID } from '../../../lib/constants';
+import ComparisonCard from './ComparisonCard';
+import CreateComparison from './CreateComparison';
 
 const ComparisonsTab = () => {
   const { currentTheme } = useTheme();
+  const [comparisons, setComparisons] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
-  // Mock data - replace with actual data from your backend
-  const comparisons = [
-    {
-      id: 1,
-      name: 'Smartphones Comparison',
-      category: 'Electronics',
-      items: 5,
-      votes: 234,
-      created_at: '2024-03-15'
-    },
-    {
-      id: 2,
-      name: 'Laptops Comparison',
-      category: 'Electronics',
-      items: 4,
-      votes: 189,
-      created_at: '2024-03-10'
-    },
-    // Add more mock comparisons as needed
-  ];
+  useEffect(() => {
+    fetchComparisons();
+  }, []);
+
+  const fetchComparisons = async () => {
+    try {
+      setLoading(true);
+      const data = await getUserComparisonSets();
+      setComparisons(data);
+    } catch (err) {
+      setError('Failed to fetch comparisons');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async (setId) => {
+    if (!window.confirm('Are you sure you want to delete this comparison?')) return;
+
+    try {
+      await deleteComparisonSet(setId);
+      await fetchComparisons();
+    } catch (err) {
+      setError('Failed to delete comparison');
+      console.error(err);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: currentTheme.colors.primary }}></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 rounded-lg" style={{ backgroundColor: currentTheme.colors.error + '20', color: currentTheme.colors.error }}>
+        {error}
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 
-          className="text-xl font-bold"
-          style={{ color: currentTheme.colors.text }}
-        >
-          Your Comparisons
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-semibold" style={{ color: currentTheme.colors.text }}>
+          My Comparisons
         </h2>
         <button
-          className="px-4 py-2 rounded-lg font-medium"
+          onClick={() => setShowCreateModal(true)}
+          className="flex items-center space-x-2 px-4 py-2 rounded-lg font-medium"
           style={{ 
             backgroundColor: currentTheme.colors.primary,
             color: currentTheme.colors.buttonText
           }}
         >
-          Create New Comparison
+          <Plus size={16} />
+          <span>Create Comparison</span>
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {comparisons.map(comparison => (
-          <ComparisonCard key={comparison.id} comparison={comparison} />
-        ))}
-      </div>
+      {comparisons.length === 0 ? (
+        <div 
+          className="p-8 text-center rounded-lg"
+          style={{ 
+            backgroundColor: currentTheme.colors.cardBackground,
+            border: `1px solid ${currentTheme.colors.border}`
+          }}
+        >
+          <p style={{ color: currentTheme.colors.textSecondary }}>
+            You haven't created any comparisons yet. Create one to get started!
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {comparisons.map((comparison) => (
+            <ComparisonCard 
+              key={comparison.id} 
+              comparison={comparison}
+              onDelete={handleDelete}
+            />
+          ))}
+        </div>
+      )}
+
+      <CreateComparison
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSuccess={fetchComparisons}
+      />
     </div>
   );
 };

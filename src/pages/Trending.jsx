@@ -38,8 +38,6 @@ const Trending = () => {
               name,
               description,
               image_url,
-              company_id,
-              companies(name),
               item_metrics(
                 views,
                 comparisons,

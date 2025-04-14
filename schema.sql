@@ -1,3 +1,8 @@
+-- Twirly Database Schema
+-- This file contains the core database schema for the Twirly application
+-- It includes tables for users, items, comparisons, reviews, and analytics
+
+-- Drop existing tables if they exist (for clean setup)
 DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS companies CASCADE;
 DROP TABLE IF EXISTS categories CASCADE;
@@ -9,7 +14,11 @@ DROP TABLE IF EXISTS votes CASCADE;
 DROP TABLE IF EXISTS reviews CASCADE;
 DROP TABLE IF EXISTS review_metrics CASCADE;
 DROP TABLE IF EXISTS review_likes CASCADE;
+
 -- Users table
+-- Stores user account information and authentication details
+-- Primary key: id
+-- Unique constraints: username, email
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(255) UNIQUE NOT NULL,
@@ -20,6 +29,8 @@ CREATE TABLE users (
 );
 
 -- Companies table
+-- Stores information about companies that produce items
+-- Primary key: id
 CREATE TABLE companies (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -31,6 +42,9 @@ CREATE TABLE companies (
 );
 
 -- Categories table
+-- Organizes items into categories for filtering and organization
+-- Primary key: id
+-- Unique constraint: name
 CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
@@ -39,13 +53,15 @@ CREATE TABLE categories (
 );
 
 -- Items table
+-- Core entity representing products/services that can be compared
+-- Primary key: id
+-- Foreign key: category_id references categories(id)
 CREATE TABLE items (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
     image_url VARCHAR(255),
     category_id INTEGER REFERENCES categories(id),
-    company_id INTEGER REFERENCES companies(id),
     price DECIMAL(10,2),
     comparison_type VARCHAR(50),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -53,6 +69,9 @@ CREATE TABLE items (
 );
 
 -- Item metrics table
+-- Tracks performance metrics for items (views, comparisons, reviews)
+-- Primary key: id
+-- Foreign key: item_id references items(id)
 CREATE TABLE item_metrics (
     id SERIAL PRIMARY KEY,
     item_id INTEGER REFERENCES items(id) ON DELETE CASCADE,
@@ -64,16 +83,22 @@ CREATE TABLE item_metrics (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Comparison sets table (updated)
+-- Comparison sets table
+-- Groups of items being compared in a poll
+-- Primary key: id
+-- Foreign keys: category_id, user_id
 CREATE TABLE comparison_sets (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255),
     category_id INTEGER REFERENCES categories(id),
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE, -- 🆕 added creator of the poll
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Comparison set items table
+-- Links items to comparison sets (many-to-many relationship)
+-- Primary key: id
+-- Foreign keys: set_id, item_id
 CREATE TABLE comparison_set_items (
     id SERIAL PRIMARY KEY,
     set_id INTEGER REFERENCES comparison_sets(id) ON DELETE CASCADE,
@@ -82,6 +107,9 @@ CREATE TABLE comparison_set_items (
 );
 
 -- Votes table
+-- Records user votes on items within comparison sets
+-- Primary key: id
+-- Foreign keys: user_id, item_id, set_id
 CREATE TABLE votes (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -91,6 +119,9 @@ CREATE TABLE votes (
 );
 
 -- Reviews table
+-- Stores user-written reviews for items
+-- Primary key: id
+-- Foreign keys: user_id, item_id
 CREATE TABLE reviews (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -102,6 +133,9 @@ CREATE TABLE reviews (
 );
 
 -- Review metrics table
+-- Stores detailed rating metrics for reviews
+-- Primary key: id
+-- Foreign key: review_id
 CREATE TABLE review_metrics (
     id SERIAL PRIMARY KEY,
     review_id INTEGER REFERENCES reviews(id) ON DELETE CASCADE,
@@ -111,6 +145,10 @@ CREATE TABLE review_metrics (
 );
 
 -- Review likes table
+-- Tracks which users have liked which reviews
+-- Primary key: id
+-- Foreign keys: user_id, review_id
+-- Unique constraint: (user_id, review_id) to prevent duplicate likes
 CREATE TABLE review_likes (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -119,9 +157,9 @@ CREATE TABLE review_likes (
     UNIQUE(user_id, review_id)
 );
 
--- Create indexes for better query performance
+-- Performance indexes
+-- These indexes improve query performance for common operations
 CREATE INDEX idx_items_category_id ON items(category_id);
-CREATE INDEX idx_items_company_id ON items(company_id);
 CREATE INDEX idx_votes_user_id ON votes(user_id);
 CREATE INDEX idx_votes_item_id ON votes(item_id);
 CREATE INDEX idx_votes_set_id ON votes(set_id);
@@ -130,7 +168,9 @@ CREATE INDEX idx_reviews_user_id ON reviews(user_id);
 CREATE INDEX idx_review_metrics_review_id ON review_metrics(review_id);
 CREATE INDEX idx_review_likes_review_id ON review_likes(review_id);
 
--- Create view for item metric averages
+-- Item metric averages view
+-- Aggregates review metrics by item and metric type
+-- Provides average ratings and total review counts
 CREATE OR REPLACE VIEW item_metric_averages AS
 SELECT
     r.item_id,
@@ -143,7 +183,9 @@ JOIN review_metrics rm ON rm.review_id = r.id
 GROUP BY
     r.item_id, rm.metric_name;
 
-
+-- User activity summary view
+-- Provides a comprehensive summary of user engagement
+-- Includes total votes, reviews, polls posted, and likes received
 CREATE VIEW user_activity_summary AS
 SELECT
     u.id AS user_id,

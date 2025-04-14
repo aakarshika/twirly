@@ -10,8 +10,7 @@ const AddProductModal = ({ isOpen, onClose, onProductAdded }) => {
     description: '',
     image_url: '',
     price: '',
-    category_id: '',
-    company_id: ''
+    category_id: ''
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -43,9 +42,8 @@ const AddProductModal = ({ isOpen, onClose, onProductAdded }) => {
     try {
       const product = await createProduct({
         ...formData,
-        // Only include category_id and company_id if they have values
-        ...(formData.category_id && { category_id: parseInt(formData.category_id) }),
-        ...(formData.company_id && { company_id: parseInt(formData.company_id) })
+        // Only include category_id if they have values
+        ...(formData.category_id && { category_id: parseInt(formData.category_id) })
       });
       onProductAdded(product);
       onClose();
@@ -205,28 +203,6 @@ const AddProductModal = ({ isOpen, onClose, onProductAdded }) => {
               type="number"
               name="category_id"
               value={formData.category_id}
-              onChange={handleChange}
-              min="1"
-              className="w-full p-2 rounded"
-              style={{ 
-                backgroundColor: currentTheme.colors.background,
-                color: currentTheme.colors.text,
-                border: `1px solid ${currentTheme.colors.border}`
-              }}
-            />
-          </div>
-
-          <div>
-            <label 
-              className="block text-sm font-medium mb-1"
-              style={{ color: currentTheme.colors.text }}
-            >
-              Company ID (Optional)
-            </label>
-            <input
-              type="number"
-              name="company_id"
-              value={formData.company_id}
               onChange={handleChange}
               min="1"
               className="w-full p-2 rounded"

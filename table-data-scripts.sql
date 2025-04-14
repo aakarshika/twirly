@@ -19,34 +19,34 @@ INSERT INTO categories (name) VALUES
   ('Smartphones');
 
 -- ITEMS (8 per category)
-INSERT INTO items (name, description, image_url, category_id, company_id, price, comparison_type) VALUES
+INSERT INTO items (name, description, image_url, category_id, price, comparison_type) VALUES
 -- Laptops
-('ZenBook Air', 'Lightweight laptop', 'https://source.unsplash.com/featured/?laptop', 1, 1, 999.99, 'in-company'),
-('ProMax 15', 'High-performance laptop', 'https://source.unsplash.com/featured/?macbook', 1, 1, 1499.99, 'in-company'),
-('EcoBook', 'Eco-friendly laptop', 'https://source.unsplash.com/featured/?green-laptop', 1, 2, 799.99, 'in-company'),
-('LiteSlate', 'Affordable laptop', 'https://source.unsplash.com/featured/?budget-laptop', 1, 2, 599.99, 'in-company'),
-('GigaGo', 'Gaming beast', 'https://source.unsplash.com/featured/?gaming-laptop', 1, 1, 1799.99, 'in-company'),
-('NotePro', 'Notebook style', 'https://source.unsplash.com/featured/?notebook-laptop', 1, 2, 699.99, 'in-company'),
-('SwiftEdge', 'Ultraportable', 'https://source.unsplash.com/featured/?ultrabook', 1, 1, 1099.99, 'in-company'),
-('BookFlex', 'Convertible laptop', 'https://source.unsplash.com/featured/?2in1-laptop', 1, 2, 1199.99, 'in-company'),
+('ZenBook Air', 'Lightweight laptop', 'https://source.unsplash.com/featured/?laptop', 1,  999.99, 'in-company'),
+('ProMax 15', 'High-performance laptop', 'https://source.unsplash.com/featured/?macbook', 1,  1499.99, 'in-company'),
+('EcoBook', 'Eco-friendly laptop', 'https://source.unsplash.com/featured/?green-laptop', 1,  799.99, 'in-company'),
+('LiteSlate', 'Affordable laptop', 'https://source.unsplash.com/featured/?budget-laptop', 1,  599.99, 'in-company'),
+('GigaGo', 'Gaming beast', 'https://source.unsplash.com/featured/?gaming-laptop', 1,  1799.99, 'in-company'),
+('NotePro', 'Notebook style', 'https://source.unsplash.com/featured/?notebook-laptop', 1,  699.99, 'in-company'),
+('SwiftEdge', 'Ultraportable', 'https://source.unsplash.com/featured/?ultrabook', 1,  1099.99, 'in-company'),
+('BookFlex', 'Convertible laptop', 'https://source.unsplash.com/featured/?2in1-laptop', 1,  1199.99, 'in-company'),
 -- Fitness Trackers
-('FitPulse', 'Track your fitness', 'https://source.unsplash.com/featured/?fitness-tracker', 2, 1, 149.99, 'in-company'),
-('StepCore', 'Step counter', 'https://source.unsplash.com/featured/?step-tracker', 2, 2, 99.99, 'in-company'),
-('RunMate', 'Running companion', 'https://source.unsplash.com/featured/?running-watch', 2, 1, 199.99, 'in-company'),
-('CardioBand', 'Heart monitor', 'https://source.unsplash.com/featured/?heart-tracker', 2, 2, 129.99, 'in-company'),
-('FlexTrack', 'Flexible band', 'https://source.unsplash.com/featured/?smart-band', 2, 1, 119.99, 'in-company'),
-('SleepGuide', 'Sleep monitor', 'https://source.unsplash.com/featured/?sleep-tracker', 2, 2, 109.99, 'in-company'),
-('WellnessLoop', 'Daily wellness', 'https://source.unsplash.com/featured/?wellness-band', 2, 1, 139.99, 'in-company'),
-('FitRing', 'Minimal wearable', 'https://source.unsplash.com/featured/?fitness-ring', 2, 2, 89.99, 'in-company'),
+('FitPulse', 'Track your fitness', 'https://source.unsplash.com/featured/?fitness-tracker', 2,  149.99, 'in-company'),
+('StepCore', 'Step counter', 'https://source.unsplash.com/featured/?step-tracker', 2,  99.99, 'in-company'),
+('RunMate', 'Running companion', 'https://source.unsplash.com/featured/?running-watch', 2,  199.99, 'in-company'),
+('CardioBand', 'Heart monitor', 'https://source.unsplash.com/featured/?heart-tracker', 2,  129.99, 'in-company'),
+('FlexTrack', 'Flexible band', 'https://source.unsplash.com/featured/?smart-band', 2,  119.99, 'in-company'),
+('SleepGuide', 'Sleep monitor', 'https://source.unsplash.com/featured/?sleep-tracker', 2,  109.99, 'in-company'),
+('WellnessLoop', 'Daily wellness', 'https://source.unsplash.com/featured/?wellness-band', 2,  139.99, 'in-company'),
+('FitRing', 'Minimal wearable', 'https://source.unsplash.com/featured/?fitness-ring', 2,  89.99, 'in-company'),
 -- Smartphones
-('SmartX A1', 'Flagship phone', 'https://source.unsplash.com/featured/?smartphone', 3, 1, 899.99, 'in-company'),
-('GalaxyTune', 'High-end Android', 'https://source.unsplash.com/featured/?android-phone', 3, 2, 799.99, 'in-company'),
-('PixelGo', 'Google assistant', 'https://source.unsplash.com/featured/?google-phone', 3, 1, 699.99, 'in-company'),
-('OneFlash', 'Blazing fast', 'https://source.unsplash.com/featured/?fast-phone', 3, 2, 599.99, 'in-company'),
-('CamPro', 'Camera phone', 'https://source.unsplash.com/featured/?camera-phone', 3, 1, 749.99, 'in-company'),
-('BriteMini', 'Compact design', 'https://source.unsplash.com/featured/?small-phone', 3, 2, 549.99, 'in-company'),
-('NoteMax', 'Large screen', 'https://source.unsplash.com/featured/?large-phone', 3, 1, 849.99, 'in-company'),
-('ZoomX', 'Zoom master', 'https://source.unsplash.com/featured/?zoom-camera', 3, 2, 799.99, 'in-company');
+('SmartX A1', 'Flagship phone', 'https://source.unsplash.com/featured/?smartphone', 3,  899.99, 'in-company'),
+('GalaxyTune', 'High-end Android', 'https://source.unsplash.com/featured/?android-phone', 3,  799.99, 'in-company'),
+('PixelGo', 'Google assistant', 'https://source.unsplash.com/featured/?google-phone', 3,  699.99, 'in-company'),
+('OneFlash', 'Blazing fast', 'https://source.unsplash.com/featured/?fast-phone', 3,  599.99, 'in-company'),
+('CamPro', 'Camera phone', 'https://source.unsplash.com/featured/?camera-phone', 3,  749.99, 'in-company'),
+('BriteMini', 'Compact design', 'https://source.unsplash.com/featured/?small-phone', 3,  549.99, 'in-company'),
+('NoteMax', 'Large screen', 'https://source.unsplash.com/featured/?large-phone', 3,  849.99, 'in-company'),
+('ZoomX', 'Zoom master', 'https://source.unsplash.com/featured/?zoom-camera', 3,  799.99, 'in-company');
 
 -- COMPARISON SETS (9 total, 3 per category)
 INSERT INTO comparison_sets (name, category_id) VALUES

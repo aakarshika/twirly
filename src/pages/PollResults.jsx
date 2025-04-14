@@ -50,9 +50,7 @@ const PollResults = () => {
                 id,
                 name,
                 description,
-                image_url,
-                company_id,
-                companies(name)
+                image_url
               )
             )
           `)
@@ -89,7 +87,6 @@ const PollResults = () => {
             name: item.name,
             description: item.description,
             image: item.image_url,
-            company: item.companies?.name || 'Unknown Company',
             averageMetrics: transformedMetrics,
             category: data.categories?.name || 'Uncategorized'
           };

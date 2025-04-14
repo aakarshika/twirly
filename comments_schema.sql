@@ -1,9 +1,17 @@
--- Drop tables if they exist
+-- Comments System Schema
+-- This file contains the schema for the comments system in Twirly
+-- It includes tables for comments, replies, and reactions on comparison sets
+
+-- Drop existing tables if they exist (for clean setup)
 DROP TABLE IF EXISTS comparison_set_comments CASCADE;
 DROP TABLE IF EXISTS comparison_set_comment_replies CASCADE;
 DROP TABLE IF EXISTS comparison_set_comment_reactions CASCADE;
 
 -- Top-level comments table for comparison sets (polls)
+-- Stores comments made on comparison sets
+-- Primary key: id
+-- Foreign keys: set_id, user_id
+-- Tracks likes, dislikes, and reply counts
 CREATE TABLE comparison_set_comments (
     id SERIAL PRIMARY KEY,
     set_id INTEGER REFERENCES comparison_sets(id) ON DELETE CASCADE,
@@ -18,6 +26,10 @@ CREATE TABLE comparison_set_comments (
 );
 
 -- Replies table (second-level comments only)
+-- Stores replies to top-level comments
+-- Primary key: id
+-- Foreign keys: parent_comment_id, user_id
+-- Tracks likes and dislikes
 CREATE TABLE comparison_set_comment_replies (
     id SERIAL PRIMARY KEY,
     parent_comment_id INTEGER REFERENCES comparison_set_comments(id) ON DELETE CASCADE,
@@ -31,6 +43,12 @@ CREATE TABLE comparison_set_comment_replies (
 );
 
 -- Reactions table for both comments and replies
+-- Tracks user reactions (likes/dislikes) on comments and replies
+-- Primary key: id
+-- Foreign keys: comment_id, reply_id, user_id
+-- Constraints:
+--   - Reaction must be either for a comment OR a reply, not both
+--   - One reaction per user per comment/reply
 CREATE TABLE comparison_set_comment_reactions (
     id SERIAL PRIMARY KEY,
     comment_id INTEGER REFERENCES comparison_set_comments(id) ON DELETE CASCADE,
@@ -48,7 +66,8 @@ CREATE TABLE comparison_set_comment_reactions (
     CONSTRAINT unique_reply_reaction UNIQUE (user_id, reply_id)
 );
 
--- Create indexes for better query performance
+-- Performance indexes
+-- These indexes improve query performance for common comment operations
 CREATE INDEX idx_comments_set_id ON comparison_set_comments(set_id);
 CREATE INDEX idx_comments_user_id ON comparison_set_comments(user_id);
 CREATE INDEX idx_replies_parent_id ON comparison_set_comment_replies(parent_comment_id);

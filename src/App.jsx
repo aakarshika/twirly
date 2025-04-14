@@ -4,6 +4,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ComparisonProvider } from './contexts/ComparisonContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { HeaderProvider } from './contexts/HeaderContext';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import Comparison from './pages/Comparison';
@@ -16,10 +17,8 @@ import PollScreen from './pages/PollScreen';
 import ProductDetails from './pages/ProductDetails';
 import PollResults from './pages/PollResults';
 import UserDashboard from './pages/UserDashboard';
-
 // Placeholder component for settings
-const Settings = () => <div className="p-8 text-center">Settings Page</div>;
-
+import MainRoutingPage from './pages/MainRoutingPage';
 /**
  * Main App component that wraps the application with necessary providers and routing
  */
@@ -27,26 +26,9 @@ const App = () => {
   return (
     <Router>
       <ThemeProvider>
-        <ComparisonProvider>
-          <div className="min-h-screen flex flex-col">
-            <Header />
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/" element={<Comparison />} />
-                <Route path="/trending" element={<Trending />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="/company" element={<CompanyProfile />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/test" element={<Test />} />
-                <Route path="/comparison/:id" element={<PollScreen />} />
-                <Route path="/product/:itemId" element={<ProductDetails />} />
-                <Route path="/pollresult/:id" element={<PollResults />} />
-                <Route path="/dashboard" element={<UserDashboard />} />
-              </Routes>
-            </main>
-            <Footer />
-          </div>
-        </ComparisonProvider>
+        <HeaderProvider>
+          <MainRoutingPage />
+        </HeaderProvider>
       </ThemeProvider>
     </Router>
   );

@@ -19,7 +19,6 @@ const ProductDetails = () => {
           .from('items')
           .select(`
             *,
-            companies (*),
             categories (*),
             item_metrics (*)
           `)
@@ -100,22 +99,6 @@ const ProductDetails = () => {
           <p className="text-gray-600 mb-4">{item.description}</p>
           {item.price && (
             <p className="text-2xl font-semibold mb-4">${item.price}</p>
-          )}
-          {item.companies && (
-            <div className="mb-4">
-              <h2 className="text-xl font-semibold mb-2">Company</h2>
-              <p className="text-gray-700">{item.companies.name}</p>
-              {item.companies.website && (
-                <a
-                  href={item.companies.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 hover:underline"
-                >
-                  Visit Website
-                </a>
-              )}
-            </div>
           )}
           {item.categories && (
             <div>

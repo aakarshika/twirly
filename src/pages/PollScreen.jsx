@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { useComparison } from '../contexts/ComparisonContext';
+import { useHeader } from '../contexts/HeaderContext';
 import PollGrid from '../components/comparison/PollGrid';
 import BarChart from '../components/results/visualizations/BarChart';
 import ComparisonSetCommentsSection from '../components/comparison/ComparisonSetCommentsSection';
@@ -17,6 +18,7 @@ const PollScreen = () => {
     currentSetId 
   } = useComparison();
   const { currentTheme } = useTheme();
+  const { isHeaderVisible } = useHeader();
   const [comparisonName, setComparisonName] = useState('');
   const { loading, error, nextPollId } = useComparisonDetails(id);
 
@@ -67,9 +69,9 @@ const PollScreen = () => {
       />
 
       <div 
-        className="relative z-0 w-full"
+        className="relative z-0 w-full transition-margin duration-300"
         style={{ 
-          marginTop: '100vh',
+          marginTop: isHeaderVisible ? '100vh' : 'calc(100vh - 4rem)',
           minHeight: '100vh',
           backgroundColor: currentTheme.colors.background,
           transform: 'translateZ(0)'
