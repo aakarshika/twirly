@@ -1,21 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
-import { 
-  StarIcon, 
-  HandThumbUpIcon, 
-  ChartBarIcon, 
-  EyeIcon, 
-  ScaleIcon, 
-  ChatBubbleLeftIcon,
-  ArrowTrendingUpIcon,
-  ClockIcon,
-  UserGroupIcon,
-  ChatBubbleOvalLeftIcon
-} from '@heroicons/react/24/solid';
 import { useTheme } from '../contexts/ThemeContext';
 import ReviewForm from '../components/comparison/ReviewForm';
-import Metrics from '../components/common/Metrics';
+import ProductHeader from '../components/product-details/ProductHeader';
+import QuickStats from '../components/product-details/QuickStats';
+import ProductTabs from '../components/product-details/ProductTabs';
 
 const ProductDetails = () => {
   const { itemId } = useParams();
@@ -28,6 +18,10 @@ const ProductDetails = () => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
   const [showReviewForm, setShowReviewForm] = useState(false);
+  const [activityData, setActivityData] = useState([]);
+  const [categoryData, setCategoryData] = useState([]);
+  const [recentActivities, setRecentActivities] = useState([]);
+  const [trends, setTrends] = useState({});
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -50,6 +44,11 @@ const ProductDetails = () => {
           .single();
 
         if (itemError) throw itemError;
+        if (!itemData) {
+          setError('Item not found');
+          setLoading(false);
+          return;
+        }
         setItem(itemData);
 
         // Fetch initial reviews
@@ -65,43 +64,92 @@ const ProductDetails = () => {
 
         if (setsError) throw setsError;
 
-        // Fetch votes and comments for each comparison set
-        const comparisonPromises = setsData.map(async (set) => {
-          // Get total votes for the comparison set
-          const { data: totalVotesData, error: totalVotesError } = await supabase
-            .from('votes')
-            .select('*', { count: 'exact' })
-            .eq('set_id', set.comparison_sets.id);
+        // Check if setsData is null or empty
+        if (!setsData || setsData.length === 0) {
+          setComparisonSets([]);
+        } else {
+          const comparisonPromises = setsData.map(async (set) => {
+            // Get total votes for the comparison set
+            const { data: totalVotesData, error: totalVotesError } = await supabase
+              .from('votes')
+              .select('*', { count: 'exact' })
+              .eq('set_id', set.comparison_sets.id);
 
-          if (totalVotesError) throw totalVotesError;
+            if (totalVotesError) throw totalVotesError;
 
-          // Get votes for this specific item in the comparison
-          const { data: itemVotesData, error: itemVotesError } = await supabase
-            .from('votes')
-            .select('*', { count: 'exact' })
-            .eq('set_id', set.comparison_sets.id)
-            .eq('item_id', itemId);
+            // Get votes for this specific item in the comparison
+            const { data: itemVotesData, error: itemVotesError } = await supabase
+              .from('votes')
+              .select('*', { count: 'exact' })
+              .eq('set_id', set.comparison_sets.id)
+              .eq('user_id', itemId);
 
-          if (itemVotesError) throw itemVotesError;
+            if (itemVotesError) throw itemVotesError;
 
-          // Get comment count for the comparison
-          const { data: commentsData, error: commentsError } = await supabase
-            .from('comparison_set_comments')
-            .select('*', { count: 'exact' })
-            .eq('set_id', set.comparison_sets.id);
+            // Get comment count for the comparison
+            const { data: commentsData, error: commentsError } = await supabase
+              .from('comparison_set_comments')
+              .select('*', { count: 'exact' })
+              .eq('set_id', set.comparison_sets.id);
 
-          if (commentsError) throw commentsError;
+            if (commentsError) throw commentsError;
 
-          return { 
-            ...set, 
-            totalVotes: totalVotesData.length,
-            itemVotes: itemVotesData.length,
-            commentCount: commentsData.length
-          };
-        });
+            return { 
+              ...set, 
+              totalVotes: totalVotesData.length,
+              itemVotes: itemVotesData.length,
+              commentCount: commentsData.length
+            };
+          });
 
-        const comparisonSetsWithData = await Promise.all(comparisonPromises);
-        setComparisonSets(comparisonSetsWithData);
+          const comparisonSetsWithData = await Promise.all(comparisonPromises);
+          setComparisonSets(comparisonSetsWithData);
+        }
+
+        // Fetch weekly activity data
+        const { data: weeklyActivity, error: weeklyError } = await supabase
+          .from('user_weekly_activity')
+          .select('*')
+          .eq('user_id', itemId)
+          .order('date', { ascending: true });
+
+        if (weeklyError) throw weeklyError;
+        setActivityData(weeklyActivity || []);
+
+        // Fetch recent activities
+        const { data: recentActivities, error: recentError } = await supabase
+          .from('user_recent_activities')
+          .select('*')
+          .eq('user_id', itemId)
+          .order('created_at', { ascending: false })
+          .limit(5);
+
+        if (recentError) throw recentError;
+        setRecentActivities(recentActivities || []);
+
+        // Fetch activity trends
+        const { data: trends, error: trendsError } = await supabase
+          .from('user_activity_trends')
+          .select('*')
+          .eq('user_id', itemId)
+          .select();
+
+        if (trendsError) throw trendsError;
+        setTrends(trends || {});
+
+        // Fetch metrics for the specific item
+        const { data: metricsData, error: metricsError } = await supabase
+          .from('item_metrics')
+          .select('*')
+          .eq('item_id', itemId)
+          .select();
+
+        if (metricsError) throw metricsError;
+        setCategoryData(metricsData ? [
+          { name: 'Views', value: metricsData.views || 0 },
+          { name: 'Comparisons', value: metricsData.comparisons || 0 },
+          { name: 'Reviews', value: metricsData.reviews || 0 }
+        ] : []);
 
         setLoading(false);
       } catch (err) {
@@ -124,7 +172,7 @@ const ProductDetails = () => {
           review_metrics (*),
           review_likes (*)
         `, { count: 'exact' })
-        .eq('item_id', itemId)
+        .eq('user_id', itemId)
         .order('created_at', { ascending: false })
         .range((page - 1) * REVIEWS_PER_PAGE, page * REVIEWS_PER_PAGE - 1);
 
@@ -159,127 +207,19 @@ const ProductDetails = () => {
   return (
     <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background }}>
       <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Product Header */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          <div>
-            {item.image_url && (
-              <img
-                src={item.image_url}
-                alt={item.name}
-                className="w-full h-auto rounded-lg shadow-lg"
-              />
-            )}
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold mb-2">{item.name}</h1>
-            <p className="text-gray-600 mb-4">{item.description}</p>
-            {item.price && (
-              <p className="text-2xl font-semibold mb-4">${item.price}</p>
-            )}
-            {item.categories && (
-              <div>
-                <h2 className="text-xl font-semibold mb-2">Category</h2>
-                <p className="text-gray-700">{item.categories.name}</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Quick Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {/* ... existing quick stats ... */}
-        </div>
-
-        {/* Tabs */}
-        <div className="mb-8">
-          <div className="flex space-x-4 border-b border-gray-700">
-            {['overview', 'reviews', 'appearances', 'metrics'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 font-medium ${
-                  activeTab === tab
-                    ? 'border-b-2 border-blue-500 text-blue-500'
-                    : 'text-gray-400 hover:text-gray-300'
-                }`}
-              >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Tab Content */}
-        <div className="mb-8">
-          {activeTab === 'overview' && (
-            <div className="space-y-6">
-              {/* ... existing overview content ... */}
-            </div>
-          )}
-
-          {activeTab === 'reviews' && (
-            <div className="space-y-6">
-              {/* ... existing reviews content ... */}
-            </div>
-          )}
-
-          {activeTab === 'appearances' && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold mb-6" style={{ color: currentTheme.colors.text }}>
-                Appears in Comparisons
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {comparisonSets.map((set) => (
-                  <div 
-                    key={set.comparison_sets.id} 
-                    className="bg-gray-800 rounded-xl p-6 hover:bg-gray-700 transition-colors cursor-pointer"
-                    onClick={() => navigate(`/comparison/${set.comparison_sets.id}`)}
-                  >
-                    <h3 
-                      className="font-semibold mb-2 text-lg hover:text-blue-400 transition-colors"
-                      style={{ color: currentTheme.colors.text }}
-                    >
-                      {set.comparison_sets.name}
-                    </h3>
-                    
-                    <div className="space-y-2">
-                      <div className="flex items-center text-gray-400">
-                        <UserGroupIcon className="h-4 w-4 mr-2" />
-                        <span>
-                          {set.itemVotes}/{set.totalVotes} votes
-                        </span>
-                      </div>
-                      
-                      <div className="flex items-center text-gray-400">
-                        <ChatBubbleOvalLeftIcon className="h-4 w-4 mr-2" />
-                        <span>{set.commentCount} comments</span>
-                      </div>
-                    </div>
-
-                    <div className="mt-4">
-                      <div className="w-full bg-gray-700 rounded-full h-2">
-                        <div
-                          className="bg-blue-500 h-2 rounded-full"
-                          style={{ width: `${(set.itemVotes / set.totalVotes) * 100}%` }}
-                        ></div>
-                      </div>
-                      <p className="text-xs text-gray-400 mt-1">
-                        {Math.round((set.itemVotes / set.totalVotes) * 100)}% of total votes
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {activeTab === 'metrics' && (
-            <div className="space-y-6">
-              {/* ... existing metrics content ... */}
-            </div>
-          )}
-        </div>
-
+        <ProductHeader item={item} />
+        <QuickStats comparisonSets={comparisonSets} reviews={reviews} />
+        <ProductTabs
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          item={item}
+          reviews={reviews}
+          comparisonSets={comparisonSets}
+          activityData={activityData}
+          categoryData={categoryData}
+          recentActivities={recentActivities}
+          trends={trends}
+        />
         {/* Review Form Modal */}
         {showReviewForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">

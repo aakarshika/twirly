@@ -61,7 +61,7 @@ const ItemCard = ({ item, i, height }) => {
   };
 
   const handleItemClick = () => {
-    navigate(`/product/${item.id}`);
+    navigate(`/item/${item.id}`);
   };
 
   const handleReviewButtonClick = (itemId) => {
@@ -76,7 +76,9 @@ const ItemCard = ({ item, i, height }) => {
   const newHeight = (numericHeight / 3) + 'vh'; 
   
   return (
-    <div className="w-full" style={{ height: newHeight }}>
+    <div className="w-full"
+            onClick={handleItemClick}
+             style={{ height: newHeight }}>
       <div className="relative h-full w-full">
         <div 
           style={{ 

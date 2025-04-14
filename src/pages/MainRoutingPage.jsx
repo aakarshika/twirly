@@ -8,6 +8,7 @@ import Footer from '../components/layout/Footer';
 import Trending from './Trending';
 import PollScreen from './PollScreen';
 import ProductDetails from './ProductDetails';
+import ItemScreen from './ItemScreen';
 import UserDashboard from './UserDashboard';
 import { useTheme } from '../contexts/ThemeContext';
 import Settings from './Settings';
@@ -31,6 +32,7 @@ const MainRoutingPage = () => {
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/comparison/:id" element={<PollScreen />} />
                 <Route path="/product/:itemId" element={<ProductDetails />} />
+                <Route path="/item/:itemId" element={<ItemScreen />} />
                 <Route path="/dashboard" element={<UserDashboard />} />
               </Routes>
             </main>
