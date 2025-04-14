@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { Shield, Lock, Key, Smartphone, Save, Check, X } from 'lucide-react';
+import { Shield, Lock, Key, Smartphone, Save, Check, X, LogOut, Trash2 } from 'lucide-react';
 import Button from '../common/Button';
+import { useAuth } from '../../contexts/AuthContext';
+import { authService } from '../../services/authService';
+import { userService } from '../../services/userService';
+import { useNavigate } from 'react-router-dom';
 
 const SecuritySettings = () => {
   const { currentTheme } = useTheme();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [securitySettings, setSecuritySettings] = useState({
     twoFactorAuth: false,
     password: {
@@ -39,6 +45,9 @@ const SecuritySettings = () => {
       }
     ]
   });
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleTwoFactorToggle = () => {
     setSecuritySettings(prev => ({
@@ -76,6 +85,43 @@ const SecuritySettings = () => {
   const handleSave = () => {
     // TODO: Implement save functionality with Supabase
     console.log('Saving security settings:', securitySettings);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!showDeleteConfirm) {
+      setShowDeleteConfirm(true);
+      return;
+    }
+
+    setIsDeleting(true);
+    setDeleteError('');
+
+    try {
+      // Delete user preferences first
+      await userService.deleteUserPreferences(user.id);
+      
+      // Delete the user account
+      await authService.deleteUser();
+      
+      // Logout and redirect
+      await logout();
+      navigate('/');
+    } catch (error) {
+      setDeleteError('Failed to delete account. Please try again.');
+      console.error('Error deleting account:', error);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
   };
 
   return (
@@ -345,6 +391,70 @@ const SecuritySettings = () => {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Account Actions */}
+      <div 
+        className="p-6 rounded-lg"
+        style={{ 
+          backgroundColor: currentTheme.colors.background,
+          border: `1px solid ${currentTheme.colors.border}`
+        }}
+      >
+        <h3 
+          className="text-lg font-medium mb-4 flex items-center space-x-2"
+          style={{ color: currentTheme.colors.text }}
+        >
+          <Shield size={20} />
+          <span>Account Actions</span>
+        </h3>
+
+        <div className="space-y-4">
+          {/* Logout Button */}
+          <Button
+            onClick={handleLogout}
+            className="flex items-center space-x-2 w-full justify-center"
+            style={{ 
+              backgroundColor: currentTheme.colors.background,
+              border: `1px solid ${currentTheme.colors.border}`,
+              color: currentTheme.colors.text
+            }}
+          >
+            <LogOut size={16} />
+            <span>Logout</span>
+          </Button>
+
+          {/* Delete Account Button */}
+          <div className="space-y-2">
+            <Button
+              onClick={handleDeleteAccount}
+              className="flex items-center space-x-2 w-full justify-center"
+              style={{ 
+                backgroundColor: showDeleteConfirm ? '#DC2626' : currentTheme.colors.background,
+                border: `1px solid ${showDeleteConfirm ? '#DC2626' : currentTheme.colors.border}`,
+                color: showDeleteConfirm ? 'white' : currentTheme.colors.text
+              }}
+              disabled={isDeleting}
+            >
+              <Trash2 size={16} />
+              <span>
+                {isDeleting ? 'Deleting...' : showDeleteConfirm ? 'Confirm Delete Account' : 'Delete Account'}
+              </span>
+            </Button>
+
+            {showDeleteConfirm && !isDeleting && (
+              <p className="text-sm text-center text-gray-500">
+                Are you sure you want to delete your account? This action cannot be undone.
+              </p>
+            )}
+
+            {deleteError && (
+              <p className="text-sm text-center text-red-500">
+                {deleteError}
+              </p>
+            )}
           </div>
         </div>
       </div>
