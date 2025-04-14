@@ -4,15 +4,13 @@ import './Reply.css';
 const Reply = ({ reply }) => {
   // Function to render text with highlighted mentions
   const renderTextWithMentions = (text) => {
-    console.log(text);
+    
     text = text.trim();
     // replace multiple spaces with a single space
     text = text.replace(/\n+/g, ' <br> ');
     text = text.replace(/\s+/g, ' ');
     text = text+' ';
-    console.log(text);
     const words = text.split(' '); // Split the text into words
-    console.log(words);
     return words.map((word, index) => {
       const key = `${word}-${index}`; // Create a unique key using the word and index
       if (word === '<br>') {

@@ -20,7 +20,7 @@ const PollScreen = () => {
   const { currentTheme } = useTheme();
   const { isHeaderVisible } = useHeader();
   const [comparisonName, setComparisonName] = useState('');
-  const { loading, error, nextPollId } = useComparisonDetails(id);
+  const { loading, error } = useComparisonDetails(id);
 
   useEffect(() => {
     if (items.length > 0 && items[0].category) {
@@ -65,7 +65,6 @@ const PollScreen = () => {
         items={items}
         votedItemId={votedItemId}
         userVoted={userVoted}
-        nextPollId={nextPollId}
       />
 
       <div 

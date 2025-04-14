@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Edit2, Trash2, Save, X } from 'lucide-react';
 import { updateProduct, deleteProduct } from '../../services/products';
-
+import { useNavigate } from 'react-router-dom';
 const ProductCard = ({ product, onUpdate, onDelete }) => {
   const { currentTheme } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
@@ -32,7 +32,11 @@ const ProductCard = ({ product, onUpdate, onDelete }) => {
       }
     }
   };
+  const navigate = useNavigate();
 
+  const handleItemClick = () => {
+    navigate(`/product/${product.id}`);
+  };
   const handleCancel = () => {
     setEditedProduct({ ...product });
     setIsEditing(false);
@@ -40,6 +44,7 @@ const ProductCard = ({ product, onUpdate, onDelete }) => {
 
   return (
     <div 
+      onClick={() => handleItemClick()}
       className="rounded-lg overflow-hidden"
       style={{ backgroundColor: currentTheme.colors.cardBackground }}
     >

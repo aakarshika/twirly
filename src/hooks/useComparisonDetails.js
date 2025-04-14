@@ -15,7 +15,6 @@ export const useComparisonDetails = (id) => {
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [nextPollId, setNextPollId] = useState(null);
 
   useEffect(() => {
     const fetchComparisonDetails = async () => {
@@ -133,17 +132,6 @@ export const useComparisonDetails = (id) => {
 
         setItems(items);
         
-        const { data: nextPoll } = await supabase
-          .from('comparison_sets')
-          .select('id')
-          .order('created_at', { ascending: false })
-          .gt('id', data.id)
-          .limit(1)
-          .single();
-
-        if (nextPoll) {
-          setNextPollId(nextPoll.id);
-        }
 
         setLoading(false);
       } catch (error) {
@@ -158,5 +146,5 @@ export const useComparisonDetails = (id) => {
     }
   }, [id, setItems, setUserVoted, setVotedItemId, setCurrentSetId]);
 
-  return { loading, error, nextPollId };
+  return { loading, error };
 }; 

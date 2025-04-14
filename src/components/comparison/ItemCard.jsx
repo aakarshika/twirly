@@ -6,6 +6,7 @@ import { useComparison } from '../../contexts/ComparisonContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import ImageLoader from './ImageLoader';
 import './ItemCard.css';
+import { useNavigate } from 'react-router-dom';
 /**
  * Card component for displaying a single comparison item
  */
@@ -23,7 +24,7 @@ const ItemCard = ({ item, i, height }) => {
   const progressInterval = useRef(null);
 
   const VOTE_DURATION = 1000; // 1 second
-
+  const navigate = useNavigate();
   const { currentTheme } = useTheme();
 
   const startVoting = () => {
@@ -59,6 +60,10 @@ const ItemCard = ({ item, i, height }) => {
     setProgress(0);
   };
 
+  const handleItemClick = () => {
+    navigate(`/product/${item.id}`);
+  };
+
   const handleReviewButtonClick = (itemId) => {
     setActiveReviewItem(itemId);
   };
@@ -70,9 +75,9 @@ const ItemCard = ({ item, i, height }) => {
   // Divide by 4
   const newHeight = (numericHeight / 4) + 'vh'; 
   
-  console.log("height",height,newHeight);
   return (
-    <div className="" style={{ height: newHeight }}>
+    <div className="" style={{ height: newHeight }}
+    onClick={() => handleItemClick()}>
       <div className="relative h-full" >
         <div 
           style={{ 

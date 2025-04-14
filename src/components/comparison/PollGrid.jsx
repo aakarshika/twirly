@@ -4,7 +4,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useHeader } from '../../contexts/HeaderContext';
 import ComparisonGrid from './ComparisonGrid';
 
-const PollGrid = ({ title, items, onVote, votedItemId, userVoted, nextPollId }) => {
+const PollGrid = ({ title, items, onVote, votedItemId, userVoted, currentId }) => {
   const { currentTheme } = useTheme();
   const { isHeaderVisible } = useHeader();
   const { scrollY } = useScroll();
@@ -41,11 +41,11 @@ const PollGrid = ({ title, items, onVote, votedItemId, userVoted, nextPollId }) 
         top: isHeaderVisible ? '64px' : '0px',
       }}
     >
-      {/* <ComparisonHeader nextPollId={nextPollId} /> */}
+      {/* ComparisonHeader  */}
       <div className="h-full flex flex-col">
         <div className="flex-1">
           <ComparisonGrid 
-            nextPollId={nextPollId}
+            currentId={currentId}
             height={height} 
             title={title}
             items={items}

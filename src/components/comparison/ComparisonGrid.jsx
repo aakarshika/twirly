@@ -14,7 +14,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 /**
  * Grid component to display comparison items
  */
-const ComparisonGrid = ({ title,nextPollId, height }) => {
+const ComparisonGrid = ({ title, height, currentId }) => {
   
   const { 
     items, 
@@ -30,8 +30,8 @@ const ComparisonGrid = ({ title,nextPollId, height }) => {
   const navigate = useNavigate();
 
   const handleNextPoll = () => {
-    if (nextPollId) {
-      navigate(`/comparison/${nextPollId}`);
+    if (currentId) {
+      navigate(`/comparison/${currentId+1}`);
     }
   };
   // console.log('Height in ComparisonGrid:', height); // Check if height is logged correctly
@@ -62,7 +62,6 @@ const ComparisonGrid = ({ title,nextPollId, height }) => {
         <span style={{  color: currentTheme.colors.primary }} className="text-lg font-bold text-white">
           {title || 'Untitled Comparison'}
         </span>
-        {nextPollId && (
           <button
             onClick={handleNextPoll}
             className="flex text-sm items-center gap-2 px-2 py-1 bg-amber-400 text-black rounded-full font-semibold hover:bg-amber-300 transition-colors"
@@ -70,7 +69,6 @@ const ComparisonGrid = ({ title,nextPollId, height }) => {
             Next Poll
             <ArrowRight size={14} />
           </button>
-        )}
       </div>
     </div>
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { Plus, Trash2, ExternalLink, MessageSquare, ThumbsUp } from 'lucide-react';
 import { TEMP_USER_ID } from '../../../lib/constants';
-
+import { useNavigate } from 'react-router-dom';
 const ComparisonCard = ({ comparison, onDelete }) => {
     const { currentTheme } = useTheme();
   
@@ -14,11 +14,16 @@ const ComparisonCard = ({ comparison, onDelete }) => {
       return comparison.comparison_set_comments.length;
     };
   
+    const navigate = useNavigate();
+    const handleComparisonClick = (comparison) => {
+      navigate(`/comparison/${comparison.id}`);
+    };
     // Define the number of placeholders needed
     const placeholdersNeeded = 3 - comparison.comparison_set_items.length;
   
     return (
       <div 
+        onClick={() => handleComparisonClick(comparison)}
         className="rounded-lg overflow-hidden flex flex-col"
         style={{ 
           backgroundColor: currentTheme.colors.card,

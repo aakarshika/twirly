@@ -24,7 +24,7 @@ const Comment = ({ comment, onLike, onReply, users, products }) => {
 
     onReply(comment.id, text);
     setText('');
-    setIsReplying(false);
+    setIsReplying(true);
     setIsReplySectionExpanded(true);
   };
 
@@ -85,7 +85,11 @@ const Comment = ({ comment, onLike, onReply, users, products }) => {
                 <div
                   ref={contentEditableRef}
                   contentEditable
-                  onInput={handleInputChange}
+                  onInput={
+                    (e) => {
+                      handleInputChange(e.target.innerText);
+                    }
+                  }
                   placeholder="Write a reply..."
                   className="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                   style={{ minHeight: '40px', outline: 'none' }}

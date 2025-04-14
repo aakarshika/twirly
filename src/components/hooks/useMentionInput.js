@@ -7,8 +7,11 @@ const useMentionInput = (users, products) => {
   const [triggerPosition, setTriggerPosition] = useState(-1);
   const contentEditableRef = useRef(null);
 
-  const handleInputChange = (e) => {
-    const value = e.target.innerText;
+  const handleInputChange = (innerText) => {
+    const value = innerText;
+
+    console.log('handleInputChange- contentEditableRef.current.innerText', contentEditableRef.current.innerText);
+    console.log('handleInputChange- e.target.innerText', innerText);
     setText(value);
 
     const selection = window.getSelection();
@@ -42,7 +45,9 @@ const useMentionInput = (users, products) => {
 
     if (triggerPosition !== -1) {
       const newText = text.substring(0, triggerPosition) + mentionText + text.substring(triggerPosition + 1);
-      contentEditableRef.current.innerText = newText;
+      contentEditableRef.current.innerText = newText+' ';
+      console.log('newText', newText);
+      console.log('contentEditableRef.current.innerText', contentEditableRef.current.innerText);
 
       const newCursorPos = triggerPosition + mentionText.length;
       const newRange = document.createRange();
@@ -53,6 +58,7 @@ const useMentionInput = (users, products) => {
       newRange.setEnd(textNode, safeCursorPos);
       selection.removeAllRanges();
       selection.addRange(newRange);
+      handleInputChange(newText);
     }
 
     setSuggestions([]);
