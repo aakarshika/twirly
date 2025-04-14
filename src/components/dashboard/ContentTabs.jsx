@@ -6,6 +6,7 @@ import ReviewsTab from './tabs/ReviewsTab';
 import VotesTab from './tabs/VotesTab';
 import CommentsTab from './tabs/CommentsTab';
 
+
 const ContentTabs = ({ activeTab, setActiveTab }) => {
   const { currentTheme } = useTheme();
 

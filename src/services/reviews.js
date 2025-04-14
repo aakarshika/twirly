@@ -226,7 +226,7 @@ export const getItemAverageMetrics = async (itemId) => {
  */
 export const getUserReviews = async (userId) => {
   try {
-    const { data, error } = await supabase
+    const { data: reviews, error } = await supabase
       .from('reviews')
       .select(`
         id,
@@ -234,24 +234,16 @@ export const getUserReviews = async (userId) => {
         likes,
         created_at,
         updated_at,
-        review_metrics (
-          id,
-          metric_name,
-          value
-        ),
-        items (
+        item:items (
           id,
           name,
-          comparison_set_items (
-            set_id,
-            comparison_sets (
-              id,
-              name,
-              categories (
-                name
-              )
-            )
+          category:categories (
+            name
           )
+        ),
+        review_metrics (
+          metric_name,
+          value
         )
       `)
       .eq('user_id', userId)
@@ -259,14 +251,18 @@ export const getUserReviews = async (userId) => {
 
     if (error) throw error;
 
-    return data.map(review => ({
+    // Transform the data to match the UI requirements
+    return reviews.map(review => ({
       id: review.id,
-      title: review.items.comparison_set_items[0]?.comparison_sets.name || 'Untitled Comparison',
-      content: review.text,
-      date: review.created_at,
+      productName: review.item.name,
+      category: review.item.category.name,
+      text: review.text,
       likes: review.likes,
-      metrics: review.review_metrics || [],
-      category: review.items.comparison_set_items[0]?.comparison_sets.categories?.name || 'Uncategorized'
+      created_at: review.created_at,
+      // Calculate average rating from metrics
+      rating: review.review_metrics.length > 0 
+        ? review.review_metrics.reduce((acc, metric) => acc + metric.value, 0) / review.review_metrics.length
+        : 0
     }));
   } catch (error) {
     console.error('Error fetching user reviews:', error);

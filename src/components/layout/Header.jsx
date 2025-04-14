@@ -92,25 +92,6 @@ const Header = () => {
           <div className="flex items-center space-x-4">
             <ThemeSwitcher />
 
-            {!customMode && (
-              <>
-                <Button
-                  variant="primary"
-                  onClick={() => setCustomMode(true)}
-                  className="hidden md:flex"
-                >
-                  Create Custom
-                </Button>
-                
-                <Button
-                  variant="outline"
-                  onClick={resetToDefault}
-                  className="hidden md:flex"
-                >
-                  Reset
-                </Button>
-              </>
-            )}
 
             {/* Mobile menu button */}
             <button
@@ -141,24 +122,6 @@ const Header = () => {
                 <span className="ml-3">{item.name}</span>
               </Link>
             ))}
-            {!customMode && (
-              <div className="px-3 py-2 space-y-2">
-                <Button
-                  variant="primary"
-                  onClick={() => setCustomMode(true)}
-                  className="w-full"
-                >
-                  Create Custom
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={resetToDefault}
-                  className="w-full"
-                >
-                  Reset
-                </Button>
-              </div>
-            )}
           </div>
         </div>
       )}

@@ -19,7 +19,7 @@ export const getUserProfile = async () => {
     // 2. Get the activity summary
     const { data: activitySummary, error: summaryError } = await supabase
       .from('user_activity_summary')
-      .select('total_votes, total_reviews, total_polls_posted, total_likes_received')
+      .select('total_votes, total_reviews, total_products, total_comparisons, total_likes_received')
       .eq('user_id', TEMP_USER_ID)
       .single();
 
@@ -30,7 +30,8 @@ export const getUserProfile = async () => {
       ...user,
       votes_count: activitySummary.total_votes,
       reviews_count: activitySummary.total_reviews,
-      polls_count: activitySummary.total_polls_posted,
+      products_count: activitySummary.total_products,
+      comparisons_count: activitySummary.total_comparisons,
       likes_count: activitySummary.total_likes_received
     };
   } catch (error) {

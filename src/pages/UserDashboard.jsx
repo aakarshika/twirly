@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import ProfileHeader from '../components/dashboard/ProfileHeader';
-import ActivityStats from '../components/dashboard/ActivityStats';
+import ActivityOverview from '../components/dashboard/ActivityOverview';
 import ContentTabs from '../components/dashboard/ContentTabs';
-import AnalyticsSection from '../components/dashboard/AnalyticsSection';
 import SettingsPanel from '../components/dashboard/SettingsPanel';
 import { getUserProfile } from '../services/users';
+import { getWeeklyActivity, getCategoryDistribution, getRecentActivities, getActivityTrends } from '../services/activity';
 
 const UserDashboard = () => {
   const { currentTheme } = useTheme();
@@ -14,21 +14,45 @@ const UserDashboard = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activityData, setActivityData] = useState([]);
+  const [categoryData, setCategoryData] = useState([]);
+  const [recentActivities, setRecentActivities] = useState([]);
+  const [trends, setTrends] = useState({});
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getUserProfile();
-        setUserData(data);
+        setLoading(true);
+        
+        // Fetch all data in parallel
+        const [
+          userProfile,
+          weeklyActivity,
+          categoryDistribution,
+          recentActivitiesData,
+          activityTrends
+        ] = await Promise.all([
+          getUserProfile(),
+          getWeeklyActivity(),
+          getCategoryDistribution(),
+          getRecentActivities(),
+          getActivityTrends()
+        ]);
+
+        setUserData(userProfile);
+        setActivityData(weeklyActivity);
+        setCategoryData(categoryDistribution);
+        setRecentActivities(recentActivitiesData);
+        setTrends(activityTrends);
       } catch (err) {
-        setError('Failed to fetch user data');
-        console.error(err);
+        console.error('Error fetching dashboard data:', err);
+        setError('Failed to fetch dashboard data');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchUserData();
+    fetchData();
   }, []);
 
   if (loading) {
@@ -80,11 +104,16 @@ const UserDashboard = () => {
         <ProfileHeader userData={userData} />
         
         <div className="mt-8">
-          <ActivityStats 
+          <ActivityOverview 
             votesCount={userData.votes_count}
             reviewsCount={userData.reviews_count}
-            pollsCount={userData.polls_count}
+            productsCount={userData.products_count}
+            comparisonsCount={userData.comparisons_count}
             likesCount={userData.likes_count}
+            recentActivities={recentActivities}
+            trends={trends}
+            activityData={activityData}
+            categoryData={categoryData}
           />
         </div>
 
@@ -94,10 +123,6 @@ const UserDashboard = () => {
             setActiveTab={setActiveTab}
             userId={userData.id}
           />
-        </div>
-
-        <div className="mt-8">
-          <AnalyticsSection userId={userData.id} />
         </div>
 
         {showSettings && (

@@ -30,7 +30,7 @@ const MainRoutingPage = () => {
   const { currentTheme } = useTheme();
   return (
         <ComparisonProvider>
-          <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background }}>
+          <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background, color: currentTheme.colors.text }}>
             <Header />
             <main className="flex-grow">
               <Routes>

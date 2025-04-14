@@ -35,18 +35,18 @@ const StatCard = ({ title, value, icon }) => {
   );
 };
 
-const ActivityStats = ({ votesCount, reviewsCount, pollsCount, likesCount }) => {
+const ActivityStats = ({ votesCount, reviewsCount, productsCount, comparisonsCount, likesCount }) => {
   const { currentTheme } = useTheme();
 
   const stats = [
     { 
       title: 'Products', 
-      value: pollsCount || 0, 
+      value: productsCount || 0, 
       icon: <Package size={20} style={{ color: currentTheme.colors.primary }} /> 
     },
     { 
       title: 'Comparisons', 
-      value: pollsCount || 0, 
+      value: comparisonsCount || 0, 
       icon: <BarChart2 size={20} style={{ color: currentTheme.colors.primary }} /> 
     },
     { 

@@ -23,6 +23,7 @@ CREATE INDEX IF NOT EXISTS idx_items_created_at ON items(created_at);
 
 -- Drop the existing view if it exists
 DROP VIEW IF EXISTS product_performance_metrics;
+DROP VIEW IF EXISTS user_activity_summary;
 
 -- Product performance metrics view
 -- Provides comprehensive performance data for products
@@ -43,7 +44,6 @@ SELECT
     im.reviews,
     im.rating,
     c.name AS category_name,
-    comp.name AS company_name,
     COUNT(DISTINCT v.id) AS total_votes,
     COUNT(DISTINCT r.id) AS total_reviews,
     COUNT(DISTINCT cs.id) AS total_comparisons
@@ -57,4 +57,71 @@ LEFT JOIN comparison_set_items csi ON i.id = csi.item_id
 LEFT JOIN comparison_sets cs ON csi.set_id = cs.id
 GROUP BY 
     i.id, i.name, i.user_id, i.created_at, im.views, im.comparisons, 
-    im.reviews, im.rating, c.name, comp.name; 
+    im.reviews, im.rating, c.name;
+
+-- User activity summary view
+-- Provides a comprehensive summary of user engagement
+-- Includes:
+--   - Total votes cast
+--   - Total reviews written
+--   - Total products created
+--   - Total comparisons created
+--   - Total likes received on reviews
+CREATE VIEW user_activity_summary AS
+SELECT
+    u.id AS user_id,
+    u.username,
+    COALESCE(v.vote_count, 0) AS total_votes,
+    COALESCE(r.review_count, 0) AS total_reviews,
+    COALESCE(p.product_count, 0) AS total_products,
+    COALESCE(cs.comparison_count, 0) AS total_comparisons,
+    COALESCE(rl.likes_received, 0) AS total_likes_received
+FROM
+    users u
+LEFT JOIN (
+    SELECT
+        user_id,
+        COUNT(*) AS vote_count
+    FROM
+        votes
+    GROUP BY
+        user_id
+) v ON u.id = v.user_id
+LEFT JOIN (
+    SELECT
+        user_id,
+        COUNT(*) AS review_count
+    FROM
+        reviews
+    GROUP BY
+        user_id
+) r ON u.id = r.user_id
+LEFT JOIN (
+    SELECT
+        user_id,
+        COUNT(*) AS product_count
+    FROM
+        items
+    GROUP BY
+        user_id
+) p ON u.id = p.user_id
+LEFT JOIN (
+    SELECT
+        user_id,
+        COUNT(*) AS comparison_count
+    FROM
+        comparison_sets
+    GROUP BY
+        user_id
+) cs ON u.id = cs.user_id
+LEFT JOIN (
+    SELECT
+        r.user_id,
+        COUNT(rl.id) AS likes_received
+    FROM
+        reviews r
+    JOIN
+        review_likes rl ON r.id = rl.review_id
+    GROUP BY
+        r.user_id
+) rl ON u.id = rl.user_id; 
