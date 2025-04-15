@@ -5,7 +5,7 @@ import { initialItemSets, getDefaultMetrics } from '../data/itemSets';
 import { castVote, getVoteCount, hasUserVoted } from '../services/voting';
 import { submitReview, likeReview, getItemReviews } from '../services/reviews';
 import { supabase } from '../lib/supabase';
-import { useAuth } from './AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import { COMPARISON_COLOR_SET } from '../lib/constants';
 
 const ComparisonContext = createContext();
@@ -64,40 +64,49 @@ export const ComparisonProvider = ({ children }) => {
 
   // Handle voting
   const handleVote = async (itemId) => {
-    if (!userVoted && currentSetId) {
-      try {
-        console.log('Handling vote in context:', { itemId, currentSetId });
-        // Cast the vote in the database
-        await castVote(itemId, currentSetId);
+    if (!currentSetId) {
+      console.error('No current set ID available');
+      return;
+    }
 
-        // Update the local state
-        setItems(prevItems => 
-          prevItems.map(item => 
-            item.id === itemId ? { ...item, votes: (item.votes || 0) + 1 } : item
-          )
-        );
+    try {
+      // First check if user has already voted in this set
+      const hasVoted = await hasUserVoted(currentSetId, user);
+      if (hasVoted) {
+        console.log('User has already voted in this set');
         setUserVoted(true);
-        setVotedItemId(itemId);
-
-        // Refresh vote counts for all items
-        const updatedItems = await Promise.all(items.map(async item => {
-          const voteCount = await getVoteCount(item.id, currentSetId);
-          return {
-            ...item,
-            votes: voteCount || 0
-          };
-        }));
-        setItems(updatedItems);
-
-        console.log('Vote handled successfully');
-      } catch (error) {
-        console.error('Error in handleVote:', error);
-        if (error.message === 'User has already voted in this comparison set') {
-          setUserVoted(true);
-        }
+        return;
       }
-    } else {
-      console.log('Vote not processed:', { userVoted, currentSetId });
+
+      console.log('Handling vote in context:', { itemId, currentSetId });
+      // Cast the vote in the database
+      await castVote({ itemId, setId: currentSetId }, user);
+
+      // Update the local state
+      setItems(prevItems => 
+        prevItems.map(item => 
+          item.id === itemId ? { ...item, votes: (item.votes || 0) + 1 } : item
+        )
+      );
+      setUserVoted(true);
+      setVotedItemId(itemId);
+
+      // Refresh vote counts for all items
+      const updatedItems = await Promise.all(items.map(async item => {
+        const voteCount = await getVoteCount(currentSetId, item.id);
+        return {
+          ...item,
+          votes: voteCount || 0
+        };
+      }));
+      setItems(updatedItems);
+
+      console.log('Vote handled successfully');
+    } catch (error) {
+      console.error('Error in handleVote:', error);
+      if (error.message === 'User has already voted in this comparison set') {
+        setUserVoted(true);
+      }
     }
   };
 

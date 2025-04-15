@@ -68,13 +68,10 @@ export const useComparisonDetails = (id) => {
 
         setCurrentSetId(data.id);
 
+        // Check if user has voted in this set
         const hasVoted = await hasUserVoted(data.id, user);
         setUserVoted(hasVoted);
         
-        if (!hasVoted) {
-          setVotedItemId(null);
-        }
-
         if (hasVoted && user) {
           const { data: voteData, error: voteError } = await supabase
             .from('votes')
@@ -86,6 +83,8 @@ export const useComparisonDetails = (id) => {
           if (!voteError && voteData) {
             setVotedItemId(voteData.item_id);
           }
+        } else {
+          setVotedItemId(null);
         }
 
         const voteCounts = await Promise.all(data.comparison_set_items?.map(async setItem => {

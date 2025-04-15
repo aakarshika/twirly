@@ -7,17 +7,17 @@ import { useAuth } from '../contexts/AuthContext';
  * @returns {Promise<Object>} The result of the vote operation
  */
 
-export const castVote = async (setId, itemId) => {
-  const { user } = useAuth();
+export const castVote = async (voteData, user) => {
   if (!user) {
-    throw new Error('You must be logged in to vote');
+    throw new Error('User must be logged in to cast a vote');
   }
 
   try {
     const { data: existingVote, error: voteError } = await supabase
       .from('votes')
       .select('*')
-      .eq('set_id', setId)
+      .eq('set_id', voteData.setId)
+      .eq('user_id', user.id)
       .single();
 
     if (voteError && voteError.code !== 'PGRST116') {
@@ -28,7 +28,7 @@ export const castVote = async (setId, itemId) => {
       // Update existing vote
       const { error: updateError } = await supabase
         .from('votes')
-        .update({ item_id: itemId })
+        .update({ item_id: voteData.itemId })
         .eq('id', existingVote.id);
 
       if (updateError) throw updateError;
@@ -36,7 +36,11 @@ export const castVote = async (setId, itemId) => {
       // Create new vote
       const { error: insertError } = await supabase
         .from('votes')
-        .insert([{ set_id: setId, item_id: itemId }]);
+        .insert([{ 
+          set_id: voteData.setId, 
+          item_id: voteData.itemId,
+          user_id: user.id 
+        }]);
 
       if (insertError) throw insertError;
     }
@@ -78,6 +82,7 @@ export const getVoteCount = async (setId, itemId) => {
  */
 export const hasUserVoted = async (setId, user) => {
   if (!user) return false;
+  if (!setId) return false; // Early return if setId is undefined/null
 
   try {
     const { data, error } = await supabase
@@ -87,8 +92,14 @@ export const hasUserVoted = async (setId, user) => {
       .eq('user_id', user.id)
       .single();
 
-    if (error && error.code !== 'PGRST116') throw error;
-    return data?.item_id || null;
+    if (error) {
+      if (error.code === 'PGRST116') {
+        // No vote found - this is expected
+        return false;
+      }
+      throw error;
+    }
+    return !!data?.item_id; // Convert to boolean
   } catch (error) {
     console.error('Error checking user vote:', error);
     throw error;
