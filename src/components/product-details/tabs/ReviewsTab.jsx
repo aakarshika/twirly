@@ -41,7 +41,7 @@ const ReviewsTab = ({ reviews, item }) => {
         </div>
         <div className="p-6 rounded-lg" style={{ backgroundColor: currentTheme.colors.cardBackground }}>
           <h3 className="text-xl font-bold mb-4" style={{ color: currentTheme.colors.text }}>Review Distribution</h3>
-          <HeatMap items={[item]} />
+          <HeatMap item={item} />
         </div>
       </div>
     </div>

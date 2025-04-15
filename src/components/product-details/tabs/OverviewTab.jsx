@@ -11,7 +11,7 @@ const OverviewTab = ({ item, recentActivities }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="p-6 rounded-lg" style={{ backgroundColor: currentTheme.colors.cardBackground }}>
           <h3 className="text-xl font-bold mb-4" style={{ color: currentTheme.colors.text }}>Performance Overview</h3>
-          <Metrics metrics={item?.averageMetrics} />
+          <Metrics metrics={item?.item_metric_averages} />
         </div>
         <div className="p-6 rounded-lg" style={{ backgroundColor: currentTheme.colors.cardBackground }}>
           <h3 className="text-xl font-bold mb-4" style={{ color: currentTheme.colors.text }}>Recent Activity</h3>

@@ -3,11 +3,9 @@ import { BarChart, Star } from 'lucide-react';
 
 const Metrics = ({ metrics = {} }) => {
   // Convert metrics object to array if needed
-  const metricsArray = Array.isArray(metrics) 
-    ? metrics 
-    : Object.entries(metrics).map(([title, value]) => ({
-        title,
-        value: typeof value === 'number' ? value.toFixed(1) : value
+  const metricsArray = (metrics).map((metric) => ({
+        title: (metric.metric_name).split("_").join(" "),
+        value: typeof metric.avg_rating === 'number' ? metric.avg_rating.toFixed(1) : metric.avg_rating
       }));
 
   if (metricsArray.length === 0) {

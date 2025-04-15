@@ -40,7 +40,8 @@ const ProductDetails = () => {
           .select(`
             *,
             categories (*),
-            item_metrics (*)
+            item_metrics (*),
+            item_metric_averages (*)
           `)
           .eq('id', itemId)
           .single();

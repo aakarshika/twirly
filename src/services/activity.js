@@ -62,13 +62,21 @@ export const getActivityTrends = async (userId) => {
       .select();
 
     if (error) throw error;
-
-    return {
-      weeklyActivity: data.weekly_activity,
-      weeklyChange: data.weekly_change_percentage,
-      currentWeekActivity: data.current_week_activity,
-      previousWeekActivity: data.previous_week_activity
-    };
+    if (data.length > 0) {
+      return {
+        weeklyActivity: data[0].weekly_activity,
+        weeklyChange: data[0].weekly_change_percentage,
+        currentWeekActivity: data[0].current_week_activity,
+        previousWeekActivity: data[0].previous_week_activity
+      };
+    } else {
+      return {
+        weeklyActivity: 0,
+        weeklyChange: 0,
+        currentWeekActivity: 0,
+        previousWeekActivity: 0
+      };
+    }
   } catch (error) {
     console.error('Error fetching activity trends:', error);
     throw error;
