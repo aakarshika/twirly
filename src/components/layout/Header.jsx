@@ -79,7 +79,8 @@ const Header = () => {
           {/* Logo and Title */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
-              <Sparkles className="text-amber-400" size={24} />
+              <img src="/public/teleport.png" alt="Twirly Logo" className="w-8 h-8 mr-2" />
+              {/* <Sparkles className="text-amber-400" size={24} /> */}
               <h1 className="ml-2 text-lg font-bold" style={{ color: currentTheme.colors.text }}>{pageName}</h1>
             </Link>
           </div>

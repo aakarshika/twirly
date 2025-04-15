@@ -12,6 +12,12 @@ export const themes = {
       text: '#1F2937', // dark gray
       card: '#F3F4F6', // light gray
       border: '#D1D5DB', // darker gray
+      accent: '#FBBF24', // amber-400
+      muted: '#E5E7EB', // gray-300
+      hover: '#E0F2FE', // light blue for hover
+      focus: '#BFDBFE', // blue for focus
+      disabled: '#D1D5DB', // gray for disabled
+      shadow: 'rgba(0, 0, 0, 0.1)', // light shadow
     },
   },
   dark: {
@@ -23,6 +29,12 @@ export const themes = {
       text: '#F3F4F6', // light gray
       card: '#2D3748', // darker gray
       border: '#4B5563', // darker gray
+      accent: '#FBBF24', // amber-400
+      muted: '#4B5563', // gray-600
+      hover: '#4B5563', // dark gray for hover
+      focus: '#A1A1A1', // gray for focus
+      disabled: '#6B7280', // gray for disabled
+      shadow: 'rgba(255, 255, 255, 0.1)', // light shadow
     },
   },
   sunset: {
@@ -34,6 +46,12 @@ export const themes = {
       text: '#78350F', // dark brown
       card: '#FDE68A', // light yellow
       border: '#FCD34D', // yellow
+      accent: '#FFB74D', // orange-400
+      muted: '#FFF3E0', // light orange
+      hover: '#FFEDD5', // light orange for hover
+      focus: '#FCA5A1', // pink for focus
+      disabled: '#FBBF24', // amber for disabled
+      shadow: 'rgba(0, 0, 0, 0.2)', // shadow
     },
   },
   ocean: {
@@ -45,6 +63,12 @@ export const themes = {
       text: '#164E63', // dark teal
       card: '#CFFAFE', // lighter cyan
       border: '#A5F3FC', // light cyan
+      accent: '#3B82F6', // blue-500
+      muted: '#E0F7FA', // light cyan
+      hover: '#B2F5EA', // light cyan for hover
+      focus: '#81E6D9', // cyan for focus
+      disabled: '#B2F5EA', // light cyan for disabled
+      shadow: 'rgba(0, 0, 0, 0.1)', // light shadow
     },
   },
   forest: {
@@ -56,6 +80,12 @@ export const themes = {
       text: '#1B5E20', // dark green
       card: '#C8E6C9', // lighter green
       border: '#A5D6A7', // green
+      accent: '#FFB74D', // orange-400
+      muted: '#C8E6C9', // light green
+      hover: '#A5D6A7', // light green for hover
+      focus: '#81C784', // green for focus
+      disabled: '#A5D6A7', // light green for disabled
+      shadow: 'rgba(0, 0, 0, 0.1)', // light shadow
     },
   },
   neon: {
@@ -67,6 +97,46 @@ export const themes = {
       text: '#FFFFFF', // white
       card: '#1C1C1C', // dark gray
       border: '#FF4081', // pink
+      accent: '#FFEB3B', // yellow
+      muted: '#424242', // dark gray
+      hover: '#FF80AB', // pink for hover
+      focus: '#00B0FF', // cyan for focus
+      disabled: '#FF4081', // pink for disabled
+      shadow: 'rgba(255, 255, 255, 0.2)', // light shadow
+    },
+  },
+  pastel: {
+    name: 'Pastel',
+    colors: {
+      primary: '#FFB3BA', // light pink
+      secondary: '#FFDFBA', // light orange
+      background: '#FFFFBA', // light yellow
+      text: '#B9FBC0', // light green
+      card: '#BAE1FF', // light blue
+      border: '#FFC3A0', // light coral
+      accent: '#FF677D', // coral
+      muted: '#D3D3D3', // light gray
+      hover: '#FFEBEE', // light pink for hover
+      focus: '#FFCCBC', // light orange for focus
+      disabled: '#FFB3BA', // light pink for disabled
+      shadow: 'rgba(0, 0, 0, 0.1)', // light shadow
+    },
+  },
+  retro: {
+    name: 'Retro',
+    colors: {
+      primary: '#FF6F61', // coral
+      secondary: '#6B5B95', // purple
+      background: '#88B04B', // green
+      text: '#F7CAC9', // pink
+      card: '#92A8D1', // blue
+      border: '#955251', // brown
+      accent: '#B9FBC0', // light green
+      muted: '#E0E0E0', // light gray
+      hover: '#FFABAB', // light coral for hover
+      focus: '#D7B2D8', // light purple for focus
+      disabled: '#FF6F61', // coral for disabled
+      shadow: 'rgba(0, 0, 0, 0.2)', // shadow
     },
   },
 };
