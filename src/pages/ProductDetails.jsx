@@ -109,36 +109,36 @@ const ProductDetails = () => {
           setComparisonSets(comparisonSetsWithData);
         }
 
-        // Fetch weekly activity data
-        const { data: weeklyActivity, error: weeklyError } = await supabase
-          .from('user_weekly_activity')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('date', { ascending: true });
-
-        if (weeklyError) throw weeklyError;
-        setActivityData(weeklyActivity || []);
-
-        // Fetch recent activities
+        // Fetch recent activities for the product
         const { data: recentActivities, error: recentError } = await supabase
-          .from('user_recent_activities')
+          .from('product_recent_activities')
           .select('*')
-          .eq('user_id', user.id)
+          .eq('item_id', itemId)
           .order('created_at', { ascending: false })
           .limit(5);
 
         if (recentError) throw recentError;
         setRecentActivities(recentActivities || []);
 
-        // Fetch activity trends
+        // Fetch activity trends for the product
         const { data: trends, error: trendsError } = await supabase
-          .from('user_activity_trends')
+          .from('product_activity_trends')
           .select('*')
-          .eq('user_id', user.id)
+          .eq('item_id', itemId)
           .select();
 
         if (trendsError) throw trendsError;
         setTrends(trends || {});
+
+        // Fetch weekly activity data for the product
+        const { data: activityData, error: activityError } = await supabase
+          .from('product_weekly_activity')
+          .select('*')
+          .eq('item_id', itemId)
+          .order('date', { ascending: true });
+
+        if (activityError) throw activityError;
+        setActivityData(activityData || []);
 
         // Fetch metrics for the specific item
         const { data: metricsData, error: metricsError } = await supabase
@@ -175,7 +175,7 @@ const ProductDetails = () => {
           review_metrics (*),
           review_likes (*)
         `, { count: 'exact' })
-        .eq('user_id', user.id)
+        .eq('item_id', itemId)
         .order('created_at', { ascending: false })
         .range((page - 1) * REVIEWS_PER_PAGE, page * REVIEWS_PER_PAGE - 1);
 

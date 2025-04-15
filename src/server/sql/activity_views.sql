@@ -2,6 +2,9 @@
 DROP VIEW IF EXISTS user_weekly_activity;
 DROP VIEW IF EXISTS user_recent_activities;
 DROP VIEW IF EXISTS user_activity_trends;
+DROP VIEW IF EXISTS product_weekly_activity;
+DROP VIEW IF EXISTS product_recent_activities;
+DROP VIEW IF EXISTS product_activity_trends;
 
 -- Create view for weekly user activity
 CREATE OR REPLACE VIEW user_weekly_activity AS
@@ -125,6 +128,139 @@ SELECT
   END AS weekly_change_percentage
 FROM auth.users u
 LEFT JOIN weekly_stats ws ON u.id = ws.user_id;
+
+-- Create view for weekly product activity
+CREATE OR REPLACE VIEW product_weekly_activity AS
+WITH RECURSIVE dates AS (
+  SELECT CURRENT_DATE - 6 AS date
+  UNION ALL
+  SELECT date + 1
+  FROM dates
+  WHERE date <= CURRENT_DATE
+),
+product_activities AS (
+  SELECT 
+    csi.item_id,
+    v.created_at::date AS activity_date,
+    'vote' AS activity_type,
+    v.user_id,
+    NULL AS description
+  FROM votes v
+  JOIN comparison_set_items csi ON v.set_id = csi.set_id AND v.item_id = csi.item_id
+  UNION ALL
+  SELECT 
+    item_id,
+    created_at::date AS activity_date,
+    'review' AS activity_type,
+    user_id,
+    text AS description
+  FROM reviews
+  UNION ALL
+  SELECT 
+    csi.item_id,
+    cs.created_at::date AS activity_date,
+    'comparison' AS activity_type,
+    cs.user_id,
+    NULL AS description
+  FROM comparison_sets cs
+  JOIN comparison_set_items csi ON cs.id = csi.set_id
+)
+SELECT 
+  d.date,
+  TO_CHAR(d.date, 'Dy') AS day_name,
+  pa.item_id,
+  i.name AS item_name,
+  COALESCE(COUNT(pa.activity_date), 0) AS activity_count,
+  COALESCE(COUNT(CASE WHEN pa.activity_type = 'vote' THEN 1 END), 0) AS votes_count,
+  COALESCE(COUNT(CASE WHEN pa.activity_type = 'review' THEN 1 END), 0) AS reviews_count,
+  COALESCE(COUNT(CASE WHEN pa.activity_type = 'comparison' THEN 1 END), 0) AS comparisons_count
+FROM dates d
+LEFT JOIN product_activities pa ON d.date = pa.activity_date
+LEFT JOIN items i ON pa.item_id = i.id
+GROUP BY d.date, pa.item_id, i.name
+ORDER BY d.date;
+
+-- Create view for recent product activities
+CREATE OR REPLACE VIEW product_recent_activities AS
+WITH product_activities AS (
+  SELECT 
+    csi.item_id,
+    v.created_at,
+    'vote' AS activity_type,
+    v.user_id,
+    NULL AS description,
+    NULL AS title
+  FROM votes v
+  JOIN comparison_set_items csi ON v.set_id = csi.set_id AND v.item_id = csi.item_id
+  UNION ALL
+  SELECT 
+    item_id,
+    created_at,
+    'review' AS activity_type,
+    user_id,
+    text AS description,
+    NULL AS title
+  FROM reviews
+  UNION ALL
+  SELECT 
+    csi.item_id,
+    cs.created_at,
+    'comparison' AS activity_type,
+    cs.user_id,
+    NULL AS description,
+    cs.name AS title
+  FROM comparison_sets cs
+  JOIN comparison_set_items csi ON cs.id = csi.set_id
+)
+SELECT 
+  pa.item_id,
+  i.name AS item_name,
+  pa.created_at,
+  pa.activity_type,
+  pa.user_id,
+  u.email AS user_email,
+  COALESCE(pa.title, pa.description) AS description,
+  EXTRACT(EPOCH FROM (NOW() - pa.created_at)) / 3600 AS hours_ago
+FROM product_activities pa
+LEFT JOIN items i ON pa.item_id = i.id
+LEFT JOIN auth.users u ON pa.user_id = u.id
+ORDER BY pa.created_at DESC
+LIMIT 10;
+
+-- Create view for product activity trends
+CREATE OR REPLACE VIEW product_activity_trends AS
+WITH weekly_stats AS (
+  SELECT 
+    item_id,
+    COUNT(*) AS weekly_activity,
+    COUNT(CASE WHEN created_at >= CURRENT_DATE - INTERVAL '7 days' THEN 1 END) AS current_week_activity,
+    COUNT(CASE WHEN created_at >= CURRENT_DATE - INTERVAL '14 days' AND created_at < CURRENT_DATE - INTERVAL '7 days' THEN 1 END) AS previous_week_activity
+  FROM (
+    SELECT csi.item_id, v.created_at 
+    FROM votes v
+    JOIN comparison_set_items csi ON v.set_id = csi.set_id AND v.item_id = csi.item_id
+    UNION ALL
+    SELECT item_id, created_at FROM reviews
+    UNION ALL
+    SELECT csi.item_id, cs.created_at
+    FROM comparison_sets cs
+    JOIN comparison_set_items csi ON cs.id = csi.set_id
+  ) all_activities
+  WHERE created_at >= CURRENT_DATE - INTERVAL '14 days'
+  GROUP BY item_id
+)
+SELECT 
+  i.id AS item_id,
+  i.name AS item_name,
+  COALESCE(ws.weekly_activity, 0) AS weekly_activity,
+  COALESCE(ws.current_week_activity, 0) AS current_week_activity,
+  COALESCE(ws.previous_week_activity, 0) AS previous_week_activity,
+  CASE 
+    WHEN COALESCE(ws.previous_week_activity, 0) = 0 THEN 0
+    ELSE ((COALESCE(ws.current_week_activity, 0)::float / COALESCE(ws.previous_week_activity, 1)::float - 1) * 100)::integer
+  END AS weekly_change_percentage
+FROM items i
+LEFT JOIN weekly_stats ws ON i.id = ws.item_id;
 
 -- -- Create index on the view for better performance
 -- CREATE INDEX IF NOT EXISTS idx_user_weekly_activity_user_id ON user_weekly_activity(user_id);
