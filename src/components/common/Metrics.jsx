@@ -1,12 +1,12 @@
 import React from 'react';
 import { BarChart, Star } from 'lucide-react';
 
-const Metrics = ({ metrics = {} }) => {
-  // Convert metrics object to array if needed
-  const metricsArray = (metrics).map((metric) => ({
-        title: (metric.metric_name).split("_").join(" "),
-        value: typeof metric.avg_rating === 'number' ? metric.avg_rating.toFixed(1) : metric.avg_rating
-      }));
+const Metrics = ({ metrics = [] }) => {
+  // Ensure metrics is an array and has the correct structure
+  const metricsArray = Array.isArray(metrics) ? metrics.map((metric) => ({
+    title: metric.metric_name ? metric.metric_name.split("_").join(" ") : '',
+    value: typeof metric.avg_rating === 'number' ? metric.avg_rating.toFixed(1) : '0.0'
+  })) : [];
 
   if (metricsArray.length === 0) {
     return null;
