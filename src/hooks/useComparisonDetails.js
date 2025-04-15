@@ -88,10 +88,23 @@ export const useComparisonDetails = (id) => {
         }
 
         const voteCounts = await Promise.all(data.comparison_set_items?.map(async setItem => {
-          const voteCount = await getVoteCount(setItem.items.id, data.id);
+          const { count, error } = await supabase
+            .from('votes')
+            .select('*', { count: 'exact', head: true })
+            .eq('set_id', data.id)
+            .eq('item_id', setItem.items.id);
+
+          if (error) {
+            console.error('Error getting vote count:', error);
+            return {
+              itemId: setItem.items.id,
+              count: 0
+            };
+          }
+
           return {
             itemId: setItem.items.id,
-            count: voteCount || 0
+            count: count || 0
           };
         }) || []);
 

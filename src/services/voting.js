@@ -54,8 +54,8 @@ export const castVote = async (voteData, user) => {
 
 /**
  * Get the vote count for an item in a comparison set
- * @param {number} itemId - The ID of the item
  * @param {number} setId - The ID of the comparison set
+ * @param {number} itemId - The ID of the item
  * @returns {Promise<number>} The number of votes for the item
  */
 export const getVoteCount = async (setId, itemId) => {
@@ -67,10 +67,10 @@ export const getVoteCount = async (setId, itemId) => {
       .eq('item_id', itemId);
 
     if (error) throw error;
-    return count;
+    return count || 0; // Return 0 if count is null
   } catch (error) {
     console.error('Error getting vote count:', error);
-    throw error;
+    return 0; // Return 0 in case of error
   }
 };
 
