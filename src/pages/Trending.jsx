@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useTheme } from '../contexts/ThemeContext';
+import TrendingSkeletonLoader from '../components/skeletons/TrendingSkeletonLoader';
 
 const Trending = () => {
   const [trendingComparisons, setTrendingComparisons] = useState([]);
@@ -173,14 +174,6 @@ const Trending = () => {
             </button>
           ))}
         </div>
-
-        {/* Loading State for Initial Load */}
-        {loading && page === 1 && (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-amber-400 mx-auto"></div>
-          </div>
-        )}
-
         {/* Infinite Scroll Component */}
         <InfiniteScroll
           dataLength={trendingComparisons.length}
@@ -199,101 +192,105 @@ const Trending = () => {
         >
           {/* Trending Comparisons Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-            {trendingComparisons.map((comparison) => (
-              <div
-                key={comparison.id}
-                onClick={() => handleComparisonClick(comparison)}
-                className="rounded-xl overflow-hidden hover:transform hover:scale-[1.02] transition-transform duration-200 cursor-pointer"
-                style={{
-                  backgroundColor: currentTheme.colors.card,
-                  borderColor: currentTheme.colors.border,
-                  borderWidth: '1px',
-                  borderStyle: 'solid',
-                }}
-              >
-                <div className="p-6" style={{ color: currentTheme.colors.text }}>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="px-3 py-1 bg-amber-400/10 text-amber-400 rounded-full text-sm">
-                      {comparison.category}
-                    </span>
-                    <span className="text-gray-400 text-sm flex items-center">
-                      <Clock className="mr-1" size={14} />
-                      {comparison.timeAgo}
-                    </span>
-                  </div>
-
-                  <h3 className="text-xl font-semibold mb-4">{comparison.title}</h3>
-
-                  <div className="flex gap-4 mb-6">
-                    <div className="flex-1">
-                      {!imageErrors[`${comparison.id}-image1`] ? (
-                        <div className="relative w-full h-48">
-                          {imageLoading[`${comparison.id}-image1`] !== false && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-gray-800 rounded-lg">
-                              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-amber-400"></div>
-                            </div>
-                          )}
-                          <img
-                            src={comparison.image1}
-                            alt={comparison.items[0]?.name || 'Item 1'}
-                            className={`w-full h-48 object-cover rounded-lg transition-opacity duration-300 ${
-                              imageLoading[`${comparison.id}-image1`] !== false ? 'opacity-0' : 'opacity-100'
-                            }`}
-                            loading="lazy"
-                            onLoad={() => handleImageLoad(comparison.id, 'image1')}
-                            onError={() => handleImageError(comparison.id, 'image1')}
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-full h-48 flex items-center justify-center bg-gray-800 rounded-lg">
-                          <h3 className="text-xl font-bold text-center px-4 line-clamp-3 text-gray-300">
-                            {comparison.items[0]?.name || 'Item 1'}
-                          </h3>
-                        </div>
-                      )}
+            {loading ? (
+              <TrendingSkeletonLoader />
+            ) : (
+              trendingComparisons.map((comparison) => (
+                <div
+                  key={comparison.id}
+                  onClick={() => handleComparisonClick(comparison)}
+                  className="rounded-xl overflow-hidden hover:transform hover:scale-[1.02] transition-transform duration-200 cursor-pointer"
+                  style={{
+                    backgroundColor: currentTheme.colors.card,
+                    borderColor: currentTheme.colors.border,
+                    borderWidth: '1px',
+                    borderStyle: 'solid',
+                  }}
+                >
+                  <div className="p-6" style={{ color: currentTheme.colors.text }}>
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className="px-3 py-1 bg-amber-400/10 text-amber-400 rounded-full text-sm">
+                        {comparison.category}
+                      </span>
+                      <span className="text-gray-400 text-sm flex items-center">
+                        <Clock className="mr-1" size={14} />
+                        {comparison.timeAgo}
+                      </span>
                     </div>
-                    <div className="flex-1">
-                      {!imageErrors[`${comparison.id}-image2`] ? (
-                        <div className="relative w-full h-48">
-                          {imageLoading[`${comparison.id}-image2`] !== false && (
-                            <div className="absolute inset-0 flex items-center justify-center bg-gray-800 rounded-lg">
-                              <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-amber-400"></div>
-                            </div>
-                          )}
-                          <img
-                            src={comparison.image2}
-                            alt={comparison.items[1]?.name || 'Item 2'}
-                            className={`w-full h-48 object-cover rounded-lg transition-opacity duration-300 ${
-                              imageLoading[`${comparison.id}-image2`] !== false ? 'opacity-0' : 'opacity-100'
-                            }`}
-                            loading="lazy"
-                            onLoad={() => handleImageLoad(comparison.id, 'image2')}
-                            onError={() => handleImageError(comparison.id, 'image2')}
-                          />
-                        </div>
-                      ) : (
-                        <div className="w-full h-48 flex items-center justify-center bg-gray-800 rounded-lg">
-                          <h3 className="text-xl font-bold text-center px-4 line-clamp-3 text-gray-300">
-                            {comparison.items[1]?.name || 'Item 2'}
-                          </h3>
-                        </div>
-                      )}
-                    </div>
-                  </div>
 
-                  <div className="flex justify-between items-center text-gray-400">
-                    <div className="flex items-center gap-2">
-                      <ThumbsUp size={16} />
-                      <span>{comparison.votes} votes</span>
+                    <h3 className="text-xl font-semibold mb-4">{comparison.title}</h3>
+
+                    <div className="flex gap-4 mb-6">
+                      <div className="flex-1">
+                        {!imageErrors[`${comparison.id}-image1`] ? (
+                          <div className="relative w-full h-48">
+                            {imageLoading[`${comparison.id}-image1`] !== false && (
+                              <div className="absolute inset-0 flex items-center justify-center bg-gray-800 rounded-lg">
+                                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-amber-400"></div>
+                              </div>
+                            )}
+                            <img
+                              src={comparison.image1}
+                              alt={comparison.items[0]?.name || 'Item 1'}
+                              className={`w-full h-48 object-cover rounded-lg transition-opacity duration-300 ${
+                                imageLoading[`${comparison.id}-image1`] !== false ? 'opacity-0' : 'opacity-100'
+                              }`}
+                              loading="lazy"
+                              onLoad={() => handleImageLoad(comparison.id, 'image1')}
+                              onError={() => handleImageError(comparison.id, 'image1')}
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-full h-48 flex items-center justify-center bg-gray-800 rounded-lg">
+                            <h3 className="text-xl font-bold text-center px-4 line-clamp-3 text-gray-300">
+                              {comparison.items[0]?.name || 'Item 1'}
+                            </h3>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        {!imageErrors[`${comparison.id}-image2`] ? (
+                          <div className="relative w-full h-48">
+                            {imageLoading[`${comparison.id}-image2`] !== false && (
+                              <div className="absolute inset-0 flex items-center justify-center bg-gray-800 rounded-lg">
+                                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-amber-400"></div>
+                              </div>
+                            )}
+                            <img
+                              src={comparison.image2}
+                              alt={comparison.items[1]?.name || 'Item 2'}
+                              className={`w-full h-48 object-cover rounded-lg transition-opacity duration-300 ${
+                                imageLoading[`${comparison.id}-image2`] !== false ? 'opacity-0' : 'opacity-100'
+                              }`}
+                              loading="lazy"
+                              onLoad={() => handleImageLoad(comparison.id, 'image2')}
+                              onError={() => handleImageError(comparison.id, 'image2')}
+                            />
+                          </div>
+                        ) : (
+                          <div className="w-full h-48 flex items-center justify-center bg-gray-800 rounded-lg">
+                            <h3 className="text-xl font-bold text-center px-4 line-clamp-3 text-gray-300">
+                              {comparison.items[1]?.name || 'Item 2'}
+                            </h3>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Users size={16} />
-                      <span>{comparison.participants} participants</span>
+
+                    <div className="flex justify-between items-center text-gray-400">
+                      <div className="flex items-center gap-2">
+                        <ThumbsUp size={16} />
+                        <span>{comparison.votes} votes</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Users size={16} />
+                        <span>{comparison.participants} participants</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </InfiniteScroll>
       </div>

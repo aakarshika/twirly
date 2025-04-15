@@ -99,10 +99,40 @@ const MainRoutingPage = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/" element={<Trending />} />
-            <Route path="/comparison/:id" element={<PollScreen />} />
-            <Route path="/product/:itemId" element={<ProductDetails />} />
-            <Route path="/item/:itemId" element={<ItemScreen />} />
+
+            {/* Protected Routes */}
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Trending />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/comparison/:id"
+              element={
+                <ProtectedRoute>
+                  <PollScreen />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/product/:itemId"
+              element={
+                <ProtectedRoute>
+                  <ProductDetails />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/item/:itemId"
+              element={
+                <ProtectedRoute>
+                  <ItemScreen />
+                </ProtectedRoute>
+              }
+            />
 
             {/* Onboarding Route */}
             <Route

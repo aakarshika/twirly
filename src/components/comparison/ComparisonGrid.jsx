@@ -10,6 +10,7 @@ import ReviewForm from './ReviewForm';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
+import ComparisonGridSkeleton from '../skeletons/ComparisonGridSkeleton';
 
 /**
  * Grid component to display comparison items
@@ -68,15 +69,19 @@ const ComparisonGrid = ({ title, height, currentId }) => {
 
 
       {/* Items Grid */}
-      <div className="grid grid-cols-2" 
-        style={{ 
-          gap: gap
-        }}
-      >
-        {items.map((item, i) => (
-          <ItemCard key={item.id} item={item} i={i} height={height} />
-        ))}
-      </div>
+      {items.length === 0 ? (
+        <ComparisonGridSkeleton />
+      ) : (
+        <div className="grid grid-cols-2" 
+          style={{ 
+            gap: gap
+          }}
+        >
+          {items.map((item, i) => (
+            <ItemCard key={item.id} item={item} i={i} height={height} />
+          ))}
+        </div>
+      )}
       
       {/* Results Announcement when voted */}
       {userVoted && winner && (
