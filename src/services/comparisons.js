@@ -1,44 +1,42 @@
 import { supabase } from '../lib/supabase';
-import { TEMP_USER_ID } from '../lib/constants';
+import { useAuth } from '../contexts/AuthContext';
 
 /**
  * Create a new comparison set
  * @param {Object} comparisonData - The comparison set data
  * @returns {Promise<Object>} The created comparison set
  */
-export const createComparisonSet = async (comparisonData) => {
+export const createComparison = async (name, categoryId, items) => {
+  const { user } = useAuth();
+  if (!user) {
+    throw new Error('You must be logged in to create a comparison');
+  }
+
   try {
-    // First, create the comparison set
+    // Create the comparison set
     const { data: comparisonSet, error: setError } = await supabase
       .from('comparison_sets')
-      .insert([
-        {
-          name: comparisonData.name,
-          user_id: TEMP_USER_ID,
-          created_at: new Date().toISOString()
-        }
-      ])
+      .insert([{ name, category_id: categoryId }])
       .select()
       .single();
 
     if (setError) throw setError;
 
-    // Then, add the items to the comparison set
-    const items = comparisonData.items.map(itemId => ({
+    // Add items to the comparison set
+    const comparisonSetItems = items.map(item => ({
       set_id: comparisonSet.id,
-      item_id: itemId,
-      created_at: new Date().toISOString()
+      item_id: item.id
     }));
 
     const { error: itemsError } = await supabase
       .from('comparison_set_items')
-      .insert(items);
+      .insert(comparisonSetItems);
 
     if (itemsError) throw itemsError;
 
     return comparisonSet;
   } catch (error) {
-    console.error('Error creating comparison set:', error);
+    console.error('Error creating comparison:', error);
     throw error;
   }
 };
@@ -47,49 +45,61 @@ export const createComparisonSet = async (comparisonData) => {
  * Get user's comparison sets
  * @returns {Promise<Array>} List of user's comparison sets
  */
-export const getUserComparisonSets = async () => {
+export const getComparisons = async (categoryId = null) => {
+  try {
+    let query = supabase
+      .from('comparison_sets')
+      .select(`
+        *,
+        items:comparison_set_items(
+          item:items(*)
+        ),
+        votes(*),
+        comments:comparison_set_comments(*)
+      `)
+      .order('created_at', { ascending: false });
+
+    if (categoryId) {
+      query = query.eq('category_id', categoryId);
+    }
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Error fetching comparisons:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get user's comparison sets
+ * @returns {Promise<Array>} List of user's comparison sets
+ */
+export const getUserComparisons = async () => {
+  const { user } = useAuth();
+  if (!user) {
+    throw new Error('You must be logged in to view your comparisons');
+  }
+
   try {
     const { data, error } = await supabase
       .from('comparison_sets')
       .select(`
-        id,
-        name,
-        created_at,
-        user_id,
-        comparison_set_items (
-          id,
-          item:items (
-            id,
-            name,
-            description,
-            image_url,
-            price,
-            user_id,
-            category:categories (
-              id,
-              name
-            )
-          )
+        *,
+        items:comparison_set_items(
+          item:items(*)
         ),
-        votes (
-          id,
-          user_id,
-          item_id
-        ),
-        comparison_set_comments (
-          id,
-          user_id,
-          text,
-          created_at
-        )
+        votes(*),
+        comments:comparison_set_comments(*)
       `)
-      .eq('user_id', TEMP_USER_ID)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
     return data;
   } catch (error) {
-    console.error('Error fetching comparison sets:', error);
+    console.error('Error fetching user comparisons:', error);
     throw error;
   }
 };

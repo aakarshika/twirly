@@ -5,7 +5,9 @@ import { initialItemSets, getDefaultMetrics } from '../data/itemSets';
 import { castVote, getVoteCount, hasUserVoted } from '../services/voting';
 import { submitReview, likeReview, getItemReviews } from '../services/reviews';
 import { supabase } from '../lib/supabase';
-import { TEMP_USER_ID } from '../lib/constants';
+import { useAuth } from './AuthContext';
+import { COMPARISON_COLOR_SET } from '../lib/constants';
+
 const ComparisonContext = createContext();
 
 export const ComparisonProvider = ({ children }) => {
@@ -30,6 +32,11 @@ export const ComparisonProvider = ({ children }) => {
     { name: "", description: "", category: "Custom" },
     { name: "", description: "", category: "Custom" }
   ]);
+
+  const [comparisons, setComparisons] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { user } = useAuth();
 
   // Initialize with stored comparison data if available
   useEffect(() => {
@@ -132,14 +139,10 @@ export const ComparisonProvider = ({ children }) => {
   const handleReviewSubmit = async (reviewData) => {
     if (activeReviewItem && reviewData.text.trim()) {
       try {
-        // Get current user ID (temporary solution)
-        const { data: { user } } = await supabase.auth.getUser();
-        const userId = user?.id || TEMP_USER_ID; // TEMP_USER_ID
-
         // Submit review to database
         const { review, metrics } = await submitReview(
           activeReviewItem,
-          userId,
+          user.id,
           reviewData.text,
           reviewData.metrics
         );
@@ -191,12 +194,8 @@ export const ComparisonProvider = ({ children }) => {
   // Handle liking a review
   const handleReviewLike = async (itemId, reviewId) => {
     try {
-      // Get current user ID (temporary solution)
-      const { data: { user } } = await supabase.auth.getUser();
-      const userId = user?.id || TEMP_USER_ID; // TEMP_USER_ID
-
       // Like review in database
-      const updatedReview = await likeReview(reviewId, userId);
+      const updatedReview = await likeReview(reviewId, user.id);
 
       // Update local state
       setItems(prevItems => 
@@ -251,6 +250,91 @@ export const ComparisonProvider = ({ children }) => {
     return true;
   };
 
+  const addVote = async (setId, itemId) => {
+    if (!user) {
+      setError('You must be logged in to vote');
+      return;
+    }
+
+    try {
+      const { data: existingVote, error: voteError } = await supabase
+        .from('votes')
+        .select('*')
+        .eq('set_id', setId)
+        .single();
+
+      if (voteError && voteError.code !== 'PGRST116') {
+        throw voteError;
+      }
+
+      if (existingVote) {
+        // Update existing vote
+        const { error: updateError } = await supabase
+          .from('votes')
+          .update({ item_id: itemId })
+          .eq('id', existingVote.id);
+
+        if (updateError) throw updateError;
+      } else {
+        // Create new vote
+        const { error: insertError } = await supabase
+          .from('votes')
+          .insert([{ set_id: setId, item_id: itemId }]);
+
+        if (insertError) throw insertError;
+      }
+
+      // Update local state
+      setComparisons(prevComparisons =>
+        prevComparisons.map(comp =>
+          comp.id === setId
+            ? {
+                ...comp,
+                votes: comp.votes.map(vote =>
+                  vote.user_id === user.id
+                    ? { ...vote, item_id: itemId }
+                    : vote
+                ),
+              }
+            : comp
+        )
+      );
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  const addComment = async (setId, text) => {
+    if (!user) {
+      setError('You must be logged in to comment');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('comparison_set_comments')
+        .insert([{ set_id: setId, text }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Update local state
+      setComparisons(prevComparisons =>
+        prevComparisons.map(comp =>
+          comp.id === setId
+            ? {
+                ...comp,
+                comments: [...comp.comments, data],
+              }
+            : comp
+        )
+      );
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   return (
     <ComparisonContext.Provider
       value={{
@@ -282,7 +366,17 @@ export const ComparisonProvider = ({ children }) => {
         setCustomMode,
         customItems,
         handleCustomItemChange,
-        handleCustomSubmit
+        handleCustomSubmit,
+
+        // New comparison state
+        comparisons,
+        setComparisons,
+        loading,
+        setLoading,
+        error,
+        setError,
+        addVote,
+        addComment
       }}
     >
       {children}

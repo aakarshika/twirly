@@ -1,26 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { Plus, Trash2, ExternalLink, MessageSquare, ThumbsUp } from 'lucide-react';
-import { getUserComparisonSets, deleteComparisonSet } from '../../../services/comparisons';
-import { TEMP_USER_ID } from '../../../lib/constants';
+import { getUserComparisons, deleteComparisonSet } from '../../../services/comparisons';
+import { useAuth } from '../../../contexts/AuthContext';
 import ComparisonCard from './ComparisonCard';
 import CreateComparison from './CreateComparison';
 
 const ComparisonsTab = () => {
   const { currentTheme } = useTheme();
+  const { user } = useAuth();
   const [comparisons, setComparisons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
   useEffect(() => {
-    fetchComparisons();
-  }, []);
+    if (user) {
+      fetchComparisons();
+    } else {
+      setError('You must be logged in to view your comparisons');
+      setLoading(false);
+    }
+  }, [user]);
 
   const fetchComparisons = async () => {
     try {
       setLoading(true);
-      const data = await getUserComparisonSets();
+      const data = await getUserComparisons(user.id);
       setComparisons(data);
     } catch (err) {
       setError('Failed to fetch comparisons');
@@ -101,11 +107,15 @@ const ComparisonsTab = () => {
         </div>
       )}
 
-      <CreateComparison
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onSuccess={fetchComparisons}
-      />
+      {showCreateModal && (
+        <CreateComparison
+          onClose={() => setShowCreateModal(false)}
+          onSuccess={() => {
+            setShowCreateModal(false);
+            fetchComparisons();
+          }}
+        />
+      )}
     </div>
   );
 };

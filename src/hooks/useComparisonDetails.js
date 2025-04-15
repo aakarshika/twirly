@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useComparison } from '../contexts/ComparisonContext';
 import { getVoteCount, hasUserVoted } from '../services/voting';
 import { getItemReviews, getItemAverageMetrics } from '../services/reviews';
-import { TEMP_USER_ID } from '../lib/constants';
+import { useAuth } from '../contexts/AuthContext';
 
 export const useComparisonDetails = (id) => {
   const { 
@@ -13,6 +13,7 @@ export const useComparisonDetails = (id) => {
     setCurrentSetId
   } = useComparison();
   
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -42,7 +43,9 @@ export const useComparisonDetails = (id) => {
             created_at,
             categories(name),
             comparison_set_items(
+              id, 
               item_id,
+              set_id,
               items(
                 id,
                 name,
@@ -65,18 +68,18 @@ export const useComparisonDetails = (id) => {
 
         setCurrentSetId(data.id);
 
-        const hasVoted = await hasUserVoted(data.id);
+        const hasVoted = await hasUserVoted(data.id, user);
         setUserVoted(hasVoted);
         
         if (!hasVoted) {
           setVotedItemId(null);
         }
 
-        if (hasVoted) {
+        if (hasVoted && user) {
           const { data: voteData, error: voteError } = await supabase
             .from('votes')
             .select('item_id')
-            .eq('user_id', TEMP_USER_ID)
+            .eq('user_id', user.id)
             .eq('set_id', data.id)
             .single();
 
@@ -131,8 +134,6 @@ export const useComparisonDetails = (id) => {
         }) || []);
 
         setItems(items);
-        
-
         setLoading(false);
       } catch (error) {
         console.error('Error fetching comparison details:', error);

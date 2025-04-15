@@ -41,13 +41,15 @@ SELECT
   d.date,
   TO_CHAR(d.date, 'Dy') AS day_name,
   ua.user_id,
+  u.email,
   COALESCE(COUNT(ua.activity_date), 0) AS activity_count,
   COALESCE(COUNT(CASE WHEN ua.activity_type = 'vote' THEN 1 END), 0) AS votes_count,
   COALESCE(COUNT(CASE WHEN ua.activity_type = 'review' THEN 1 END), 0) AS reviews_count,
   COALESCE(COUNT(CASE WHEN ua.activity_type = 'comparison' THEN 1 END), 0) AS comparisons_count
 FROM dates d
 LEFT JOIN user_activities ua ON d.date = ua.activity_date
-GROUP BY d.date, ua.user_id
+LEFT JOIN auth.users u ON ua.user_id = u.id
+GROUP BY d.date, ua.user_id, u.email
 ORDER BY d.date;
 
 -- Create view for recent activities
@@ -67,7 +69,7 @@ WITH user_activities AS (
     created_at,
     'review' AS activity_type,
     item_id,
-    'text' AS description,
+    text AS description,
     NULL AS title
   FROM reviews
   UNION ALL
@@ -82,12 +84,14 @@ WITH user_activities AS (
 )
 SELECT 
   ua.user_id,
+  u.email,
   ua.created_at,
   ua.activity_type,
   ua.item_id,
   COALESCE(ua.title, ua.description) AS description,
   EXTRACT(EPOCH FROM (NOW() - ua.created_at)) / 3600 AS hours_ago
 FROM user_activities ua
+LEFT JOIN auth.users u ON ua.user_id = u.id
 ORDER BY ua.created_at DESC
 LIMIT 10;
 
@@ -110,15 +114,17 @@ WITH weekly_stats AS (
   GROUP BY user_id
 )
 SELECT 
-  user_id,
-  weekly_activity,
-  current_week_activity,
-  previous_week_activity,
+  ws.user_id,
+  u.email,
+  ws.weekly_activity,
+  ws.current_week_activity,
+  ws.previous_week_activity,
   CASE 
-    WHEN previous_week_activity = 0 THEN 100
-    ELSE ((current_week_activity::float / previous_week_activity::float - 1) * 100)::integer
+    WHEN ws.previous_week_activity = 0 THEN 100
+    ELSE ((ws.current_week_activity::float / ws.previous_week_activity::float - 1) * 100)::integer
   END AS weekly_change_percentage
-FROM weekly_stats;
+FROM weekly_stats ws
+LEFT JOIN auth.users u ON ws.user_id = u.id;
 
 -- -- Create index on the view for better performance
 -- CREATE INDEX IF NOT EXISTS idx_user_weekly_activity_user_id ON user_weekly_activity(user_id);

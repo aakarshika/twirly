@@ -1,9 +1,11 @@
 import React from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ProfileHeader = ({ userData }) => {
   const { currentTheme } = useTheme();
+  const navigate = useNavigate();
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -40,6 +42,7 @@ const ProfileHeader = ({ userData }) => {
       </div>
 
       <button
+        onClick={() => navigate('/settings')}
         className="mt-4 md:mt-0 px-4 py-2 rounded-lg font-medium"
         style={{
           backgroundColor: currentTheme.colors.primary,

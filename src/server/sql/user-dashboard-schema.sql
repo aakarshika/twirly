@@ -12,7 +12,7 @@ BEGIN
         WHERE table_name = 'items' 
         AND column_name = 'user_id'
     ) THEN
-        ALTER TABLE items ADD COLUMN user_id INTEGER REFERENCES users(id) ON DELETE CASCADE;
+        ALTER TABLE items ADD COLUMN user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE;
     END IF;
 END $$;
 
@@ -30,7 +30,7 @@ DROP VIEW IF EXISTS user_activity_summary;
 -- Includes:
 --   - Basic product information
 --   - User ownership
---   - Category and company details
+--   - Category details
 --   - Engagement metrics (views, comparisons, reviews)
 --   - Voting and review statistics
 CREATE VIEW product_performance_metrics AS
@@ -38,6 +38,7 @@ SELECT
     i.id AS product_id,
     i.name AS product_name,
     i.user_id,
+    u.email AS user_email,
     i.created_at,
     im.views,
     im.comparisons,
@@ -49,6 +50,7 @@ SELECT
     COUNT(DISTINCT cs.id) AS total_comparisons
 FROM 
     items i
+LEFT JOIN auth.users u ON i.user_id = u.id
 LEFT JOIN item_metrics im ON i.id = im.item_id
 LEFT JOIN categories c ON i.category_id = c.id
 LEFT JOIN votes v ON i.id = v.item_id
@@ -56,7 +58,7 @@ LEFT JOIN reviews r ON i.id = r.item_id
 LEFT JOIN comparison_set_items csi ON i.id = csi.item_id
 LEFT JOIN comparison_sets cs ON csi.set_id = cs.id
 GROUP BY 
-    i.id, i.name, i.user_id, i.created_at, im.views, im.comparisons, 
+    i.id, i.name, i.user_id, u.email, i.created_at, im.views, im.comparisons, 
     im.reviews, im.rating, c.name;
 
 -- User activity summary view
@@ -70,14 +72,14 @@ GROUP BY
 CREATE VIEW user_activity_summary AS
 SELECT
     u.id AS user_id,
-    u.username,
+    u.email,
     COALESCE(v.vote_count, 0) AS total_votes,
     COALESCE(r.review_count, 0) AS total_reviews,
     COALESCE(p.product_count, 0) AS total_products,
     COALESCE(cs.comparison_count, 0) AS total_comparisons,
     COALESCE(rl.likes_received, 0) AS total_likes_received
 FROM
-    users u
+    auth.users u
 LEFT JOIN (
     SELECT
         user_id,

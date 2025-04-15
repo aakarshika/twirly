@@ -6,11 +6,13 @@ import ReviewForm from '../components/comparison/ReviewForm';
 import ProductHeader from '../components/product-details/ProductHeader';
 import QuickStats from '../components/product-details/QuickStats';
 import ProductTabs from '../components/product-details/ProductTabs';
+import { useAuth } from '../contexts/AuthContext';
 
 const ProductDetails = () => {
   const { itemId } = useParams();
   const { currentTheme } = useTheme();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [item, setItem] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [comparisonSets, setComparisonSets] = useState([]);
@@ -82,7 +84,7 @@ const ProductDetails = () => {
               .from('votes')
               .select('*', { count: 'exact' })
               .eq('set_id', set.comparison_sets.id)
-              .eq('user_id', itemId);
+              .eq('user_id', user.id);
 
             if (itemVotesError) throw itemVotesError;
 
@@ -110,7 +112,7 @@ const ProductDetails = () => {
         const { data: weeklyActivity, error: weeklyError } = await supabase
           .from('user_weekly_activity')
           .select('*')
-          .eq('user_id', itemId)
+          .eq('user_id', user.id)
           .order('date', { ascending: true });
 
         if (weeklyError) throw weeklyError;
@@ -120,7 +122,7 @@ const ProductDetails = () => {
         const { data: recentActivities, error: recentError } = await supabase
           .from('user_recent_activities')
           .select('*')
-          .eq('user_id', itemId)
+          .eq('user_id', user.id)
           .order('created_at', { ascending: false })
           .limit(5);
 
@@ -131,7 +133,7 @@ const ProductDetails = () => {
         const { data: trends, error: trendsError } = await supabase
           .from('user_activity_trends')
           .select('*')
-          .eq('user_id', itemId)
+          .eq('user_id', user.id)
           .select();
 
         if (trendsError) throw trendsError;
@@ -168,11 +170,11 @@ const ProductDetails = () => {
         .from('reviews')
         .select(`
           *,
-          users (username),
+          profiles (username),
           review_metrics (*),
           review_likes (*)
         `, { count: 'exact' })
-        .eq('user_id', itemId)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .range((page - 1) * REVIEWS_PER_PAGE, page * REVIEWS_PER_PAGE - 1);
 

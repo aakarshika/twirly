@@ -5,9 +5,10 @@ import { Sparkles, RefreshCw, PlusCircle, Menu, X, Sun, Moon, Home, BarChart2, S
 import { useComparison } from '../../contexts/ComparisonContext';
 import { useHeader } from '../../contexts/HeaderContext';
 import Button from '../common/Button';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ThemeSwitcher from '../ThemeSwitcher';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 /**
  * Header component with app title, navigation, and main actions
@@ -23,6 +24,8 @@ const Header = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
   const { isHeaderVisible, setIsHeaderVisible } = useHeader();
   const { currentTheme } = useTheme();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const controlHeader = () => {
@@ -51,6 +54,16 @@ const Header = () => {
   ];
 
   const pageName = 'TWIRLY';
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate('/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
   return (
     <header
       className={`sticky top-0 z-40 w-full border-b transition-transform duration-300 ${
@@ -88,7 +101,85 @@ const Header = () => {
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-4">
-
+            {user ? (
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <button
+                    className="w-8 h-8 rounded-full overflow-hidden"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setIsMenuOpen(!isMenuOpen);
+                    }}
+                  >
+                    {user.avatar_url ? (
+                      <img
+                        src={user.avatar_url}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+                        <User size={20} className="text-gray-400" />
+                      </div>
+                    )}
+                  </button>
+                  {isMenuOpen && (
+                    <div 
+                      className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
+                      style={{
+                        backgroundColor: currentTheme.colors.card,
+                        borderColor: currentTheme.colors.border,
+                      }}
+                    >
+                      <div className="px-4 py-2 border-b" style={{ borderColor: currentTheme.colors.border }}>
+                        <p className="text-sm font-medium" style={{ color: currentTheme.colors.text }}>
+                          Hello, {user.email?.split('@')[0] || 'User'}
+                        </p>
+                      </div>
+                      <Link
+                        to="/settings"
+                        className="block px-4 py-2 text-sm hover:bg-gray-100"
+                        style={{ color: currentTheme.colors.text }}
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Settings
+                      </Link>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleLogout();
+                          setIsMenuOpen(false);
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                        style={{ color: currentTheme.colors.text }}
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-4">
+                <Link
+                  to="/login"
+                  className="text-sm font-medium"
+                  style={{ color: currentTheme.colors.text }}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="text-sm font-medium px-4 py-2 rounded-lg"
+                  style={{
+                    backgroundColor: currentTheme.colors.primary,
+                    color: currentTheme.colors.buttonText
+                  }}
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
 
             {/* Mobile menu button */}
             <button

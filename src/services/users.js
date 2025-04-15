@@ -1,33 +1,34 @@
 import { supabase } from '../lib/supabase';
-import { TEMP_USER_ID } from '../lib/constants';
+import { useAuth } from '../contexts/AuthContext';
 
 /**
  * Get user profile data
+ * @param {string} userId - The ID of the user
  * @returns {Promise<Object>} The user's profile data with activity counts
  */
-export const getUserProfile = async () => {
+export const getUserProfile = async (userId) => {
   try {
-    // 1. Get the user
-    const { data: user, error: userError } = await supabase
-      .from('users')
+    // 1. Get the user profile
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
       .select('*')
-      .eq('id', TEMP_USER_ID)
+      .eq('id', userId)
       .single();
 
-    if (userError) throw userError;
+    if (profileError) throw profileError;
 
     // 2. Get the activity summary
     const { data: activitySummary, error: summaryError } = await supabase
       .from('user_activity_summary')
       .select('total_votes, total_reviews, total_products, total_comparisons, total_likes_received')
-      .eq('user_id', TEMP_USER_ID)
+      .eq('user_id', userId)
       .single();
 
     if (summaryError) throw summaryError;
 
     // Combine the data
     return {
-      ...user,
+      ...profile,
       votes_count: activitySummary.total_votes,
       reviews_count: activitySummary.total_reviews,
       products_count: activitySummary.total_products,
@@ -46,11 +47,17 @@ export const getUserProfile = async () => {
  * @returns {Promise<Object>} The updated user profile
  */
 export const updateUserProfile = async (profileData) => {
+  const { user } = useAuth();
+
+  if (!user) {
+    throw new Error('User not authenticated');
+  }
+
   try {
     const { data, error } = await supabase
-      .from('users')
+      .from('profiles')
       .update(profileData)
-      .eq('id', TEMP_USER_ID)
+      .eq('id', user.id)
       .select()
       .single();
 

@@ -5,8 +5,11 @@ import ActivityOverview from '../components/dashboard/ActivityOverview';
 import ContentTabs from '../components/dashboard/ContentTabs';
 import { getUserProfile } from '../services/users';
 import { getWeeklyActivity, getCategoryDistribution, getRecentActivities, getActivityTrends } from '../services/activity';
+import { useAuth } from '../contexts/AuthContext';
+
 const UserDashboard = () => {
   const { currentTheme } = useTheme();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('products');
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,6 +21,8 @@ const UserDashboard = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!user) return;
+
       try {
         setLoading(true);
         
@@ -29,11 +34,11 @@ const UserDashboard = () => {
           recentActivitiesData,
           activityTrends
         ] = await Promise.all([
-          getUserProfile(),
-          getWeeklyActivity(),
-          getCategoryDistribution(),
-          getRecentActivities(),
-          getActivityTrends()
+          getUserProfile(user.id),
+          getWeeklyActivity(user.id),
+          getCategoryDistribution(user.id),
+          getRecentActivities(user.id),
+          getActivityTrends(user.id)
         ]);
 
         setUserData(userProfile);
@@ -50,7 +55,7 @@ const UserDashboard = () => {
     };
 
     fetchData();
-  }, []);
+  }, [user]);
 
   if (loading) {
     return (

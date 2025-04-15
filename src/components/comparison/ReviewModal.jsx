@@ -3,9 +3,8 @@ import { useComparison } from '../../contexts/ComparisonContext';
 import Button from '../common/Button';
 import { Star, X, MessageSquare } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
-// import { TEMP_USER_ID } from '../../constants';
-import { TEMP_USER_ID } from '../../lib/constants';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 const ReviewModal = () => {
   const { 
@@ -15,6 +14,7 @@ const ReviewModal = () => {
     handleReviewSubmit 
   } = useComparison();
 
+  const { user } = useAuth();
   const [reviewText, setReviewText] = useState('');
   const [metrics, setMetrics] = useState({});
   const [hoveredMetric, setHoveredMetric] = useState(null);
@@ -32,9 +32,14 @@ const ReviewModal = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!user) {
+      console.error('User must be logged in to submit a review');
+      return;
+    }
+
     // Log the data being inserted
     console.log('Inserting review with data:', {
-      user_id: TEMP_USER_ID,
+      user_id: user.id,
       item_id: item.id,
       text: reviewText,
       likes: 0,
@@ -46,7 +51,7 @@ const ReviewModal = () => {
       .from('reviews')
       .insert([
         {
-          user_id: TEMP_USER_ID,
+          user_id: user.id,
           item_id: item.id,
           text: reviewText,
           likes: 0,

@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { getUserReviews } from '../../../services/reviews';
+import { useAuth } from '../../../contexts/AuthContext';
 import ReviewCard from './ReviewCard';
-import { TEMP_USER_ID } from '../../../lib/constants';
 
-const ReviewsTab = ({  }) => {
+const ReviewsTab = () => {
   const { currentTheme } = useTheme();
+  const { user } = useAuth();
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    
     const fetchReviews = async () => {
+      if (!user) {
+        setError('You must be logged in to view your reviews');
+        setLoading(false);
+        return;
+      }
+
       try {
-        const data = await getUserReviews(TEMP_USER_ID);
+        const data = await getUserReviews(user.id);
         setReviews(data);
       } catch (err) {
         setError('Failed to fetch reviews');
@@ -25,19 +31,19 @@ const ReviewsTab = ({  }) => {
     };
 
     fetchReviews();
-  }, [TEMP_USER_ID]);
+  }, [user]);
 
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2" style={{ borderColor: currentTheme.colors.primary }}></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center text-red-500 p-4">
+      <div className="text-center p-4" style={{ color: currentTheme.colors.error }}>
         {error}
       </div>
     );

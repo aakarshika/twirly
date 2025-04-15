@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase';
-import { TEMP_USER_ID } from '../lib/constants';
+import { useAuth } from '../contexts/AuthContext';
 /**
  * Cast a vote for an item in a comparison set
  * @param {number} itemId - The ID of the item being voted for
@@ -7,55 +7,43 @@ import { TEMP_USER_ID } from '../lib/constants';
  * @returns {Promise<Object>} The result of the vote operation
  */
 
-export const castVote = async (itemId, setId) => {
+export const castVote = async (setId, itemId) => {
+  const { user } = useAuth();
+  if (!user) {
+    throw new Error('You must be logged in to vote');
+  }
+
   try {
-    console.log('Attempting to cast vote:', { itemId, setId });
-    
-    // For now, we'll use a temporary user ID
-
-    // First check if user has already voted in this set
-    const { data: existingVote, error: checkError } = await supabase
+    const { data: existingVote, error: voteError } = await supabase
       .from('votes')
-      .select('id')
-      .eq('user_id', TEMP_USER_ID)
+      .select('*')
       .eq('set_id', setId)
-      .maybeSingle();
+      .single();
 
-    console.log('Existing vote check result:', { existingVote, checkError });
-
-    if (checkError) {
-      console.error('Error checking existing vote:', checkError);
-      throw checkError;
+    if (voteError && voteError.code !== 'PGRST116') {
+      throw voteError;
     }
 
     if (existingVote) {
-      console.log('User has already voted in this set');
-      throw new Error('User has already voted in this comparison set');
+      // Update existing vote
+      const { error: updateError } = await supabase
+        .from('votes')
+        .update({ item_id: itemId })
+        .eq('id', existingVote.id);
+
+      if (updateError) throw updateError;
+    } else {
+      // Create new vote
+      const { error: insertError } = await supabase
+        .from('votes')
+        .insert([{ set_id: setId, item_id: itemId }]);
+
+      if (insertError) throw insertError;
     }
 
-    // Insert the new vote
-    const { data, error } = await supabase
-      .from('votes')
-      .insert([
-        {
-          user_id: TEMP_USER_ID,
-          item_id: itemId,
-          set_id: setId
-        }
-      ])
-      .select()
-      .single();
-
-    console.log('Vote insert result:', { data, error });
-
-    if (error) {
-      console.error('Error casting vote:', error);
-      throw error;
-    }
-
-    return data;
+    return true;
   } catch (error) {
-    console.error('Error in castVote:', error);
+    console.error('Error casting vote:', error);
     throw error;
   }
 };
@@ -66,49 +54,44 @@ export const castVote = async (itemId, setId) => {
  * @param {number} setId - The ID of the comparison set
  * @returns {Promise<number>} The number of votes for the item
  */
-export const getVoteCount = async (itemId, setId) => {
+export const getVoteCount = async (setId, itemId) => {
   try {
     const { count, error } = await supabase
       .from('votes')
       .select('*', { count: 'exact', head: true })
-      .eq('item_id', itemId)
-      .eq('set_id', setId);
+      .eq('set_id', setId)
+      .eq('item_id', itemId);
 
-    if (error) {
-      console.error('Error getting vote count:', error);
-      throw error;
-    }
-
-    return count || 0;
+    if (error) throw error;
+    return count;
   } catch (error) {
-    console.error('Error in getVoteCount:', error);
-    return 0;
+    console.error('Error getting vote count:', error);
+    throw error;
   }
 };
 
 /**
  * Check if a user has voted in a comparison set
  * @param {number} setId - The ID of the comparison set
+ * @param {Object} user - The authenticated user object
  * @returns {Promise<boolean>} Whether the user has voted
  */
-export const hasUserVoted = async (setId) => {
+export const hasUserVoted = async (setId, user) => {
+  if (!user) return false;
+
   try {
     const { data, error } = await supabase
       .from('votes')
-      .select('id')
-      .eq('user_id', TEMP_USER_ID)
+      .select('item_id')
       .eq('set_id', setId)
-      .maybeSingle();
+      .eq('user_id', user.id)
+      .single();
 
-    if (error) {
-      console.error('Error checking user vote:', error);
-      throw error;
-    }
-
-    return !!data;
+    if (error && error.code !== 'PGRST116') throw error;
+    return data?.item_id || null;
   } catch (error) {
-    console.error('Error in hasUserVoted:', error);
-    return false;
+    console.error('Error checking user vote:', error);
+    throw error;
   }
 };
 

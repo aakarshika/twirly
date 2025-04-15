@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
 import ProductCard from './ProductCard';
 import { getUserProducts } from '../../services/products';
 
 const ProductList = ({ products, setProducts }) => {
   const { currentTheme } = useTheme();
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data = await getUserProducts();
+        const data = await getUserProducts(user);
         setProducts(data);
       } catch (err) {
         setError('Failed to fetch products');
@@ -22,7 +24,7 @@ const ProductList = ({ products, setProducts }) => {
     };
 
     fetchProducts();
-  }, [setProducts]);
+  }, [setProducts, user]);
 
   const handleProductUpdate = (updatedProduct) => {
     setProducts(products.map(product => 

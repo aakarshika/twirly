@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function Signup() {
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -11,6 +13,11 @@ export default function Signup() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  // Redirect if user is already logged in
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   const validateForm = () => {
     if (!formData.email) {

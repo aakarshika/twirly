@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { getUserVotes } from '../../../services/votes';
-import { TEMP_USER_ID } from '../../../lib/constants';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const VoteCard = ({ vote }) => {
   const { currentTheme } = useTheme();
@@ -58,14 +58,21 @@ const VoteCard = ({ vote }) => {
 
 const VotesTab = ({  }) => {
   const { currentTheme } = useTheme();
+  const { user } = useAuth();
   const [votes, setVotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchVotes = async () => {
+      if (!user) {
+        setError('You must be logged in to view your votes');
+        setLoading(false);
+        return;
+      }
+
       try {
-        const data = await getUserVotes(TEMP_USER_ID);
+        const data = await getUserVotes(user.id);
         setVotes(data);
       } catch (err) {
         setError('Failed to fetch votes');
@@ -76,7 +83,7 @@ const VotesTab = ({  }) => {
     };
 
     fetchVotes();
-  }, [TEMP_USER_ID]);
+  }, [user]);
 
   if (loading) {
     return (
@@ -98,26 +105,17 @@ const VotesTab = ({  }) => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 
-          className="text-xl font-bold"
+          className="text-2xl font-bold"
           style={{ color: currentTheme.colors.text }}
         >
           Your Votes
         </h2>
       </div>
 
-      <div className="space-y-6">
-        {votes.length > 0 ? (
-          votes.map(vote => (
-            <VoteCard key={vote.id} vote={vote} />
-          ))
-        ) : (
-          <div 
-            className="text-center p-8"
-            style={{ color: currentTheme.colors.textSecondary }}
-          >
-            No votes yet. Start voting on comparison sets!
-          </div>
-        )}
+      <div className="space-y-4">
+        {votes.map((vote) => (
+          <VoteCard key={vote.id} vote={vote} />
+        ))}
       </div>
     </div>
   );

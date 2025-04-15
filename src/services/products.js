@@ -1,11 +1,15 @@
 import { supabase } from '../lib/supabase';
-import { TEMP_USER_ID } from '../lib/constants';
-
+import { useAuth } from '../contexts/AuthContext';
 /**
  * Get user's products with their metrics
+ * @param {Object} user - The authenticated user object
  * @returns {Promise<Array>} List of user's products
  */
-export const getUserProducts = async () => {
+export const getUserProducts = async (user) => {
+  if (!user) {
+    throw new Error('User must be logged in to fetch products');
+  }
+
   try {
     const { data, error } = await supabase
       .from('items')
@@ -21,7 +25,7 @@ export const getUserProducts = async () => {
           name
         )
       `)
-      .eq('user_id', TEMP_USER_ID)
+      .eq('user_id', user.id)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -80,19 +84,27 @@ export const deleteProduct = async (productId) => {
 /**
  * Create a new product
  * @param {Object} productData - The product data to create
+ * @param {string} userId - The ID of the user creating the product
  * @returns {Promise<Object>} The created product
  */
-export const createProduct = async (productData) => {
+export const createProduct = async (productData, userId) => {
+  if (!userId) {
+    throw new Error('User must be logged in to create a product');
+  }
+
   try {
     // Clean up the data - convert empty strings to null for optional fields
     const cleanedData = {
       ...productData,
-      user_id: TEMP_USER_ID,
+      user_id: userId,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       category_id: productData.category_id || null,
       price: productData.price ? parseFloat(productData.price) : null
     };
+
+    // Remove any id field if it exists
+    delete cleanedData.id;
 
     const { data, error } = await supabase
       .from('items')

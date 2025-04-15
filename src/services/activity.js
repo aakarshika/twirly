@@ -1,16 +1,16 @@
 import { supabase } from '../lib/supabase';
-import { TEMP_USER_ID } from '../lib/constants';
 
 /**
  * Get weekly activity data for a user
+ * @param {string} userId - The ID of the user
  * @returns {Promise<Array>} Array of daily activity counts
  */
-export const getWeeklyActivity = async () => {
+export const getWeeklyActivity = async (userId) => {
   try {
     const { data, error } = await supabase
       .from('user_weekly_activity')
       .select('*')
-      .eq('user_id', TEMP_USER_ID)
+      .eq('user_id', userId)
       .order('date', { ascending: true });
 
     if (error) throw error;
@@ -23,14 +23,15 @@ export const getWeeklyActivity = async () => {
 
 /**
  * Get recent activities for a user
+ * @param {string} userId - The ID of the user
  * @returns {Promise<Array>} Array of recent activities
  */
-export const getRecentActivities = async () => {
+export const getRecentActivities = async (userId) => {
   try {
     const { data, error } = await supabase
       .from('user_recent_activities')
       .select('*')
-      .eq('user_id', TEMP_USER_ID)
+      .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -49,14 +50,15 @@ export const getRecentActivities = async () => {
 
 /**
  * Get activity trends for a user
+ * @param {string} userId - The ID of the user
  * @returns {Promise<Object>} Object containing trend data
  */
-export const getActivityTrends = async () => {
+export const getActivityTrends = async (userId) => {
   try {
     const { data, error } = await supabase
       .from('user_activity_trends')
       .select('*')
-      .eq('user_id', TEMP_USER_ID)
+      .eq('user_id', userId)
       .single();
 
     if (error) throw error;
@@ -75,9 +77,10 @@ export const getActivityTrends = async () => {
 
 /**
  * Get category distribution for a user's items
+ * @param {string} userId - The ID of the user
  * @returns {Promise<Array>} Array of category counts
  */
-export const getCategoryDistribution = async () => {
+export const getCategoryDistribution = async (userId) => {
   try {
     const { data, error } = await supabase
       .from('items')
@@ -87,7 +90,7 @@ export const getCategoryDistribution = async () => {
           name
         )
       `)
-      .eq('user_id', TEMP_USER_ID);
+      .eq('user_id', userId);
 
     if (error) throw error;
 

@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { Plus, Trash2, ExternalLink, MessageSquare, ThumbsUp } from 'lucide-react';
-import { TEMP_USER_ID } from '../../../lib/constants';
+import { useAuth } from '../../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+
 const ComparisonCard = ({ comparison, onDelete }) => {
     const { currentTheme } = useTheme();
+    const { user } = useAuth();
   
     const getVoteCount = (itemId) => {
       return comparison.votes.filter(vote => vote.item_id === itemId).length;
@@ -40,7 +42,10 @@ const ComparisonCard = ({ comparison, onDelete }) => {
               {comparison.name}
             </h3>
             <button
-              onClick={() => onDelete(comparison.id)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(comparison.id);
+              }}
               className="p-1 rounded-full hover:bg-gray-100"
               style={{ color: currentTheme.colors.textSecondary }}
             >
@@ -75,7 +80,7 @@ const ComparisonCard = ({ comparison, onDelete }) => {
                       >
                         {setItem.item.name}
                       </p>
-                      {setItem.item.user_id === TEMP_USER_ID && (
+                      {user && setItem.item.user_id === user.id && (
                         <span 
                           className="text-xs px-2 py-0.5 rounded"
                           style={{ 
@@ -99,8 +104,6 @@ const ComparisonCard = ({ comparison, onDelete }) => {
                           {setItem.item.category.name}
                         </span>
                       )}
-                    </div>
-                    <div className="flex items-center space-x-4 mt-2">
                       <div className="flex items-center space-x-1">
                         <ThumbsUp size={14} style={{ color: currentTheme.colors.textSecondary }} />
                         <span 
@@ -110,63 +113,42 @@ const ComparisonCard = ({ comparison, onDelete }) => {
                           {getVoteCount(setItem.item.id)}
                         </span>
                       </div>
+                      <div className="flex items-center space-x-1">
+                        <MessageSquare size={14} style={{ color: currentTheme.colors.textSecondary }} />
+                        <span 
+                          className="text-xs"
+                          style={{ color: currentTheme.colors.textSecondary }}
+                        >
+                          {getCommentCount()}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
               );
             })}
   
-            {/* Render placeholders if there are fewer than 3 items */}
-            {placeholdersNeeded > 0 && Array.from({ length: placeholdersNeeded }).map((_, index) => (
+            {[...Array(placeholdersNeeded)].map((_, index) => (
               <div
                 key={`placeholder-${index}`}
                 className="flex items-center space-x-3 p-3 rounded-lg"
                 style={{ 
                   backgroundColor: currentTheme.colors.background,
-                  border: `1px dashed ${currentTheme.colors.border}`,
-                  height: '48px' // Adjust height as needed
+                  border: `1px solid ${currentTheme.colors.border}`
                 }}
               >
-                <div className="w-12 h-12 rounded-lg bg-gray-200" /> {/* Placeholder for image */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-gray-400">Placeholder Item</p>
+                <div className="w-12 h-12 rounded-lg bg-gray-200"></div>
+                <div className="flex-1">
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2 mt-2"></div>
                 </div>
               </div>
             ))}
           </div>
         </div>
-  
-        <div 
-          className="px-4 py-3 flex items-center justify-between border-t"
-          style={{ 
-            borderColor: currentTheme.colors.border,
-            backgroundColor: currentTheme.colors.background
-          }}
-        >
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-1">
-              <MessageSquare size={14} style={{ color: currentTheme.colors.textSecondary }} />
-              <span 
-                className="text-xs"
-                style={{ color: currentTheme.colors.textSecondary }}
-              >
-                {getCommentCount()} comments
-              </span>
-            </div>
-          </div>
-          <a
-            href={`/comparison/${comparison.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center space-x-1 text-sm"
-            style={{ color: currentTheme.colors.primary }}
-          >
-            <ExternalLink size={14} />
-            <span>View</span>
-          </a>
-        </div>
       </div>
     );
   };
-export default ComparisonCard; 
+  
+  export default ComparisonCard; 
   

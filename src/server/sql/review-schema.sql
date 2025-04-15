@@ -13,7 +13,7 @@ DROP TABLE IF EXISTS review_likes CASCADE;
 -- Foreign keys: user_id, item_id
 CREATE TABLE reviews (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     item_id INTEGER REFERENCES items(id) ON DELETE CASCADE,
     text TEXT NOT NULL,
     likes INTEGER DEFAULT 0,
@@ -40,7 +40,7 @@ CREATE TABLE review_metrics (
 -- Unique constraint: (user_id, review_id) to prevent duplicate likes
 CREATE TABLE review_likes (
     id SERIAL PRIMARY KEY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     review_id INTEGER REFERENCES reviews(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(user_id, review_id)

@@ -15,7 +15,7 @@ DROP TABLE IF EXISTS comparison_set_comment_reactions CASCADE;
 CREATE TABLE comparison_set_comments (
     id SERIAL PRIMARY KEY,
     set_id INTEGER REFERENCES comparison_sets(id) ON DELETE CASCADE,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     text TEXT NOT NULL,
     likes_count INTEGER DEFAULT 0,
     dislikes_count INTEGER DEFAULT 0,
@@ -33,7 +33,7 @@ CREATE TABLE comparison_set_comments (
 CREATE TABLE comparison_set_comment_replies (
     id SERIAL PRIMARY KEY,
     parent_comment_id INTEGER REFERENCES comparison_set_comments(id) ON DELETE CASCADE,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     text TEXT NOT NULL,
     likes_count INTEGER DEFAULT 0,
     dislikes_count INTEGER DEFAULT 0,
@@ -53,7 +53,7 @@ CREATE TABLE comparison_set_comment_reactions (
     id SERIAL PRIMARY KEY,
     comment_id INTEGER REFERENCES comparison_set_comments(id) ON DELETE CASCADE,
     reply_id INTEGER REFERENCES comparison_set_comment_replies(id) ON DELETE CASCADE,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     reaction_type VARCHAR(10) CHECK (reaction_type IN ('like', 'dislike')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     -- Ensure reaction is either for a comment OR a reply, not both

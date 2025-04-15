@@ -148,7 +148,7 @@ export const getItemReviews = async (itemId, page = 1, limit = 3) => {
     // Calculate offset
     const offset = (page - 1) * limit;
     
-    // Get paginated reviews for the item with user information
+    // Get paginated reviews for the item
     const { data: reviews, error: reviewsError, count } = await supabase
       .from('reviews')
       .select(`
@@ -157,11 +157,7 @@ export const getItemReviews = async (itemId, page = 1, limit = 3) => {
         likes,
         created_at,
         updated_at,
-        user_id,
-        users (
-          id,
-          username
-        )
+        user_id
       `, { count: 'exact' })
       .eq('item_id', itemId)
       .order('created_at', { ascending: false })
@@ -170,10 +166,25 @@ export const getItemReviews = async (itemId, page = 1, limit = 3) => {
     if (reviewsError) throw reviewsError;
     console.log('Fetched reviews:', reviews);
 
+    // Get user profiles for the reviews
+    const userIds = reviews.map(review => review.user_id);
+    const { data: userProfiles, error: profilesError } = await supabase
+      .from('profiles')
+      .select('id, username')
+      .in('id', userIds);
+
+    if (profilesError) throw profilesError;
+
+    // Create a map of user profiles for quick lookup
+    const userProfileMap = userProfiles.reduce((acc, profile) => {
+      acc[profile.id] = profile;
+      return acc;
+    }, {});
+
     // Transform reviews to include username
     const reviewsWithUsername = reviews.map(review => ({
       ...review,
-      username: review.users?.username || 'Anonymous'
+      username: userProfileMap[review.user_id]?.username || 'Anonymous'
     }));
 
     return {

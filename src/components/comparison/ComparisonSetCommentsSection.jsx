@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabase';
-import { TEMP_USER_ID } from '../../lib/constants';
 import CommentForm from './CommentForm';
 import CommentList from './CommentList';
+import { useAuth } from '../../contexts/AuthContext';
 
 const ComparisonSetCommentsSection = ({ setId , items}) => {
+  const { user } = useAuth();
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,9 +22,9 @@ const ComparisonSetCommentsSection = ({ setId , items}) => {
         .from('comparison_set_comments')
         .select(`
           *,
-          user:users(username),
+          user:profiles(username),
           reactions:comparison_set_comment_reactions(reaction_type, user_id),
-          replies:comparison_set_comment_replies(*,user:users(username))
+          replies:comparison_set_comment_replies(*,user:profiles(username))
         `)
         .eq('set_id', setId)
         .order('created_at', { ascending: true });
@@ -32,7 +33,7 @@ const ComparisonSetCommentsSection = ({ setId , items}) => {
 
       const processedComments = data.map(comment => ({
         ...comment,
-        userReaction: comment.reactions?.find(r => r.user_id === TEMP_USER_ID)?.reaction_type || null,
+        userReaction: comment.reactions?.find(r => r.user_id === user?.id)?.reaction_type || null,
         replies: comment.replies || []
       }));
       console.log('Success fetching comments:', processedComments);
@@ -71,13 +72,18 @@ const ComparisonSetCommentsSection = ({ setId , items}) => {
     e.preventDefault();
     if (!newComment.trim()) return;
 
+    if (!user) {
+      console.error('User must be logged in to comment');
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('comparison_set_comments')
         .insert([
           {
             set_id: setId,
-            user_id: TEMP_USER_ID,
+            user_id: user.id,
             text: newComment.trim()
           }
         ])
@@ -95,6 +101,11 @@ const ComparisonSetCommentsSection = ({ setId , items}) => {
   };
 
   const handleLikeComment = async (commentId) => {
+    if (!user) {
+      console.error('User must be logged in to like comments');
+      return;
+    }
+
     try {
       const comment = comments.find(c => c.id === commentId);
       const hasLiked = comment.userReaction === 'like';
@@ -105,7 +116,7 @@ const ComparisonSetCommentsSection = ({ setId , items}) => {
           .from('comparison_set_comment_reactions')
           .delete()
           .eq('comment_id', commentId)
-          .eq('user_id', TEMP_USER_ID);
+          .eq('user_id', user.id);
       } else {
         // Add like
         await supabase
@@ -113,7 +124,7 @@ const ComparisonSetCommentsSection = ({ setId , items}) => {
           .insert([
             {
               comment_id: commentId,
-              user_id: TEMP_USER_ID,
+              user_id: user.id,
               reaction_type: 'like'
             }
           ]);
@@ -125,7 +136,7 @@ const ComparisonSetCommentsSection = ({ setId , items}) => {
           return {
             ...c,
             userReaction: hasLiked ? null : 'like',
-            reactions: hasLiked ? c.reactions.filter(r => r.user_id !== TEMP_USER_ID) : [...c.reactions, { user_id: TEMP_USER_ID, reaction_type: 'like' }]
+            reactions: hasLiked ? c.reactions.filter(r => r.user_id !== user.id) : [...c.reactions, { user_id: user.id, reaction_type: 'like' }]
           };
         }
         return c;
@@ -139,13 +150,18 @@ const ComparisonSetCommentsSection = ({ setId , items}) => {
   const handleReply = async (commentId, replyText) => {
     if (!replyText.trim()) return;
 
+    if (!user) {
+      console.error('User must be logged in to reply to comments');
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from('comparison_set_comment_replies')
         .insert([
           {
             parent_comment_id: commentId,
-            user_id: TEMP_USER_ID,
+            user_id: user.id,
             text: replyText.trim()
           }
         ])

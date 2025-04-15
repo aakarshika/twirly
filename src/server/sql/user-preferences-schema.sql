@@ -103,22 +103,27 @@ CREATE POLICY "Users can delete their own category preferences"
     ON user_category_preferences FOR DELETE
     USING (auth.uid() = user_id);
 
--- Functions
+-- Drop existing trigger if it exists
+DROP TRIGGER IF EXISTS on_auth_user_created_preferences ON auth.users;
+
 -- Function to create default preferences for new users
-CREATE OR REPLACE FUNCTION public.handle_new_user()
+CREATE OR REPLACE FUNCTION public.handle_new_user_preferences()
 RETURNS TRIGGER AS $$
 BEGIN
-    INSERT INTO public.user_preferences (user_id)
-    VALUES (NEW.id);
-    
-    INSERT INTO public.user_notification_settings (user_id)
-    VALUES (NEW.id);
-    
-    RETURN NEW;
+  -- Create default user preferences
+  INSERT INTO public.user_preferences (user_id, username, theme_preference, language_preference)
+  VALUES (NEW.id, NEW.email, 'light', 'en');
+
+  -- Create default notification settings
+  INSERT INTO public.user_notification_settings (user_id)
+  VALUES (NEW.id);
+
+  RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Trigger to create default preferences when a new user signs up
-CREATE TRIGGER on_auth_user_created
-    AFTER INSERT ON auth.users
-    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user(); 
+-- Create trigger to handle new user creation
+CREATE TRIGGER on_auth_user_created_preferences
+  AFTER INSERT ON auth.users
+  FOR EACH ROW
+  EXECUTE FUNCTION public.handle_new_user_preferences(); 

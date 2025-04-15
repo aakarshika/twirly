@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { getUserComments } from '../../../services/comments';
-import { TEMP_USER_ID } from '../../../lib/constants';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const CommentCard = ({ comment }) => {
   const { currentTheme } = useTheme();
@@ -100,14 +100,21 @@ const CommentCard = ({ comment }) => {
 
 const CommentsTab = ({  }) => {
   const { currentTheme } = useTheme();
+  const { user } = useAuth();
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchComments = async () => {
+      if (!user) {
+        setError('You must be logged in to view your comments');
+        setLoading(false);
+        return;
+      }
+
       try {
-        const data = await getUserComments(TEMP_USER_ID);
+        const data = await getUserComments(user.id);
         setComments(data);
       } catch (err) {
         setError('Failed to fetch comments');
@@ -118,7 +125,7 @@ const CommentsTab = ({  }) => {
     };
 
     fetchComments();
-  }, [TEMP_USER_ID]);
+  }, [user]);
 
   if (loading) {
     return (
@@ -140,26 +147,17 @@ const CommentsTab = ({  }) => {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 
-          className="text-xl font-bold"
+          className="text-2xl font-bold"
           style={{ color: currentTheme.colors.text }}
         >
           Your Comments
         </h2>
       </div>
 
-      <div className="space-y-6">
-        {comments.length > 0 ? (
-          comments.map(comment => (
-            <CommentCard key={comment.id} comment={comment} />
-          ))
-        ) : (
-          <div 
-            className="text-center p-8"
-            style={{ color: currentTheme.colors.textSecondary }}
-          >
-            No comments yet. Start engaging with comparison sets!
-          </div>
-        )}
+      <div className="space-y-4">
+        {comments.map((comment) => (
+          <CommentCard key={comment.id} comment={comment} />
+        ))}
       </div>
     </div>
   );

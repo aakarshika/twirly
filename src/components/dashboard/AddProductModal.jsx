@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../contexts/AuthContext';
 import { X, Plus } from 'lucide-react';
 import { createProduct } from '../../services/products';
 
 const AddProductModal = ({ isOpen, onClose, onProductAdded }) => {
   const { currentTheme } = useTheme();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -44,7 +46,7 @@ const AddProductModal = ({ isOpen, onClose, onProductAdded }) => {
         ...formData,
         // Only include category_id if they have values
         ...(formData.category_id && { category_id: parseInt(formData.category_id) })
-      });
+      }, user.id);
       onProductAdded(product);
       onClose();
     } catch (err) {
