@@ -114,17 +114,17 @@ WITH weekly_stats AS (
   GROUP BY user_id
 )
 SELECT 
-  ws.user_id,
+  u.id AS user_id,
   u.email,
-  ws.weekly_activity,
-  ws.current_week_activity,
-  ws.previous_week_activity,
+  COALESCE(ws.weekly_activity, 0) AS weekly_activity,
+  COALESCE(ws.current_week_activity, 0) AS current_week_activity,
+  COALESCE(ws.previous_week_activity, 0) AS previous_week_activity,
   CASE 
-    WHEN ws.previous_week_activity = 0 THEN 100
-    ELSE ((ws.current_week_activity::float / ws.previous_week_activity::float - 1) * 100)::integer
+    WHEN COALESCE(ws.previous_week_activity, 0) = 0 THEN 0
+    ELSE ((COALESCE(ws.current_week_activity, 0)::float / COALESCE(ws.previous_week_activity, 1)::float - 1) * 100)::integer
   END AS weekly_change_percentage
-FROM weekly_stats ws
-LEFT JOIN auth.users u ON ws.user_id = u.id;
+FROM auth.users u
+LEFT JOIN weekly_stats ws ON u.id = ws.user_id;
 
 -- -- Create index on the view for better performance
 -- CREATE INDEX IF NOT EXISTS idx_user_weekly_activity_user_id ON user_weekly_activity(user_id);

@@ -13,7 +13,7 @@ const ProductList = ({ products, setProducts }) => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data = await getUserProducts(user);
+        const data = await getUserProducts(user.id);
         setProducts(data);
       } catch (err) {
         setError('Failed to fetch products');

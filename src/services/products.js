@@ -2,12 +2,12 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 /**
  * Get user's products with their metrics
- * @param {Object} user - The authenticated user object
+ * @param {string} userId - The ID of the user
  * @returns {Promise<Array>} List of user's products
  */
-export const getUserProducts = async (user) => {
-  if (!user) {
-    throw new Error('User must be logged in to fetch products');
+export const getUserProducts = async (userId) => {
+  if (!userId) {
+    throw new Error('User ID is required to fetch products');
   }
 
   try {
@@ -25,7 +25,7 @@ export const getUserProducts = async (user) => {
           name
         )
       `)
-      .eq('user_id', user.id)
+      .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;

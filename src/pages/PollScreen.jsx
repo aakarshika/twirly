@@ -69,12 +69,13 @@ const PollScreen = () => {
       />
 
       <div 
-        className="relative z-0 w-full transition-margin duration-300"
+        className="relative z-0 w-full transition-all duration-150 ease-in-out"
         style={{ 
-          marginTop: isHeaderVisible ? '100vh' : 'calc(100vh - 4rem)',
+          marginTop: '100vh',
           minHeight: '100vh',
           backgroundColor: currentTheme.colors.background,
-          transform: 'translateZ(0)'
+          transform: 'translateZ(0)',
+          willChange: 'transform'
         }}
       >
         <div className="w-full max-w-4xl mx-auto">

@@ -26,7 +26,7 @@ const CreateComparison = ({ onClose, onSuccess }) => {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const data = await getUserProducts();
+      const data = await getUserProducts(user.id);
       setProducts(data);
     } catch (err) {
       setError('Failed to fetch products');
@@ -84,11 +84,11 @@ const CreateComparison = ({ onClose, onSuccess }) => {
       setLoading(true);
       const comparisonData = {
         name: `Comparison of ${selectedProducts.map(p => p.name).join(', ')}`,
-        user_id: user.id,
-        items: selectedProducts.map(p => p.id)
+        categoryId: null, // You can add category selection if needed
+        items: selectedProducts
       };
 
-      await createComparison(comparisonData);
+      await createComparison(comparisonData, user.id);
       onSuccess();
       onClose();
     } catch (err) {

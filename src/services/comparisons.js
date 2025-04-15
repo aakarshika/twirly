@@ -4,37 +4,58 @@ import { useAuth } from '../contexts/AuthContext';
 /**
  * Create a new comparison set
  * @param {Object} comparisonData - The comparison set data
+ * @param {string} userId - The ID of the user
  * @returns {Promise<Object>} The created comparison set
  */
-export const createComparison = async (name, categoryId, items) => {
-  const { user } = useAuth();
-  if (!user) {
-    throw new Error('You must be logged in to create a comparison');
+export const createComparison = async (comparisonData, userId) => {
+  if (!userId) {
+    throw new Error('User must be logged in to create a comparison');
   }
 
   try {
     // Create the comparison set
     const { data: comparisonSet, error: setError } = await supabase
       .from('comparison_sets')
-      .insert([{ name, category_id: categoryId }])
+      .insert([{ 
+        name: comparisonData.name,
+        category_id: comparisonData.categoryId,
+        user_id: userId
+      }])
       .select()
       .single();
 
     if (setError) throw setError;
 
     // Add items to the comparison set
-    const comparisonSetItems = items.map(item => ({
+    const comparisonSetItems = comparisonData.items.map(item => ({
       set_id: comparisonSet.id,
       item_id: item.id
     }));
 
     const { error: itemsError } = await supabase
       .from('comparison_set_items')
-      .insert(comparisonSetItems);
+      .insert(comparisonSetItems)
+      .select();
 
     if (itemsError) throw itemsError;
 
-    return comparisonSet;
+    // Fetch the complete comparison set with items
+    const { data: completeComparison, error: fetchError } = await supabase
+      .from('comparison_sets')
+      .select(`
+        *,
+        items:comparison_set_items(
+          item:items(*)
+        ),
+        votes(*),
+        comments:comparison_set_comments(*)
+      `)
+      .eq('id', comparisonSet.id)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    return completeComparison;
   } catch (error) {
     console.error('Error creating comparison:', error);
     throw error;
@@ -75,12 +96,12 @@ export const getComparisons = async (categoryId = null) => {
 
 /**
  * Get user's comparison sets
+ * @param {string} userId - The ID of the user
  * @returns {Promise<Array>} List of user's comparison sets
  */
-export const getUserComparisons = async () => {
-  const { user } = useAuth();
-  if (!user) {
-    throw new Error('You must be logged in to view your comparisons');
+export const getUserComparisons = async (userId) => {
+  if (!userId) {
+    throw new Error('User ID is required to fetch comparisons');
   }
 
   try {
@@ -94,6 +115,7 @@ export const getUserComparisons = async () => {
         votes(*),
         comments:comparison_set_comments(*)
       `)
+      .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;

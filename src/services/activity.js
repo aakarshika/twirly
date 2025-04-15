@@ -59,7 +59,7 @@ export const getActivityTrends = async (userId) => {
       .from('user_activity_trends')
       .select('*')
       .eq('user_id', userId)
-      .single();
+      .select();
 
     if (error) throw error;
 

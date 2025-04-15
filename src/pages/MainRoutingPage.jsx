@@ -1,7 +1,7 @@
 // File: src/App.jsx
 
 import React, { useState, useEffect } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ComparisonProvider } from '../contexts/ComparisonContext';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/layout/Header';
@@ -71,6 +71,17 @@ const OnboardingRoute = ({ children }) => {
   return children;
 };
 
+// Add this component before MainRoutingPage
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
+
 /**
  * Main App component that wraps the application with necessary providers and routing
  */
@@ -91,6 +102,7 @@ const MainRoutingPage = () => {
 
   return (
     <ComparisonProvider>
+      <ScrollToTop />
       <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background, color: currentTheme.colors.text }}>
         <Header />
         <main className="flex-grow">
