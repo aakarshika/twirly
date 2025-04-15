@@ -1,28 +1,93 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../lib/supabase';
 import { useTheme } from '../../contexts/ThemeContext';
 import { User, Mail, Phone, MapPin, Globe, Camera, Save } from 'lucide-react';
 import Button from '../common/Button';
 
 const ProfileSettings = () => {
+  const { user } = useAuth();
   const { currentTheme } = useTheme();
   const [profileData, setProfileData] = useState({
-    username: 'johndoe',
-    email: 'john@example.com',
-    fullName: 'John Doe',
-    phone: '+1 (555) 123-4567',
-    location: 'New York, USA',
-    website: 'https://johndoe.com',
-    bio: 'Product designer and developer. Love creating beautiful and functional interfaces.',
-    avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=John',
+    username: '',
+    displayName: '',
+    bio: '',
+    email: '',
+    profileImageUrl: '',
+    phone: '',
+    location: '',
+    website: '',
     socialLinks: {
-      twitter: 'johndoe',
-      github: 'johndoe',
-      linkedin: 'johndoe'
+      twitter: '',
+      github: '',
+      linkedin: ''
     }
   });
-
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [avatarPreview, setAvatarPreview] = useState(profileData.avatar);
+  const [avatarPreview, setAvatarPreview] = useState('');
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (!user) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Fetch user preferences
+        const { data: preferences, error: preferencesError } = await supabase
+          .from('user_preferences')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (preferencesError) throw preferencesError;
+
+        // Fetch basic profile data
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError) throw profileError;
+
+        // If there's a profile image URL, get the public URL
+        if (preferences?.profile_image_url) {
+          // Extract just the file path from the URL if it's a full URL
+          const filePath = preferences.profile_image_url.includes('storage/v1/object/public/profile-pics/')
+            ? preferences.profile_image_url.split('storage/v1/object/public/profile-pics/')[1]
+            : preferences.profile_image_url;
+
+          console.log('Extracted file path:', filePath);
+          const { data: { publicUrl } } = supabase.storage
+            .from('profile-pics')
+            .getPublicUrl(filePath);
+          console.log('Generated public URL:', publicUrl);
+          setAvatarPreview(publicUrl);
+          setProfileData(prev => ({
+            ...prev,
+            profileImageUrl: filePath
+          }));
+        }
+
+        setProfileData(prev => ({
+          ...prev,
+          ...preferences,
+          ...profile
+        }));
+      } catch (err) {
+        console.error('Error fetching profile data:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfileData();
+  }, [user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -42,22 +107,108 @@ const ProfileSettings = () => {
     }));
   };
 
-  const handleAvatarChange = (e) => {
+  const handleAvatarChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    try {
+      // Create a unique file name using timestamp
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}.${fileExt}`;
+      // Create path with user ID (UUID) as folder name
+      const filePath = `${user.id}/${fileName}`;
+      console.log('Uploading file to path:', filePath);
+
+      // Upload the file to Supabase Storage
+      const { error: uploadError } = await supabase.storage
+        .from('profile-pics')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (uploadError) throw uploadError;
+
+      // Get the public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('profile-pics')
+        .getPublicUrl(filePath);
+      console.log('Generated public URL after upload:', publicUrl);
+
+      // Update both the file path and the avatar preview
+      setProfileData(prev => ({
+        ...prev,
+        profileImageUrl: filePath
+      }));
+      setAvatarPreview(publicUrl);
+
+      // First, check if user preferences exist
+      const { data: existingPreferences } = await supabase
+        .from('user_preferences')
+        .select('id')
+        .eq('user_id', user.id)
+        .single();
+
+      // Update or insert user preferences
+      const { error: updateError } = await supabase
+        .from('user_preferences')
+        .upsert({
+          id: existingPreferences?.id,
+          user_id: user.id,
+          profile_image_url: filePath // Store just the file path, not the full URL
+        }, {
+          onConflict: 'user_id'
+        });
+
+      if (updateError) throw updateError;
+
+    } catch (err) {
+      console.error('Error uploading profile picture:', err);
+      setError(err.message);
     }
   };
 
-  const handleSave = () => {
-    // TODO: Implement save functionality with Supabase
-    console.log('Saving profile:', profileData);
-    setIsEditing(false);
+  const handleSave = async () => {
+    try {
+      const { error } = await supabase
+        .from('user_preferences')
+        .upsert({
+          user_id: user.id,
+          username: profileData.username,
+          display_name: profileData.displayName,
+          bio: profileData.bio,
+          phone: profileData.phone,
+          location: profileData.location,
+          website: profileData.website,
+          twitter_handle: profileData.socialLinks.twitter,
+          github_handle: profileData.socialLinks.github,
+          linkedin_handle: profileData.socialLinks.linkedin,
+          profile_image_url: profileData.profileImageUrl // Store the file path instead of public URL
+        });
+
+      if (error) throw error;
+      setIsEditing(false);
+    } catch (err) {
+      console.error('Error saving profile:', err);
+      setError(err.message);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: currentTheme.colors.primary }}></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 rounded-lg" style={{ backgroundColor: currentTheme.colors.errorBackground, color: currentTheme.colors.errorText }}>
+        Error loading profile data: {error}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -69,12 +220,12 @@ const ProfileSettings = () => {
           Profile Settings
         </h2>
         <Button
-          onClick={handleSave}
+          onClick={isEditing ? handleSave : () => setIsEditing(true)}
           className="flex items-center space-x-2"
           style={{ backgroundColor: currentTheme.colors.primary }}
         >
           <Save size={16} />
-          <span>Save Changes</span>
+          <span>{isEditing ? 'Save Changes' : 'Edit Profile'}</span>
         </Button>
       </div>
 
@@ -89,26 +240,47 @@ const ProfileSettings = () => {
         >
           <div className="flex items-center space-x-6">
             <div className="relative">
-              <img
-                src={avatarPreview}
-                alt="Profile"
-                className="w-24 h-24 rounded-full object-cover"
-              />
-              <label 
-                className="absolute bottom-0 right-0 p-2 rounded-full cursor-pointer"
+              <div 
+                className="w-24 h-24 rounded-full bg-cover bg-center overflow-hidden"
                 style={{ 
-                  backgroundColor: currentTheme.colors.primary,
-                  color: currentTheme.colors.background
+                  backgroundColor: currentTheme.colors.border,
                 }}
               >
-                <Camera size={16} />
-                <input
-                  type="file"
-                  className="hidden"
-                  accept="image/*"
-                  onChange={handleAvatarChange}
-                />
-              </label>
+                {avatarPreview ? (
+                  <img
+                    src={avatarPreview}
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      console.error('Error loading image:', e);
+                      setAvatarPreview('');
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center rounded-full" style={{ backgroundColor: currentTheme.colors.primary }}>
+                    <span className="text-white text-2xl">
+                      {profileData.displayName?.[0] || profileData.username?.[0] || '?'}
+                    </span>
+                  </div>
+                )}
+              </div>
+              {isEditing && (
+                <label 
+                  className="absolute bottom-0 right-0 p-2 rounded-full cursor-pointer"
+                  style={{ 
+                    backgroundColor: currentTheme.colors.primary,
+                    color: currentTheme.colors.background
+                  }}
+                >
+                  <Camera size={16} />
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleAvatarChange}
+                  />
+                </label>
+              )}
             </div>
             <div>
               <h3 
@@ -150,6 +322,7 @@ const ProfileSettings = () => {
                 value={profileData.username}
                 onChange={handleInputChange}
                 placeholder="Username"
+                readOnly={!isEditing}
                 className="flex-1 p-2 rounded-lg"
                 style={{ 
                   backgroundColor: currentTheme.colors.background,
@@ -164,7 +337,7 @@ const ProfileSettings = () => {
                 type="email"
                 name="email"
                 value={profileData.email}
-                onChange={handleInputChange}
+                readOnly
                 placeholder="Email"
                 className="flex-1 p-2 rounded-lg"
                 style={{ 
@@ -178,10 +351,11 @@ const ProfileSettings = () => {
               <User size={20} style={{ color: currentTheme.colors.text }} />
               <input
                 type="text"
-                name="fullName"
-                value={profileData.fullName}
+                name="displayName"
+                value={profileData.displayName}
                 onChange={handleInputChange}
-                placeholder="Full Name"
+                placeholder="Display Name"
+                readOnly={!isEditing}
                 className="flex-1 p-2 rounded-lg"
                 style={{ 
                   backgroundColor: currentTheme.colors.background,
@@ -198,6 +372,7 @@ const ProfileSettings = () => {
                 value={profileData.phone}
                 onChange={handleInputChange}
                 placeholder="Phone Number"
+                readOnly={!isEditing}
                 className="flex-1 p-2 rounded-lg"
                 style={{ 
                   backgroundColor: currentTheme.colors.background,
@@ -214,6 +389,7 @@ const ProfileSettings = () => {
                 value={profileData.location}
                 onChange={handleInputChange}
                 placeholder="Location"
+                readOnly={!isEditing}
                 className="flex-1 p-2 rounded-lg"
                 style={{ 
                   backgroundColor: currentTheme.colors.background,
@@ -230,6 +406,7 @@ const ProfileSettings = () => {
                 value={profileData.website}
                 onChange={handleInputChange}
                 placeholder="Website"
+                readOnly={!isEditing}
                 className="flex-1 p-2 rounded-lg"
                 style={{ 
                   backgroundColor: currentTheme.colors.background,
@@ -257,9 +434,9 @@ const ProfileSettings = () => {
           </h3>
           <textarea
             name="bio"
-            value={profileData.bio}
             onChange={handleInputChange}
             placeholder="Tell us about yourself..."
+            readOnly={!isEditing}
             rows="4"
             className="w-full p-2 rounded-lg"
             style={{ 
@@ -284,63 +461,7 @@ const ProfileSettings = () => {
           >
             Social Links
           </h3>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <span className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-500 text-white">
-                𝕏
-              </span>
-              <input
-                type="text"
-                value={profileData.socialLinks.twitter}
-                onChange={(e) => handleSocialLinkChange('twitter', e.target.value)}
-                placeholder="Twitter username"
-                className="flex-1 p-2 rounded-lg"
-                style={{ 
-                  backgroundColor: currentTheme.colors.background,
-                  color: currentTheme.colors.text,
-                  border: `1px solid ${currentTheme.colors.border}`
-                }}
-              />
-            </div>
-            <div className="flex items-center space-x-3">
-              <span className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-800 text-white">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                </svg>
-              </span>
-              <input
-                type="text"
-                value={profileData.socialLinks.github}
-                onChange={(e) => handleSocialLinkChange('github', e.target.value)}
-                placeholder="GitHub username"
-                className="flex-1 p-2 rounded-lg"
-                style={{ 
-                  backgroundColor: currentTheme.colors.background,
-                  color: currentTheme.colors.text,
-                  border: `1px solid ${currentTheme.colors.border}`
-                }}
-              />
-            </div>
-            <div className="flex items-center space-x-3">
-              <span className="w-8 h-8 flex items-center justify-center rounded-full bg-blue-600 text-white">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-                </svg>
-              </span>
-              <input
-                type="text"
-                value={profileData.socialLinks.linkedin}
-                onChange={(e) => handleSocialLinkChange('linkedin', e.target.value)}
-                placeholder="LinkedIn username"
-                className="flex-1 p-2 rounded-lg"
-                style={{ 
-                  backgroundColor: currentTheme.colors.background,
-                  color: currentTheme.colors.text,
-                  border: `1px solid ${currentTheme.colors.border}`
-                }}
-              />
-            </div>
-          </div>
+
         </div>
       </div>
     </div>
