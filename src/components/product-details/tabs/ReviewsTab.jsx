@@ -23,11 +23,11 @@ const ReviewsTab = ({ reviews, item }) => {
                     </p>
                   </div>
                 </div>
-                <p className="text-sm" style={{ color: currentTheme.colors.text }}>{review.content}</p>
+                <p className="text-sm" style={{ color: currentTheme.colors.text }}>{review.text}</p>
                 <div className="flex items-center mt-2">
                   <ThumbsUp className="w-4 h-4 mr-1" style={{ color: currentTheme.colors.primary }} />
                   <span className="text-xs" style={{ color: currentTheme.colors.textSecondary }}>
-                    {review.review_likes?.length || 0} likes
+                    {review.likes || 0} likes
                   </span>
                 </div>
               </div>
