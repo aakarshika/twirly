@@ -60,7 +60,7 @@ const AppearancesTab = ({ comparisonSets, item }) => {
         </div>
         <div className="p-6 rounded-lg" style={{ backgroundColor: currentTheme.colors.cardBackground }}>
           <h3 className="text-xl font-bold mb-4" style={{ color: currentTheme.colors.text }}>Performance Analysis</h3>
-          <RadarChart items={[item]} />
+          <RadarChart item={item} />
         </div>
       </div>
     </div>

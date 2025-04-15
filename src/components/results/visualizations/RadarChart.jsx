@@ -1,23 +1,16 @@
 import React from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 
-const RadarChart = ({ items }) => {
+const RadarChart = ({ item }) => {
   const { currentTheme } = useTheme();
   
-  // Get all unique metrics across items
-  const allMetrics = new Set();
-  items.forEach(item => {
-    if (item.averageMetrics) {
-      Object.keys(item.averageMetrics).forEach(metric => allMetrics.add(metric));
-    }
-  });
-  
-  const metrics = Array.from(allMetrics);
+  const metrics = item.item_metric_averages;
+  const maxValue = 5; // Assuming max value is 5
   const colors = ['#F59E0B', '#3B82F6', '#10B981', '#8B5CF6']; // Amber, Blue, Green, Purple
 
   return (
     <div className="relative w-full h-[600px]">
-      <svg viewBox="0 0 500 500" className="w-full h-full">
+      <svg viewBox="0 0 500 500" className="w-full h-auto">
         {/* Draw radar lines */}
         {metrics.map((metric, i) => {
           const angle = (i * 2 * Math.PI) / metrics.length;
@@ -25,7 +18,7 @@ const RadarChart = ({ items }) => {
           const y = 250 + Math.sin(angle) * 200;
           
           return (
-            <g key={metric}>
+            <g key={metric.metric_name}>
               {/* Metric line */}
               <line
                 x1="250"
@@ -44,7 +37,7 @@ const RadarChart = ({ items }) => {
                 fill={currentTheme.colors.text}
                 className="text-sm"
               >
-                {metric}
+                {metric.metric_name.split('_').join(' ')}
               </text>
             </g>
           );
@@ -65,13 +58,11 @@ const RadarChart = ({ items }) => {
         ))}
 
         {/* Draw item data */}
-        {items.map((item, itemIndex) => {
-          if (!item.averageMetrics) return null;
-          
+        {(() => {
           const points = metrics.map((metric, i) => {
             const angle = (i * 2 * Math.PI) / metrics.length;
-            const value = item.averageMetrics[metric]?.average || 0;
-            const scaledValue = (value / 5) * 200; // Assuming max value is 5
+            const value = metric.avg_rating || 0;
+            const scaledValue = (value / maxValue) * 200;
             
             return {
               x: 250 + Math.cos(angle) * scaledValue,
@@ -84,9 +75,9 @@ const RadarChart = ({ items }) => {
               {/* Fill area */}
               <polygon
                 points={points.map(p => `${p.x},${p.y}`).join(' ')}
-                fill={colors[itemIndex]}
+                fill={colors[0]}
                 fillOpacity="0.2"
-                stroke={colors[itemIndex]}
+                stroke={colors[0]}
                 strokeWidth="2"
               />
               
@@ -97,25 +88,23 @@ const RadarChart = ({ items }) => {
                   cx={point.x}
                   cy={point.y}
                   r="4"
-                  fill={colors[itemIndex]}
+                  fill={colors[0]}
                 />
               ))}
             </g>
           );
-        })}
+        })()}
       </svg>
 
       {/* Legend */}
       <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-4">
-        {items.map((item, i) => (
-          <div key={item.id} className="flex items-center gap-2">
-            <div 
-              className="w-4 h-4 rounded-full" 
-              style={{ backgroundColor: colors[i] }}
-            />
-            <span className="text-sm text-gray-300">{item.name}</span>
-          </div>
-        ))}
+        <div className="flex items-center gap-2">
+          <div 
+            className="w-4 h-4 rounded-full" 
+            style={{ backgroundColor: colors[0] }}
+          />
+          <span className="text-sm text-gray-300">{item.name}</span>
+        </div>
       </div>
     </div>
   );

@@ -77,7 +77,7 @@ const ItemCard = ({ item, i, height }) => {
   
   return (
     <div className="w-full"
-            // onClick={handleItemClick}
+            onClick={handleItemClick}
              style={{ height: newHeight }}>
       <div className="relative h-full w-full">
         <div 
