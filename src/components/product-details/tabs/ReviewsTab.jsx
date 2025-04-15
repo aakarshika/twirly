@@ -17,7 +17,7 @@ const ReviewsTab = ({ reviews, item }) => {
                 <div className="flex items-center mb-2">
                   <div className="w-8 h-8 rounded-full bg-gray-700 mr-2"></div>
                   <div>
-                    <p className="font-medium" style={{ color: currentTheme.colors.text }}>{review.users?.username}</p>
+                    <p className="font-medium" style={{ color: currentTheme.colors.text }}>{review.profiles?.username}</p>
                     <p className="text-xs" style={{ color: currentTheme.colors.textSecondary }}>
                       {new Date(review.created_at).toLocaleDateString()}
                     </p>
