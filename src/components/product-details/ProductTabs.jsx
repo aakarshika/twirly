@@ -22,7 +22,7 @@ const ProductTabs = ({
   return (
     <div className="mb-8">
       <div className="flex space-x-4 border-b border-gray-700">
-        {['overview', 'reviews', 'appearances', 'metrics', 'activity'].map((tab) => (
+        {['overview', 'reviews', 'appearances'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -43,6 +43,9 @@ const ProductTabs = ({
           <OverviewTab 
             item={item}
             recentActivities={recentActivities}
+            categoryData={categoryData}
+            activityData={activityData}
+            trends={trends}
           />
         )}
 
@@ -60,21 +63,6 @@ const ProductTabs = ({
           />
         )}
 
-        {activeTab === 'metrics' && (
-          <MetricsTab 
-            item={item}
-            categoryData={categoryData}
-            activityData={activityData}
-          />
-        )}
-
-        {activeTab === 'activity' && (
-          <ActivityTab 
-            activityData={activityData}
-            categoryData={categoryData}
-            trends={trends}
-          />
-        )}
       </div>
     </div>
   );

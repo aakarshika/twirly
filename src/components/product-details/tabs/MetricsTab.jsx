@@ -4,7 +4,7 @@ import { CombinedBarChart } from '../../results/visualizations';
 import ActivityVisualizations from '../../dashboard/ActivityVisualizations';
 import Metrics from '../../common/Metrics';
 
-const MetricsTab = ({ item, activityData, categoryData }) => {
+const MetricsTab = ({ item, activityData, categoryData, recentActivities, trends }) => {
   const { currentTheme } = useTheme();
 
   return (
@@ -19,13 +19,7 @@ const MetricsTab = ({ item, activityData, categoryData }) => {
             </div>
           </div>
         </div>
-        <div className="p-6 rounded-lg" style={{ backgroundColor: currentTheme.colors.cardBackground }}>
-          <h3 className="text-xl font-bold mb-4" style={{ color: currentTheme.colors.text }}>Category Distribution</h3>
-          <ActivityVisualizations 
-            activityData={activityData}
-            categoryData={categoryData}
-          />
-        </div>
+        
       </div>
     </div>
   );
