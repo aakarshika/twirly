@@ -13,6 +13,7 @@ import Button from '../components/common/Button';
 import { MessageSquare, Star } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import ComparisonGridSkeleton from '../components/skeletons/ComparisonGridSkeleton';
 
 const PollScreen = () => {
   const { id } = useParams();
@@ -209,12 +210,9 @@ const PollScreen = () => {
 
   if (loading) {
     return (
+      
       <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background }}>
-        <div className="h-screen flex items-center justify-center">
-          <div className="text-center">
-            <p className="text-gray-500">Loading...</p>
-          </div>
-        </div>
+          <ComparisonGridSkeleton />
       </div>
     );
   }
@@ -238,17 +236,17 @@ const PollScreen = () => {
   }
 
   return (
-    <div className="min-h-screen relative" style={{ backgroundColor: currentTheme.colors.background }}>
-      <PollGrid 
-        title={currentComparisonName}
-        items={items}
-        votedItemId={votedItemId}
-        currentId={id}
-        userVoted={userVoted}
-        onItemClick={handleItemClick}
-        itemReviews={itemReviews}
-      />
-
+    <div className="min-h-screen h-full flex flex-col max-w-4xl mx-auto" style={{ backgroundColor: currentTheme.colors.background }}>
+      
+        <PollGrid 
+          title={currentComparisonName}
+          items={items}
+          votedItemId={votedItemId}
+          currentId={id}
+          userVoted={userVoted}
+          onItemClick={handleItemClick}
+          itemReviews={itemReviews}
+        />
       <div 
         className="relative z-0 w-full transition-all duration-150 ease-in-out"
         style={{ 
@@ -289,6 +287,7 @@ const PollScreen = () => {
         </div>}
       </div>
 
+      )}
       {activeReviewItem && <SetReviewModal />}
       <SetCombinedReviewModal 
         comparisonMetrics={comparisonMetrics}

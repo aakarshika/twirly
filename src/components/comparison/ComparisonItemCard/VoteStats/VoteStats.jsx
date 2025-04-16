@@ -15,7 +15,8 @@ const VoteStats = ({ votes, totalVotes, color, isVotedItem, reviewCount, itemRev
         <span className="vote-percentage">{Math.round(percentage)}%</span>
         
       </div>
-      <div className="vote-progress">
+      
+      <div className=" vote-progress">
         <div 
           className="progress-bar"
           style={{
@@ -25,10 +26,11 @@ const VoteStats = ({ votes, totalVotes, color, isVotedItem, reviewCount, itemRev
           }}
         />
       </div>
+
       
       {reviewCount > 0 && (
                 <div className="flex-row mt-2">
-                  <span className="flex items-center gap-1 highlighted-aspect ">
+                  <span className="flex items-center gap-1 highlighted-aspect-reply ">
                     <MessagesSquare size={14} fill="currentColor" />
                     <span className="text-gray-100 mb-2 item-description">
                     {reviewCount} {reviewCount === 1 ? '' : ''}

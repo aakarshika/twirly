@@ -74,10 +74,6 @@ const ComparisonGrid = ({ isHeaderVisible, title, height, currentId, itemReviews
     </div>
 
 
-      {/* Items Grid */}
-      {items.length === 0 ? (
-        <ComparisonGridSkeleton />
-      ) : (
         <div className="grid grid-cols-2" 
           style={{ 
             gap: gap
@@ -98,7 +94,7 @@ const ComparisonGrid = ({ isHeaderVisible, title, height, currentId, itemReviews
             />
           ))}
         </div>
-      )}
+      
       
       {/* Results Announcement when voted */}
       {userVoted && winner && (
