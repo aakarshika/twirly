@@ -5,6 +5,7 @@ DROP VIEW IF EXISTS user_activity_trends;
 DROP VIEW IF EXISTS product_weekly_activity;
 DROP VIEW IF EXISTS product_recent_activities;
 DROP VIEW IF EXISTS product_activity_trends;
+DROP VIEW IF EXISTS comparison_set_metrics;
 
 -- Create view for weekly user activity
 CREATE OR REPLACE VIEW user_weekly_activity AS
@@ -261,6 +262,70 @@ SELECT
   END AS weekly_change_percentage
 FROM items i
 LEFT JOIN weekly_stats ws ON i.id = ws.item_id;
+
+-- Create view for comparison set metrics
+CREATE OR REPLACE VIEW comparison_set_metrics AS
+WITH comparison_items AS (
+  SELECT 
+    cs.id AS set_id,
+    cs.name AS set_name,
+    csi.item_id,
+    i.name AS item_name
+  FROM comparison_sets cs
+  JOIN comparison_set_items csi ON cs.id = csi.set_id
+  JOIN items i ON csi.item_id = i.id
+),
+item_metrics AS (
+  SELECT 
+    ci.set_id,
+    ci.set_name,
+    ci.item_id,
+    ci.item_name,
+    rm.metric_name,
+    ROUND(AVG(rm.value), 2) AS avg_rating,
+    COUNT(DISTINCT r.id) AS total_reviews
+  FROM comparison_items ci
+  LEFT JOIN reviews r ON ci.item_id = r.item_id
+  LEFT JOIN review_metrics rm ON r.id = rm.review_id
+  GROUP BY ci.set_id, ci.set_name, ci.item_id, ci.item_name, rm.metric_name
+),
+aggregated_metrics AS (
+  SELECT 
+    set_id,
+    set_name,
+    item_id,
+    item_name,
+    jsonb_object_agg(
+      metric_name,
+      jsonb_build_object(
+        'avg_rating', avg_rating,
+        'total_reviews', total_reviews
+      )
+    ) AS metrics
+  FROM item_metrics
+  GROUP BY set_id, set_name, item_id, item_name
+),
+final_aggregation AS (
+  SELECT 
+    set_id,
+    set_name,
+    jsonb_agg(
+      jsonb_build_object(
+        'id', item_id,
+        'name', item_name,
+        'average_metrics', COALESCE(metrics, '{}'::jsonb)
+      )
+    ) AS items,
+    array_agg(item_id) AS item_ids
+  FROM aggregated_metrics
+  GROUP BY set_id, set_name
+)
+SELECT 
+  set_id,
+  set_name,
+  items,
+  item_ids
+FROM final_aggregation;
 
 -- -- Create index on the view for better performance
 -- CREATE INDEX IF NOT EXISTS idx_user_weekly_activity_user_id ON user_weekly_activity(user_id);

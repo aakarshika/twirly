@@ -57,57 +57,36 @@ const ProductDetails = () => {
         // Fetch initial reviews
         await fetchReviews(1);
 
-        // Fetch comparison sets where this item appears
+        // Fetch comparison sets where this item appears with detailed metrics
         const { data: setsData, error: setsError } = await supabase
-          .from('comparison_set_items')
-          .select(`
-            comparison_sets (*)
-          `)
-          .eq('item_id', itemId);
+          .from('comparison_set_metrics')
+          .select('*')
+          .filter('item_ids', 'cs', `{${itemId}}`);
 
         if (setsError) throw setsError;
 
-        // Check if setsData is null or empty
-        if (!setsData || setsData.length === 0) {
-          setComparisonSets([]);
-        } else {
-          const comparisonPromises = setsData.map(async (set) => {
-            // Get total votes for the comparison set
-            const { data: totalVotesData, error: totalVotesError } = await supabase
-              .from('votes')
-              .select('*', { count: 'exact' })
-              .eq('set_id', set.comparison_sets.id);
+        // Transform the data for the UI
+        const transformedSets = setsData.map(set => {
+          // Get votes for this specific item in the comparison
+          const itemVotes = set.items.find(item => item.id === itemId)?.votes || 0;
+          const totalVotes = set.items.reduce((sum, item) => sum + (item.votes || 0), 0);
+          
+          // Get comment count for the comparison
+          const commentCount = set.items.reduce((sum, item) => sum + (item.comments || 0), 0);
 
-            if (totalVotesError) throw totalVotesError;
+          return {
+            comparison_sets: {
+              id: set.set_id,
+              name: set.set_name,
+              items: set.items
+            },
+            itemVotes,
+            totalVotes,
+            commentCount
+          };
+        });
 
-            // Get votes for this specific item in the comparison
-            const { data: itemVotesData, error: itemVotesError } = await supabase
-              .from('votes')
-              .select('*', { count: 'exact' })
-              .eq('set_id', set.comparison_sets.id)
-              .eq('user_id', user.id);
-
-            if (itemVotesError) throw itemVotesError;
-
-            // Get comment count for the comparison
-            const { data: commentsData, error: commentsError } = await supabase
-              .from('comparison_set_comments')
-              .select('*', { count: 'exact' })
-              .eq('set_id', set.comparison_sets.id);
-
-            if (commentsError) throw commentsError;
-
-            return { 
-              ...set, 
-              totalVotes: totalVotesData.length,
-              itemVotes: itemVotesData.length,
-              commentCount: commentsData.length
-            };
-          });
-
-          const comparisonSetsWithData = await Promise.all(comparisonPromises);
-          setComparisonSets(comparisonSetsWithData);
-        }
+        setComparisonSets(transformedSets);
 
         // Fetch recent activities for the product
         const { data: recentActivities, error: recentError } = await supabase

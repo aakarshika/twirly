@@ -3,8 +3,6 @@ import { useTheme } from '../../contexts/ThemeContext';
 import OverviewTab from './tabs/OverviewTab';
 import ReviewsTab from './tabs/ReviewsTab';
 import AppearancesTab from './tabs/AppearancesTab';
-import MetricsTab from './tabs/MetricsTab';
-import ActivityTab from './tabs/ActivityTab';
 
 const ProductTabs = ({ 
   activeTab, 

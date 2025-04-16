@@ -8,6 +8,13 @@ const AppearancesTab = ({ comparisonSets, item }) => {
   const { currentTheme } = useTheme();
   const navigate = useNavigate();
 
+  // Transform comparison sets data for the radar chart
+  const transformedComparisonSets = comparisonSets?.map(set => ({
+    id: set.comparison_sets.id,
+    name: set.comparison_sets.name,
+    items: set.comparison_sets.items || [] // Assuming items array contains all items in the comparison
+  }));
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -60,7 +67,10 @@ const AppearancesTab = ({ comparisonSets, item }) => {
         </div>
         <div className="p-6 rounded-lg" style={{ backgroundColor: currentTheme.colors.cardBackground }}>
           <h3 className="text-xl font-bold mb-4" style={{ color: currentTheme.colors.text }}>Performance Analysis</h3>
-          <RadarChart item={item} />
+          <RadarChart 
+            item={item} 
+            comparisonSets={transformedComparisonSets}
+          />
         </div>
       </div>
     </div>
