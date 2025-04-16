@@ -3,7 +3,7 @@
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useComparison } from '../../contexts/ComparisonContext';
-import ItemCard from './ItemCard';
+import ComparisonItemCard from './ComparisonItemCard/ComparisonItemCard';
 import Button from '../common/Button';
 import ReviewForm from './ReviewForm';
 
@@ -15,14 +15,16 @@ import ComparisonGridSkeleton from '../skeletons/ComparisonGridSkeleton';
 /**
  * Grid component to display comparison items
  */
-const ComparisonGrid = ({ title, height, currentId }) => {
+const ComparisonGrid = ({ isHeaderVisible, title, height, currentId }) => {
   
   const { 
     items, 
     userVoted, 
     loadNextSet,
     completedSets,
-    currentSetIndex
+    currentSetIndex,
+    handleVote,
+    votedItemId
   } = useComparison();
   // console.log("height in grid",height);
 
@@ -52,7 +54,10 @@ const ComparisonGrid = ({ title, height, currentId }) => {
   const numericHeight = parseFloat(heightValue); 
   
   // Divide by 4
-  const gap = (numericHeight / 30) + 'vh'; 
+  const gap = (numericHeight / 50) + 'vh'; 
+
+  // Calculate total votes for percentage calculation
+  const totalVotes = items.reduce((sum, item) => sum + (item.votes || 0), 0);
 
   return (
     <div className="space-y-4  m-4" style={{  color: currentTheme.colors.primary }}>
@@ -78,7 +83,16 @@ const ComparisonGrid = ({ title, height, currentId }) => {
           }}
         >
           {items.map((item, i) => (
-            <ItemCard key={item.id} item={item} i={i} height={height} />
+            <ComparisonItemCard
+              key={item.id}
+              item={item}
+              index={i}
+              height={height}
+              userVoted={userVoted}
+              handleVote={handleVote}
+              votedItemId={votedItemId}
+              totalVotes={totalVotes}
+            />
           ))}
         </div>
       )}

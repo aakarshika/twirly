@@ -15,6 +15,7 @@ export const ComparisonProvider = ({ children }) => {
   const [items, setItems] = useState(initialItemSets[0]);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
   const [currentSetId, setCurrentSetId] = useState(null);
+  const [currentComparisonName, setCurrentComparisonName] = useState(null);
   const [userVoted, setUserVoted] = useState(false);
   const [completedSets, setCompletedSets] = useState([]);
   const [votedItemId, setVotedItemId] = useState(null);
@@ -358,7 +359,9 @@ export const ComparisonProvider = ({ children }) => {
         completedSets,
         currentSetIndex,
         currentSetId,
+        currentComparisonName,
         setCurrentSetId,
+        setCurrentComparisonName,
         votedItemId,
         setVotedItemId,
         

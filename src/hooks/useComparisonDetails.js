@@ -10,7 +10,8 @@ export const useComparisonDetails = (id) => {
     setItems, 
     setUserVoted, 
     setVotedItemId,
-    setCurrentSetId
+    setCurrentSetId, 
+    setCurrentComparisonName
   } = useComparison();
   
   const { user } = useAuth();
@@ -67,6 +68,7 @@ export const useComparisonDetails = (id) => {
         if (!data) throw new Error('Comparison not found');
 
         setCurrentSetId(data.id);
+        setCurrentComparisonName(data.name);
 
         // Check if user has voted in this set
         const hasVoted = await hasUserVoted(data.id, user);
@@ -157,7 +159,7 @@ export const useComparisonDetails = (id) => {
     if (id) {
       fetchComparisonDetails();
     }
-  }, [id, setItems, setUserVoted, setVotedItemId, setCurrentSetId]);
+  }, [id, setItems, setUserVoted, setVotedItemId, setCurrentSetId, setCurrentComparisonName]);
 
   return { loading, error };
 }; 
