@@ -52,9 +52,9 @@ const VotingAnimation = ({
       onMouseUp={(e) => e.preventDefault()}
       onMouseLeave={(e) => e.preventDefault()}
     >
-      <div className="voting-instruction">
+      {/* <div className="voting-instruction">
         Double tap to vote
-      </div>
+      </div> */}
       
       <div className="heart-container">
         {showSingleHeart && <div className="heart" style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%) rotate(45deg)' }} />}

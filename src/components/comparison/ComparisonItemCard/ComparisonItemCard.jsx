@@ -5,18 +5,19 @@ import VotingAnimation from './VotingAnimation/VotingAnimation';
 import VoteStats from './VoteStats/VoteStats';
 import ColorCoding from './ColorCoding/ColorCoding';
 import './ComparisonItemCard.css';
-import { ThumbsUp, X } from 'lucide-react';
+import { ThumbsUp, X, Star } from 'lucide-react';
 import { COMPARISON_COLOR_SET } from '../../../lib/constants';
 
-const ComparisonItemCard = ({ 
-  item, 
-  index, 
-  height, 
-  userVoted, 
+const ComparisonItemCard = ({
+  item,
+  index,
+  height,
+  userVoted,
   handleVote,
   handleRevertVote,
   votedItemId,
-  totalVotes 
+  totalVotes,
+  itemReviews
 }) => {
   const navigate = useNavigate();
   const { currentTheme } = useTheme();
@@ -44,26 +45,29 @@ const ComparisonItemCard = ({
 
   const isVotedItem = userVoted && votedItemId === item.id;
 
+  const itemReviewData = itemReviews[item.id] || { reviews: [], metrics: {} };
+  const reviewCount = itemReviewData.reviews.length;
+
   return (
-    <div 
+    <div
       className="comparison-item-card"
       style={{ height: newHeight }}
     >
-      <div 
+      <div
         className="card-container"
-        style={{ 
+        style={{
           backgroundColor: currentTheme.colors.card,
           borderColor: currentTheme.colors.border,
         }}
       >
-        <ColorCoding 
+        <ColorCoding
           color={COMPARISON_COLOR_SET[index]}
           isActive={isVotedItem}
         />
-        
+
         <div className="image-container">
           {isVotedItem && (
-            <button 
+            <button
               className="you-voted-badge"
               onClick={handleRevertClick}
               type="button"
@@ -79,7 +83,7 @@ const ComparisonItemCard = ({
           ) : (
             <VotingAnimation
               onStartVoting={startVoting}
-              onCancelVoting={() => {}}
+              onCancelVoting={() => { }}
             />
           )}
           <img
@@ -91,21 +95,26 @@ const ComparisonItemCard = ({
         </div>
 
         <div className="absolute bottom-0 left-0 right-0 p-4 content-overlay">
-          <h3 
+          <h3
             onClick={handleItemClick}
             className="item-name"
           >
             {item.name}
           </h3>
           <p className="item-description">{item.description}</p>
-          
+
           {userVoted ? (
-            <VoteStats 
-              votes={item.votes}
-              totalVotes={totalVotes}
-              color={COMPARISON_COLOR_SET[index]}
-              isVotedItem={isVotedItem}
-            />
+            <div className="flex items-center gap-2">
+              <VoteStats
+                votes={item.votes}
+                totalVotes={totalVotes}
+                color={COMPARISON_COLOR_SET[index]}
+                isVotedItem={isVotedItem}
+                reviewCount={reviewCount}
+                itemReviewData={itemReviewData}
+              />
+
+            </div>
           ) : (
             <span></span>
           )}

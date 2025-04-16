@@ -24,6 +24,7 @@ export const ComparisonProvider = ({ children }) => {
   // Review state
   const [activeReviewItem, setActiveReviewItem] = useState(null);
   const [activeDetailsItem, setActiveDetailsItem] = useState(null);
+  const [showCombinedReviewModal, setShowCombinedReviewModal] = useState(false);
   
   // Custom comparison state
   const [customMode, setCustomMode] = useState(false);
@@ -389,6 +390,66 @@ export const ComparisonProvider = ({ children }) => {
     }
   };
 
+  const refreshReviews = async () => {
+    if (!currentSetId || !user) return;
+    
+    try {
+      const { data: reviews, error: reviewsError } = await supabase
+        .from('reviews')
+        .select(`
+          id,
+          item_id,
+          user_id,
+          review_metrics!inner (
+            metric_name,
+            value,
+            set_id
+          )
+        `)
+        .eq('review_metrics.set_id', currentSetId);
+
+      if (reviewsError) throw reviewsError;
+
+      // Check if user has reviewed all items
+      const userReviews = reviews.filter(review => review.user_id === user.id);
+      const userReviewedItems = new Set(userReviews.map(review => review.item_id));
+      const allItemsReviewed = items.every(item => userReviewedItems.has(item.id));
+      
+      // Update the reviews state
+      const reviewsByItem = reviews.reduce((acc, review) => {
+        if (!acc[review.item_id]) {
+          acc[review.item_id] = {
+            reviews: [],
+            metrics: {}
+          };
+        }
+        
+        review.review_metrics.forEach(metric => {
+          if (!acc[review.item_id].metrics[metric.metric_name]) {
+            acc[review.item_id].metrics[metric.metric_name] = {
+              total: 0,
+              count: 0,
+              average: 0
+            };
+          }
+          acc[review.item_id].metrics[metric.metric_name].total += metric.value;
+          acc[review.item_id].metrics[metric.metric_name].count += 1;
+          acc[review.item_id].metrics[metric.metric_name].average = 
+            acc[review.item_id].metrics[metric.metric_name].total / 
+            acc[review.item_id].metrics[metric.metric_name].count;
+        });
+
+        acc[review.item_id].reviews.push(review);
+        return acc;
+      }, {});
+
+      setItemReviews(reviewsByItem);
+      setHasReviewed(allItemsReviewed);
+    } catch (error) {
+      console.error('Error refreshing reviews:', error);
+    }
+  };
+
   return (
     <ComparisonContext.Provider
       value={{
@@ -433,7 +494,12 @@ export const ComparisonProvider = ({ children }) => {
         error,
         setError,
         addVote,
-        addComment
+        addComment,
+
+        // Show combined review modal
+        showCombinedReviewModal,
+        setShowCombinedReviewModal,
+        refreshReviews
       }}
     >
       {children}

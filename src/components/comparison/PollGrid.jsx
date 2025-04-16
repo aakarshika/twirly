@@ -4,7 +4,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useHeader } from '../../contexts/HeaderContext';
 import ComparisonGrid from './ComparisonGrid';
 
-const PollGrid = ({ title, items, onVote, votedItemId, userVoted, currentId }) => {
+const PollGrid = ({ title, items, onVote, votedItemId, userVoted, currentId, itemReviews }) => {
   const { currentTheme } = useTheme();
   const { isHeaderVisible } = useHeader();
   const { scrollY } = useScroll();
@@ -53,6 +53,7 @@ const PollGrid = ({ title, items, onVote, votedItemId, userVoted, currentId }) =
             onVote={onVote}
             votedItemId={votedItemId}
             userVoted={userVoted}
+            itemReviews={itemReviews}
           />
         </div>
       </div>

@@ -17,6 +17,14 @@
   color: white;
 }
 
+.highlighted-aspect {
+  background-color: rgb(198,198,198,0.4);
+  color: #cecece; /* Dark teal text */
+  font-weight: bold; /* Bold text */
+  border-radius: 5px; /* Rounded corners */
+  padding: 4px; /* Padding around the text */
+  font-size: 0.5rem;
+}
 .vote-label {
   font-size: 0.65rem;
   color: rgba(255, 255, 255, 0.8);
@@ -65,4 +73,10 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
 } 

@@ -1,7 +1,8 @@
 import React from 'react';
 import './VoteStats.css';
+import { MessagesSquare, Star } from 'lucide-react';
 
-const VoteStats = ({ votes, totalVotes, color, isVotedItem }) => {
+const VoteStats = ({ votes, totalVotes, color, isVotedItem, reviewCount, itemReviewData }) => {
   const percentage = totalVotes > 0 ? (votes / totalVotes) * 100 : 0;
   
   return (
@@ -19,11 +20,35 @@ const VoteStats = ({ votes, totalVotes, color, isVotedItem }) => {
           className="progress-bar"
           style={{
             width: `${percentage}%`,
-            backgroundColor: color
+            backgroundColor: color,
+            minWidth: '10px'
           }}
         />
       </div>
       
+      {reviewCount > 0 && (
+                <div className="flex-row mt-2">
+                  <span className="flex items-center gap-1 highlighted-aspect ">
+                    <MessagesSquare size={14} fill="currentColor" />
+                    <span className="text-gray-100 mb-2 item-description">
+                    {reviewCount} {reviewCount === 1 ? '' : ''}
+                  </span>
+                  </span>
+                  <div className="flex-row">
+                    {Object.entries(itemReviewData.metrics).map(([metricName, metricData]) => (
+                      metricData.average > 2 && (
+                        <span key={metricName} className="flex items-center gap-1 highlighted-aspect item-description">
+                          <span className="text-gray-300">{metricName}</span>
+                          <span className="flex items-center gap-1 text-amber-400">
+                            {metricData.average.toFixed(1)}
+                            <Star size={12} fill="currentColor" />
+                          </span>
+                        </span>
+                      )
+                    ))}
+                  </div>
+                </div>
+              )}
       
     </div>
   );

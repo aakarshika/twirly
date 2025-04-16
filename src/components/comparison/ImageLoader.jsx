@@ -44,7 +44,7 @@ const ImageLoader = ({ item, index, isPressing, progress, userVoted, itemId, han
 
             {userVoted && (
               <div className="text-sm text-white-400">
-                {item.votes} {item.votes === 1 ? 'vote' : 'votes'}
+                {item.votes} {item.votes === 1 ? 'vote' : 'votesss'}
               </div>
             )}
           </div>
@@ -56,7 +56,7 @@ const ImageLoader = ({ item, index, isPressing, progress, userVoted, itemId, han
             <p className="text-gray-200 text-sm line-clamp-2">{item.description}</p>
             {userVoted && (
               <div className="text-sm text-white-400">
-                {item.votes} {item.votes === 1 ? 'vote' : 'votes'}
+                {item.votes} {item.votes === 1 ? 'vote' : 'votesss'}
               </div>
             )}
           </div>

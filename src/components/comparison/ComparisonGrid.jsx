@@ -15,7 +15,7 @@ import ComparisonGridSkeleton from '../skeletons/ComparisonGridSkeleton';
 /**
  * Grid component to display comparison items
  */
-const ComparisonGrid = ({ isHeaderVisible, title, height, currentId }) => {
+const ComparisonGrid = ({ isHeaderVisible, title, height, currentId, itemReviews }) => {
   
   const { 
     items, 
@@ -94,6 +94,7 @@ const ComparisonGrid = ({ isHeaderVisible, title, height, currentId }) => {
               handleRevertVote={handleRevertVote}
               votedItemId={votedItemId}
               totalVotes={totalVotes}
+              itemReviews={itemReviews}
             />
           ))}
         </div>

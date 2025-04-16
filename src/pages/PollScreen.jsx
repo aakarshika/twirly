@@ -7,10 +7,12 @@ import PollGrid from '../components/comparison/PollGrid';
 import BarChart from '../components/results/visualizations/BarChart';
 import ComparisonSetCommentsSection from '../components/comparison/ComparisonSetCommentsSection';
 import SetReviewModal from '../components/comparison/SetReviewModal';
+import SetCombinedReviewModal from '../components/comparison/SetCombinedReviewModal';
 import { useComparisonDetails } from '../hooks/useComparisonDetails';
 import Button from '../components/common/Button';
 import { MessageSquare, Star } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 const PollScreen = () => {
   const { id } = useParams();
@@ -23,8 +25,10 @@ const PollScreen = () => {
     currentComparisonName,
     handleVote,
     setActiveReviewItem,
-    activeReviewItem
+    activeReviewItem,
+    setShowCombinedReviewModal,
   } = useComparison();
+  const { user } = useAuth();
   const { currentTheme } = useTheme();
   const { isHeaderVisible } = useHeader();
   const { loading, error } = useComparisonDetails(id);
@@ -34,27 +38,105 @@ const PollScreen = () => {
   const [popupPosition, setPopupPosition] = useState(null);
   const [itemReviews, setItemReviews] = useState({});
   const [loadingReviews, setLoadingReviews] = useState(true);
+  const [hasReviewed, setHasReviewed] = useState(false);
+
+  const [metrics, setMetrics] = useState({});
+  const [comparisonMetrics, setComparisonMetrics] = useState([]);
+  const [existingReviewIds, setExistingReviewIds] = useState({});
+
+  const fetchSetMetrics = async () => {
+    if (!currentSetId || !user) return;
+    
+    try {
+      // Fetch comparison aspects
+      const { data: comparisonSetAspects, error } = await supabase
+        .from('comparison_set_aspects')
+        .select('*')
+        .eq('set_id', currentSetId);
+
+      if (error) throw error;
+
+      // Fetch existing reviews for this user
+      const { data: existingReviews, error: reviewsError } = await supabase
+        .from('reviews')
+        .select(`
+          id,
+          item_id,
+          review_metrics!inner (
+            metric_name,
+            value,
+            set_id
+          )
+        `)
+        .eq('user_id', user.id)
+        .eq('review_metrics.set_id', currentSetId);
+
+      if (reviewsError) throw reviewsError;
+
+      // Initialize metrics with default values for each item and metric
+      const defaultMetrics = {};
+      const reviewIds = {};
+
+      items.forEach(item => {
+        defaultMetrics[item.id] = {};
+        comparisonSetAspects.forEach(aspect => {
+          defaultMetrics[item.id][aspect.metric_name] = 0;
+        });
+
+        // Check if this item has an existing review
+        const existingReview = existingReviews?.find(review => review.item_id === item.id);
+        if (existingReview) {
+          reviewIds[item.id] = existingReview.id;
+          // Set the metrics from the existing review
+          existingReview.review_metrics.forEach(metric => {
+            defaultMetrics[item.id][metric.metric_name] = metric.value;
+          });
+        }
+      });
+
+      setMetrics(defaultMetrics);
+      setComparisonMetrics(comparisonSetAspects);
+      setExistingReviewIds(reviewIds);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoadingReviews(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchSetMetrics();
+  }, [currentSetId, items, user]);
 
   useEffect(() => {
     const fetchReviews = async () => {
-      if (!currentSetId) return;
+      if (!currentSetId || !user) return;
       
       try {
         setLoadingReviews(true);
+        // Fetch all reviews for the set
         const { data: reviews, error: reviewsError } = await supabase
           .from('reviews')
           .select(`
             id,
             item_id,
-            text,
-            review_metrics (
+            user_id,
+            review_metrics!inner (
               metric_name,
-              value
+              value,
+              set_id
             )
           `)
-          .eq('set_id', currentSetId);
+          .eq('review_metrics.set_id', currentSetId);
 
         if (reviewsError) throw reviewsError;
+
+        // Check if user has reviewed all items
+        const userReviews = reviews.filter(review => review.user_id === user.id);
+        const userReviewedItems = new Set(userReviews.map(review => review.item_id));
+        const allItemsReviewed = items.every(item => userReviewedItems.has(item.id));
+        
+        setHasReviewed(allItemsReviewed);
 
         // Group reviews by item_id
         const reviewsByItem = reviews.reduce((acc, review) => {
@@ -94,7 +176,7 @@ const PollScreen = () => {
     };
 
     fetchReviews();
-  }, [currentSetId]);
+  }, [currentSetId, items, user]);
 
   const handleItemClick = (item, position) => {
     if (userVoted) {
@@ -164,6 +246,7 @@ const PollScreen = () => {
         currentId={id}
         userVoted={userVoted}
         onItemClick={handleItemClick}
+        itemReviews={itemReviews}
       />
 
       <div 
@@ -176,10 +259,26 @@ const PollScreen = () => {
           willChange: 'transform'
         }}
       >
-        <div className="w-full max-w-4xl mx-auto">
+        
+        {userVoted && <div className="w-full max-w-4xl mx-auto">
+
+          {/* Review Section */}
           <div className="w-full p-4">
             <div className="bg-gray-800 rounded-lg" style={{ backgroundColor: currentTheme.colors.background }}>
-              <BarChart items={items} />
+              <div className="flex justify-between items-center">
+                <Button
+                  onClick={() => setShowCombinedReviewModal(true)}
+                  className="flex items-center gap-2"
+                >
+                  <Star size={16} />
+                  {hasReviewed ? 'Edit Combined Review' : 'Add Combined Review'}
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="w-full p-4">
+            <div className="bg-gray-800 rounded-lg" style={{ backgroundColor: currentTheme.colors.background }}>
+              <BarChart items={items} metrics={metrics} comparisonMetrics={comparisonMetrics} />
             </div>
           </div>
 
@@ -187,68 +286,18 @@ const PollScreen = () => {
             <ComparisonSetCommentsSection setId={currentSetId} items={items} />
           </div>
 
-          {/* Review Section */}
-          <div className="w-full p-4">
-            <div className="bg-gray-800 rounded-lg p-6" style={{ backgroundColor: currentTheme.colors.background }}>
-              <h3 className="text-xl font-semibold text-white mb-4">Review Items</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {items.map((item) => {
-                  const itemReviewData = itemReviews[item.id] || { reviews: [], metrics: {} };
-                  const reviewCount = itemReviewData.reviews.length;
-                  
-                  return (
-                    <div 
-                      key={item.id} 
-                      className="flex flex-col p-4 bg-gray-900 rounded-lg"
-                    >
-                      <div className="flex items-center justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <img 
-                            src={item.image_url || '/api/placeholder/300/300'} 
-                            alt={item.name}
-                            className="w-12 h-12 rounded-full object-cover"
-                          />
-                          <span className="text-white">{item.name}</span>
-                        </div>
-                        <Button
-                          onClick={() => handleReviewClick(item)}
-                          className="flex items-center gap-2"
-                        >
-                          <MessageSquare size={16} />
-                          Add Review
-                        </Button>
-                      </div>
-                      
-                      {reviewCount > 0 && (
-                        <div className="mt-2">
-                          <div className="text-sm text-gray-400 mb-2">
-                            {reviewCount} {reviewCount === 1 ? 'review' : 'reviews'}
-                          </div>
-                          <div className="space-y-2">
-                            {Object.entries(itemReviewData.metrics).map(([metricName, metricData]) => (
-                              <div key={metricName} className="flex items-center justify-between">
-                                <span className="text-gray-300 text-sm">{metricName}</span>
-                                <div className="flex items-center gap-1">
-                                  <span className="text-amber-400 text-sm">
-                                    {metricData.average.toFixed(1)}
-                                  </span>
-                                  <Star size={14} className="text-amber-400" fill="currentColor" />
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </div>
+        </div>}
       </div>
 
       {activeReviewItem && <SetReviewModal />}
+      <SetCombinedReviewModal 
+        comparisonMetrics={comparisonMetrics}
+        existingReviewIds={existingReviewIds}
+        loading={loading}
+        metrics={metrics}
+        setMetrics={setMetrics}
+        fetchSetMetrics={fetchSetMetrics}
+      />
     </div>
   );
 };

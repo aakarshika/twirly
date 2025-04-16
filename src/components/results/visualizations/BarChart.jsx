@@ -2,18 +2,14 @@ import React from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { COMPARISON_COLOR_SET } from '../../../lib/constants';
 
-const BarChart = ({ items }) => {
+const BarChart = ({ items, metrics, comparisonMetrics }) => {
   const { currentTheme } = useTheme();
   
   // Get all unique metrics across items
   const allMetrics = new Set();
-  items.forEach(item => {
-    if (item.averageMetrics) {
-      Object.keys(item.averageMetrics).forEach(metric => allMetrics.add(metric));
-    }
-  });
+  comparisonMetrics.forEach(metric => allMetrics.add(metric.metric_name));
   
-  const metrics = Array.from(allMetrics);
+  const metricsArray = Array.from(allMetrics);
 
   return (
     <div className="w-full">
@@ -39,7 +35,27 @@ const BarChart = ({ items }) => {
           className="divide-y"
           style={{ borderColor: currentTheme.colors.border }}
         >
-          {metrics.map(metric => (
+          <div className="flex items-center gap-2 p-4">
+            <div className="w-24 min-w-[6rem]">
+              <span 
+                className="text-xs font-medium truncate block"
+                style={{ color: currentTheme.colors.textSecondary }}
+              >
+                Item Names
+              </span>
+            </div>
+            {items.map(item => (
+              <div key={item.id} className="flex-1 min-w-[2rem]">
+                <span 
+                  className="text-xs font-medium block"
+                  style={{ color: currentTheme.colors.textSecondary }}
+                >
+                  {item.name}
+                </span>
+              </div>
+            ))}
+          </div>
+          {metricsArray.map(metric => (
             <div 
               key={metric} 
               className="p-2"
@@ -56,8 +72,7 @@ const BarChart = ({ items }) => {
                 </div>
                 <div className="flex-1 flex gap-1">
                   {items.map((item, i) => {
-                    if (!item.averageMetrics) return null;
-                    const value = ((item.averageMetrics[metric]?.average-3)*5/2) || 0;
+                    const value = metrics[item.id]?.[metric] || 0;
                     const percentage = (value / 5) * 100;
                     
                     return (
