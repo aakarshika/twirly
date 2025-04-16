@@ -34,7 +34,7 @@ const ReviewCard = ({ review, isExpanded, onExpand }) => {
               ))}
             </div>
             <span className="font-medium" style={{ color: currentTheme.colors.text }}>
-              {review.user?.username || 'Anonymous'}
+              {review.user?.username || 'Reviewer'}
             </span>
           </div>
           <p className="text-sm text-gray-500">

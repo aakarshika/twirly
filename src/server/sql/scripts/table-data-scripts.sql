@@ -34,32 +34,6 @@ INSERT INTO items (id, name, description, image_url, category_id, price, compari
 (23, 'NoteMax', 'Large screen', 'https://images.pexels.com/photos/1092644/pexels-photo-1092644.jpeg', 3, 849.99, 'in-company'),
 (24, 'ZoomX', 'Zoom master', 'https://images.pexels.com/photos/1092644/pexels-photo-1092644.jpeg', 3, 799.99, 'in-company');
 
--- Initialize item metrics
-INSERT INTO item_metrics (id, item_id, views, comparisons, reviews, rating) VALUES
-(1, 1, 0, 0, 0, 0),
-(2, 2, 0, 0, 0, 0),
-(3, 3, 0, 0, 0, 0),
-(4, 4, 0, 0, 0, 0),
-(5, 5, 0, 0, 0, 0),
-(6, 6, 0, 0, 0, 0),
-(7, 7, 0, 0, 0, 0),
-(8, 8, 0, 0, 0, 0),
-(9, 9, 0, 0, 0, 0),
-(10, 10, 0, 0, 0, 0),
-(11, 11, 0, 0, 0, 0),
-(12, 12, 0, 0, 0, 0),
-(13, 13, 0, 0, 0, 0),
-(14, 14, 0, 0, 0, 0),
-(15, 15, 0, 0, 0, 0),
-(16, 16, 0, 0, 0, 0),
-(17, 17, 0, 0, 0, 0),
-(18, 18, 0, 0, 0, 0),
-(19, 19, 0, 0, 0, 0),
-(20, 20, 0, 0, 0, 0),
-(21, 21, 0, 0, 0, 0),
-(22, 22, 0, 0, 0, 0),
-(23, 23, 0, 0, 0, 0),
-(24, 24, 0, 0, 0, 0);
 
 -- Comparison sets (3 per category)
 INSERT INTO comparison_sets (id, name, category_id, user_id) VALUES

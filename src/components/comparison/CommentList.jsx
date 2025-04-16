@@ -12,7 +12,7 @@ const CommentList = ({ comment, handleLikeComment, handleReply, commentVisibilit
 
   const users = ["John_Doe", "Jane_Doe", "John_Smith", "Jane_Smith"];
   return (
-    <div className="space-y-1">
+    <div className="">
       <Comment
         comment={comment}
         onLike={handleLikeComment}

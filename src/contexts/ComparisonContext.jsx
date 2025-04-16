@@ -2,7 +2,7 @@
 
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { initialItemSets, getDefaultMetrics } from '../data/itemSets';
-import { castVote, getVoteCount, hasUserVoted } from '../services/voting';
+import { castVote, getVoteCount, hasUserVoted, revertVote } from '../services/voting';
 import { submitReview, likeReview, getItemReviews } from '../services/reviews';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
@@ -111,6 +111,50 @@ export const ComparisonProvider = ({ children }) => {
     }
   };
 
+  // Handle vote reversion
+  const handleRevertVote = async () => {
+    console.log('Starting vote reversion process...');
+    console.log('Current state:', { currentSetId, userVoted, votedItemId });
+    
+    if (!currentSetId) {
+      console.error('No current set ID available');
+      return;
+    }
+
+    try {
+      console.log('Attempting to revert vote in database...');
+      // Revert the vote in the database
+      const success = await revertVote(currentSetId, user);
+      console.log('Revert vote result:', success);
+      
+      if (!success) {
+        console.log('No vote found to revert');
+        return;
+      }
+
+      console.log('Updating local state...');
+      // Update the local state
+      setUserVoted(false);
+      setVotedItemId(null);
+
+      console.log('Refreshing vote counts...');
+      // Refresh vote counts for all items
+      const updatedItems = await Promise.all(items.map(async item => {
+        const voteCount = await getVoteCount(currentSetId, item.id);
+        console.log(`Vote count for item ${item.id}:`, voteCount);
+        return {
+          ...item,
+          votes: voteCount || 0
+        };
+      }));
+      setItems(updatedItems);
+
+      console.log('Vote reversion completed successfully');
+    } catch (error) {
+      console.error('Error in handleRevertVote:', error);
+    }
+  };
+
   // Move to the next set of items
   const loadNextSet = () => {
     // Store the results from the current set
@@ -183,7 +227,7 @@ export const ComparisonProvider = ({ children }) => {
                     metrics: reviewData.metrics,
                     timestamp: review.created_at,
                     likes: review.likes,
-                    username: user?.user_metadata?.username || 'Anonymous'
+                    username: user?.user_metadata?.username || 'Someone'
                   }
                 ],
                 metrics: updatedMetrics
@@ -354,6 +398,7 @@ export const ComparisonProvider = ({ children }) => {
         userVoted,
         setUserVoted,
         handleVote,
+        handleRevertVote,
         loadNextSet,
         resetToDefault,
         completedSets,

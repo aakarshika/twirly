@@ -5,16 +5,16 @@ import VotingAnimation from './VotingAnimation/VotingAnimation';
 import VoteStats from './VoteStats/VoteStats';
 import ColorCoding from './ColorCoding/ColorCoding';
 import './ComparisonItemCard.css';
-import { ThumbsUp } from 'lucide-react';
+import { ThumbsUp, X } from 'lucide-react';
 import { COMPARISON_COLOR_SET } from '../../../lib/constants';
-
 
 const ComparisonItemCard = ({ 
   item, 
   index, 
   height, 
   userVoted, 
-  handleVote, 
+  handleVote,
+  handleRevertVote,
   votedItemId,
   totalVotes 
 }) => {
@@ -33,6 +33,11 @@ const ComparisonItemCard = ({
     handleVote(item.id);
   };
 
+  const handleRevertClick = (e) => {
+    e.stopPropagation();
+    handleRevertVote();
+  };
+
   // Calculate height
   const numericHeight = parseFloat(height);
   const newHeight = (numericHeight / 3) + 'vh';
@@ -44,7 +49,6 @@ const ComparisonItemCard = ({
       className="comparison-item-card"
       style={{ height: newHeight }}
     >
-        
       <div 
         className="card-container"
         style={{ 
@@ -58,12 +62,17 @@ const ComparisonItemCard = ({
         />
         
         <div className="image-container">
-
-            {isVotedItem && (
-                <div className="absolute text-white text-sm top-0 right-0 bg-black/50 rounded-full px-2 py-1 you-voted-badge">
-                <ThumbsUp style={{ width: '12px', height: '12px', marginRight: '4px' }} /> Your vote
-                </div>
-            )}
+          {isVotedItem && (
+            <button 
+              className="you-voted-badge"
+              onClick={handleRevertClick}
+              type="button"
+            >
+              <ThumbsUp style={{ width: '12px', height: '12px' }} />
+              <span>Your vote</span>
+              <X style={{ width: '12px', height: '12px' }} />
+            </button>
+          )}
 
           {userVoted ? (
             <span></span>

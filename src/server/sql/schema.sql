@@ -5,7 +5,6 @@
 -- Drop existing tables if they exist (for clean setup)
 DROP TABLE IF EXISTS categories CASCADE;
 DROP TABLE IF EXISTS items CASCADE;
-DROP TABLE IF EXISTS item_metrics CASCADE;
 DROP TABLE IF EXISTS comparison_sets CASCADE;
 DROP TABLE IF EXISTS comparison_set_items CASCADE;
 DROP TABLE IF EXISTS votes CASCADE;
@@ -47,20 +46,7 @@ CREATE TABLE items (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Item metrics table
--- Tracks performance metrics for items (views, comparisons, reviews)
--- Primary key: id
--- Foreign key: item_id references items(id)
-CREATE TABLE item_metrics (
-    id SERIAL PRIMARY KEY,
-    item_id INTEGER REFERENCES items(id) ON DELETE CASCADE,
-    views INTEGER DEFAULT 0,
-    comparisons INTEGER DEFAULT 0,
-    reviews INTEGER DEFAULT 0,
-    rating DECIMAL(3,2) DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
+
 
 -- Comparison sets table
 -- Groups of items being compared in a poll
@@ -120,6 +106,7 @@ CREATE TABLE review_metrics (
     review_id INTEGER REFERENCES reviews(id) ON DELETE CASCADE,
     metric_name VARCHAR(50) NOT NULL,
     value DECIMAL(3,2) NOT NULL,
+    set_id INTEGER REFERENCES comparison_sets(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -240,6 +227,7 @@ CREATE INDEX idx_user_preferences_user_id ON user_preferences(user_id);
 CREATE INDEX idx_user_notification_settings_user_id ON user_notification_settings(user_id);
 CREATE INDEX idx_user_category_preferences_user_id ON user_category_preferences(user_id);
 CREATE INDEX idx_user_category_preferences_category_id ON user_category_preferences(category_id);
+CREATE INDEX idx_review_metrics_set_id ON review_metrics(set_id);
 
 -- Enable Row Level Security
 ALTER TABLE items ENABLE ROW LEVEL SECURITY;

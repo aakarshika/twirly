@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { Plus, Trash2, ExternalLink, MessageSquare, ThumbsUp } from 'lucide-react';
+import { Plus, Trash2, ExternalLink, MessageSquare, ThumbsUp, Settings } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -78,7 +78,7 @@ const ComparisonItem = ({ item, user, getVoteCount, getCommentCount }) => {
   );
 };
 
-const ComparisonCard = ({ comparison, onDelete }) => {
+const ComparisonCard = ({ comparison, onDelete, onEditMetrics }) => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -118,16 +118,28 @@ const ComparisonCard = ({ comparison, onDelete }) => {
           >
             {comparison?.name || 'Unnamed Comparison'}
           </h3>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(comparison.id);
-            }}
-            className="p-1 rounded-full hover:bg-gray-100"
-            style={{ color: currentTheme.colors.textSecondary }}
-          >
-            <Trash2 size={16} />
-          </button>
+          <div className="flex space-x-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEditMetrics(comparison);
+              }}
+              className="p-2 rounded-full hover:bg-gray-700"
+              title="Edit Metrics"
+            >
+              <Settings size={18} style={{ color: currentTheme.colors.textSecondary }} />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(comparison.id);
+              }}
+              className="p-2 rounded-full hover:bg-gray-700"
+              title="Delete Comparison"
+            >
+              <Trash2 size={18} style={{ color: currentTheme.colors.error }} />
+            </button>
+          </div>
         </div>
 
         <div className="space-y-3">
@@ -158,6 +170,20 @@ const ComparisonCard = ({ comparison, onDelete }) => {
             </div>
           ))}
         </div>
+      </div>
+
+      <div className="px-4 py-3" style={{ backgroundColor: currentTheme.colors.cardBackgroundAlt }}>
+        <button
+          onClick={() => navigate(`/comparison/${comparison.id}`)}
+          className="flex items-center justify-center w-full py-2 rounded-lg font-medium"
+          style={{ 
+            backgroundColor: currentTheme.colors.primary,
+            color: currentTheme.colors.buttonText
+          }}
+        >
+          <ExternalLink size={16} className="mr-2" />
+          View Comparison
+        </button>
       </div>
     </div>
   );

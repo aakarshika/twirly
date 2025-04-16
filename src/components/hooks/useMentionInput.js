@@ -37,6 +37,24 @@ const useMentionInput = (users, products) => {
     }
   };
 
+  const appendText = (textToAppend) => {
+    if (!contentEditableRef.current) return;
+
+    const currentText = contentEditableRef.current.innerText;
+    const newText = currentText + (currentText ? ' ' : '') + textToAppend;
+    contentEditableRef.current.innerText = newText;
+    
+    // Move cursor to end
+    const range = document.createRange();
+    const selection = window.getSelection();
+    range.selectNodeContents(contentEditableRef.current);
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    
+    handleInputChange(newText);
+  };
+
   const insertMention = (mention) => {
     const selection = window.getSelection();
     const range = selection.getRangeAt(0);
@@ -45,9 +63,7 @@ const useMentionInput = (users, products) => {
 
     if (triggerPosition !== -1) {
       const newText = text.substring(0, triggerPosition) + mentionText + text.substring(triggerPosition + 1);
-      contentEditableRef.current.innerText = newText+' ';
-      console.log('newText', newText);
-      console.log('contentEditableRef.current.innerText', contentEditableRef.current.innerText);
+      contentEditableRef.current.innerText = newText + ' ';
 
       const newCursorPos = triggerPosition + mentionText.length;
       const newRange = document.createRange();
@@ -76,6 +92,7 @@ const useMentionInput = (users, products) => {
     contentEditableRef,
     handleInputChange,
     insertMention,
+    appendText
   };
 };
 

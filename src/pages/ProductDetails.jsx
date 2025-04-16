@@ -40,7 +40,6 @@ const ProductDetails = () => {
           .select(`
             *,
             categories (*),
-            item_metrics (*),
             item_metric_averages (*)
           `)
           .eq('id', itemId)
@@ -57,34 +56,48 @@ const ProductDetails = () => {
         // Fetch initial reviews
         await fetchReviews(1);
 
-        // Fetch comparison sets where this item appears with detailed metrics
+        // Fetch comparison sets where this item appears
         const { data: setsData, error: setsError } = await supabase
-          .from('comparison_set_metrics')
-          .select('*')
-          .filter('item_ids', 'cs', `{${itemId}}`);
+          .from('comparison_set_items')
+          .select(`
+            set_id,
+            comparison_sets (
+              id,
+              name
+            )
+          `)
+          .eq('item_id', itemId);
 
         if (setsError) throw setsError;
 
-        // Transform the data for the UI
-        const transformedSets = setsData.map(set => {
+        // Fetch metrics for each set
+        const transformedSets = await Promise.all(setsData.map(async (set) => {
+          const { data: metricsData, error: metricsError } = await supabase
+            .from('comparison_set_metrics')
+            .select('*')
+            .eq('set_id', set.set_id)
+            .single();
+
+          if (metricsError) throw metricsError;
+
           // Get votes for this specific item in the comparison
-          const itemVotes = set.items.find(item => item.id === itemId)?.votes || 0;
-          const totalVotes = set.items.reduce((sum, item) => sum + (item.votes || 0), 0);
+          const itemVotes = metricsData.items.find(item => item.id === itemId)?.votes || 0;
+          const totalVotes = metricsData.items.reduce((sum, item) => sum + (item.votes || 0), 0);
           
           // Get comment count for the comparison
-          const commentCount = set.items.reduce((sum, item) => sum + (item.comments || 0), 0);
+          const commentCount = metricsData.items.reduce((sum, item) => sum + (item.comments || 0), 0);
 
           return {
             comparison_sets: {
-              id: set.set_id,
-              name: set.set_name,
-              items: set.items
+              id: metricsData.set_id,
+              name: metricsData.set_name,
+              items: metricsData.items
             },
             itemVotes,
             totalVotes,
             commentCount
           };
-        });
+        }));
 
         setComparisonSets(transformedSets);
 

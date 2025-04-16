@@ -149,3 +149,61 @@ export const getUserVotes = async (userId) => {
     throw error;
   }
 };
+
+/**
+ * Revert a user's vote in a comparison set
+ * @param {number} setId - The ID of the comparison set
+ * @param {Object} user - The authenticated user object
+ * @returns {Promise<boolean>} Whether the vote was successfully reverted
+ */
+export const revertVote = async (setId, user) => {
+  console.log('revertVote called with:', { setId, userId: user?.id });
+  
+  if (!user) {
+    console.error('User must be logged in to revert a vote');
+    throw new Error('User must be logged in to revert a vote');
+  }
+
+  try {
+    console.log('Checking for existing vote...');
+    const { data: existingVote, error: voteError } = await supabase
+      .from('votes')
+      .select('*')
+      .eq('set_id', setId)
+      .eq('user_id', user.id)
+      .single();
+
+    console.log('Existing vote check result:', { existingVote, voteError });
+
+    if (voteError) {
+      if (voteError.code === 'PGRST116') {
+        console.log('No vote found - this is expected');
+        return false;
+      }
+      console.error('Error checking for existing vote:', voteError);
+      throw voteError;
+    }
+
+    if (existingVote) {
+      console.log('Found existing vote, attempting to delete...');
+      // Delete the vote
+      const { error: deleteError } = await supabase
+        .from('votes')
+        .delete()
+        .eq('id', existingVote.id);
+
+      if (deleteError) {
+        console.error('Error deleting vote:', deleteError);
+        throw deleteError;
+      }
+      console.log('Vote successfully deleted');
+      return true;
+    }
+
+    console.log('No vote found to delete');
+    return false;
+  } catch (error) {
+    console.error('Error in revertVote:', error);
+    throw error;
+  }
+};

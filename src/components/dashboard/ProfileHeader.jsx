@@ -30,7 +30,7 @@ const ProfileHeader = ({ userData }) => {
             className="text-2xl font-bold"
             style={{ color: currentTheme.colors.text }}
           >
-            {userData?.username || 'Anonymous'}
+            {userData?.username }
           </h1>
           <p
             className="text-sm"

@@ -24,6 +24,7 @@ const ComparisonGrid = ({ isHeaderVisible, title, height, currentId }) => {
     completedSets,
     currentSetIndex,
     handleVote,
+    handleRevertVote,
     votedItemId
   } = useComparison();
   // console.log("height in grid",height);
@@ -90,6 +91,7 @@ const ComparisonGrid = ({ isHeaderVisible, title, height, currentId }) => {
               height={height}
               userVoted={userVoted}
               handleVote={handleVote}
+              handleRevertVote={handleRevertVote}
               votedItemId={votedItemId}
               totalVotes={totalVotes}
             />

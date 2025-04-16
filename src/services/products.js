@@ -15,12 +15,6 @@ export const getUserProducts = async (userId) => {
       .from('items')
       .select(`
         *,
-        item_metrics (
-          views,
-          comparisons,
-          reviews,
-          rating
-        ),
         categories (
           name
         )

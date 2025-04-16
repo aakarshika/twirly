@@ -51,13 +51,7 @@ export const useComparisonDetails = (id) => {
                 id,
                 name,
                 description,
-                image_url,
-                item_metrics(
-                  views,
-                  comparisons,
-                  reviews,
-                  rating
-                )
+                image_url
               )
             )
           `)
@@ -128,7 +122,7 @@ export const useComparisonDetails = (id) => {
                 text: review.text,
                 likes: review.likes,
                 timestamp: review.created_at,
-                username: review.username || 'Anonymous'
+                username: review.username || ''
               })),
               averageMetrics: averageMetrics || defaultMetrics
             };

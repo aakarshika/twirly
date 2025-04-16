@@ -184,7 +184,7 @@ export const getItemReviews = async (itemId, page = 1, limit = 3) => {
     // Transform reviews to include username
     const reviewsWithUsername = reviews.map(review => ({
       ...review,
-      username: userProfileMap[review.user_id]?.username || 'Anonymous'
+      username: userProfileMap[review.user_id]?.username || ''
     }));
 
     return {

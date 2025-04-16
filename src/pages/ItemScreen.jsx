@@ -28,7 +28,6 @@ const ItemScreen = () => {
           .select(`
             *,
             categories (*),
-            item_metrics (*),
             reviews (*),
             comparison_set_items (
               *,

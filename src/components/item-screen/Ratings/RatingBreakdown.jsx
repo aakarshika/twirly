@@ -76,7 +76,7 @@ const RatingBreakdown = ({ reviews }) => {
                   ))}
                 </div>
                 <span className="text-sm font-medium" style={{ color: currentTheme.colors.text }}>
-                  {review.user?.username || 'Anonymous'}
+                  {review.user?.username || '???'}
                 </span>
               </div>
               <p className="text-sm" style={{ color: currentTheme.colors.text }}>
