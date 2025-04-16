@@ -58,47 +58,51 @@ const ProductDetails = () => {
 
         // Fetch comparison sets where this item appears
         const { data: setsData, error: setsError } = await supabase
-          .from('comparison_set_items')
+          .from('comparison_sets')
           .select(`
-            set_id,
-            comparison_sets (
-              id,
-              name
-            )
+        *,
+        comparison_set_items!inner(*
+        ),
+        votes(*),
+        comments:comparison_set_comments(*)
           `)
-          .eq('item_id', itemId);
+          .eq('comparison_set_items.item_id', itemId);
 
         if (setsError) throw setsError;
-
+        
+        const totalVotes = setsData.reduce((sum, set) => sum + (set.votes?.length || 0), 0);
         // Fetch metrics for each set
         const transformedSets = await Promise.all(setsData.map(async (set) => {
-          const { data: metricsData, error: metricsError } = await supabase
-            .from('comparison_set_metrics')
+          // First, get all reviews for this item
+          const { data: setReviews, error: reviewsError } = await supabase
+            .from('reviews')
+            .select(`
+              *,
+              review_metrics!inner (*)
+            `)
+            .eq('review_metrics.set_id', set.id);
+
+          if (reviewsError) throw reviewsError;
+
+
+          // Get comment count from comparison_set_aspects
+          const { data: aspectsData, error: aspectsError } = await supabase
+            .from('comparison_set_aspects')
             .select('*')
-            .eq('set_id', set.set_id)
-            .single();
+            .eq('set_id', set.id)
+            .select();
 
-          if (metricsError) throw metricsError;
-
-          // Get votes for this specific item in the comparison
-          const itemVotes = metricsData.items.find(item => item.id === itemId)?.votes || 0;
-          const totalVotes = metricsData.items.reduce((sum, item) => sum + (item.votes || 0), 0);
-          
-          // Get comment count for the comparison
-          const commentCount = metricsData.items.reduce((sum, item) => sum + (item.comments || 0), 0);
+          if (aspectsError) throw aspectsError;
 
           return {
-            comparison_sets: {
-              id: metricsData.set_id,
-              name: metricsData.set_name,
-              items: metricsData.items
-            },
-            itemVotes,
             totalVotes,
-            commentCount
+            ...set,
+            reviews: setReviews,
+            aspects: aspectsData
           };
         }));
 
+        console.log(transformedSets);
         setComparisonSets(transformedSets);
 
         // Fetch recent activities for the product
@@ -132,19 +136,6 @@ const ProductDetails = () => {
         if (activityError) throw activityError;
         setActivityData(activityData || []);
 
-        // Fetch metrics for the specific item
-        const { data: metricsData, error: metricsError } = await supabase
-          .from('item_metrics')
-          .select('*')
-          .eq('item_id', itemId)
-          .select();
-
-        if (metricsError) throw metricsError;
-        setCategoryData(metricsData ? [
-          { name: 'Views', value: metricsData.views || 0 },
-          { name: 'Comparisons', value: metricsData.comparisons || 0 },
-          { name: 'Reviews', value: metricsData.reviews || 0 }
-        ] : []);
 
         setLoading(false);
       } catch (err) {

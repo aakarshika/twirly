@@ -40,10 +40,6 @@ SELECT
     i.user_id,
     u.email AS user_email,
     i.created_at,
-    im.views,
-    im.comparisons,
-    im.reviews,
-    im.rating,
     c.name AS category_name,
     COUNT(DISTINCT v.id) AS total_votes,
     COUNT(DISTINCT r.id) AS total_reviews,
@@ -51,7 +47,6 @@ SELECT
 FROM 
     items i
 LEFT JOIN auth.users u ON i.user_id = u.id
-LEFT JOIN item_metrics im ON i.id = im.item_id
 LEFT JOIN categories c ON i.category_id = c.id
 LEFT JOIN votes v ON i.id = v.item_id
 LEFT JOIN reviews r ON i.id = r.item_id

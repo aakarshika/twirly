@@ -38,13 +38,7 @@ const Trending = () => {
               id,
               name,
               description,
-              image_url,
-              item_metrics(
-                views,
-                comparisons,
-                reviews,
-                rating
-              )
+              image_url
             )
           )
         `)
@@ -79,8 +73,7 @@ const Trending = () => {
             image: item.image_url,
             category: comparison.categories?.name || 'Uncategorized',
             votes: 0,
-            reviews: [],
-            metrics: item.item_metrics
+            reviews: []
           }))
         };
       });

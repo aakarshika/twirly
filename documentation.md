@@ -49,54 +49,177 @@ const heightTransform = useTransform(
 ## Database Schema
 
 ### Core Tables
-1. **Users**
-   - Stores user information (username, email, password)
-   - Tracks user activity through relationships with other tables
 
-3. **Categories**
-   - Organizes items into categories
-   - Used for filtering and organizing comparisons
+1. **Categories**
+   - Primary key: id
+   - Fields: name (unique), description, created_at
+   - Purpose: Organizes items into categories for filtering and organization
 
-4. **Items**
-   - Core entity representing products/services
-   - Contains basic information (name, description, image, price)
-   - Links to categories and companies
+2. **Items**
+   - Primary key: id
+   - Fields: name, description, image_url, category_id, price, comparison_type, created_at, updated_at
+   - Foreign keys: category_id references categories(id)
+   - Purpose: Core entity representing products/services that can be compared
 
-### Comparison System
-1. **Comparison Sets**
-   - Groups of items being compared
-   - Created by users
-   - Associated with categories
+3. **Comparison Sets**
+   - Primary key: id
+   - Fields: name, category_id, user_id, created_at
+   - Foreign keys: category_id references categories(id), user_id references auth.users(id)
+   - Purpose: Groups of items being compared in a poll
 
-2. **Comparison Set Items**
-   - Links items to comparison sets
-   - Many-to-many relationship between items and sets
+4. **Comparison Set Items**
+   - Primary key: id
+   - Fields: set_id, item_id, created_at
+   - Foreign keys: set_id references comparison_sets(id), item_id references items(id)
+   - Purpose: Links items to comparison sets (many-to-many relationship)
 
-3. **Votes**
-   - Records user votes on items within comparison sets
-   - Tracks voting history
+5. **Votes**
+   - Primary key: id
+   - Fields: user_id, item_id, set_id, created_at
+   - Foreign keys: user_id references auth.users(id), item_id references items(id), set_id references comparison_sets(id)
+   - Purpose: Records user votes on items within comparison sets
 
-### Review System
-1. **Reviews**
-   - User-written reviews for items
-   - Contains review text and like count
+6. **Reviews**
+   - Primary key: id
+   - Fields: user_id, item_id, text, likes, created_at, updated_at
+   - Foreign keys: user_id references auth.users(id), item_id references items(id)
+   - Purpose: Stores user-written reviews for items
 
-2. **Review Metrics**
-   - Detailed rating metrics for reviews
-   - Allows for multi-dimensional rating system
+7. **Review Metrics**
+   - Primary key: id
+   - Fields: review_id, metric_name, value, created_at
+   - Foreign key: review_id references reviews(id)
+   - Purpose: Stores detailed rating metrics for reviews
 
-3. **Review Likes**
-   - Tracks which users have liked which reviews
-   - Prevents duplicate likes
+8. **Review Likes**
+   - Primary key: id
+   - Fields: user_id, review_id, created_at
+   - Foreign keys: user_id references auth.users(id), review_id references reviews(id)
+   - Unique constraint: (user_id, review_id)
+   - Purpose: Tracks which users have liked which reviews
 
-### Analytics
-1. **Item Metrics**
-   - Tracks views, comparisons, and reviews for items
-   - Maintains overall rating
+9. **Comparison Set Comments**
+   - Primary key: id
+   - Fields: set_id, user_id, text, likes_count, dislikes_count, replies_count, is_edited, created_at, updated_at
+   - Foreign keys: set_id references comparison_sets(id), user_id references auth.users(id)
+   - Purpose: Stores comments made on comparison sets
 
-2. **Views**
-   - `item_metric_averages`: Aggregates review metrics
-   - `user_activity_summary`: Tracks user engagement
+10. **Comment Replies**
+    - Primary key: id
+    - Fields: parent_comment_id, user_id, text, likes_count, dislikes_count, is_edited, created_at, updated_at
+    - Foreign keys: parent_comment_id references comparison_set_comments(id), user_id references auth.users(id)
+    - Purpose: Stores replies to top-level comments
+
+11. **Comment Reactions**
+    - Primary key: id
+    - Fields: comment_id, reply_id, user_id, reaction_type, created_at
+    - Foreign keys: comment_id references comparison_set_comments(id), reply_id references comparison_set_comment_replies(id), user_id references auth.users(id)
+    - Constraints: reaction_type IN ('like', 'dislike')
+    - Purpose: Tracks user reactions on comments and replies
+
+12. **User Preferences**
+    - Primary key: id
+    - Fields: user_id, username, display_name, bio, profile_image_url, theme_preference, language_preference, is_onboarding_complete, created_at, updated_at
+    - Foreign key: user_id references auth.users(id)
+    - Unique constraint: (user_id)
+    - Purpose: Stores core user preferences and settings
+
+13. **User Notification Settings**
+    - Primary key: id
+    - Fields: user_id, email_notifications, push_notifications, marketing_emails, vote_notifications, comment_notifications, created_at, updated_at
+    - Foreign key: user_id references auth.users(id)
+    - Unique constraint: (user_id)
+    - Purpose: Stores user notification preferences
+
+14. **User Category Preferences**
+    - Primary key: id
+    - Fields: user_id, category_id, is_favorite, created_at
+    - Foreign keys: user_id references auth.users(id), category_id references categories(id)
+    - Unique constraint: (user_id, category_id)
+    - Purpose: Stores user's preferred categories
+
+### Views
+
+1. **item_metric_averages**
+   - Purpose: Aggregates review metrics by item and metric type
+   - Fields: item_id, metric_name, avg_rating, total_reviews
+   - Provides average ratings and total review counts
+
+2. **user_activity_summary**
+   - Purpose: Provides comprehensive summary of user engagement
+   - Fields: user_id, email, total_votes, total_reviews, total_products, total_comparisons, total_likes_received
+   - Tracks user activity across all features
+
+3. **product_performance_metrics**
+   - Purpose: Provides comprehensive performance data for products
+   - Fields: product_id, product_name, user_id, user_email, created_at, category_name, total_votes, total_reviews, total_comparisons
+   - Includes basic product information and engagement metrics
+
+### Performance Indexes
+
+1. **Items Indexes**
+   - idx_items_category_id
+   - idx_items_user_id
+   - idx_items_created_at
+
+2. **Votes Indexes**
+   - idx_votes_user_id
+   - idx_votes_item_id
+   - idx_votes_set_id
+
+3. **Reviews Indexes**
+   - idx_reviews_item_id
+   - idx_reviews_user_id
+   - idx_review_metrics_review_id
+   - idx_review_likes_review_id
+
+4. **Comments Indexes**
+   - idx_comments_set_id
+   - idx_comments_user_id
+   - idx_replies_parent_id
+   - idx_replies_user_id
+   - idx_reactions_comment_id
+   - idx_reactions_reply_id
+   - idx_reactions_user_id
+
+5. **User Preferences Indexes**
+   - idx_user_preferences_user_id
+   - idx_user_notification_settings_user_id
+   - idx_user_category_preferences_user_id
+   - idx_user_category_preferences_category_id
+
+### Row Level Security (RLS)
+
+All tables have RLS enabled with appropriate policies:
+
+1. **Items Policies**
+   - Anyone can view items
+   - Authenticated users can create items
+
+2. **Votes Policies**
+   - Anyone can view votes
+   - Authenticated users can create and update their own votes
+
+3. **Reviews Policies**
+   - Anyone can view reviews
+   - Authenticated users can create and update their own reviews
+
+4. **Review Likes Policies**
+   - Anyone can view review likes
+   - Authenticated users can create and delete their own review likes
+
+5. **Comparison Sets Policies**
+   - Anyone can view comparison sets
+   - Authenticated users can create and update their own comparison sets
+
+6. **Comments Policies**
+   - Anyone can view comments
+   - Authenticated users can create and update their own comments
+
+7. **User Preferences Policies**
+   - Users can view, update, and insert their own preferences
+   - Users can manage their own notification settings
+   - Users can manage their own category preferences
 
 ## UI Component Tree
 
@@ -332,4 +455,73 @@ App
 ## Deployment
 - Environment variables managed through `.env` files
 - Supabase configuration in `SUPABASE_SETUP.md`
-- Deployment instructions in `DEPLOYMENT.md` 
+- Deployment instructions in `DEPLOYMENT.md`
+
+### Activity Views
+
+1. **User Activity Views**
+   - **user_weekly_activity**
+     - Purpose: Tracks user activity on a weekly basis
+     - Fields: date, day_name, user_id, email, activity_count, votes_count, reviews_count, comparisons_count
+     - Shows daily breakdown of user activities (votes, reviews, comparisons)
+
+   - **user_recent_activities**
+     - Purpose: Shows most recent user activities
+     - Fields: user_id, email, created_at, activity_type, item_id, description, hours_ago
+     - Displays last 10 activities across all types
+
+   - **user_activity_trends**
+     - Purpose: Analyzes user activity trends
+     - Fields: user_id, email, weekly_activity, current_week_activity, previous_week_activity, weekly_change_percentage
+     - Compares current week vs previous week activity
+
+2. **Product Activity Views**
+   - **product_weekly_activity**
+     - Purpose: Tracks product activity on a weekly basis
+     - Fields: date, day_name, item_id, item_name, activity_count, votes_count, reviews_count, comparisons_count
+     - Shows daily breakdown of product engagement
+
+   - **product_recent_activities**
+     - Purpose: Shows most recent product activities
+     - Fields: item_id, item_name, created_at, activity_type, user_id, user_email, description, hours_ago
+     - Displays last 10 activities for each product
+
+   - **product_activity_trends**
+     - Purpose: Analyzes product activity trends
+     - Fields: item_id, item_name, weekly_activity, current_week_activity, previous_week_activity, weekly_change_percentage
+     - Compares current week vs previous week product engagement
+
+3. **Comparison Set Metrics**
+   - **comparison_set_metrics**
+     - Purpose: Provides detailed metrics for comparison sets
+     - Fields: set_id, set_name, total_votes, total_comments, item_metrics
+     - Aggregates voting and engagement statistics
+
+### Storage Policies
+
+1. **Profile Pictures Bucket**
+   - Bucket Name: 'profile-pics'
+   - Public Access: true
+   - Policies:
+     - **Public Access**
+       - Allows anyone to view profile pictures
+       - Applies to: SELECT operations
+     
+     - **Users can upload their own profile pictures**
+       - Allows authenticated users to upload to their own folder
+       - Applies to: INSERT operations
+       - Folder structure: `{user_id}/filename`
+     
+     - **Users can update their own profile pictures**
+       - Allows users to modify their own profile pictures
+       - Applies to: UPDATE operations
+     
+     - **Users can delete their own profile pictures**
+       - Allows users to remove their own profile pictures
+       - Applies to: DELETE operations
+
+2. **Security Features**
+   - Row Level Security (RLS) enabled on storage.objects
+   - Folder-based access control using user IDs
+   - Authenticated-only operations for upload/update/delete
+   - Public read access for profile pictures 

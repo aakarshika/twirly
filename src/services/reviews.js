@@ -39,27 +39,6 @@ export const submitReview = async (itemId, userId, text, metrics) => {
 
     if (metricsError) throw metricsError;
 
-    // Update item metrics
-    const { data: itemMetrics, error: itemMetricsError } = await supabase
-      .from('item_metrics')
-      .select('*')
-      .eq('item_id', itemId)
-      .single();
-
-    if (itemMetricsError) throw itemMetricsError;
-
-    const updatedReviews = (itemMetrics.reviews || 0) + 1;
-    const updatedRating = itemMetrics.rating 
-      ? ((itemMetrics.rating * (updatedReviews - 1)) + Object.values(metrics).reduce((a, b) => a + b, 0) / Object.keys(metrics).length) / updatedReviews
-      : Object.values(metrics).reduce((a, b) => a + b, 0) / Object.keys(metrics).length;
-
-    const { error: updateError } = await supabase
-      .from('item_metrics')
-      .update({
-        reviews: updatedReviews,
-        rating: updatedRating
-      })
-      .eq('item_id', itemId);
 
     if (updateError) throw updateError;
 

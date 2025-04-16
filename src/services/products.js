@@ -108,19 +108,6 @@ export const createProduct = async (productData, userId) => {
 
     if (error) throw error;
 
-    // Create initial metrics for the product
-    await supabase
-      .from('item_metrics')
-      .insert([
-        {
-          item_id: data.id,
-          views: 0,
-          comparisons: 0,
-          reviews: 0,
-          rating: 0
-        }
-      ]);
-
     return data;
   } catch (error) {
     console.error('Error creating product:', error);
