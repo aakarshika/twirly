@@ -155,7 +155,7 @@ const ProductDetails = () => {
         .select(`
           *,
           profiles (username),
-          review_metrics (*),
+          review_metrics (*, comparison_sets(*)),
           review_likes (*)
         `, { count: 'exact' })
         .eq('item_id', itemId)
@@ -205,6 +205,9 @@ const ProductDetails = () => {
           categoryData={categoryData}
           recentActivities={recentActivities}
           trends={trends}
+          hasMoreReviews={hasMoreReviews}
+          loadingReviews={loadingMoreReviews}
+          loadMoreReviews={loadMoreReviews}
         />
         {/* Review Form Modal */}
         {showReviewForm && (

@@ -13,7 +13,10 @@ const ProductTabs = ({
   activityData, 
   categoryData, 
   recentActivities, 
-  trends 
+  trends,
+  hasMoreReviews,
+  loadingReviews,
+  loadMoreReviews
 }) => {
   const { currentTheme } = useTheme();
 
@@ -51,6 +54,9 @@ const ProductTabs = ({
           <ReviewsTab 
             reviews={reviews}
             item={item}
+            hasMoreReviews={hasMoreReviews}
+            loadingReviews={loadingReviews}
+            loadMoreReviews={loadMoreReviews}
           />
         )}
 

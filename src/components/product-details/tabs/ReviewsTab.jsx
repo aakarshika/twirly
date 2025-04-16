@@ -3,7 +3,7 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { HeatMap } from '../../results/visualizations';
 import { ThumbsUp } from 'lucide-react';
 
-const ReviewsTab = ({ reviews, item }) => {
+const ReviewsTab = ({ reviews, item , hasMoreReviews, loadingReviews, loadMoreReviews}) => {
   const { currentTheme } = useTheme();
 
   return (
@@ -23,7 +23,13 @@ const ReviewsTab = ({ reviews, item }) => {
                     </p>
                   </div>
                 </div>
-                <p className="text-sm" style={{ color: currentTheme.colors.text }}>{review.text}</p>
+                <p className="text-sm " style={{ color: currentTheme.colors.text }}>{review.text}</p>
+                {review.review_metrics.length &&  <p>{review.review_metrics[0].comparison_sets?.name}</p>}
+                {review.review_metrics.map((metric) => (
+                  <div key={metric.id}>
+                    <p className="text-xs" style={{ color: currentTheme.colors.textSecondary }}>{metric.metric_name} - {metric.value}</p>
+                  </div>
+                ))}
                 <div className="flex items-center mt-2">
                   <ThumbsUp className="w-4 h-4 mr-1" style={{ color: currentTheme.colors.primary }} />
                   <span className="text-xs" style={{ color: currentTheme.colors.textSecondary }}>
@@ -37,11 +43,16 @@ const ReviewsTab = ({ reviews, item }) => {
                 No reviews to display
               </p>
             )}
+
+                  {hasMoreReviews && !loadingReviews && (
+                    <button
+                      onClick={loadMoreReviews}
+                      className="w-full text-sm text-gray-400 hover:text-white transition-colors"
+                    >
+                      Load More Reviews
+                    </button>
+                  )}
           </div>
-        </div>
-        <div className="p-6 rounded-lg" style={{ backgroundColor: currentTheme.colors.cardBackground }}>
-          <h3 className="text-xl font-bold mb-4" style={{ color: currentTheme.colors.text }}>Review Distribution</h3>
-          <HeatMap item={item} />
         </div>
       </div>
     </div>
