@@ -12,7 +12,7 @@ import HelpSettings from '../components/settings/HelpSettings';
 
 const Settings = () => {
   const { currentTheme } = useTheme();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('profile');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -72,7 +72,7 @@ const Settings = () => {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="fixed top-4 right-4 z-50 p-2 rounded-lg md:hidden"
+        className="fixed top-20 right-4 z-50 p-2 rounded-lg md:hidden"
         style={{ 
           backgroundColor: currentTheme.colors.background,
           border: `1px solid ${currentTheme.colors.border}`
@@ -192,6 +192,26 @@ const Settings = () => {
                   {renderTabLabel(tab)}
                 </button>
               ))}
+              <button
+                onClick={async () => {
+                  try {
+                    await signOut();
+                    navigate('/login');
+                  } catch (error) {
+                    console.error('Error logging out:', error);
+                  }
+                }}
+                className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 mt-4"
+                style={{ 
+                  color: currentTheme.colors.text,
+                  backgroundColor: 'transparent'
+                }}
+              >
+                <div className="flex items-center space-x-2">
+                  <span className="text-lg">🚪</span>
+                  <span>Logout</span>
+                </div>
+              </button>
             </nav>
           </div>
         </div>
