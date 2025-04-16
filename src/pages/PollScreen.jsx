@@ -15,17 +15,16 @@ const PollScreen = () => {
     items, 
     userVoted, 
     votedItemId, 
-    currentSetId 
+    currentSetId ,
+    currentComparisonName
   } = useComparison();
   const { currentTheme } = useTheme();
   const { isHeaderVisible } = useHeader();
-  const [comparisonName, setComparisonName] = useState('');
   const { loading, error } = useComparisonDetails(id);
-
+  console.log("items",items);
+  console.log("id",id);
+  console.log("currentComparisonName",currentComparisonName);
   useEffect(() => {
-    if (items.length > 0 && items[0].category) {
-      setComparisonName(items[0].category);
-    }
   }, [items]);
 
   if (loading) {
@@ -61,7 +60,7 @@ const PollScreen = () => {
   return (
     <div className="min-h-screen relative " style={{ backgroundColor: currentTheme.colors.background }}>
       <PollGrid 
-        title={comparisonName}
+        title={currentComparisonName}
         items={items}
         votedItemId={votedItemId}
         currentId={id}
@@ -80,7 +79,7 @@ const PollScreen = () => {
       >
         <div className="w-full max-w-4xl mx-auto">
           <div className="w-full p-4">
-            <div className="bg-gray-800 rounded-lg p-4" style={{ backgroundColor: currentTheme.colors.background }}>
+            <div className="bg-gray-800 rounded-lg" style={{ backgroundColor: currentTheme.colors.background }}>
               <BarChart items={items} />
             </div>
           </div>

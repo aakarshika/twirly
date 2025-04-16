@@ -75,3 +75,12 @@ CREATE INDEX idx_replies_user_id ON comparison_set_comment_replies(user_id);
 CREATE INDEX idx_reactions_comment_id ON comparison_set_comment_reactions(comment_id);
 CREATE INDEX idx_reactions_reply_id ON comparison_set_comment_reactions(reply_id);
 CREATE INDEX idx_reactions_user_id ON comparison_set_comment_reactions(user_id);
+
+-- RLS Policies for comment replies
+CREATE POLICY "Anyone can view comment replies"
+  ON comparison_set_comment_replies FOR SELECT
+  USING (true);
+
+CREATE POLICY "Authenticated users can create and update their own replies"
+  ON comparison_set_comment_replies FOR ALL
+  USING (auth.uid() = user_id);

@@ -45,6 +45,7 @@ const PollGrid = ({ title, items, onVote, votedItemId, userVoted, currentId }) =
       <div className="h-full flex flex-col max-w-4xl mx-auto">
         <div className="flex-1">
           <ComparisonGrid 
+            isHeaderVisible={isHeaderVisible}
             currentId={currentId}
             height={height} 
             title={title}
