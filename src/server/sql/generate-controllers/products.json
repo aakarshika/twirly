@@ -1,0 +1,1172 @@
+[
+    {
+        "name": "Smartphones",
+        "products": [
+            {
+                "pname": "ProTech X9000",
+                "price": "899.99",
+                "subsubcat": "Electronics/Smartphones",
+                "desc": "Flagship smartphone featuring a 6.7\" AMOLED display, 5G capability, 256GB storage, 12GB RAM, and a revolutionary 108MP camera system. Water and dust resistant with IP68 rating.",
+                "img": "https://example.com/images/protech-x9000.jpg"
+            },
+            {
+                "pname": "MobiWave Lite",
+                "price": "449.99",
+                "subsubcat": "Electronics/Smartphones",
+                "desc": "Mid-range smartphone with excellent battery life (5000mAh), 6.4\" LCD display, 128GB storage, 6GB RAM, and a versatile quad-camera setup.",
+                "img": "https://example.com/images/mobiwave-lite.jpg"
+            },
+            {
+                "pname": "BasicCall S3",
+                "price": "199.99",
+                "subsubcat": "Electronics/Smartphones",
+                "desc": "Budget-friendly smartphone with all essential features, 5.8\" display, 64GB storage (expandable), dual camera system, and reliable performance for everyday use.",
+                "img": "https://example.com/images/basiccall-s3.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Laptops",
+        "products": [
+            {
+                "pname": "UltraBook Pro X",
+                "price": "1499.99",
+                "subsubcat": "Electronics/Laptops",
+                "desc": "Premium ultralight laptop with 14\" 4K display, Intel Core i7, 1TB SSD, 16GB RAM, dedicated graphics card, and up to 12 hours of battery life. Perfect for professionals and content creators.",
+                "img": "https://example.com/images/ultrabook-pro-x.jpg"
+            },
+            {
+                "pname": "GameStation GT5",
+                "price": "1899.99",
+                "subsubcat": "Electronics/Laptops",
+                "desc": "High-performance gaming laptop featuring a 17.3\" 144Hz display, AMD Ryzen 9 processor, RTX 3080 graphics, 2TB SSD, 32GB RAM, and advanced cooling system.",
+                "img": "https://example.com/images/gamestation-gt5.jpg"
+            },
+            {
+                "pname": "WorkMate Essential",
+                "price": "699.99",
+                "subsubcat": "Electronics/Laptops",
+                "desc": "Reliable business laptop with 15.6\" display, Intel Core i5, 512GB SSD, 8GB RAM, extensive connectivity options, and enterprise-grade security features.",
+                "img": "https://example.com/images/workmate-essential.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Audio Equipment",
+        "products": [
+            {
+                "pname": "SoundSphere Pro Headphones",
+                "price": "299.99",
+                "subsubcat": "Electronics/Audio",
+                "desc": "Over-ear wireless headphones with active noise cancellation, 40-hour battery life, premium audio drivers, and comfortable memory foam ear cushions for extended listening sessions.",
+                "img": "https://example.com/images/soundsphere-pro.jpg"
+            },
+            {
+                "pname": "PulseBeats TWS Earbuds",
+                "price": "149.99",
+                "subsubcat": "Electronics/Audio",
+                "desc": "True wireless earbuds with touch controls, IPX7 waterproof rating, 8-hour playtime (32 hours with charging case), and crystal-clear sound quality for calls and music.",
+                "img": "https://example.com/images/pulsebeats-tws.jpg"
+            },
+            {
+                "pname": "AudioRoom Smart Speaker",
+                "price": "179.99",
+                "subsubcat": "Electronics/Audio",
+                "desc": "Voice-controlled smart speaker with premium 360° sound, multi-room synchronization capability, built-in virtual assistant, and elegant design that complements any home decor.",
+                "img": "https://example.com/images/audioroom-speaker.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Kitchen Appliances",
+        "products": [
+            {
+                "pname": "CuisinePro Mixer Elite",
+                "price": "349.99",
+                "subsubcat": "Home/Kitchen Appliances",
+                "desc": "Professional stand mixer with 5.5-quart stainless steel bowl, 10-speed settings, planetary mixing action, and includes dough hook, flat beater, and wire whip attachments.",
+                "img": "https://example.com/images/cuisinepro-mixer.jpg"
+            },
+            {
+                "pname": "BrewMaster Coffee System",
+                "price": "199.99",
+                "subsubcat": "Home/Kitchen Appliances",
+                "desc": "Programmable coffee maker with built-in grinder, thermal carafe, adjustable brewing strength, and convenient auto-start function for perfect coffee every morning.",
+                "img": "https://example.com/images/brewmaster-coffee.jpg"
+            },
+            {
+                "pname": "SmartChef Air Fryer",
+                "price": "129.99",
+                "subsubcat": "Home/Kitchen Appliances",
+                "desc": "Digital air fryer with 6-quart capacity, 8 preset cooking functions, non-stick basket, and 1700W of power for quick, crispy results using up to 85% less oil than traditional frying.",
+                "img": "https://example.com/images/smartchef-airfryer.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Furniture",
+        "products": [
+            {
+                "pname": "ComfortLux Recliner",
+                "price": "499.99",
+                "subsubcat": "Home/Furniture",
+                "desc": "Premium leather recliner with power adjustments, built-in USB charging ports, reinforced frame, and plush cushioning for ultimate relaxation.",
+                "img": "https://example.com/images/comfortlux-recliner.jpg"
+            },
+            {
+                "pname": "ModernSpace Sectional Sofa",
+                "price": "1299.99",
+                "subsubcat": "Home/Furniture",
+                "desc": "Contemporary L-shaped sectional sofa with chaise lounge, durable fabric upholstery, solid wood frame, and removable/washable cushion covers.",
+                "img": "https://example.com/images/modernspace-sectional.jpg"
+            },
+            {
+                "pname": "SleepWell Memory Foam Mattress",
+                "price": "799.99",
+                "subsubcat": "Home/Furniture",
+                "desc": "Queen-size memory foam mattress with cooling gel technology, multiple support layers, hypoallergenic cover, and 100-night trial period.",
+                "img": "https://example.com/images/sleepwell-mattress.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Home Decor",
+        "products": [
+            {
+                "pname": "LuminaGlow Smart Lamp Set",
+                "price": "89.99",
+                "subsubcat": "Home/Home Decor",
+                "desc": "Set of two smart table lamps with adjustable color temperature, app/voice control, scheduling options, and elegant design for bedrooms or living areas.",
+                "img": "https://example.com/images/luminaglow-lamps.jpg"
+            },
+            {
+                "pname": "NatureScape Area Rug",
+                "price": "249.99",
+                "subsubcat": "Home/Home Decor",
+                "desc": "8'x10' premium area rug with nature-inspired pattern, stain-resistant fibers, non-slip backing, and low pile height suitable for high-traffic areas.",
+                "img": "https://example.com/images/naturescape-rug.jpg"
+            },
+            {
+                "pname": "ArtisanWall Canvas Collection",
+                "price": "179.99",
+                "subsubcat": "Home/Home Decor",
+                "desc": "Set of three coordinated canvas art prints, each 16\"x24\", featuring abstract designs with metallic accents, ready to hang with included hardware.",
+                "img": "https://example.com/images/artisanwall-canvas.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Mens Clothing",
+        "products": [
+            {
+                "pname": "AlpineTerritory Down Jacket",
+                "price": "189.99",
+                "subsubcat": "Fashion/Mens Clothing",
+                "desc": "Premium down-filled jacket with water-resistant exterior, adjustable hood, multiple pockets, and thermal lining rated for temperatures down to -20°F.",
+                "img": "https://example.com/images/alpineterritory-jacket.jpg"
+            },
+            {
+                "pname": "UrbanEdge Slim Fit Jeans",
+                "price": "79.99",
+                "subsubcat": "Fashion/Mens Clothing",
+                "desc": "Modern slim fit jeans made from premium stretch denim, featuring a versatile dark wash, reinforced stitching, and classic 5-pocket design.",
+                "img": "https://example.com/images/urbanedge-jeans.jpg"
+            },
+            {
+                "pname": "ExecLine Business Shirt",
+                "price": "59.99",
+                "subsubcat": "Fashion/Mens Clothing",
+                "desc": "Non-iron dress shirt made from breathable cotton blend, featuring wrinkle-resistant technology, convertible cuffs, and tailored fit suitable for professional settings.",
+                "img": "https://example.com/images/execline-shirt.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Womens Clothing",
+        "products": [
+            {
+                "pname": "SeasonalChic Wrap Dress",
+                "price": "89.99",
+                "subsubcat": "Fashion/Womens Clothing",
+                "desc": "Versatile wrap dress in premium jersey fabric, featuring adjustable waist tie, flattering V-neckline, and three-quarter length sleeves suitable for multiple occasions.",
+                "img": "https://example.com/images/seasonalchic-dress.jpg"
+            },
+            {
+                "pname": "ActiveFlex Performance Leggings",
+                "price": "69.99",
+                "subsubcat": "Fashion/Womens Clothing",
+                "desc": "High-waisted compression leggings with four-way stretch fabric, moisture-wicking technology, hidden pocket, and squat-proof construction perfect for workouts or casual wear.",
+                "img": "https://example.com/images/activeflex-leggings.jpg"
+            },
+            {
+                "pname": "ElegantEssence Cashmere Sweater",
+                "price": "129.99",
+                "subsubcat": "Fashion/Womens Clothing",
+                "desc": "Pure cashmere pullover sweater with ribbed trim, relaxed fit, and exceptional softness available in six versatile colors.",
+                "img": "https://example.com/images/elegantessence-sweater.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Accessories",
+        "products": [
+            {
+                "pname": "TravelPro Weekender Bag",
+                "price": "159.99",
+                "subsubcat": "Fashion/Accessories",
+                "desc": "Durable weekender bag with genuine leather trim, water-resistant canvas exterior, dedicated laptop compartment, and convenient shoe storage section.",
+                "img": "https://example.com/images/travelpro-bag.jpg"
+            },
+            {
+                "pname": "PrecisionTime Automatic Watch",
+                "price": "329.99",
+                "subsubcat": "Fashion/Accessories",
+                "desc": "Self-winding mechanical watch with sapphire crystal, stainless steel case, genuine leather strap, luminous hands, and water resistance to 100 meters.",
+                "img": "https://example.com/images/precisiontime-watch.jpg"
+            },
+            {
+                "pname": "SilkRoad Luxury Scarf",
+                "price": "89.99",
+                "subsubcat": "Fashion/Accessories",
+                "desc": "Oversized pure silk scarf with hand-rolled edges, unique printed design, and versatile styling options for all seasons.",
+                "img": "https://example.com/images/silkroad-scarf.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Fitness Equipment",
+        "products": [
+            {
+                "pname": "PowerLift Home Gym System",
+                "price": "1499.99",
+                "subsubcat": "Sports/Fitness Equipment",
+                "desc": "Comprehensive home gym with weight stack, multiple workout stations, adjustable bench, and over 50 possible exercises in a space-efficient design.",
+                "img": "https://example.com/images/powerlift-gym.jpg"
+            },
+            {
+                "pname": "TrailRunner Pro Treadmill",
+                "price": "999.99",
+                "subsubcat": "Sports/Fitness Equipment",
+                "desc": "Commercial-grade folding treadmill with 3.5HP motor, cushioned deck, 15% incline capability, heart rate monitoring, and built-in workout programs.",
+                "img": "https://example.com/images/trailrunner-treadmill.jpg"
+            },
+            {
+                "pname": "FlexCycle Spinning Bike",
+                "price": "699.99",
+                "subsubcat": "Sports/Fitness Equipment",
+                "desc": "Indoor cycling bike with magnetic resistance system, LCD performance monitor, adjustable seat/handlebars, and smooth belt drive for quiet operation.",
+                "img": "https://example.com/images/flexcycle-bike.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Outdoor Gear",
+        "products": [
+            {
+                "pname": "ExpeditionPro Backpacking Tent",
+                "price": "299.99",
+                "subsubcat": "Sports/Outdoor Gear",
+                "desc": "Lightweight 3-season backpacking tent for two people, featuring waterproof rainfly, aluminum poles, reinforced floor, and excellent ventilation.",
+                "img": "https://example.com/images/expeditionpro-tent.jpg"
+            },
+            {
+                "pname": "TerrainMaster Hiking Boots",
+                "price": "149.99",
+                "subsubcat": "Sports/Outdoor Gear",
+                "desc": "Waterproof hiking boots with Vibram outsole, shock-absorbing midsole, protective toe cap, and breathable membrane to keep feet dry and comfortable on rough trails.",
+                "img": "https://example.com/images/terrainmaster-boots.jpg"
+            },
+            {
+                "pname": "WildStream Fishing Rod Combo",
+                "price": "119.99",
+                "subsubcat": "Sports/Outdoor Gear",
+                "desc": "Complete fishing set including carbon fiber rod, premium reel with smooth drag system, tackle box with essential lures, and convenient carrying case.",
+                "img": "https://example.com/images/wildstream-fishing.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Team Sports",
+        "products": [
+            {
+                "pname": "StrikeForce Soccer Ball",
+                "price": "49.99",
+                "subsubcat": "Sports/Team Sports",
+                "desc": "Official size and weight soccer ball with premium synthetic leather cover, butyl bladder for excellent air retention, and all-weather construction.",
+                "img": "https://example.com/images/strikeforce-soccer.jpg"
+            },
+            {
+                "pname": "CourtMaster Basketball Set",
+                "price": "199.99",
+                "subsubcat": "Sports/Team Sports",
+                "desc": "Adjustable basketball hoop system with 44\" backboard, all-weather net, adjustable height from 7.5' to 10', and weighted base for stability.",
+                "img": "https://example.com/images/courtmaster-basketball.jpg"
+            },
+            {
+                "pname": "TourSeries Golf Club Set",
+                "price": "499.99",
+                "subsubcat": "Sports/Team Sports",
+                "desc": "Complete set of golf clubs for intermediate players, including driver, fairway woods, hybrids, irons, wedges, putter, and premium stand bag.",
+                "img": "https://example.com/images/tourseries-golf.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Skincare",
+        "products": [
+            {
+                "pname": "PureGlow Facial Care Set",
+                "price": "89.99",
+                "subsubcat": "Beauty/Skincare",
+                "desc": "Complete facial care system including cleanser, toner, serum, moisturizer, and weekly treatment mask featuring natural ingredients and anti-aging properties.",
+                "img": "https://example.com/images/pureglow-set.jpg"
+            },
+            {
+                "pname": "HydraIntense Night Cream",
+                "price": "49.99",
+                "subsubcat": "Beauty/Skincare",
+                "desc": "Rich night cream with hyaluronic acid, peptides, and natural oils to deeply moisturize and repair skin while you sleep.",
+                "img": "https://example.com/images/hydraintense-cream.jpg"
+            },
+            {
+                "pname": "SunShield SPF 50 Lotion",
+                "price": "24.99",
+                "subsubcat": "Beauty/Skincare",
+                "desc": "Broad-spectrum SPF 50 sunscreen with antioxidants, lightweight non-greasy formula, and water resistance up to 80 minutes.",
+                "img": "https://example.com/images/sunshield-lotion.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Haircare",
+        "products": [
+            {
+                "pname": "VitalLocks Professional Hair Dryer",
+                "price": "129.99",
+                "subsubcat": "Beauty/Haircare",
+                "desc": "Salon-quality hair dryer with ionic technology, multiple heat/speed settings, concentrator and diffuser attachments, and ergonomic design.",
+                "img": "https://example.com/images/vitallocks-dryer.jpg"
+            },
+            {
+                "pname": "KeratinFusion Treatment Kit",
+                "price": "79.99",
+                "subsubcat": "Beauty/Haircare",
+                "desc": "At-home keratin smoothing treatment that reduces frizz for up to 30 days, includes pre-treatment shampoo, keratin formula, and aftercare conditioner.",
+                "img": "https://example.com/images/keratinfusion-kit.jpg"
+            },
+            {
+                "pname": "BotanicalBlend Shampoo & Conditioner",
+                "price": "34.99",
+                "subsubcat": "Beauty/Haircare",
+                "desc": "Premium natural hair care duo featuring botanical extracts, no sulfates or parabens, and gentle formula suitable for all hair types.",
+                "img": "https://example.com/images/botanicalblend-hair.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Makeup",
+        "products": [
+            {
+                "pname": "ColorSpectrum Eyeshadow Palette",
+                "price": "45.99",
+                "subsubcat": "Beauty/Makeup",
+                "desc": "Professional eyeshadow palette with 24 highly-pigmented shades in matte, shimmer, and metallic finishes, complete with dual-ended brush.",
+                "img": "https://example.com/images/colorspectrum-palette.jpg"
+            },
+            {
+                "pname": "FlawlessFace Foundation Collection",
+                "price": "39.99",
+                "subsubcat": "Beauty/Makeup",
+                "desc": "Long-wearing liquid foundation available in 40 inclusive shades, featuring buildable coverage, oil-control technology, and SPF 25 protection.",
+                "img": "https://example.com/images/flawlessface-foundation.jpg"
+            },
+            {
+                "pname": "LuxeLine Professional Makeup Brushes",
+                "price": "59.99",
+                "subsubcat": "Beauty/Makeup",
+                "desc": "Set of 12 professional-grade makeup brushes with synthetic bristles, ergonomic handles, and travel case for everyday application or special occasions.",
+                "img": "https://example.com/images/luxeline-brushes.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Board Games",
+        "products": [
+            {
+                "pname": "StrategyMasters Ultimate Edition",
+                "price": "69.99",
+                "subsubcat": "Toys/Board Games",
+                "desc": "Strategic board game for 2-6 players featuring modular board, 200+ game pieces, multiple victory paths, and expansive gameplay thats different each time.",
+                "img": "https://example.com/images/strategymasters-game.jpg"
+            },
+            {
+                "pname": "FamilyFun Party Game Collection",
+                "price": "34.99",
+                "subsubcat": "Toys/Board Games",
+                "desc": "Collection of 5 party games suitable for all ages, perfect for family gatherings, with easy setup and rules designed for quick learning.",
+                "img": "https://example.com/images/familyfun-games.jpg"
+            },
+            {
+                "pname": "BrainTeaser Puzzle Box",
+                "price": "29.99",
+                "subsubcat": "Toys/Board Games",
+                "desc": "Wooden puzzle box featuring 5 increasingly difficult mechanical puzzles and hidden compartments, ideal for puzzle enthusiasts and escape room fans.",
+                "img": "https://example.com/images/brainteaser-box.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Video Games",
+        "products": [
+            {
+                "pname": "EpicQuest: Legends Reborn",
+                "price": "59.99",
+                "subsubcat": "Toys/Video Games",
+                "desc": "Open-world RPG featuring 100+ hours of gameplay, immersive storyline, character customization, and next-gen graphics for the latest consoles.",
+                "img": "https://example.com/images/epicquest-game.jpg"
+            },
+            {
+                "pname": "RacingElite: Championship Edition",
+                "price": "49.99",
+                "subsubcat": "Toys/Video Games",
+                "desc": "High-octane racing simulator with 50+ licensed vehicles, realistic physics, dynamic weather, and online multiplayer competitions.",
+                "img": "https://example.com/images/racingelite-game.jpg"
+            },
+            {
+                "pname": "BuilderWorld: Unlimited Creation",
+                "price": "39.99",
+                "subsubcat": "Toys/Video Games",
+                "desc": "Sandbox creation game that allows players to build virtually anything, featuring multiplayer capability, extensive crafting system, and regular content updates.",
+                "img": "https://example.com/images/builderworld-game.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Educational Toys",
+        "products": [
+            {
+                "pname": "JuniorScientist Chemistry Lab",
+                "price": "49.99",
+                "subsubcat": "Toys/Educational",
+                "desc": "Interactive chemistry set for ages 10+ with 40 safe experiments, comprehensive guidebook, all necessary equipment, and educational content about scientific principles.",
+                "img": "https://example.com/images/juniorscientist-lab.jpg"
+            },
+            {
+                "pname": "RoboCoder Beginner Kit",
+                "price": "79.99",
+                "subsubcat": "Toys/Educational",
+                "desc": "Programmable robot kit for children 8+, teaching basic coding concepts through hands-on building and simple block-based programming interface.",
+                "img": "https://example.com/images/robocoder-kit.jpg"
+            },
+            {
+                "pname": "WorldExplorer Interactive Globe",
+                "price": "59.99",
+                "subsubcat": "Toys/Educational",
+                "desc": "Touch-activated smart globe with audio information about countries, landmarks, and cultures, featuring quiz modes and regular content updates via app connection.",
+                "img": "https://example.com/images/worldexplorer-globe.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Fiction Books",
+        "products": [
+            {
+                "pname": "\"The Shadow Chronicles: Complete Series\"",
+                "price": "89.99",
+                "subsubcat": "Books/Fiction",
+                "desc": "Boxed set containing all seven bestselling fantasy novels in the acclaimed Shadow Chronicles series, featuring custom illustrations and exclusive bonus content.",
+                "img": "https://example.com/images/shadow-chronicles.jpg"
+            },
+            {
+                "pname": "\"Whispers in the Night\"",
+                "price": "24.99",
+                "subsubcat": "Books/Fiction",
+                "desc": "Award-winning thriller novel by renowned author J.L. Morgan, featuring unexpected twists, compelling characters, and a mystery that keeps readers guessing until the final page.",
+                "img": "https://example.com/images/whispers-night.jpg"
+            },
+            {
+                "pname": "\"Endless Summer\" - Romance Collection",
+                "price": "39.99",
+                "subsubcat": "Books/Fiction",
+                "desc": "Collection of five contemporary romance novels set in picturesque beach locations, perfect for vacation reading or escaping into sun-soaked stories.",
+                "img": "https://example.com/images/endless-summer.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Non-Fiction Books",
+        "products": [
+            {
+                "pname": "\"Mindful Living: Daily Practices\"",
+                "price": "19.99",
+                "subsubcat": "Books/Non-Fiction",
+                "desc": "Practical guide to incorporating mindfulness into everyday life, featuring 30-day program, meditation techniques, and science-backed stress reduction methods.",
+                "img": "https://example.com/images/mindful-living.jpg"
+            },
+            {
+                "pname": "\"Kitchen Mastery: Professional Techniques\"",
+                "price": "34.99",
+                "subsubcat": "Books/Non-Fiction",
+                "desc": "Comprehensive cookbook featuring 200+ recipes, step-by-step photography of essential techniques, and professional tips from renowned chefs.",
+                "img": "https://example.com/images/kitchen-mastery.jpg"
+            },
+            {
+                "pname": "\"The Future of Technology: Innovation Horizons\"",
+                "price": "29.99",
+                "subsubcat": "Books/Non-Fiction",
+                "desc": "Insightful exploration of emerging technologies and their potential impact on society, business, and daily life over the coming decades.",
+                "img": "https://example.com/images/future-technology.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Movies & Music",
+        "products": [
+            {
+                "pname": "\"Cinematic Masterpieces: Directors Collection\"",
+                "price": "99.99",
+                "subsubcat": "Media/Movies",
+                "desc": "Limited edition box set featuring 10 award-winning films from legendary director, including remastered versions, commentary tracks, and exclusive behind-the-scenes content.",
+                "img": "https://example.com/images/cinematic-masterpieces.jpg"
+            },
+            {
+                "pname": "\"Harmonic Journeys: Classical Collection\"",
+                "price": "49.99",
+                "subsubcat": "Media/Music",
+                "desc": "Comprehensive 5-disc collection of essential classical compositions performed by the London Philharmonic Orchestra, featuring works from Bach to Debussy.",
+                "img": "https://example.com/images/harmonic-journeys.jpg"
+            },
+            {
+                "pname": "\"Streaming Entertainment Annual Subscription\"",
+                "price": "119.99",
+                "subsubcat": "Media/Streaming",
+                "desc": "One-year premium subscription to streaming service featuring thousands of movies, TV shows, documentaries, and exclusive original content in 4K quality.",
+                "img": "https://example.com/images/streaming-subscription.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Car Accessories",
+        "products": [
+            {
+                "pname": "SmartDrive Navigation System",
+                "price": "299.99",
+                "subsubcat": "Automotive/Accessories",
+                "desc": "Advanced in-car navigation system with 10\" touchscreen, real-time traffic updates, voice control, smartphone integration, and wireless backup camera.",
+                "img": "https://example.com/images/smartdrive-navigation.jpg"
+            },
+            {
+                "pname": "LuxuryLine Premium Seat Covers",
+                "price": "159.99",
+                "subsubcat": "Automotive/Accessories",
+                "desc": "Set of two front seat covers made from durable faux leather, featuring memory foam padding, adjustable straps, and elegant stitching compatible with most vehicles.",
+                "img": "https://example.com/images/luxuryline-seats.jpg"
+            },
+            {
+                "pname": "PowerCharge Car Jump Starter",
+                "price": "89.99",
+                "subsubcat": "Automotive/Accessories",
+                "desc": "Portable jump starter with 20000mAh capacity, capable of starting vehicles up to 6.5L gas/5.0L diesel, includes LED flashlight, USB charging ports, and safety features.",
+                "img": "https://example.com/images/powercharge-jumper.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Maintenance Products",
+        "products": [
+            {
+                "pname": "UltraShine Complete Car Wash Kit",
+                "price": "49.99",
+                "subsubcat": "Automotive/Maintenance",
+                "desc": "Comprehensive car cleaning kit including pH-balanced shampoo, microfiber cloths, wheel cleaner, tire shine, interior detailer, and professional-grade wax.",
+                "img": "https://example.com/images/ultrashine-kit.jpg"
+            },
+            {
+                "pname": "EnginePro Synthetic Oil Change Kit",
+                "price": "59.99",
+                "subsubcat": "Automotive/Maintenance",
+                "desc": "Complete oil change kit with premium synthetic oil, oil filter, drain pan, funnel, gloves, and detailed instructions suitable for most passenger vehicles.",
+                "img": "https://example.com/images/enginepro-oil.jpg"
+            },
+            {
+                "pname": "BrakeMax Professional Brake Cleaner",
+                "price": "14.99",
+                "subsubcat": "Automotive/Maintenance",
+                "desc": "Heavy-duty brake cleaner spray that quickly removes brake fluid, oil, grease, and other contaminants without leaving residue, improving brake performance and reducing noise.",
+                "img": "https://example.com/images/brakemax-cleaner.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Performance Parts",
+        "products": [
+            {
+                "pname": "TurboForce Air Intake System",
+                "price": "249.99",
+                "subsubcat": "Automotive/Performance",
+                "desc": "Cold air intake system that increases horsepower and torque, improves throttle response, and provides a deeper engine sound with washable/reusable air filter.",
+                "img": "https://example.com/images/turboforce-intake.jpg"
+            },
+            {
+                "pname": "RoadMaster Performance Exhaust",
+                "price": "399.99",
+                "subsubcat": "Automotive/Performance",
+                "desc": "Cat-back exhaust system made from stainless steel, featuring improved exhaust flow, deep tone without drone, and polished tips for enhanced appearance.",
+                "img": "https://example.com/images/roadmaster-exhaust.jpg"
+            },
+            {
+                "pname": "SpeedTech Racing Suspension Kit",
+                "price": "799.99",
+                "subsubcat": "Automotive/Performance",
+                "desc": "Complete suspension upgrade kit with performance springs, adjustable dampers, polyurethane bushings, and sway bars for improved handling and reduced body roll.",
+                "img": "https://example.com/images/speedtech-suspension.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Dog Products",
+        "products": [
+            {
+                "pname": "ComfortPet Orthopedic Dog Bed",
+                "price": "79.99",
+                "subsubcat": "Pets/Dog Supplies",
+                "desc": "Premium orthopedic dog bed with memory foam base, waterproof inner lining, machine-washable cover, and non-slip bottom suitable for dogs of all sizes.",
+                "img": "https://example.com/images/comfortpet-bed.jpg"
+            },
+            {
+                "pname": "TrailBuddy Dog Harness & Leash Set",
+                "price": "49.99",
+                "subsubcat": "Pets/Dog Supplies",
+                "desc": "Adjustable no-pull dog harness with matching 6ft leash, featuring reflective stitching, padded chest plate, dual attachment points, and quick-release buckles.",
+                "img": "https://example.com/images/trailbuddy-harness.jpg"
+            },
+            {
+                "pname": "NutriPrime Premium Dog Food",
+                "price": "64.99",
+                "subsubcat": "Pets/Dog Supplies",
+                "desc": "24lb bag of high-protein dog food formulated with real meat, whole grains, and vegetables, free from artificial preservatives, colors, and fillers.",
+                "img": "https://example.com/images/nutriprime-dogfood.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Cat Products",
+        "products": [
+            {
+                "pname": "PurrPalace Multi-Level Cat Tree",
+                "price": "129.99",
+                "subsubcat": "Pets/Cat Supplies",
+                "desc": "Tall cat tree featuring multiple platforms, enclosed condos, dangling toys, scratching posts, and plush coverings suitable for multiple cats.",
+                "img": "https://example.com/images/purrpalace-tree.jpg"
+            },
+            {
+                "pname": "CleanCatch Self-Cleaning Litter Box",
+                "price": "199.99",
+                "subsubcat": "Pets/Cat Supplies",
+                "desc": "Automatic self-cleaning litter box that separates waste into a sealed compartment, reduces odors, tracks usage patterns, and requires less frequent maintenance.",
+                "img": "https://example.com/images/cleancatch-litterbox.jpg"
+            },
+            {
+                "pname": "FeliFeast Wet Cat Food Variety Pack",
+                "price": "29.99",
+                "subsubcat": "Pets/Cat Supplies",
+                "desc": "Pack of 24 premium wet cat food pouches in assorted flavors, made with real protein sources, essential nutrients, and no artificial ingredients.",
+                "img": "https://example.com/images/felifeast-catfood.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Small Pet Supplies",
+        "products": [
+            {
+                "pname": "HabitatHaven Small Animal Cage",
+                "price": "89.99",
+                "subsubcat": "Pets/Small Animal Supplies",
+                "desc": "Spacious multi-level habitat for small pets like hamsters and gerbils, featuring tunnels, exercise wheel, water bottle, food dish, and easy-clean design.",
+                "img": "https://example.com/images/habitathaven-cage.jpg"
+            },
+            {
+                "pname": "NatureNibbles Premium Timothy Hay",
+                "price": "19.99",
+                "subsubcat": "Pets/Small Animal Supplies",
+                "desc": "5lb bag of premium hand-selected timothy hay, perfect for rabbits, guinea pigs, and other herbivores, high in fiber and naturally sun-dried.",
+                "img": "https://example.com/images/naturenibbles-hay.jpg"
+            },
+            {
+                "pname": "CozyCorner Small Pet Bedding",
+                "price": "14.99",
+                "subsubcat": "Pets/Small Animal Supplies",
+                "desc": "Ultra-absorbent paper bedding for small animals, dust-free, odor-controlling, and biodegradable with 99% recycled materials.",
+                "img": "https://example.com/images/cozycorner-bedding.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Office Furniture",
+        "products": [
+            {
+                "pname": "ErgoElite Adjustable Desk",
+                "price": "499.99",
+                "subsubcat": "Office/Furniture",
+                "desc": "Electric height-adjustable standing desk with programmable height settings, spacious workspace, cable management system, and sturdy steel frame supporting up to 300 lbs.",
+                "img": "https://example.com/images/ergoelite-desk.jpg"
+            },
+            {
+                "pname": "ExecutiveComfort Office Chair",
+                "price": "299.99",
+                "subsubcat": "Office/Furniture",
+                "desc": "Ergonomic office chair featuring adjustable lumbar support, breathable mesh back, padded armrests, 360° swivel, and smooth-rolling casters rated for 8+ hours of comfort.",
+                "img": "https://example.com/images/executivecomfort-chair.jpg"
+            },
+            {
+                "pname": "StorageMax Filing Cabinet",
+                "price": "179.99",
+                "subsubcat": "Office/Furniture",
+                "desc": "Metal filing cabinet with three full-extension drawers, built-in lock, label holders, and anti-tilt mechanism suitable for letter and legal-sized documents.",
+                "img": "https://example.com/images/storagemax-cabinet.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Writing Supplies",
+        "products": [
+            {
+                "pname": "ScribeElite Fountain Pen Set",
+                "price": "89.99",
+                "subsubcat": "Office/Writing Supplies",
+                "desc": "Luxury fountain pen set featuring stainless steel construction, smooth-writing medium nib, converter for bottled ink, and elegant presentation case.",
+                "img": "https://example.com/images/scribeelite-pen.jpg"
+            },
+            {
+                "pname": "NoteMaster Premium Journal",
+                "price": "24.99",
+                "subsubcat": "Office/Writing Supplies",
+                "desc": "Hardcover journal with 192 pages of acid-free paper, lay-flat binding, elastic closure, ribbon bookmark, and expandable inner pocket.",
+                "img": "https://example.com/images/notemaster-journal.jpg"
+            },
+            {
+                "pname": "ColorBurst Professional Marker Set",
+                "price": "49.99",
+                "subsubcat": "Office/Writing Supplies",
+                "desc": "Set of 48 dual-tip alcohol-based markers with both fine and broad nibs, vibrant colors, blendable ink, and convenient carrying case.",
+                "img": "https://example.com/images/colorburst-markers.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Technology & Electronics",
+        "products": [
+            {
+                "pname": "DataVault External Hard Drive",
+                "price": "129.99",
+                "subsubcat": "Office/Technology",
+                "desc": "2TB portable external hard drive with USB-C connectivity, hardware encryption, automatic backup software, and shock-resistant casing.",
+                "img": "https://example.com/images/datavault-drive.jpg"
+            },
+            {
+                "pname": "PrecisionScan Document Scanner",
+                "price": "199.99",
+                "subsubcat": "Office/Technology",
+                "desc": "Compact document scanner with 50-sheet automatic feeder, duplex scanning capability, 600 dpi resolution, and cloud storage integration.",
+                "img": "https://example.com/images/precisionscan-scanner.jpg"
+            },
+            {
+                "pname": "ConferenceElite Speakerphone",
+                "price": "149.99",
+                "subsubcat": "Office/Technology",
+                "desc": "Professional-grade conference speakerphone with 360° microphone coverage, noise cancellation, Bluetooth connectivity, and up to 15 hours of talk time.",
+                "img": "https://example.com/images/conferenceelite-phone.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Vitamins & Supplements",
+        "products": [
+            {
+                "pname": "VitalityPlus Multivitamin",
+                "price": "29.99",
+                "subsubcat": "Health/Supplements",
+                "desc": "Complete daily multivitamin with 23 essential vitamins and minerals, antioxidants, and herbal extracts in easy-to-swallow capsules, 90-day supply.",
+                "img": "https://example.com/images/vitalityplus-vitamin.jpg"
+            },
+            {
+                "pname": "OmegaPro Fish Oil Complex",
+                "price": "24.99",
+                "subsubcat": "Health/Supplements",
+                "desc": "High-potency omega-3 fish oil supplement with 1200mg per serving, molecularly distilled for purity, and enteric-coated to prevent fishy aftertaste.",
+                "img": "https://example.com/images/omegapro-fishoil.jpg"
+            },
+            {
+                "pname": "ImmunityBoost Herbal Formula",
+                "price": "19.99",
+                "subsubcat": "Health/Supplements",
+                "desc": "Natural immune support supplement featuring elderberry, echinacea, zinc, and vitamin C in convenient daily packets, perfect for travel or seasonal use.",
+                "img": "https://example.com/images/immunityboost-herbal.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Fitness Accessories",
+        "products": [
+            {
+                "pname": "FitTracker Advanced Smart Watch",
+                "price": "169.99",
+                "subsubcat": "Health/Fitness",
+                "desc": "Fitness-focused smartwatch with heart rate monitoring, GPS tracking, sleep analysis, 20+ exercise modes, and 7-day battery life in a waterproof design.",
+                "img": "https://example.com/images/fittracker-watch.jpg"
+            },
+            {
+                "pname": "ResistancePro Exercise Bands Set",
+                "price": "29.99",
+                "subsubcat": "Health/Fitness",
+                "desc": "Set of 5 resistance bands with different strength levels, handles, door anchor, ankle straps, and carrying case for versatile home workouts.",
+                "img": "https://example.com/images/resistancepro-bands.jpg"
+            },
+            {
+                "pname": "HydroFlow Insulated Water Bottle",
+                "price": "34.99",
+                "subsubcat": "Health/Fitness",
+                "desc": "32oz vacuum-insulated stainless steel water bottle keeping drinks cold for 24 hours or hot for 12 hours, featuring leak-proof lid and convenient carry handle.",
+                "img": "https://example.com/images/hydroflow-bottle.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Wellness Equipment",
+        "products": [
+            {
+                "pname": "SereneSpace Meditation Cushion Set",
+                "price": "79.99",
+                "subsubcat": "Health/Wellness",
+                "desc": "Complete meditation set including memory foam cushion with washable cover, supportive bolster, eye pillow, and guided meditation app access.",
+                "img": "https://example.com/images/serenespace-cushion.jpg"
+            },
+            {
+                "pname": "AromaMist Essential Oil Diffuser",
+                "price": "49.99",
+                "subsubcat": "Health/Wellness",
+                "desc": "Ultrasonic essential oil diffuser with 300ml capacity, 7 LED light options, multiple mist settings, auto shut-off, and whisper-quiet operation.",
+                "img": "https://example.com/images/aromamist-diffuser.jpg"
+            },
+            {
+                "pname": "SleepWell White Noise Machine",
+                "price": "39.99",
+                "subsubcat": "Health/Wellness",
+                "desc": "Sleep sound machine with 24 soothing sounds, programmable timer, headphone jack, compact design, and rechargeable battery for travel use.",
+                "img": "https://example.com/images/sleepwell-noise.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Gourmet Food",
+        "products": [
+            {
+                "pname": "ArtisanTaste Charcuterie Collection",
+                "price": "69.99",
+                "subsubcat": "Food/Gourmet",
+                "desc": "Premium charcuterie gift box featuring assorted cured meats, artisanal cheeses, gourmet crackers, dried fruits, nuts, and specialty condiments in a presentation-ready wooden crate.",
+                "img": "https://example.com/images/artisantaste-charcuterie.jpg"
+            },
+            {
+                "pname": "TruffleTreasures Assortment",
+                "price": "39.99",
+                "subsubcat": "Food/Gourmet",
+                "desc": "Luxury chocolate truffle collection featuring 24 handcrafted truffles in 8 gourmet flavors, made with premium Belgian chocolate and presented in elegant gift box.",
+                "img": "https://example.com/images/truffletreasures-chocolate.jpg"
+            },
+            {
+                "pname": "OliveOrchard Premium Oil Set",
+                "price": "49.99",
+                "subsubcat": "Food/Gourmet",
+                "desc": "Set of three cold-pressed extra virgin olive oils from award-winning groves, featuring distinct flavor profiles from different olive varieties in glass bottles with pour spouts.",
+                "img": "https://example.com/images/oliveorchard-oil.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Beverages",
+        "products": [
+            {
+                "pname": "BeanMaster Coffee Sampler",
+                "price": "34.99",
+                "subsubcat": "Food/Beverages",
+                "desc": "Specialty coffee bean sampler featuring four quarter-pound bags of single-origin coffees from different regions, freshly roasted and packaged with tasting notes.",
+                "img": "https://example.com/images/beanmaster-coffee.jpg"
+            },
+            {
+                "pname": "TeaHeritage Premium Collection",
+                "price": "29.99",
+                "subsubcat": "Food/Beverages",
+                "desc": "Luxury tea assortment featuring 48 individually wrapped sachets of 12 different organic tea varieties, including black, green, herbal, and fruit infusions.",
+                "img": "https://example.com/images/teaheritage-collection.jpg"
+            },
+            {
+                "pname": "CraftBrew Home Beer Kit",
+                "price": "79.99",
+                "subsubcat": "Food/Beverages",
+                "desc": "Complete home brewing starter kit with fermenter, ingredients, bottles, sanitizer, and step-by-step instructions to craft a classic American pale ale.",
+                "img": "https://example.com/images/craftbrew-kit.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Specialty Foods",
+        "products": [
+            {
+                "pname": "SpiceVoyage Global Collection",
+                "price": "44.99",
+                "subsubcat": "Food/Specialty",
+                "desc": "Set of 12 premium spice blends from around the world, featuring authentic regional seasonings in magnetic glass jars with recipe suggestions for each blend.",
+                "img": "https://example.com/images/spicevoyage-collection.jpg"
+            },
+            {
+                "pname": "SweetHarvest Organic Honey Set",
+                "price": "39.99",
+                "subsubcat": "Food/Specialty",
+                "desc": "Collection of four 8oz jars of single-floral organic honeys, including clover, orange blossom, lavender, and buckwheat, each with unique flavor profiles.",
+                "img": "https://example.com/images/sweetharvest-honey.jpg"
+            },
+            {
+                "pname": "HealthyEssentials Superfood Mix",
+                "price": "24.99",
+                "subsubcat": "Food/Specialty",
+                "desc": "Nutrient-dense superfood powder blend featuring spirulina, acai, maca, cacao, and other organic ingredients, perfect for smoothies and breakfast bowls.",
+                "img": "https://example.com/images/healthyessentials-superfood.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Fine Jewelry",
+        "products": [
+            {
+                "pname": "EternalElegance Diamond Pendant",
+                "price": "999.99",
+                "subsubcat": "Jewelry/Fine",
+                "desc": "14K white gold pendant featuring a 0.5-carat solitaire diamond with excellent cut and clarity, suspended on an 18-inch matching chain with secure lobster clasp.",
+                "img": "https://example.com/images/eternalelegance-pendant.jpg"
+            },
+            {
+                "pname": "PureGold Classic Bracelet",
+                "price": "699.99",
+                "subsubcat": "Jewelry/Fine",
+                "desc": "18K solid gold link bracelet with classic design, secure box clasp with safety catch, and high-polish finish suitable for everyday wear or special occasions.",
+                "img": "https://example.com/images/puregold-bracelet.jpg"
+            },
+            {
+                "pname": "GemTreasure Birthstone Ring Collection",
+                "price": "349.99",
+                "subsubcat": "Jewelry/Fine",
+                "desc": "Sterling silver ring featuring genuine birthstone of your choice surrounded by white topaz accents in an elegant setting available in sizes 5-10.",
+                "img": "https://example.com/images/gemtreasure-ring.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Fashion Jewelry",
+        "products": [
+            {
+                "pname": "ModernGlam Statement Necklace",
+                "price": "79.99",
+                "subsubcat": "Jewelry/Fashion",
+                "desc": "Bold statement necklace featuring geometric design with mixed metal elements, semi-precious stones, and adjustable length perfect for elevating casual and formal outfits.",
+                "img": "https://example.com/images/modernglam-necklace.jpg"
+            },
+            {
+                "pname": "UrbanChic Layered Bracelet Set",
+                "price": "49.99",
+                "subsubcat": "Jewelry/Fashion",
+                "desc": "Set of three coordinating bracelets with various textures and details including beads, chains, and charms that can be worn together or separately.",
+                "img": "https://example.com/images/urbanchic-bracelets.jpg"
+            },
+            {
+                "pname": "BohemianSpirit Handcrafted Earrings",
+                "price": "34.99",
+                "subsubcat": "Jewelry/Fashion",
+                "desc": "Hand-crafted drop earrings featuring natural materials including wood, shell, and brass elements with nickel-free hooks suitable for sensitive ears.",
+                "img": "https://example.com/images/bohemianspirit-earrings.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Luxury Watches",
+        "products": [
+            {
+                "pname": "ChronoPrecision Automatic Watch",
+                "price": "1299.99",
+                "subsubcat": "Jewelry/Watches",
+                "desc": "Luxury automatic watch featuring Swiss movement, sapphire crystal, stainless steel case, genuine leather strap, and exhibition caseback displaying the precision movement.",
+                "img": "https://example.com/images/chronoprecision-watch.jpg"
+            },
+            {
+                "pname": "SportElite Dive Watch",
+                "price": "699.99",
+                "subsubcat": "Jewelry/Watches",
+                "desc": "Professional dive watch with 300m water resistance, unidirectional rotating bezel, luminous markers, screw-down crown, and durable stainless steel bracelet.",
+                "img": "https://example.com/images/sportelite-watch.jpg"
+            },
+            {
+                "pname": "MinimalistTime Designer Watch",
+                "price": "399.99",
+                "subsubcat": "Jewelry/Watches",
+                "desc": "Contemporary watch featuring ultra-thin case, clean dial design, scratch-resistant glass, Japanese quartz movement, and interchangeable leather and mesh bands.",
+                "img": "https://example.com/images/minimalisttime-watch.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Gardening Tools",
+        "products": [
+            {
+                "pname": "GardenPro Tool Set",
+                "price": "79.99",
+                "subsubcat": "Garden/Tools",
+                "desc": "Comprehensive 10-piece gardening tool set including pruners, trowel, weeder, rake, cultivator, and more in a convenient carrying case with ergonomic handles.",
+                "img": "https://example.com/images/gardenpro-tools.jpg"
+            },
+            {
+                "pname": "PowerGarden Electric Tiller",
+                "price": "199.99",
+                "subsubcat": "Garden/Tools",
+                "desc": "Electric garden tiller with 12-inch tilling width, adjustable depth settings, foldable handle for storage, and powerful motor for efficient soil preparation.",
+                "img": "https://example.com/images/powergarden-tiller.jpg"
+            },
+            {
+                "pname": "WaterWise Irrigation System",
+                "price": "89.99",
+                "subsubcat": "Garden/Tools",
+                "desc": "Smart drip irrigation kit with timer, moisture sensors, adjustable flow emitters, and app control for efficient watering of gardens and planters.",
+                "img": "https://example.com/images/waterwise-irrigation.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Outdoor Furniture",
+        "products": [
+            {
+                "pname": "SunLounge Patio Set",
+                "price": "999.99",
+                "subsubcat": "Garden/Furniture",
+                "desc": "7-piece outdoor dining set including table and six chairs with weather-resistant frames, quick-dry cushions, and tempered glass tabletop perfect for entertaining.",
+                "img": "https://example.com/images/sunlounge-patio.jpg"
+            },
+            {
+                "pname": "RelaxMaster Adirondack Chair Set",
+                "price": "299.99",
+                "subsubcat": "Garden/Furniture",
+                "desc": "Set of two all-weather Adirondack chairs made from recycled materials, featuring wide armrests, contoured seats, and fade-resistant construction with 20-year warranty.",
+                "img": "https://example.com/images/relaxmaster-chairs.jpg"
+            },
+            {
+                "pname": "ShadeOasis Patio Umbrella",
+                "price": "149.99",
+                "subsubcat": "Garden/Furniture",
+                "desc": "10-foot cantilever patio umbrella with solar-powered LED lights, UV-resistant canopy, easy crank operation, and 360-degree rotation capability.",
+                "img": "https://example.com/images/shadeoasis-umbrella.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Plants & Seeds",
+        "products": [
+            {
+                "pname": "UrbanGarden Indoor Plant Collection",
+                "price": "89.99",
+                "subsubcat": "Garden/Plants",
+                "desc": "Collection of five low-maintenance indoor plants including snake plant, pothos, ZZ plant, peace lily, and aloe vera in coordinating ceramic pots with care instructions.",
+                "img": "https://example.com/images/urbangarden-plants.jpg"
+            },
+            {
+                "pname": "HeirloomHarvest Vegetable Seed Kit",
+                "price": "34.99",
+                "subsubcat": "Garden/Seeds",
+                "desc": "Comprehensive vegetable seed kit featuring 15 varieties of non-GMO, heirloom seeds, plant markers, growing calendar, and detailed planting guide.",
+                "img": "https://example.com/images/heirloomharvest-seeds.jpg"
+            },
+            {
+                "pname": "BloomBurst Perennial Flower Collection",
+                "price": "49.99",
+                "subsubcat": "Garden/Plants",
+                "desc": "Set of six hardy perennial flowering plants chosen for extended blooming season, including coneflowers, black-eyed susans, lavender, and more in biodegradable pots.",
+                "img": "https://example.com/images/bloomburst-flowers.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Baby Essentials",
+        "products": [
+            {
+                "pname": "DreamNest Convertible Crib",
+                "price": "349.99",
+                "subsubcat": "Baby/Furniture",
+                "desc": "4-in-1 convertible crib that transforms from baby crib to toddler bed, day bed, and full-size bed with adjustable mattress height and non-toxic finish.",
+                "img": "https://example.com/images/dreamnest-crib.jpg"
+            },
+            {
+                "pname": "ComfortCarry Baby Carrier",
+                "price": "129.99",
+                "subsubcat": "Baby/Essentials",
+                "desc": "Ergonomic baby carrier with multiple carrying positions, adjustable straps, breathable mesh panel, supportive waist belt, and infant insert for newborns.",
+                "img": "https://example.com/images/comfortcarry-carrier.jpg"
+            },
+            {
+                "pname": "SmartMonitor Baby Camera System",
+                "price": "199.99",
+                "subsubcat": "Baby/Essentials",
+                "desc": "Advanced baby monitor with HD video, two-way audio, temperature sensors, movement tracking, sleep analytics, and smartphone connectivity.",
+                "img": "https://example.com/images/smartmonitor-camera.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Kids' Toys",
+        "products": [
+            {
+                "pname": "ImaginationStation Building Blocks",
+                "price": "59.99",
+                "subsubcat": "Kids/Toys",
+                "desc": "Set of 500+ interlocking building blocks in various shapes, sizes, and colors, compatible with major brands and packaged in a convenient storage container.",
+                "img": "https://example.com/images/imaginationstation-blocks.jpg"
+            },
+            {
+                "pname": "AdventureKids Outdoor Play Set",
+                "price": "399.99",
+                "subsubcat": "Kids/Toys",
+                "desc": "Backyard play structure featuring swing set, slide, climbing wall, sandbox, and playhouse suitable for children ages 3-10 with weather-resistant construction.",
+                "img": "https://example.com/images/adventurekids-playset.jpg"
+            },
+            {
+                "pname": "SmartLearner Interactive Globe",
+                "price": "69.99",
+                "subsubcat": "Kids/Toys",
+                "desc": "Educational interactive globe with touch-activated voice narration, 1000+ facts, quiz modes, and compatibility with a free learning app for expanded content.",
+                "img": "https://example.com/images/smartlearner-globe.jpg"
+            }
+        ]
+    },
+    {
+        "name": "Childrens Clothing",
+        "products": [
+            {
+                "pname": "GrowthGear Adjustable Outerwear",
+                "price": "69.99",
+                "subsubcat": "Kids/Clothing",
+                "desc": "Innovative childrens jacket with extendable sleeves and adjustable waist that grows with your child through multiple seasons, featuring waterproof material and reflective elements.",
+                "img": "https://example.com/images/growthgear-jacket.jpg"
+            },
+            {
+                "pname": "PlayProof Everyday Basics Set",
+                "price": "49.99",
+                "subsubcat": "Kids/Clothing",
+                "desc": "Set of durable everyday childrens clothes including three t-shirts, two pants, and hoodie made from stain-resistant, reinforced fabric in mix-and-match colors.",
+                "img": "https://example.com/images/playproof-clothing.jpg"
+            },
+            {
+                "pname": "AdventureReady Rain Boot Collection",
+                "price": "34.99",
+                "subsubcat": "Kids/Clothing",
+                "desc": "Waterproof childrens rain boots featuring non-slip soles, easy-pull handles, and fun patterns available in multiple sizes with matching umbrellas sold separately.",
+                "img": "https://example.com/images/adventureready-boots.jpg"
+            }
+        ]
+    }
+]

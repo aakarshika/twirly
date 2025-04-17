@@ -2,14 +2,26 @@ import React from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { COMPARISON_COLOR_SET } from '../../../lib/constants';
 
-const BarChart = ({ items, metrics, comparisonMetrics }) => {
+const BarChart = ({ items, itemReviews }) => {
   const { currentTheme } = useTheme();
-  
-  // Get all unique metrics across items
-  const allMetrics = new Set();
-  comparisonMetrics.forEach(metric => allMetrics.add(metric.metric_name));
-  
-  const metricsArray = Array.from(allMetrics);
+
+  // Extract all unique metrics from the reviews
+  const metricsArray = React.useMemo(() => {
+    if (!itemReviews) return [];
+    const metrics = new Set();
+    Object.values(itemReviews).forEach(item => {
+      if (item.metrics) {
+        Object.keys(item.metrics).forEach(metric => metrics.add(metric));
+      }
+    });
+    return Array.from(metrics);
+  }, [itemReviews]);
+
+  // Get the average value for a metric for a specific item
+  const getMetricAverage = (itemId, metricName) => {
+    if (!itemReviews?.[itemId]?.metrics?.[metricName]) return 0;
+    return itemReviews[itemId].metrics[metricName].average;
+  };
 
   return (
     <div className="w-full">
@@ -72,7 +84,7 @@ const BarChart = ({ items, metrics, comparisonMetrics }) => {
                 </div>
                 <div className="flex-1 flex gap-1">
                   {items.map((item, i) => {
-                    const value = metrics[item.id]?.[metric] || 0;
+                    const value = getMetricAverage(item.id, metric);
                     const percentage = (value / 5) * 100;
                     
                     return (

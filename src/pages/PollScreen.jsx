@@ -239,6 +239,7 @@ const PollScreen = () => {
     <div className="min-h-screen h-full flex flex-col max-w-4xl mx-auto" style={{ backgroundColor: currentTheme.colors.background }}>
       
         <PollGrid 
+          id={id}
           title={currentComparisonName}
           items={items}
           votedItemId={votedItemId}
@@ -257,7 +258,6 @@ const PollScreen = () => {
           willChange: 'transform'
         }}
       >
-        
         {userVoted && <div className="w-full max-w-4xl mx-auto">
 
           {/* Review Section */}
@@ -276,7 +276,10 @@ const PollScreen = () => {
           </div>
           <div className="w-full p-4">
             <div className="bg-gray-800 rounded-lg" style={{ backgroundColor: currentTheme.colors.background }}>
-              <BarChart items={items} metrics={metrics} comparisonMetrics={comparisonMetrics} />
+              <BarChart items={items} 
+                      itemReviews={itemReviews} 
+                      metrics={metrics} 
+                      comparisonMetrics={comparisonMetrics} />
             </div>
           </div>
 
@@ -286,8 +289,6 @@ const PollScreen = () => {
 
         </div>}
       </div>
-
-      )}
       {activeReviewItem && <SetReviewModal />}
       <SetCombinedReviewModal 
         comparisonMetrics={comparisonMetrics}

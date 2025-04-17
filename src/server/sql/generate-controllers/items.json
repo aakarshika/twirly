@@ -1,0 +1,2162 @@
+[
+  {
+    "id": 1,
+    "category_id": 1,
+    "name": "iPhone 15",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Latest Apple smartphone with advanced camera system",
+    "image_url": "https://picsum.photos/id/1/200",
+    "created_at": "2025-03-24 12:10:07"
+  },
+  {
+    "id": 2,
+    "category_id": 1,
+    "name": "Samsung S24",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Premium Android smartphone with AI features",
+    "image_url": "https://picsum.photos/id/2/200",
+    "created_at": "2025-02-05 14:38:56"
+  },
+  {
+    "id": 3,
+    "category_id": 1,
+    "name": "Google Pixel 8",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Google's flagship phone with best-in-class camera",
+    "image_url": "https://picsum.photos/id/3/200",
+    "created_at": "2025-03-24 02:26:03"
+  },
+  {
+    "id": 4,
+    "category_id": 1,
+    "name": "OnePlus 12",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "High-performance smartphone with fast charging",
+    "image_url": "https://picsum.photos/id/4/200",
+    "created_at": "2025-02-26 23:49:48"
+  },
+  {
+    "id": 5,
+    "category_id": 1,
+    "name": "MacBook Pro",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Professional laptop with Apple Silicon",
+    "image_url": "https://picsum.photos/id/5/200",
+    "created_at": "2025-04-15 08:24:02"
+  },
+  {
+    "id": 6,
+    "category_id": 1,
+    "name": "Dell XPS",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "Premium Windows laptop with OLED display",
+    "image_url": "https://picsum.photos/id/6/200",
+    "created_at": "2025-02-18 13:19:52"
+  },
+  {
+    "id": 7,
+    "category_id": 1,
+    "name": "Sony XM5",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "Premium noise-cancelling headphones",
+    "image_url": "https://picsum.photos/id/7/200",
+    "created_at": "2025-02-07 18:01:47"
+  },
+  {
+    "id": 8,
+    "category_id": 1,
+    "name": "Bose QC Ultra",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "High-end wireless earbuds with ANC",
+    "image_url": "https://picsum.photos/id/8/200",
+    "created_at": "2025-03-03 15:44:35"
+  },
+  {
+    "id": 9,
+    "category_id": 2,
+    "name": "Instant Pot",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "7-in-1 electric pressure cooker",
+    "image_url": "https://picsum.photos/id/9/200",
+    "created_at": "2025-01-25 07:32:31"
+  },
+  {
+    "id": 10,
+    "category_id": 2,
+    "name": "Ninja Foodi",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Multi-cooker with air fryer function",
+    "image_url": "https://picsum.photos/id/10/200",
+    "created_at": "2025-03-24 07:28:20"
+  },
+  {
+    "id": 11,
+    "category_id": 2,
+    "name": "Vitamix",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Professional-grade blender",
+    "image_url": "https://picsum.photos/id/11/200",
+    "created_at": "2025-03-01 16:38:49"
+  },
+  {
+    "id": 12,
+    "category_id": 2,
+    "name": "KitchenAid Mixer",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "Classic stand mixer with attachments",
+    "image_url": "https://picsum.photos/id/12/200",
+    "created_at": "2025-03-07 09:50:22"
+  },
+  {
+    "id": 13,
+    "category_id": 2,
+    "name": "Dyson V15",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "Cordless vacuum with laser detection",
+    "image_url": "https://picsum.photos/id/13/200",
+    "created_at": "2025-02-23 14:42:32"
+  },
+  {
+    "id": 14,
+    "category_id": 2,
+    "name": "Roomba i7",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Self-emptying robot vacuum",
+    "image_url": "https://picsum.photos/id/14/200",
+    "created_at": "2025-04-13 08:39:49"
+  },
+  {
+    "id": 15,
+    "category_id": 2,
+    "name": "Nespresso",
+    "user_id": "bd668022-7999-4b44-91b3-7033a8a24157",
+    "description": "Coffee maker with capsule system",
+    "image_url": "https://picsum.photos/id/15/200",
+    "created_at": "2025-03-26 04:39:56"
+  },
+  {
+    "id": 16,
+    "category_id": 2,
+    "name": "Breville Express",
+    "user_id": "bd668022-7999-4b44-91b3-7033a8a24157",
+    "description": "Semi-automatic espresso machine",
+    "image_url": "https://picsum.photos/id/16/200",
+    "created_at": "2025-01-28 03:33:06"
+  },
+  {
+    "id": 17,
+    "category_id": 3,
+    "name": "Nike Air Force",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "Classic white sneakers",
+    "image_url": "https://picsum.photos/id/17/200",
+    "created_at": "2025-02-28 16:18:48"
+  },
+  {
+    "id": 18,
+    "category_id": 3,
+    "name": "Adidas Ultraboost",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Running shoes with Boost technology",
+    "image_url": "https://picsum.photos/id/18/200",
+    "created_at": "2025-04-08 21:30:51"
+  },
+  {
+    "id": 19,
+    "category_id": 3,
+    "name": "Levi's 501",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Classic straight fit jeans",
+    "image_url": "https://picsum.photos/id/19/200",
+    "created_at": "2025-02-24 14:55:44"
+  },
+  {
+    "id": 20,
+    "category_id": 3,
+    "name": "Patagonia Nano",
+    "user_id": "bd668022-7999-4b44-91b3-7033a8a24157",
+    "description": "Lightweight insulated jacket",
+    "image_url": "https://picsum.photos/id/20/200",
+    "created_at": "2025-02-15 06:47:15"
+  },
+  {
+    "id": 21,
+    "category_id": 3,
+    "name": "Ray-Ban Aviator",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Classic sunglasses",
+    "image_url": "https://picsum.photos/id/21/200",
+    "created_at": "2025-01-19 07:56:56"
+  },
+  {
+    "id": 22,
+    "category_id": 3,
+    "name": "Michael Kors Tote",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Leather handbag",
+    "image_url": "https://picsum.photos/id/22/200",
+    "created_at": "2025-03-15 05:34:15"
+  },
+  {
+    "id": 23,
+    "category_id": 3,
+    "name": "Apple Watch",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Smartwatch with health features",
+    "image_url": "https://picsum.photos/id/23/200",
+    "created_at": "2025-02-18 17:18:44"
+  },
+  {
+    "id": 24,
+    "category_id": 3,
+    "name": "Fossil Gen 6",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Smartwatch with Wear OS",
+    "image_url": "https://picsum.photos/id/24/200",
+    "created_at": "2025-04-05 22:15:26"
+  },
+  {
+    "id": 25,
+    "category_id": 4,
+    "name": "Peloton Bike",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Smart exercise bike with live classes",
+    "image_url": "https://picsum.photos/id/25/200",
+    "created_at": "2025-02-24 18:00:07"
+  },
+  {
+    "id": 26,
+    "category_id": 4,
+    "name": "NordicTrack Treadmill",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Smart treadmill with iFit",
+    "image_url": "https://picsum.photos/id/26/200",
+    "created_at": "2025-04-01 16:42:35"
+  },
+  {
+    "id": 27,
+    "category_id": 4,
+    "name": "Bowflex Dumbbells",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "Adjustable weight dumbbells",
+    "image_url": "https://picsum.photos/id/27/200",
+    "created_at": "2025-01-23 19:24:39"
+  },
+  {
+    "id": 28,
+    "category_id": 4,
+    "name": "Fitbit Charge",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "Fitness tracker with heart rate",
+    "image_url": "https://picsum.photos/id/28/200",
+    "created_at": "2025-03-19 15:35:02"
+  },
+  {
+    "id": 29,
+    "category_id": 4,
+    "name": "Garmin Forerunner",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "GPS running watch",
+    "image_url": "https://picsum.photos/id/29/200",
+    "created_at": "2025-02-01 18:49:18"
+  },
+  {
+    "id": 30,
+    "category_id": 4,
+    "name": "Yoga Mat",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Premium non-slip yoga mat",
+    "image_url": "https://picsum.photos/id/30/200",
+    "created_at": "2025-04-02 02:22:44"
+  },
+  {
+    "id": 31,
+    "category_id": 4,
+    "name": "Resistance Bands",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Set of 5 resistance bands",
+    "image_url": "https://picsum.photos/id/31/200",
+    "created_at": "2025-03-23 08:18:51"
+  },
+  {
+    "id": 32,
+    "category_id": 4,
+    "name": "Jump Rope",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Weighted speed jump rope",
+    "image_url": "https://picsum.photos/id/32/200",
+    "created_at": "2025-02-20 22:07:28"
+  },
+  {
+    "id": 33,
+    "category_id": 5,
+    "name": "Smart Thermostat",
+    "user_id": "bd668022-7999-4b44-91b3-7033a8a24157",
+    "description": "WiFi enabled temperature control",
+    "image_url": "https://picsum.photos/id/33/200",
+    "created_at": "2025-03-12 18:06:19"
+  },
+  {
+    "id": 34,
+    "category_id": 5,
+    "name": "Robot Vacuum",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Smart vacuum with mapping",
+    "image_url": "https://picsum.photos/id/34/200",
+    "created_at": "2025-03-27 08:40:17"
+  },
+  {
+    "id": 35,
+    "category_id": 5,
+    "name": "Air Purifier",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "HEPA air purifier with smart sensor",
+    "image_url": "https://picsum.photos/id/35/200",
+    "created_at": "2025-03-25 13:26:00"
+  },
+  {
+    "id": 36,
+    "category_id": 5,
+    "name": "Smart Lock",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Keyless entry with app control",
+    "image_url": "https://picsum.photos/id/36/200",
+    "created_at": "2025-03-25 19:22:54"
+  },
+  {
+    "id": 37,
+    "category_id": 5,
+    "name": "Smart Lights",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Color changing LED bulbs",
+    "image_url": "https://picsum.photos/id/37/200",
+    "created_at": "2025-03-19 03:02:20"
+  },
+  {
+    "id": 38,
+    "category_id": 5,
+    "name": "Security Camera",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "HD outdoor security camera",
+    "image_url": "https://picsum.photos/id/38/200",
+    "created_at": "2025-01-29 07:41:33"
+  },
+  {
+    "id": 39,
+    "category_id": 5,
+    "name": "Smart Plug",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "WiFi controlled power outlet",
+    "image_url": "https://picsum.photos/id/39/200",
+    "created_at": "2025-01-19 10:11:56"
+  },
+  {
+    "id": 40,
+    "category_id": 5,
+    "name": "Video Doorbell",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "Smart doorbell with camera",
+    "image_url": "https://picsum.photos/id/40/200",
+    "created_at": "2025-02-28 17:38:06"
+  },
+  {
+    "id": 41,
+    "category_id": 6,
+    "name": "PS5",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Sony PlayStation 5 console",
+    "image_url": "https://picsum.photos/id/41/200",
+    "created_at": "2025-02-24 13:07:28"
+  },
+  {
+    "id": 42,
+    "category_id": 6,
+    "name": "Xbox Series X",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Microsoft Xbox Series X console",
+    "image_url": "https://picsum.photos/id/42/200",
+    "created_at": "2025-01-31 01:48:10"
+  },
+  {
+    "id": 43,
+    "category_id": 6,
+    "name": "Nintendo Switch",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Hybrid gaming console",
+    "image_url": "https://picsum.photos/id/43/200",
+    "created_at": "2025-03-12 10:17:46"
+  },
+  {
+    "id": 44,
+    "category_id": 6,
+    "name": "Gaming Laptop",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "High-performance gaming laptop",
+    "image_url": "https://picsum.photos/id/44/200",
+    "created_at": "2025-02-11 03:28:42"
+  },
+  {
+    "id": 45,
+    "category_id": 6,
+    "name": "Gaming Mouse",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "RGB gaming mouse",
+    "image_url": "https://picsum.photos/id/45/200",
+    "created_at": "2025-03-15 11:37:59"
+  },
+  {
+    "id": 46,
+    "category_id": 6,
+    "name": "Gaming Keyboard",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Mechanical gaming keyboard",
+    "image_url": "https://picsum.photos/id/46/200",
+    "created_at": "2025-02-13 08:12:05"
+  },
+  {
+    "id": 47,
+    "category_id": 6,
+    "name": "Gaming Headset",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "Surround sound gaming headset",
+    "image_url": "https://picsum.photos/id/47/200",
+    "created_at": "2025-03-06 08:12:30"
+  },
+  {
+    "id": 48,
+    "category_id": 6,
+    "name": "Gaming Monitor",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "144Hz gaming monitor",
+    "image_url": "https://picsum.photos/id/48/200",
+    "created_at": "2025-01-23 02:51:38"
+  },
+  {
+    "id": 49,
+    "category_id": 7,
+    "name": "AirPods Pro",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Apple wireless earbuds with ANC",
+    "image_url": "https://picsum.photos/id/49/200",
+    "created_at": "2025-03-10 01:40:58"
+  },
+  {
+    "id": 50,
+    "category_id": 7,
+    "name": "Sony WH-1000XM4",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Premium noise-cancelling headphones",
+    "image_url": "https://picsum.photos/id/50/200",
+    "created_at": "2025-02-21 03:04:03"
+  },
+  {
+    "id": 51,
+    "category_id": 7,
+    "name": "Bose Soundbar",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Premium soundbar with subwoofer",
+    "image_url": "https://picsum.photos/id/51/200",
+    "created_at": "2025-02-21 00:24:24"
+  },
+  {
+    "id": 52,
+    "category_id": 7,
+    "name": "JBL Speaker",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "Portable Bluetooth speaker",
+    "image_url": "https://picsum.photos/id/52/200",
+    "created_at": "2025-02-14 06:38:33"
+  },
+  {
+    "id": 53,
+    "category_id": 7,
+    "name": "Audio Technica",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Professional studio headphones",
+    "image_url": "https://picsum.photos/id/53/200",
+    "created_at": "2025-01-22 16:03:30"
+  },
+  {
+    "id": 54,
+    "category_id": 7,
+    "name": "Sonos One",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "Smart speaker with voice control",
+    "image_url": "https://picsum.photos/id/54/200",
+    "created_at": "2025-01-18 14:07:22"
+  },
+  {
+    "id": 55,
+    "category_id": 7,
+    "name": "Marshall Speaker",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Retro-style Bluetooth speaker",
+    "image_url": "https://picsum.photos/id/55/200",
+    "created_at": "2025-01-20 11:35:55"
+  },
+  {
+    "id": 56,
+    "category_id": 7,
+    "name": "Beats Studio",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Wireless over-ear headphones",
+    "image_url": "https://picsum.photos/id/56/200",
+    "created_at": "2025-03-10 22:37:15"
+  },
+  {
+    "id": 57,
+    "category_id": 8,
+    "name": "Canon EOS R5",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "Full-frame mirrorless camera",
+    "image_url": "https://picsum.photos/id/57/200",
+    "created_at": "2025-03-12 03:13:54"
+  },
+  {
+    "id": 58,
+    "category_id": 8,
+    "name": "Sony A7IV",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "Professional mirrorless camera",
+    "image_url": "https://picsum.photos/id/58/200",
+    "created_at": "2025-04-02 18:38:51"
+  },
+  {
+    "id": 59,
+    "category_id": 8,
+    "name": "Nikon Z7",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "High-resolution mirrorless camera",
+    "image_url": "https://picsum.photos/id/59/200",
+    "created_at": "2025-02-17 13:07:42"
+  },
+  {
+    "id": 60,
+    "category_id": 8,
+    "name": "GoPro Hero",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "Action camera with 4K video",
+    "image_url": "https://picsum.photos/id/60/200",
+    "created_at": "2025-02-13 14:17:51"
+  },
+  {
+    "id": 61,
+    "category_id": 8,
+    "name": "DJI Drone",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "4K camera drone with gimbal",
+    "image_url": "https://picsum.photos/id/61/200",
+    "created_at": "2025-03-15 11:38:53"
+  },
+  {
+    "id": 62,
+    "category_id": 8,
+    "name": "Instax Camera",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "Instant film camera",
+    "image_url": "https://picsum.photos/id/62/200",
+    "created_at": "2025-01-29 13:43:00"
+  },
+  {
+    "id": 63,
+    "category_id": 8,
+    "name": "Ring Light",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "LED ring light for photography",
+    "image_url": "https://picsum.photos/id/63/200",
+    "created_at": "2025-04-08 09:15:27"
+  },
+  {
+    "id": 64,
+    "category_id": 8,
+    "name": "Camera Tripod",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Professional camera tripod",
+    "image_url": "https://picsum.photos/id/64/200",
+    "created_at": "2025-01-22 14:56:21"
+  },
+  {
+    "id": 65,
+    "category_id": 9,
+    "name": "Tent",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "4-person camping tent",
+    "image_url": "https://picsum.photos/id/65/200",
+    "created_at": "2025-02-06 11:43:22"
+  },
+  {
+    "id": 66,
+    "category_id": 9,
+    "name": "Sleeping Bag",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Cold weather sleeping bag",
+    "image_url": "https://picsum.photos/id/66/200",
+    "created_at": "2025-03-17 13:06:19"
+  },
+  {
+    "id": 67,
+    "category_id": 9,
+    "name": "Hiking Backpack",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "50L hiking backpack",
+    "image_url": "https://picsum.photos/id/67/200",
+    "created_at": "2025-04-18 02:54:21"
+  },
+  {
+    "id": 68,
+    "category_id": 9,
+    "name": "Camping Stove",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "Portable camping stove",
+    "image_url": "https://picsum.photos/id/68/200",
+    "created_at": "2025-02-08 15:14:20"
+  },
+  {
+    "id": 69,
+    "category_id": 9,
+    "name": "Water Filter",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "Portable water filter",
+    "image_url": "https://picsum.photos/id/69/200",
+    "created_at": "2025-02-23 12:37:13"
+  },
+  {
+    "id": 70,
+    "category_id": 9,
+    "name": "Headlamp",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "LED headlamp with red light",
+    "image_url": "https://picsum.photos/id/70/200",
+    "created_at": "2025-03-22 06:21:32"
+  },
+  {
+    "id": 71,
+    "category_id": 9,
+    "name": "Hiking Boots",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Waterproof hiking boots",
+    "image_url": "https://picsum.photos/id/71/200",
+    "created_at": "2025-01-24 23:24:06"
+  },
+  {
+    "id": 72,
+    "category_id": 9,
+    "name": "Camping Chair",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Compact camping chair",
+    "image_url": "https://picsum.photos/id/72/200",
+    "created_at": "2025-03-04 21:08:59"
+  },
+  {
+    "id": 73,
+    "category_id": 10,
+    "name": "Espresso Machine",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "Semi-automatic espresso machine",
+    "image_url": "https://picsum.photos/id/73/200",
+    "created_at": "2025-01-24 06:07:13"
+  },
+  {
+    "id": 74,
+    "category_id": 10,
+    "name": "Coffee Grinder",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "Burr coffee grinder",
+    "image_url": "https://picsum.photos/id/74/200",
+    "created_at": "2025-03-17 16:48:09"
+  },
+  {
+    "id": 75,
+    "category_id": 10,
+    "name": "French Press",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "Glass French press",
+    "image_url": "https://picsum.photos/id/75/200",
+    "created_at": "2025-03-10 02:00:53"
+  },
+  {
+    "id": 76,
+    "category_id": 10,
+    "name": "Pour Over",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Ceramic pour over set",
+    "image_url": "https://picsum.photos/id/76/200",
+    "created_at": "2025-03-04 02:30:25"
+  },
+  {
+    "id": 77,
+    "category_id": 10,
+    "name": "Cold Brew",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Cold brew coffee maker",
+    "image_url": "https://picsum.photos/id/77/200",
+    "created_at": "2025-02-07 08:47:40"
+  },
+  {
+    "id": 78,
+    "category_id": 10,
+    "name": "Milk Frother",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "Electric milk frother",
+    "image_url": "https://picsum.photos/id/78/200",
+    "created_at": "2025-03-31 08:03:57"
+  },
+  {
+    "id": 79,
+    "category_id": 10,
+    "name": "Coffee Scale",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Digital coffee scale",
+    "image_url": "https://picsum.photos/id/79/200",
+    "created_at": "2025-02-06 22:26:45"
+  },
+  {
+    "id": 80,
+    "category_id": 10,
+    "name": "Coffee Maker",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Programmable coffee maker",
+    "image_url": "https://picsum.photos/id/80/200",
+    "created_at": "2025-02-24 03:50:38"
+  },
+  {
+    "id": 81,
+    "category_id": 11,
+    "name": "Batman",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "Dark knight with gadgets and brooding",
+    "image_url": "https://picsum.photos/id/81/200",
+    "created_at": "2025-02-28 10:07:05"
+  },
+  {
+    "id": 82,
+    "category_id": 11,
+    "name": "Superman",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Flying alien with laser eyes",
+    "image_url": "https://picsum.photos/id/82/200",
+    "created_at": "2025-02-16 08:30:24"
+  },
+  {
+    "id": 83,
+    "category_id": 11,
+    "name": "Spider-Man",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Web-slinging high school hero",
+    "image_url": "https://picsum.photos/id/83/200",
+    "created_at": "2025-02-02 08:53:12"
+  },
+  {
+    "id": 84,
+    "category_id": 11,
+    "name": "Wonder Woman",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Amazonian warrior princess",
+    "image_url": "https://picsum.photos/id/84/200",
+    "created_at": "2025-01-29 13:11:18"
+  },
+  {
+    "id": 85,
+    "category_id": 11,
+    "name": "Iron Man",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "Genius billionaire playboy philanthropist",
+    "image_url": "https://picsum.photos/id/85/200",
+    "created_at": "2025-04-01 10:56:46"
+  },
+  {
+    "id": 86,
+    "category_id": 11,
+    "name": "Black Panther",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Wakandan king with vibranium suit",
+    "image_url": "https://picsum.photos/id/86/200",
+    "created_at": "2025-03-19 16:21:20"
+  },
+  {
+    "id": 87,
+    "category_id": 11,
+    "name": "Captain Marvel",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "Cosmic-powered Air Force pilot",
+    "image_url": "https://picsum.photos/id/87/200",
+    "created_at": "2025-02-02 00:39:06"
+  },
+  {
+    "id": 88,
+    "category_id": 11,
+    "name": "Doctor Strange",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Sorcerer Supreme with time stone",
+    "image_url": "https://picsum.photos/id/88/200",
+    "created_at": "2025-03-15 09:15:16"
+  },
+  {
+    "id": 89,
+    "category_id": 12,
+    "name": "Margherita",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Classic tomato, mozzarella, and basil",
+    "image_url": "https://picsum.photos/id/89/200",
+    "created_at": "2025-02-18 13:03:10"
+  },
+  {
+    "id": 90,
+    "category_id": 12,
+    "name": "Pepperoni",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "America's favorite topping",
+    "image_url": "https://picsum.photos/id/90/200",
+    "created_at": "2025-03-08 12:43:37"
+  },
+  {
+    "id": 91,
+    "category_id": 12,
+    "name": "Hawaiian",
+    "user_id": "bd668022-7999-4b44-91b3-7033a8a24157",
+    "description": "Pineapple and ham - controversial choice",
+    "image_url": "https://picsum.photos/id/91/200",
+    "created_at": "2025-02-27 14:52:55"
+  },
+  {
+    "id": 92,
+    "category_id": 12,
+    "name": "BBQ Chicken",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Sweet and smoky with red onions",
+    "image_url": "https://picsum.photos/id/92/200",
+    "created_at": "2025-04-17 05:26:56"
+  },
+  {
+    "id": 93,
+    "category_id": 12,
+    "name": "Veggie Supreme",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "All the vegetables you can handle",
+    "image_url": "https://picsum.photos/id/93/200",
+    "created_at": "2025-01-19 04:42:42"
+  },
+  {
+    "id": 94,
+    "category_id": 12,
+    "name": "Meat Lovers",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "All the meats you can handle",
+    "image_url": "https://picsum.photos/id/94/200",
+    "created_at": "2025-04-10 11:50:31"
+  },
+  {
+    "id": 95,
+    "category_id": 12,
+    "name": "White Pizza",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "No tomato sauce, just cheese and garlic",
+    "image_url": "https://picsum.photos/id/95/200",
+    "created_at": "2025-03-10 10:48:48"
+  },
+  {
+    "id": 96,
+    "category_id": 12,
+    "name": "Deep Dish",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "Chicago-style pizza casserole",
+    "image_url": "https://picsum.photos/id/96/200",
+    "created_at": "2025-02-02 21:30:17"
+  },
+  {
+    "id": 97,
+    "category_id": 13,
+    "name": "Netflix",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Original content and binge-watching pioneer",
+    "image_url": "https://picsum.photos/id/97/200",
+    "created_at": "2025-01-23 14:15:49"
+  },
+  {
+    "id": 98,
+    "category_id": 13,
+    "name": "Disney+",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "All the magic and Marvel you can handle",
+    "image_url": "https://picsum.photos/id/98/200",
+    "created_at": "2025-02-26 17:54:47"
+  },
+  {
+    "id": 99,
+    "category_id": 13,
+    "name": "HBO Max",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Premium content and HBO classics",
+    "image_url": "https://picsum.photos/id/99/200",
+    "created_at": "2025-04-14 06:18:28"
+  },
+  {
+    "id": 100,
+    "category_id": 13,
+    "name": "Prime Video",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Free shipping and free shows",
+    "image_url": "https://picsum.photos/id/100/200",
+    "created_at": "2025-03-14 22:10:17"
+  },
+  {
+    "id": 101,
+    "category_id": 13,
+    "name": "Hulu",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Next-day TV and original series",
+    "image_url": "https://picsum.photos/id/101/200",
+    "created_at": "2025-04-14 19:05:48"
+  },
+  {
+    "id": 102,
+    "category_id": 13,
+    "name": "Apple TV+",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "A few good shows and lots of potential",
+    "image_url": "https://picsum.photos/id/102/200",
+    "created_at": "2025-02-01 05:34:37"
+  },
+  {
+    "id": 103,
+    "category_id": 13,
+    "name": "Peacock",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "NBC shows and WWE network",
+    "image_url": "https://picsum.photos/id/103/200",
+    "created_at": "2025-03-21 15:26:03"
+  },
+  {
+    "id": 104,
+    "category_id": 13,
+    "name": "Paramount+",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Star Trek and Nickelodeon nostalgia",
+    "image_url": "https://picsum.photos/id/104/200",
+    "created_at": "2025-03-28 23:28:42"
+  },
+  {
+    "id": 105,
+    "category_id": 14,
+    "name": "McDonald's",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Golden arches and Big Macs",
+    "image_url": "https://picsum.photos/id/105/200",
+    "created_at": "2025-02-27 01:53:54"
+  },
+  {
+    "id": 106,
+    "category_id": 14,
+    "name": "Burger King",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Flame-grilled and Whopper-sized",
+    "image_url": "https://picsum.photos/id/106/200",
+    "created_at": "2025-02-08 12:46:18"
+  },
+  {
+    "id": 107,
+    "category_id": 14,
+    "name": "Taco Bell",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Mexican-inspired late-night cravings",
+    "image_url": "https://picsum.photos/id/107/200",
+    "created_at": "2025-03-31 23:59:22"
+  },
+  {
+    "id": 108,
+    "category_id": 14,
+    "name": "Wendy's",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Square burgers and sassy Twitter",
+    "image_url": "https://picsum.photos/id/108/200",
+    "created_at": "2025-03-16 19:32:45"
+  },
+  {
+    "id": 109,
+    "category_id": 14,
+    "name": "Chick-fil-A",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Chicken sandwiches and closed Sundays",
+    "image_url": "https://picsum.photos/id/109/200",
+    "created_at": "2025-01-18 12:25:48"
+  },
+  {
+    "id": 110,
+    "category_id": 14,
+    "name": "Subway",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Eat fresh and footlong subs",
+    "image_url": "https://picsum.photos/id/110/200",
+    "created_at": "2025-04-07 11:58:02"
+  },
+  {
+    "id": 111,
+    "category_id": 14,
+    "name": "KFC",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "Finger-lickin' good chicken",
+    "image_url": "https://picsum.photos/id/111/200",
+    "created_at": "2025-02-01 00:35:56"
+  },
+  {
+    "id": 112,
+    "category_id": 14,
+    "name": "Pizza Hut",
+    "user_id": "bd668022-7999-4b44-91b3-7033a8a24157",
+    "description": "Pan pizza and stuffed crust",
+    "image_url": "https://picsum.photos/id/112/200",
+    "created_at": "2025-02-20 19:59:50"
+  },
+  {
+    "id": 113,
+    "category_id": 15,
+    "name": "Instagram",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Picture-perfect life curation",
+    "image_url": "https://picsum.photos/id/113/200",
+    "created_at": "2025-03-14 18:51:51"
+  },
+  {
+    "id": 114,
+    "category_id": 15,
+    "name": "TikTok",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Short-form video addiction",
+    "image_url": "https://picsum.photos/id/114/200",
+    "created_at": "2025-02-23 18:06:22"
+  },
+  {
+    "id": 115,
+    "category_id": 15,
+    "name": "Twitter",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "Hot takes and character limits",
+    "image_url": "https://picsum.photos/id/115/200",
+    "created_at": "2025-04-01 09:29:40"
+  },
+  {
+    "id": 116,
+    "category_id": 15,
+    "name": "Facebook",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "Boomer memes and family updates",
+    "image_url": "https://picsum.photos/id/116/200",
+    "created_at": "2025-03-18 12:20:19"
+  },
+  {
+    "id": 117,
+    "category_id": 15,
+    "name": "Snapchat",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Disappearing messages and filters",
+    "image_url": "https://picsum.photos/id/117/200",
+    "created_at": "2025-02-03 13:48:25"
+  },
+  {
+    "id": 118,
+    "category_id": 15,
+    "name": "LinkedIn",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "Professional networking and humblebrags",
+    "image_url": "https://picsum.photos/id/118/200",
+    "created_at": "2025-04-17 01:25:39"
+  },
+  {
+    "id": 119,
+    "category_id": 15,
+    "name": "Reddit",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Front page of the internet",
+    "image_url": "https://picsum.photos/id/119/200",
+    "created_at": "2025-03-31 07:14:29"
+  },
+  {
+    "id": 120,
+    "category_id": 15,
+    "name": "Pinterest",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "DIY dreams and wedding planning",
+    "image_url": "https://picsum.photos/id/120/200",
+    "created_at": "2025-02-18 06:03:54"
+  },
+  {
+    "id": 121,
+    "category_id": 16,
+    "name": "Christmas",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Santa, presents, and Mariah Carey",
+    "image_url": "https://picsum.photos/id/121/200",
+    "created_at": "2025-04-05 04:56:08"
+  },
+  {
+    "id": 122,
+    "category_id": 16,
+    "name": "Halloween",
+    "user_id": "bd668022-7999-4b44-91b3-7033a8a24157",
+    "description": "Candy, costumes, and spooky vibes",
+    "image_url": "https://picsum.photos/id/122/200",
+    "created_at": "2025-03-13 15:57:35"
+  },
+  {
+    "id": 123,
+    "category_id": 16,
+    "name": "Thanksgiving",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "Turkey, family, and football",
+    "image_url": "https://picsum.photos/id/123/200",
+    "created_at": "2025-02-20 10:01:56"
+  },
+  {
+    "id": 124,
+    "category_id": 16,
+    "name": "Easter",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Bunnies, eggs, and chocolate",
+    "image_url": "https://picsum.photos/id/124/200",
+    "created_at": "2025-03-19 14:13:38"
+  },
+  {
+    "id": 125,
+    "category_id": 16,
+    "name": "Valentine's Day",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Love, chocolate, and pressure",
+    "image_url": "https://picsum.photos/id/125/200",
+    "created_at": "2025-02-22 07:39:51"
+  },
+  {
+    "id": 126,
+    "category_id": 16,
+    "name": "New Year's Eve",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Parties, resolutions, and champagne",
+    "image_url": "https://picsum.photos/id/126/200",
+    "created_at": "2025-02-12 09:47:24"
+  },
+  {
+    "id": 127,
+    "category_id": 16,
+    "name": "Fourth of July",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "BBQ, fireworks, and freedom",
+    "image_url": "https://picsum.photos/id/127/200",
+    "created_at": "2025-04-17 09:55:00"
+  },
+  {
+    "id": 128,
+    "category_id": 16,
+    "name": "St. Patrick's Day",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "Green beer and Irish pride",
+    "image_url": "https://picsum.photos/id/128/200",
+    "created_at": "2025-02-27 04:46:10"
+  },
+  {
+    "id": 129,
+    "category_id": 17,
+    "name": "Pancakes",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "Fluffy stacks with syrup",
+    "image_url": "https://picsum.photos/id/129/200",
+    "created_at": "2025-04-09 21:23:20"
+  },
+  {
+    "id": 130,
+    "category_id": 17,
+    "name": "Waffles",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "Crispy squares with syrup",
+    "image_url": "https://picsum.photos/id/130/200",
+    "created_at": "2025-04-03 11:24:04"
+  },
+  {
+    "id": 131,
+    "category_id": 17,
+    "name": "French Toast",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "Bread soaked in eggy goodness",
+    "image_url": "https://picsum.photos/id/131/200",
+    "created_at": "2025-02-25 14:57:38"
+  },
+  {
+    "id": 132,
+    "category_id": 17,
+    "name": "Omelette",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Eggs folded with fillings",
+    "image_url": "https://picsum.photos/id/132/200",
+    "created_at": "2025-03-17 22:42:59"
+  },
+  {
+    "id": 133,
+    "category_id": 17,
+    "name": "Bacon",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Crispy, salty perfection",
+    "image_url": "https://picsum.photos/id/133/200",
+    "created_at": "2025-02-25 14:05:33"
+  },
+  {
+    "id": 134,
+    "category_id": 17,
+    "name": "Sausage",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Spicy breakfast links",
+    "image_url": "https://picsum.photos/id/134/200",
+    "created_at": "2025-03-03 15:43:15"
+  },
+  {
+    "id": 135,
+    "category_id": 17,
+    "name": "Bagel",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "Chewy, doughy goodness",
+    "image_url": "https://picsum.photos/id/135/200",
+    "created_at": "2025-02-01 02:12:19"
+  },
+  {
+    "id": 136,
+    "category_id": 17,
+    "name": "Cereal",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Quick and easy morning fuel",
+    "image_url": "https://picsum.photos/id/136/200",
+    "created_at": "2025-04-17 15:44:33"
+  },
+  {
+    "id": 137,
+    "category_id": 18,
+    "name": "Action",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Explosions and car chases",
+    "image_url": "https://picsum.photos/id/137/200",
+    "created_at": "2025-02-07 23:23:58"
+  },
+  {
+    "id": 138,
+    "category_id": 18,
+    "name": "Comedy",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Laughs and punchlines",
+    "image_url": "https://picsum.photos/id/138/200",
+    "created_at": "2025-01-19 06:35:39"
+  },
+  {
+    "id": 139,
+    "category_id": 18,
+    "name": "Horror",
+    "user_id": "bd668022-7999-4b44-91b3-7033a8a24157",
+    "description": "Screams and jump scares",
+    "image_url": "https://picsum.photos/id/139/200",
+    "created_at": "2025-03-24 10:41:00"
+  },
+  {
+    "id": 140,
+    "category_id": 18,
+    "name": "Romance",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Love and heartbreak",
+    "image_url": "https://picsum.photos/id/140/200",
+    "created_at": "2025-02-10 08:56:10"
+  },
+  {
+    "id": 141,
+    "category_id": 18,
+    "name": "Sci-Fi",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Space and future tech",
+    "image_url": "https://picsum.photos/id/141/200",
+    "created_at": "2025-02-26 00:18:44"
+  },
+  {
+    "id": 142,
+    "category_id": 18,
+    "name": "Drama",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Emotions and character arcs",
+    "image_url": "https://picsum.photos/id/142/200",
+    "created_at": "2025-02-26 21:14:57"
+  },
+  {
+    "id": 143,
+    "category_id": 18,
+    "name": "Documentary",
+    "user_id": "bd668022-7999-4b44-91b3-7033a8a24157",
+    "description": "Real life and facts",
+    "image_url": "https://picsum.photos/id/143/200",
+    "created_at": "2025-03-06 04:13:19"
+  },
+  {
+    "id": 144,
+    "category_id": 18,
+    "name": "Animation",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "Cartoons and imagination",
+    "image_url": "https://picsum.photos/id/144/200",
+    "created_at": "2025-03-28 12:48:13"
+  },
+  {
+    "id": 145,
+    "category_id": 19,
+    "name": "Sunny",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Bright skies and sunglasses",
+    "image_url": "https://picsum.photos/id/145/200",
+    "created_at": "2025-04-04 20:35:27"
+  },
+  {
+    "id": 146,
+    "category_id": 19,
+    "name": "Rainy",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Umbrellas and cozy vibes",
+    "image_url": "https://picsum.photos/id/146/200",
+    "created_at": "2025-01-26 19:39:21"
+  },
+  {
+    "id": 147,
+    "category_id": 19,
+    "name": "Snowy",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Snowmen and hot chocolate",
+    "image_url": "https://picsum.photos/id/147/200",
+    "created_at": "2025-02-23 16:22:03"
+  },
+  {
+    "id": 148,
+    "category_id": 19,
+    "name": "Cloudy",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Gray skies and naps",
+    "image_url": "https://picsum.photos/id/148/200",
+    "created_at": "2025-02-28 22:22:01"
+  },
+  {
+    "id": 149,
+    "category_id": 19,
+    "name": "Windy",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Hair disasters and kites",
+    "image_url": "https://picsum.photos/id/149/200",
+    "created_at": "2025-03-02 19:32:23"
+  },
+  {
+    "id": 150,
+    "category_id": 19,
+    "name": "Foggy",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "Mystery and low visibility",
+    "image_url": "https://picsum.photos/id/150/200",
+    "created_at": "2025-01-29 01:29:37"
+  },
+  {
+    "id": 151,
+    "category_id": 19,
+    "name": "Stormy",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "Thunder and lightning",
+    "image_url": "https://picsum.photos/id/151/200",
+    "created_at": "2025-01-19 20:05:57"
+  },
+  {
+    "id": 152,
+    "category_id": 19,
+    "name": "Humid",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Sweat and frizzy hair",
+    "image_url": "https://picsum.photos/id/152/200",
+    "created_at": "2025-04-17 06:32:48"
+  },
+  {
+    "id": 153,
+    "category_id": 20,
+    "name": "Dog",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Loyal and always excited",
+    "image_url": "https://picsum.photos/id/153/200",
+    "created_at": "2025-04-16 20:08:31"
+  },
+  {
+    "id": 154,
+    "category_id": 20,
+    "name": "Cat",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Independent and judgmental",
+    "image_url": "https://picsum.photos/id/154/200",
+    "created_at": "2025-03-16 08:32:31"
+  },
+  {
+    "id": 155,
+    "category_id": 20,
+    "name": "Fish",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Quiet and low maintenance",
+    "image_url": "https://picsum.photos/id/155/200",
+    "created_at": "2025-02-26 02:32:56"
+  },
+  {
+    "id": 156,
+    "category_id": 20,
+    "name": "Bird",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Colorful and chatty",
+    "image_url": "https://picsum.photos/id/156/200",
+    "created_at": "2025-03-15 21:28:30"
+  },
+  {
+    "id": 157,
+    "category_id": 20,
+    "name": "Hamster",
+    "user_id": "bd668022-7999-4b44-91b3-7033a8a24157",
+    "description": "Tiny and nocturnal",
+    "image_url": "https://picsum.photos/id/157/200",
+    "created_at": "2025-04-09 01:24:16"
+  },
+  {
+    "id": 158,
+    "category_id": 20,
+    "name": "Rabbit",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Fluffy and hoppy",
+    "image_url": "https://picsum.photos/id/158/200",
+    "created_at": "2025-02-06 13:28:51"
+  },
+  {
+    "id": 159,
+    "category_id": 20,
+    "name": "Turtle",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Slow and steady",
+    "image_url": "https://picsum.photos/id/159/200",
+    "created_at": "2025-01-28 01:16:14"
+  },
+  {
+    "id": 160,
+    "category_id": 20,
+    "name": "Snake",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Sleek and misunderstood",
+    "image_url": "https://picsum.photos/id/160/200",
+    "created_at": "2025-03-30 14:04:49"
+  },
+  {
+    "id": 161,
+    "category_id": 21,
+    "name": "Vanilla",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Classic but never boring",
+    "image_url": "https://picsum.photos/id/161/200",
+    "created_at": "2025-03-13 06:33:36"
+  },
+  {
+    "id": 162,
+    "category_id": 21,
+    "name": "Chocolate",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Rich and indulgent",
+    "image_url": "https://picsum.photos/id/162/200",
+    "created_at": "2025-03-25 05:28:16"
+  },
+  {
+    "id": 163,
+    "category_id": 21,
+    "name": "Strawberry",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Fruity and refreshing",
+    "image_url": "https://picsum.photos/id/163/200",
+    "created_at": "2025-02-25 16:37:47"
+  },
+  {
+    "id": 164,
+    "category_id": 21,
+    "name": "Mint Chip",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Cool and crunchy",
+    "image_url": "https://picsum.photos/id/164/200",
+    "created_at": "2025-03-02 15:39:01"
+  },
+  {
+    "id": 165,
+    "category_id": 21,
+    "name": "Cookie Dough",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "Sweet and chunky",
+    "image_url": "https://picsum.photos/id/165/200",
+    "created_at": "2025-03-25 21:42:56"
+  },
+  {
+    "id": 166,
+    "category_id": 21,
+    "name": "Rocky Road",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "Nuts, marshmallows, and chocolate",
+    "image_url": "https://picsum.photos/id/166/200",
+    "created_at": "2025-01-24 18:23:27"
+  },
+  {
+    "id": 167,
+    "category_id": 21,
+    "name": "Butter Pecan",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Buttery and nutty",
+    "image_url": "https://picsum.photos/id/167/200",
+    "created_at": "2025-03-23 00:00:45"
+  },
+  {
+    "id": 168,
+    "category_id": 21,
+    "name": "Neapolitan",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Three flavors in one",
+    "image_url": "https://picsum.photos/id/168/200",
+    "created_at": "2025-03-12 22:00:17"
+  },
+  {
+    "id": 169,
+    "category_id": 22,
+    "name": "Reality TV",
+    "user_id": "bd668022-7999-4b44-91b3-7033a8a24157",
+    "description": "Drama without the script",
+    "image_url": "https://picsum.photos/id/169/200",
+    "created_at": "2025-03-01 07:29:02"
+  },
+  {
+    "id": 170,
+    "category_id": 22,
+    "name": "Sitcom",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Laugh tracks and punchlines",
+    "image_url": "https://picsum.photos/id/170/200",
+    "created_at": "2025-04-10 19:30:16"
+  },
+  {
+    "id": 171,
+    "category_id": 22,
+    "name": "Drama",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Tears and plot twists",
+    "image_url": "https://picsum.photos/id/171/200",
+    "created_at": "2025-03-30 08:40:53"
+  },
+  {
+    "id": 172,
+    "category_id": 22,
+    "name": "Game Show",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Prizes and suspense",
+    "image_url": "https://picsum.photos/id/172/200",
+    "created_at": "2025-03-03 19:46:51"
+  },
+  {
+    "id": 173,
+    "category_id": 22,
+    "name": "Talk Show",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Celebrities and hot topics",
+    "image_url": "https://picsum.photos/id/173/200",
+    "created_at": "2025-02-20 22:30:12"
+  },
+  {
+    "id": 174,
+    "category_id": 22,
+    "name": "News",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Information and breaking stories",
+    "image_url": "https://picsum.photos/id/174/200",
+    "created_at": "2025-03-10 19:49:02"
+  },
+  {
+    "id": 175,
+    "category_id": 22,
+    "name": "Documentary",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Learning and discovery",
+    "image_url": "https://picsum.photos/id/175/200",
+    "created_at": "2025-03-31 06:52:02"
+  },
+  {
+    "id": 176,
+    "category_id": 22,
+    "name": "Cartoon",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "Animation and imagination",
+    "image_url": "https://picsum.photos/id/176/200",
+    "created_at": "2025-03-30 06:22:02"
+  },
+  {
+    "id": 177,
+    "category_id": 23,
+    "name": "Beach",
+    "user_id": "bd668022-7999-4b44-91b3-7033a8a24157",
+    "description": "Sun, sand, and relaxation",
+    "image_url": "https://picsum.photos/id/177/200",
+    "created_at": "2025-03-10 11:38:53"
+  },
+  {
+    "id": 178,
+    "category_id": 23,
+    "name": "Mountain",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "Hiking and fresh air",
+    "image_url": "https://picsum.photos/id/178/200",
+    "created_at": "2025-03-19 02:08:02"
+  },
+  {
+    "id": 179,
+    "category_id": 23,
+    "name": "City",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "Culture and nightlife",
+    "image_url": "https://picsum.photos/id/179/200",
+    "created_at": "2025-03-02 07:30:45"
+  },
+  {
+    "id": 180,
+    "category_id": 23,
+    "name": "Cruise",
+    "user_id": "bd668022-7999-4b44-91b3-7033a8a24157",
+    "description": "All-inclusive floating hotel",
+    "image_url": "https://picsum.photos/id/180/200",
+    "created_at": "2025-02-04 01:55:50"
+  },
+  {
+    "id": 181,
+    "category_id": 23,
+    "name": "Camping",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Nature and s'mores",
+    "image_url": "https://picsum.photos/id/181/200",
+    "created_at": "2025-04-01 22:36:55"
+  },
+  {
+    "id": 182,
+    "category_id": 23,
+    "name": "Ski Resort",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Snow and apr\u00e8s-ski",
+    "image_url": "https://picsum.photos/id/182/200",
+    "created_at": "2025-04-01 10:04:33"
+  },
+  {
+    "id": 183,
+    "category_id": 23,
+    "name": "Road Trip",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Freedom and adventure",
+    "image_url": "https://picsum.photos/id/183/200",
+    "created_at": "2025-02-23 09:01:45"
+  },
+  {
+    "id": 184,
+    "category_id": 23,
+    "name": "Staycation",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Home sweet home",
+    "image_url": "https://picsum.photos/id/184/200",
+    "created_at": "2025-02-21 04:27:56"
+  },
+  {
+    "id": 185,
+    "category_id": 24,
+    "name": "Pop",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Catchy and mainstream",
+    "image_url": "https://picsum.photos/id/185/200",
+    "created_at": "2025-01-18 04:25:07"
+  },
+  {
+    "id": 186,
+    "category_id": 24,
+    "name": "Rock",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Guitars and attitude",
+    "image_url": "https://picsum.photos/id/186/200",
+    "created_at": "2025-03-20 19:55:25"
+  },
+  {
+    "id": 187,
+    "category_id": 24,
+    "name": "Hip Hop",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Beats and rhymes",
+    "image_url": "https://picsum.photos/id/187/200",
+    "created_at": "2025-02-12 19:36:28"
+  },
+  {
+    "id": 188,
+    "category_id": 24,
+    "name": "Country",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Trucks and heartbreak",
+    "image_url": "https://picsum.photos/id/188/200",
+    "created_at": "2025-03-12 13:14:44"
+  },
+  {
+    "id": 189,
+    "category_id": 24,
+    "name": "Jazz",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Smooth and sophisticated",
+    "image_url": "https://picsum.photos/id/189/200",
+    "created_at": "2025-02-25 21:55:17"
+  },
+  {
+    "id": 190,
+    "category_id": 24,
+    "name": "Classical",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Orchestras and concertos",
+    "image_url": "https://picsum.photos/id/190/200",
+    "created_at": "2025-03-23 11:22:52"
+  },
+  {
+    "id": 191,
+    "category_id": 24,
+    "name": "Electronic",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Beats and drops",
+    "image_url": "https://picsum.photos/id/191/200",
+    "created_at": "2025-04-18 01:22:50"
+  },
+  {
+    "id": 192,
+    "category_id": 24,
+    "name": "R&B",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Soul and rhythm",
+    "image_url": "https://picsum.photos/id/192/200",
+    "created_at": "2025-04-03 11:58:06"
+  },
+  {
+    "id": 193,
+    "category_id": 25,
+    "name": "Espresso",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Strong and concentrated",
+    "image_url": "https://picsum.photos/id/193/200",
+    "created_at": "2025-02-02 09:09:24"
+  },
+  {
+    "id": 194,
+    "category_id": 25,
+    "name": "Latte",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Smooth and milky",
+    "image_url": "https://picsum.photos/id/194/200",
+    "created_at": "2025-03-24 08:45:08"
+  },
+  {
+    "id": 195,
+    "category_id": 25,
+    "name": "Cappuccino",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Foamy and balanced",
+    "image_url": "https://picsum.photos/id/195/200",
+    "created_at": "2025-02-22 20:32:34"
+  },
+  {
+    "id": 196,
+    "category_id": 25,
+    "name": "Americano",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Simple and strong",
+    "image_url": "https://picsum.photos/id/196/200",
+    "created_at": "2025-02-15 16:14:17"
+  },
+  {
+    "id": 197,
+    "category_id": 25,
+    "name": "Mocha",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Sweet and chocolatey",
+    "image_url": "https://picsum.photos/id/197/200",
+    "created_at": "2025-02-09 16:42:15"
+  },
+  {
+    "id": 198,
+    "category_id": 25,
+    "name": "Macchiato",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Espresso with a dash",
+    "image_url": "https://picsum.photos/id/198/200",
+    "created_at": "2025-04-06 00:17:21"
+  },
+  {
+    "id": 199,
+    "category_id": 25,
+    "name": "Cold Brew",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Smooth and refreshing",
+    "image_url": "https://picsum.photos/id/199/200",
+    "created_at": "2025-04-09 06:52:31"
+  },
+  {
+    "id": 200,
+    "category_id": 25,
+    "name": "Flat White",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Creamy and velvety",
+    "image_url": "https://picsum.photos/id/200/200",
+    "created_at": "2025-04-10 07:42:06"
+  },
+  {
+    "id": 201,
+    "category_id": 26,
+    "name": "Monopoly",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Capitalism and family feuds",
+    "image_url": "https://picsum.photos/id/201/200",
+    "created_at": "2025-04-04 22:25:44"
+  },
+  {
+    "id": 202,
+    "category_id": 26,
+    "name": "Scrabble",
+    "user_id": "bd668022-7999-4b44-91b3-7033a8a24157",
+    "description": "Words and strategy",
+    "image_url": "https://picsum.photos/id/202/200",
+    "created_at": "2025-02-26 14:54:09"
+  },
+  {
+    "id": 203,
+    "category_id": 26,
+    "name": "Chess",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "Classic and strategic",
+    "image_url": "https://picsum.photos/id/203/200",
+    "created_at": "2025-02-11 19:31:08"
+  },
+  {
+    "id": 204,
+    "category_id": 26,
+    "name": "Risk",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "World domination",
+    "image_url": "https://picsum.photos/id/204/200",
+    "created_at": "2025-02-25 10:03:00"
+  },
+  {
+    "id": 205,
+    "category_id": 26,
+    "name": "Catan",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Resources and trading",
+    "image_url": "https://picsum.photos/id/205/200",
+    "created_at": "2025-01-23 12:50:14"
+  },
+  {
+    "id": 206,
+    "category_id": 26,
+    "name": "Pictionary",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "Drawing and guessing",
+    "image_url": "https://picsum.photos/id/206/200",
+    "created_at": "2025-03-13 08:09:39"
+  },
+  {
+    "id": 207,
+    "category_id": 26,
+    "name": "Cards Against Humanity",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Dark humor and shock",
+    "image_url": "https://picsum.photos/id/207/200",
+    "created_at": "2025-03-06 04:07:13"
+  },
+  {
+    "id": 208,
+    "category_id": 26,
+    "name": "Jenga",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Tension and balance",
+    "image_url": "https://picsum.photos/id/208/200",
+    "created_at": "2025-04-10 13:47:34"
+  },
+  {
+    "id": 209,
+    "category_id": 27,
+    "name": "Apple",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "Classic and crisp",
+    "image_url": "https://picsum.photos/id/209/200",
+    "created_at": "2025-03-24 07:07:42"
+  },
+  {
+    "id": 210,
+    "category_id": 27,
+    "name": "Banana",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Portable and potassium-rich",
+    "image_url": "https://picsum.photos/id/210/200",
+    "created_at": "2025-03-15 04:45:31"
+  },
+  {
+    "id": 211,
+    "category_id": 27,
+    "name": "Orange",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Juicy and vitamin C",
+    "image_url": "https://picsum.photos/id/211/200",
+    "created_at": "2025-02-09 05:20:06"
+  },
+  {
+    "id": 212,
+    "category_id": 27,
+    "name": "Strawberry",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Sweet and summery",
+    "image_url": "https://picsum.photos/id/212/200",
+    "created_at": "2025-04-01 04:22:35"
+  },
+  {
+    "id": 213,
+    "category_id": 27,
+    "name": "Watermelon",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "Refreshing and hydrating",
+    "image_url": "https://picsum.photos/id/213/200",
+    "created_at": "2025-03-19 21:43:32"
+  },
+  {
+    "id": 214,
+    "category_id": 27,
+    "name": "Pineapple",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Tropical and tangy",
+    "image_url": "https://picsum.photos/id/214/200",
+    "created_at": "2025-02-27 05:29:56"
+  },
+  {
+    "id": 215,
+    "category_id": 27,
+    "name": "Grapes",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Bite-sized and versatile",
+    "image_url": "https://picsum.photos/id/215/200",
+    "created_at": "2025-01-19 02:17:28"
+  },
+  {
+    "id": 216,
+    "category_id": 27,
+    "name": "Mango",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Sweet and exotic",
+    "image_url": "https://picsum.photos/id/216/200",
+    "created_at": "2025-03-13 11:27:01"
+  },
+  {
+    "id": 217,
+    "category_id": 28,
+    "name": "Car",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "Freedom and traffic",
+    "image_url": "https://picsum.photos/id/217/200",
+    "created_at": "2025-04-11 11:35:26"
+  },
+  {
+    "id": 218,
+    "category_id": 28,
+    "name": "Bicycle",
+    "user_id": "bd668022-7999-4b44-91b3-7033a8a24157",
+    "description": "Eco-friendly and exercise",
+    "image_url": "https://picsum.photos/id/218/200",
+    "created_at": "2025-03-25 04:40:37"
+  },
+  {
+    "id": 219,
+    "category_id": 28,
+    "name": "Train",
+    "user_id": "bd668022-7999-4b44-91b3-7033a8a24157",
+    "description": "Scenic and relaxing",
+    "image_url": "https://picsum.photos/id/219/200",
+    "created_at": "2025-02-27 13:29:13"
+  },
+  {
+    "id": 220,
+    "category_id": 28,
+    "name": "Bus",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Public and practical",
+    "image_url": "https://picsum.photos/id/220/200",
+    "created_at": "2025-03-28 10:42:52"
+  },
+  {
+    "id": 221,
+    "category_id": 28,
+    "name": "Airplane",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Fast and cramped",
+    "image_url": "https://picsum.photos/id/221/200",
+    "created_at": "2025-04-13 05:51:25"
+  },
+  {
+    "id": 222,
+    "category_id": 28,
+    "name": "Motorcycle",
+    "user_id": "bd668022-7999-4b44-91b3-7033a8a24157",
+    "description": "Thrilling and dangerous",
+    "image_url": "https://picsum.photos/id/222/200",
+    "created_at": "2025-02-10 07:37:55"
+  },
+  {
+    "id": 223,
+    "category_id": 28,
+    "name": "Boat",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Leisurely and seasick",
+    "image_url": "https://picsum.photos/id/223/200",
+    "created_at": "2025-03-10 21:50:35"
+  },
+  {
+    "id": 224,
+    "category_id": 28,
+    "name": "Walking",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "Simple and healthy",
+    "image_url": "https://picsum.photos/id/224/200",
+    "created_at": "2025-03-04 16:52:32"
+  },
+  {
+    "id": 225,
+    "category_id": 29,
+    "name": "Chocolate Cake",
+    "user_id": "d106f657-3eb6-494c-bd53-d2577fad787d",
+    "description": "Rich and decadent",
+    "image_url": "https://picsum.photos/id/225/200",
+    "created_at": "2025-02-13 16:26:21"
+  },
+  {
+    "id": 226,
+    "category_id": 29,
+    "name": "Ice Cream",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Cold and creamy",
+    "image_url": "https://picsum.photos/id/226/200",
+    "created_at": "2025-02-02 03:59:58"
+  },
+  {
+    "id": 227,
+    "category_id": 29,
+    "name": "Cheesecake",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "Creamy and tangy",
+    "image_url": "https://picsum.photos/id/227/200",
+    "created_at": "2025-01-23 06:36:34"
+  },
+  {
+    "id": 228,
+    "category_id": 29,
+    "name": "Apple Pie",
+    "user_id": "bd668022-7999-4b44-91b3-7033a8a24157",
+    "description": "Classic and comforting",
+    "image_url": "https://picsum.photos/id/228/200",
+    "created_at": "2025-02-15 05:08:51"
+  },
+  {
+    "id": 229,
+    "category_id": 29,
+    "name": "Brownies",
+    "user_id": "4b32e053-2c2f-4c0e-ba6f-9ccbb4aea6c0",
+    "description": "Fudgy and chocolatey",
+    "image_url": "https://picsum.photos/id/229/200",
+    "created_at": "2025-03-31 12:44:10"
+  },
+  {
+    "id": 230,
+    "category_id": 29,
+    "name": "Tiramisu",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Coffee-flavored and elegant",
+    "image_url": "https://picsum.photos/id/230/200",
+    "created_at": "2025-03-27 21:00:40"
+  },
+  {
+    "id": 231,
+    "category_id": 29,
+    "name": "Cupcakes",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Portable and decorated",
+    "image_url": "https://picsum.photos/id/231/200",
+    "created_at": "2025-03-29 12:25:19"
+  },
+  {
+    "id": 232,
+    "category_id": 29,
+    "name": "Cookies",
+    "user_id": "bef0b348-a7aa-4216-b3c5-b511773cfa63",
+    "description": "Simple and satisfying",
+    "image_url": "https://picsum.photos/id/232/200",
+    "created_at": "2025-01-22 22:40:54"
+  },
+  {
+    "id": 233,
+    "category_id": 30,
+    "name": "Soccer",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "World's most popular sport",
+    "image_url": "https://picsum.photos/id/233/200",
+    "created_at": "2025-03-05 03:23:20"
+  },
+  {
+    "id": 234,
+    "category_id": 30,
+    "name": "Basketball",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "Fast-paced and high-scoring",
+    "image_url": "https://picsum.photos/id/234/200",
+    "created_at": "2025-01-30 16:04:49"
+  },
+  {
+    "id": 235,
+    "category_id": 30,
+    "name": "Baseball",
+    "user_id": "d08be63a-b011-4848-86c0-64b89afea709",
+    "description": "America's pastime",
+    "image_url": "https://picsum.photos/id/235/200",
+    "created_at": "2025-02-17 01:51:59"
+  },
+  {
+    "id": 236,
+    "category_id": 30,
+    "name": "Football",
+    "user_id": "33aab4ad-ec8b-4ba2-a40b-c05cecfc189b",
+    "description": "Tackles and touchdowns",
+    "image_url": "https://picsum.photos/id/236/200",
+    "created_at": "2025-03-04 15:33:57"
+  },
+  {
+    "id": 237,
+    "category_id": 30,
+    "name": "Tennis",
+    "user_id": "a9cd1a33-58b0-40e4-9065-17046a9d2cf0",
+    "description": "Elegant and competitive",
+    "image_url": "https://picsum.photos/id/237/200",
+    "created_at": "2025-04-12 03:51:40"
+  },
+  {
+    "id": 238,
+    "category_id": 30,
+    "name": "Golf",
+    "user_id": "0a40dd20-8694-44c1-b803-ce8991c36750",
+    "description": "Precise and peaceful",
+    "image_url": "https://picsum.photos/id/238/200",
+    "created_at": "2025-04-16 09:55:52"
+  },
+  {
+    "id": 239,
+    "category_id": 30,
+    "name": "Swimming",
+    "user_id": "241e253d-131d-40a8-b576-aaae2086add6",
+    "description": "Low-impact and refreshing",
+    "image_url": "https://picsum.photos/id/239/200",
+    "created_at": "2025-02-22 21:20:22"
+  },
+  {
+    "id": 240,
+    "category_id": 30,
+    "name": "Running",
+    "user_id": "e52e4637-548d-4e79-8622-a67e58c9cdd7",
+    "description": "Simple and accessible",
+    "image_url": "https://picsum.photos/id/240/200",
+    "created_at": "2025-02-26 17:49:46"
+  }
+]

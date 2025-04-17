@@ -156,24 +156,13 @@ const SetCombinedReviewModal = ({ existingReviewIds, loading, comparisonMetrics,
             <table className="w-full">
               <thead>
                 <tr>
-                  <th className="p-3 text-left text-gray-300" style={{ color: currentTheme.colors.text }}>Item</th>
-                  {comparisonMetrics.map(metric => (
-                    <th key={metric.metric_name} className="p-3 text-left text-gray-300 capitalize" style={{ color: currentTheme.colors.text }}>
-                      {metric.metric_name}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {items.map(item => (
-                  <tr key={item.id} className="border-t border-gray-700">
-                    <td className="p-3">
+                  <th className="p-3 text-left text-gray-300" style={{ color: currentTheme.colors.text }}>Aspect</th>
+                  {items.map(item => (
+                    <th key={item.id} className="p-3 text-left text-gray-300" style={{ color: currentTheme.colors.text }}>
                       <div className="flex items-center gap-2">
-                        {console.log('Image URL:', item.image_url)}
                         <img 
                           src={item.image || '/api/placeholder/300/300'} 
                           alt={item.name}
-
                           onError={(e) => {
                             e.target.onerror = null;
                             if (e.target.src !== 'https://fakeimg.pl/600x400?text=img') {
@@ -184,8 +173,17 @@ const SetCombinedReviewModal = ({ existingReviewIds, loading, comparisonMetrics,
                         />
                         <span className="text-white" style={{ color: currentTheme.colors.text }}>{item.name}</span>
                       </div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {comparisonMetrics.map(metric => (
+                  <tr key={metric.metric_name} className="border-t border-gray-700">
+                    <td className="p-3 text-white capitalize" style={{ color: currentTheme.colors.text }}>
+                      {metric.metric_name}
                     </td>
-                    {comparisonMetrics.map(metric => (
+                    {items.map(item => (
                       <td key={`${item.id}-${metric.metric_name}`} className="p-3">
                         <div className="flex gap-1">
                           {renderStars(item.id, metric.metric_name, metrics[item.id]?.[metric.metric_name] || 0)}

@@ -1,0 +1,35 @@
+BEGIN;
+
+INSERT INTO categories (id, name, description, created_at)
+VALUES (1, 'Tech Titans', 'Cutting-edge technology and gadgets', TIMESTAMP '2025-04-17 17:19:16'),
+ (2, 'Kitchen Wizards', 'Culinary tools and kitchen essentials', TIMESTAMP '2025-04-17 17:19:16'),
+ (3, 'Fashion Forward', 'Style and fashion essentials', TIMESTAMP '2025-04-17 17:19:16'),
+ (4, 'Fitness Fanatics', 'Workout gear and fitness equipment', TIMESTAMP '2025-04-17 17:19:16'),
+ (5, 'Home Sweet Home', 'Smart home and household items', TIMESTAMP '2025-04-17 17:19:16'),
+ (6, 'Gaming Gurus', 'Gaming equipment and accessories', TIMESTAMP '2025-04-17 17:19:16'),
+ (7, 'Audio Aficionados', 'Sound systems and audio gear', TIMESTAMP '2025-04-17 17:19:16'),
+ (8, 'Photography Pros', 'Cameras and photography equipment', TIMESTAMP '2025-04-17 17:19:16'),
+ (9, 'Outdoor Enthusiasts', 'Camping and outdoor gear', TIMESTAMP '2025-04-17 17:19:16'),
+ (10, 'Coffee Connoisseurs', 'Coffee makers and brewing tools', TIMESTAMP '2025-04-17 17:19:16'),
+ (11, 'Superhero Showdown', 'Compare your favorite superheroes', TIMESTAMP '2025-04-17 17:19:16'),
+ (12, 'Pizza Wars', 'Battle of the best pizza styles', TIMESTAMP '2025-04-17 17:19:16'),
+ (13, 'Streaming Services', 'Compare streaming platforms', TIMESTAMP '2025-04-17 17:19:16'),
+ (14, 'Fast Food Frenzy', 'Battle of fast food chains', TIMESTAMP '2025-04-17 17:19:16'),
+ (15, 'Social Media Stars', 'Compare social media platforms', TIMESTAMP '2025-04-17 17:19:16'),
+ (16, 'Holiday Havoc', 'Compare your favorite holidays', TIMESTAMP '2025-04-17 17:19:16'),
+ (17, 'Breakfast Battle', 'Battle of breakfast foods', TIMESTAMP '2025-04-17 17:19:16'),
+ (18, 'Movie Genres', 'Compare movie categories', TIMESTAMP '2025-04-17 17:19:16'),
+ (19, 'Weather Warriors', 'Compare weather conditions', TIMESTAMP '2025-04-17 17:19:16'),
+ (20, 'Pet Personalities', 'Compare different pets', TIMESTAMP '2025-04-17 17:19:16'),
+ (21, 'Ice Cream Showdown', 'Battle of ice cream flavors', TIMESTAMP '2025-04-17 17:19:16'),
+ (22, 'TV Show Types', 'Compare TV show genres', TIMESTAMP '2025-04-17 17:19:16'),
+ (23, 'Vacation Vibes', 'Compare vacation styles', TIMESTAMP '2025-04-17 17:19:16'),
+ (24, 'Music Genres', 'Compare music styles', TIMESTAMP '2025-04-17 17:19:16'),
+ (25, 'Coffee Types', 'Compare coffee styles', TIMESTAMP '2025-04-17 17:19:16'),
+ (26, 'Board Games', 'Compare tabletop games', TIMESTAMP '2025-04-17 17:19:16'),
+ (27, 'Fruit Fight', 'Battle of fruits', TIMESTAMP '2025-04-17 17:19:16'),
+ (28, 'Transportation', 'Compare transport methods', TIMESTAMP '2025-04-17 17:19:16'),
+ (29, 'Dessert Delights', 'Compare sweet treats', TIMESTAMP '2025-04-17 17:19:16'),
+ (30, 'Sports', 'Compare different sports', TIMESTAMP '2025-04-17 17:19:16');
+
+COMMIT;

@@ -38,7 +38,7 @@ const VoteStats = ({ votes, totalVotes, color, isVotedItem, reviewCount, itemRev
                   </span>
                   <div className="flex-row">
                     {Object.entries(itemReviewData.metrics).map(([metricName, metricData]) => (
-                      metricData.average > 2 && (
+                      metricData.average > 3.5 && (
                         <span key={metricName} className="flex items-center gap-1 highlighted-aspect item-description">
                           <span className="text-gray-300">{metricName}</span>
                           <span className="flex items-center gap-1 text-amber-400">

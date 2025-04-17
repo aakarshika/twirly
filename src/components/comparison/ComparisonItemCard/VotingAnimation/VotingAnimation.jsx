@@ -23,9 +23,12 @@ const VotingAnimation = ({
         tapCountRef.current = 0;
       }, 300); // Reset after 300ms if no second tap
     } else if (tapCountRef.current === 2) {
-      // Double tap detected - show balloon hearts
+      // Double tap detected - cast vote first, then show balloon hearts
       clearTimeout(tapTimerRef.current);
       tapCountRef.current = 0;
+      
+      // Cast vote immediately
+      onStartVoting();
       
       // Create multiple balloon hearts
       const newBalloonHearts = Array.from({ length: 10 }, (_, i) => ({
@@ -38,7 +41,6 @@ const VotingAnimation = ({
       // Clear hearts after animation
       setTimeout(() => {
         setBalloonHearts([]);
-        onStartVoting();
       }, 2000);
     }
   };
