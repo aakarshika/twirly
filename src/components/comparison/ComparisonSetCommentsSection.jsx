@@ -57,13 +57,13 @@ const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
       <div className="text-center" >
         <div className="flex ">
           <img
-            src={user?.profile_picture || 'https://images.pexels.com/photos/538969/pexels-photo-538969.jpeg'}
-            alt={user?.username || 'User'}
+            src={aspectSet?.comparison_sets?.user?.profile_picture || 'https://images.pexels.com/photos/538969/pexels-photo-538969.jpeg'}
+            alt={aspectSet?.comparison_sets?.user?.username || 'User'}
             className="w-8 h-8 rounded-full mr-2"
           />
 
           <div className="flex">
-            <span className="font-bold text-lg">{user?.username || 'Anonymous'}</span>
+            <span className="font-bold text-lg">{aspectSet?.comparison_sets?.user?.username || 'Anonymous'}</span>
             <span><div className="w-1 h-1 bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{ marginTop: '8px', background: 'lightgray' }}></div></span>
             <span className="font-normal text-xs text-gray-400 dark:text-gray-300" style={{ marginTop: '2px' }}>
               {new Date(aspectSet?.created_at).toLocaleDateString()}
