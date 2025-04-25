@@ -53,7 +53,7 @@ const PollScreen = () => {
       // Fetch comparison aspects
       const { data: comparisonSetAspects, error } = await supabase
         .from('comparison_set_aspects')
-        .select('*')
+        .select('*, votes(*)')
         .eq('set_id', currentSetId);
 
       if (error) throw error;
@@ -252,7 +252,6 @@ const PollScreen = () => {
           items={items}
           votedItemId={votedItemId}
           currentId={id}
-          userVoted={userVoted}
           onItemClick={handleItemClick}
           itemReviews={itemReviews}
           setId={currentSetId}
@@ -264,7 +263,7 @@ const PollScreen = () => {
           backgroundColor: currentTheme.colors.background,
         }}
       >
-        {userVoted && <div className="w-full max-w-4xl mx-auto">
+        <div className="w-full max-w-4xl mx-auto">
 
           {/* Review Section */}
           <div className="w-full p-4">
@@ -286,13 +285,11 @@ const PollScreen = () => {
                       itemReviews={itemReviews} 
                       metrics={metrics} 
                       comparisonMetrics={comparisonMetrics}
-                      setId={currentSetId}
-                      set={currentSet}
                       />
             </div>
           </div>
 
-        </div>}
+        </div>
       </div>
       {activeReviewItem && <SetReviewModal />}
       <SetCombinedReviewModal 

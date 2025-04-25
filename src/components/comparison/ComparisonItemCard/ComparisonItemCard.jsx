@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 import VotingAnimation from './VotingAnimation/VotingAnimation';
-import VoteStats from './VoteStats/VoteStats';
+import VoteStatsCombined from './VoteStats/VoteStatsCombined';
 import ColorCoding from './ColorCoding/ColorCoding';
 import './ComparisonItemCard.css';
 import { ThumbsUp, X, Star } from 'lucide-react';
@@ -132,7 +132,7 @@ const ComparisonItemCard = ({
                 <p className="text-fallback-description">{item.description}</p>
               </div>
               <div className="flex items-center gap-2 content-overlay">
-                <VoteStats
+                <VoteStatsCombined
                   votes={item.votes}
                   totalVotes={totalVotes}
                   color={COMPARISON_COLOR_SET[index]}
@@ -155,7 +155,7 @@ const ComparisonItemCard = ({
             <p className="item-description">{item.description}</p>
 
               <div className="flex items-center gap-2" >
-                <VoteStats
+                <VoteStatsCombined
                   votes={item.votes}
                   totalVotes={totalVotes}
                   color={COMPARISON_COLOR_SET[index]}

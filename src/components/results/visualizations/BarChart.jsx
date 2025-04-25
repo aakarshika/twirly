@@ -3,7 +3,7 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { COMPARISON_COLOR_SET } from '../../../lib/constants';
 import ComparisonSetAspectsCommentsSection from '../../comparison/ComparisonSetAspectsCommentsSection';
 
-const BarChart = ({ items, itemReviews, setId, set }) => {
+const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
   const { currentTheme } = useTheme();
 
   // Extract all unique metrics from the reviews
@@ -17,6 +17,7 @@ const BarChart = ({ items, itemReviews, setId, set }) => {
     });
     return Array.from(metrics);
   }, [itemReviews]);
+  console.log(comparisonMetrics);
 
   // Get the average value for a metric for a specific item
   const getMetricAverage = (itemId, metricName) => {
@@ -24,16 +25,28 @@ const BarChart = ({ items, itemReviews, setId, set }) => {
     return itemReviews[itemId].metrics[metricName].average;
   };
 
+  const getMetricAverageVotes = (itemId, metricName) => {
+    var itemVotes = 0;
+    comparisonMetrics.forEach(metric => {
+      metric.votes.forEach(vote => {
+        if (vote.item_id === itemId && metric.metric_name === metricName) {
+          itemVotes++;
+        }
+      });
+    });
+    return itemVotes ;
+  };
+
   return (
     <div className="w-full">
       <div
       >
-        {metricsArray.map(metric => (
+        {comparisonMetrics.map(metric => (
           <div
             className="divide-y"
           >
             <div
-              key={metric}
+              key={metric.metric_name}
               className=""
             >
 
@@ -45,21 +58,23 @@ const BarChart = ({ items, itemReviews, setId, set }) => {
                         className="truncate block "
                         style={{ color: currentTheme.colors.textSecondary, textAlign: 'left' }}
                       >
-                        {metric.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                        {metric.metric_name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                       </h4>
                     <div className="flex items-center gap-2">
                       
                       <div className="flex-1 flex gap-1">
                         
                         {items.map((item, i) => {
-                          const value = getMetricAverage(item.id, metric);
-                          const percentage = (value / 5) * 100;
+                          const value = getMetricAverageVotes(item.id, metric.metric_name);
+                          const percentage = (value / (metric.votes.length || 1)) * 100;
+                          console.log(value);
+                          console.log(percentage);
 
                           return (
                             <div key={item.id}>
                               <div className="flex-1 min-w-[6rem]">
                                 <span
-                                  className="text-xs font-medium block"
+                                  className="text-xs font-medium block truncate "
                                   style={{ color: currentTheme.colors.textSecondary, textAlign: 'left' }}
                                 >
                                   {item.name}
@@ -97,7 +112,7 @@ const BarChart = ({ items, itemReviews, setId, set }) => {
                       </div>
                     </div>
                     <div className="w-full mt-4" style={{ textAlign: 'left' }}>
-                      <ComparisonSetAspectsCommentsSection setId={setId} items={items} set={set} />
+                      <ComparisonSetAspectsCommentsSection aspectSetId={metric.id} items={items} aspectSet={metric} />
                     </div>
                   </div>
                 </div>
