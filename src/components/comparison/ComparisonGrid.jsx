@@ -55,7 +55,8 @@ const ComparisonGrid = ({ isHeaderVisible, title, height, currentId, itemReviews
   const numericHeight = parseFloat(heightValue); 
   
   // Divide by 4
-  const gap = (numericHeight / 50) + 'vh'; 
+  const gap = '0vh'; 
+  const gap2 = (numericHeight / 100) + 'vh'; 
 
   // Calculate total votes for percentage calculation
   const totalVotes = items.reduce((sum, item) => sum + (item.votes || 0), 0);
@@ -63,17 +64,15 @@ const ComparisonGrid = ({ isHeaderVisible, title, height, currentId, itemReviews
   return (
     <div className="space-y-4  m-4" style={{  color: currentTheme.colors.primary }}>
       {/* Poll Title */}
-
-    <div style={{  color: currentTheme.colors.text }}>
-      <div className="flex justify-between items-center ">
-        
-        <span style={{  color: currentTheme.colors.primary }} className="text-lg font-bold text-white">
-          {title || 'Untitled Comparison'}
-        </span>
-      </div>
-    </div>
-
-
+      <div className="grid-container">
+        <div style={{  color: currentTheme.colors.text }}>
+          <div className="flex justify-between items-center ">
+            
+            <span style={{  color: currentTheme.colors.primary, padding: '15px' }} className="text-lg font-bold text-center">
+              {title || 'Untitled Comparison'}
+            </span>
+          </div>
+        </div>
         <div className="grid grid-cols-2" 
           style={{ 
             gap: gap
@@ -94,13 +93,7 @@ const ComparisonGrid = ({ isHeaderVisible, title, height, currentId, itemReviews
             />
           ))}
         </div>
-      
-      
-      {/* Results Announcement when voted */}
-      {userVoted && winner && (
-        <div className="text-center ">
-        </div>
-      )}
+      </div>
       
       {/* Review Form Modal */}
       <ReviewForm />

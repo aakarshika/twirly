@@ -25,13 +25,16 @@ const Trending = () => {
       
       // Base query
       let query = supabase
-        .from('comparison_sets')
+        .from('comparison_sets_with_users')
         .select(`
           id,
           name,
           category_id,
           created_at,
-          categories(name),
+          category_name,
+          username,
+          display_name,
+          profile_image_url,
           comparison_set_items(
             item_id,
             items(
@@ -40,6 +43,13 @@ const Trending = () => {
               description,
               image_url
             )
+          ),
+          votes:votes(count),
+          participants:votes(
+            user_id
+          ),
+          comparison_set_aspects(
+            metric_name
           )
         `)
         .order('created_at', { ascending: false })
@@ -47,33 +57,87 @@ const Trending = () => {
 
       // Add category filter if not 'All'
       if (category !== 'All') {
-        query = query.eq('categories.name', category);
+        query = query.eq('category_name', category);
       }
 
       const { data, error, count } = await query;
 
       if (error) throw error;
 
+      // Fetch reviews for all items in the comparisons
+      const itemIds = data.flatMap(comparison => 
+        comparison.comparison_set_items?.map(setItem => setItem.items?.id) || []
+      ).filter(Boolean);
+
+      const { data: reviewsData, error: reviewsError } = await supabase
+        .from('reviews')
+        .select(`
+          id,
+          item_id,
+          review_metrics(
+            metric_name,
+            value,
+            set_id
+          )
+        `)
+        .in('item_id', itemIds);
+
+      if (reviewsError) throw reviewsError;
+
       // Transform the data to match our UI structure
       const transformedData = data.map(comparison => {
         const items = comparison.comparison_set_items?.map(setItem => setItem.items) || [];
+        
+        // Calculate average metrics for each item
+        const itemMetrics = {};
+        items.forEach(item => {
+          const itemReviews = reviewsData?.filter(review => review.item_id === item.id) || [];
+          const metrics = {};
+          
+          comparison.comparison_set_aspects?.forEach(aspect => {
+            const metricValues = itemReviews
+              .flatMap(review => review.review_metrics)
+              .filter(metric => metric.metric_name === aspect.metric_name)
+              .map(metric => metric.value);
+            
+            const average = metricValues.length > 0 
+              ? metricValues.reduce((a, b) => a + b, 0) / metricValues.length 
+              : 0;
+            
+            metrics[aspect.metric_name] = {
+              average,
+              totalReviews: metricValues.length
+            };
+          });
+          
+          itemMetrics[item.id] = metrics;
+        });
+
+        // Count unique participants
+        const uniqueParticipants = new Set(comparison.participants?.map(p => p.user_id) || []).size;
+
         return {
           id: comparison.id,
           title: comparison.name,
-          category: comparison.categories?.name || 'Uncategorized',
-          votes: Math.floor(Math.random() * 2000), // TODO: Replace with actual votes from votes table
-          participants: Math.floor(Math.random() * 1500), // TODO: Replace with actual participants
+          category: comparison.category_name || 'Uncategorized',
+          votes: comparison.votes?.[0]?.count || 0,
+          participants: uniqueParticipants,
           timeAgo: formatTimeAgo(comparison.created_at),
           image1: items[0]?.image_url || 'https://placehold.co/400x300/1a1a1a/ffffff?text=No+Image',
           image2: items[1]?.image_url || 'https://placehold.co/400x300/1a1a1a/ffffff?text=No+Image',
+          user: {
+            id: comparison.user_id,
+            name: comparison.display_name || comparison.username || 'Anonymous',
+            image: comparison.profile_image_url || 'https://placehold.co/100x100/1a1a1a/ffffff?text=U'
+          },
           items: items.map(item => ({
             id: item.id,
             name: item.name,
             description: item.description,
             image: item.image_url,
-            category: comparison.categories?.name || 'Uncategorized',
-            votes: 0,
-            reviews: []
+            category: comparison.category_name || 'Uncategorized',
+            averageMetrics: itemMetrics[item.id] || {},
+            reviews: reviewsData?.filter(review => review.item_id === item.id) || []
           }))
         };
       });
@@ -201,18 +265,36 @@ const Trending = () => {
                   }}
                 >
                   <div className="p-6" style={{ color: currentTheme.colors.text }}>
-                    <div className="flex items-center gap-2 mb-4">
-                      <span className="px-3 py-1 bg-amber-400/10 text-amber-400 rounded-full text-sm">
-                        {comparison.category}
-                      </span>
-                      <span className="text-gray-400 text-sm flex items-center">
-                        <Clock className="mr-1" size={14} />
-                        {comparison.timeAgo}
-                      </span>
+                    {/* Header Section */}
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-2">
+                      {/* User Info Section */}
+                        <img 
+                          src={comparison.user.image} 
+                          alt={comparison.user.name}
+                          className="w-8 h-8 rounded-full object-cover"
+                        />
+                        <div>
+                          <p className="text-sm font-medium">{comparison.user.name}</p>
+                          <p className="text-xs text-gray-400">{comparison.timeAgo}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1 text-gray-400">
+                          <ThumbsUp size={16} />
+                          <span className="text-sm">{comparison.votes}</span>
+                        </div>
+                        <div className="flex items-center gap-1 text-gray-400">
+                          <Users size={16} />
+                          <span className="text-sm">{comparison.items[0].reviews.length}</span>
+                        </div>
+                      </div>
                     </div>
 
-                    <h3 className="text-xl font-semibold mb-4">{comparison.title}</h3>
+                    {/* Title */}
+                    <h3 className="text-xl font-semibold mb-4 line-clamp-2">{comparison.title}</h3>
 
+                    {/* Images Section */}
                     <div className="flex gap-4 mb-6">
                       <div className="flex-1">
                         {!imageErrors[`${comparison.id}-image1`] ? (
@@ -232,12 +314,20 @@ const Trending = () => {
                               onLoad={() => handleImageLoad(comparison.id, 'image1')}
                               onError={() => handleImageError(comparison.id, 'image1')}
                             />
+                            <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/70 to-transparent rounded-b-lg">
+                              <h4 className="text-white font-medium truncate">{comparison.items[0]?.name}</h4>
+                            </div>
                           </div>
                         ) : (
                           <div className="w-full h-48 flex items-center justify-center bg-gray-800 rounded-lg">
-                            <h3 className="text-xl font-bold text-center px-4 line-clamp-3 text-gray-300">
-                              {comparison.items[0]?.name || 'Item 1'}
-                            </h3>
+                            <div className="text-center p-4">
+                              <h3 className="text-xl font-bold text-gray-300 mb-2">
+                                {comparison.items[0]?.name || 'Item 1'}
+                              </h3>
+                              <p className="text-sm text-gray-400 line-clamp-2">
+                                {comparison.items[0]?.description || 'No description available'}
+                              </p>
+                            </div>
                           </div>
                         )}
                       </div>
@@ -259,27 +349,45 @@ const Trending = () => {
                               onLoad={() => handleImageLoad(comparison.id, 'image2')}
                               onError={() => handleImageError(comparison.id, 'image2')}
                             />
+                            <div className="absolute bottom-0 left-0 right-0 p-2 bg-gradient-to-t from-black/70 to-transparent rounded-b-lg">
+                              <h4 className="text-white font-medium truncate">{comparison.items[1]?.name}</h4>
+                            </div>
                           </div>
                         ) : (
                           <div className="w-full h-48 flex items-center justify-center bg-gray-800 rounded-lg">
-                            <h3 className="text-xl font-bold text-center px-4 line-clamp-3 text-gray-300">
-                              {comparison.items[1]?.name || 'Item 2'}
-                            </h3>
+                            <div className="text-center p-4">
+                              <h3 className="text-xl font-bold text-gray-300 mb-2">
+                                {comparison.items[1]?.name || 'Item 2'}
+                              </h3>
+                              <p className="text-sm text-gray-400 line-clamp-2">
+                                {comparison.items[1]?.description || 'No description available'}
+                              </p>
+                            </div>
                           </div>
                         )}
                       </div>
                     </div>
 
-                    <div className="flex justify-between items-center text-gray-400">
-                      <div className="flex items-center gap-2">
-                        <ThumbsUp size={16} />
-                        <span>{comparison.votes} votes</span>
+                    {/* Metrics and Reviews Section */}
+                    {(comparison.items[0]?.averageMetrics || comparison.items[0]?.reviews?.length > 0) && (
+                      <div className="">
+                        <div className="">
+                          {/* Top Metrics */}
+                          {comparison.items[0]?.averageMetrics && Object.keys(comparison.items[0].averageMetrics).length > 0 && (
+                            <div>
+                              <div className="flex flex-row">
+                                {Object.entries(comparison.items[0].averageMetrics)
+                                  .sort(([, a], [, b]) => b.average - a.average)
+                                  .slice(0, 2)
+                                  .map(([metric, data]) => (
+                                      <span className="text-sm text-gray-400 bg-gray-200 rounded-full px-2 py-1">{metric.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}</span>
+                                  ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Users size={16} />
-                        <span>{comparison.participants} participants</span>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 </div>
               ))

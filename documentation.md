@@ -266,15 +266,6 @@ App
 │   │   ├── ProductGrid
 │   │   │   └── ProductCard
 │   │   └── CompanyStats
-│   ├── Item Details Page
-│   │   ├── ItemHeader
-│   │   │   ├── ItemImage
-│   │   │   └── ItemInfo
-│   │   ├── ReviewSection
-│   │   │   ├── ReviewList
-│   │   │   │   └── ReviewCard
-│   │   │   └── ReviewForm
-│   │   └── ComparisonHistory
 │   └── Product Details Page
 │       ├── ProductGallery
 │       ├── ProductInfo

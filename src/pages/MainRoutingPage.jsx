@@ -9,7 +9,7 @@ import Footer from '../components/layout/Footer';
 import Trending from './Trending';
 import PollScreen from './PollScreen';
 import ProductDetails from './ProductDetails';
-import ItemScreen from './ItemScreen';
+import ItemPage from './ItemPage';
 import UserDashboard from './UserDashboard';
 import { useTheme } from '../contexts/ThemeContext';
 import Settings from './Settings';
@@ -18,6 +18,7 @@ import Signup from '../components/auth/Signup';
 import ForgotPassword from '../components/auth/ForgotPassword';
 import OnboardingFlow from '../components/onboarding/OnboardingFlow';
 import { userService } from '../services/userService';
+import PollScreenAspect from './PollScreenAspect';
 
 // Protected Route wrapper
 const ProtectedRoute = ({ children }) => {
@@ -122,6 +123,14 @@ const MainRoutingPage = () => {
               }
             />
             <Route
+              path="/comparison-aspect/:id"
+              element={
+                <ProtectedRoute>
+                  <PollScreenAspect />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="/comparison/:id"
               element={
                 <ProtectedRoute>
@@ -141,7 +150,7 @@ const MainRoutingPage = () => {
               path="/item/:itemId"
               element={
                 <ProtectedRoute>
-                  <ItemScreen />
+                  <ItemPage />
                 </ProtectedRoute>
               }
             />

@@ -1,25 +1,34 @@
 import { supabase } from '../lib/supabase';
 
 export const comparisonSetService = {
-  async fetchComments(setId, userId) {
-    const { data, error } = await supabase
+  async fetchComments(setId, userId, page = 1, limit = 3) {
+    const offset = (page - 1) * limit;
+    
+    const { data, error, count } = await supabase
       .from('comparison_set_comments')
       .select(`
         *,
         user:profiles(username),
         reactions:comparison_set_comment_reactions(reaction_type, user_id),
         replies:comparison_set_comment_replies(*,user:profiles(username))
-      `)
+      `, { count: 'exact' })
       .eq('set_id', setId)
-      .order('created_at', { ascending: true });
+      .order('created_at', { ascending: true })
+      .range(offset, offset + limit - 1);
 
     if (error) throw error;
 
-    return data.map(comment => ({
-      ...comment,
-      userReaction: comment.reactions?.find(r => r.user_id === userId)?.reaction_type || null,
-      replies: comment.replies || []
-    }));
+    return {
+      comments: data.map(comment => ({
+        ...comment,
+        userReaction: comment.reactions?.find(r => r.user_id === userId)?.reaction_type || null,
+        replies: comment.replies || []
+      })),
+      total: count,
+      page,
+      limit,
+      hasMore: count > offset + limit
+    };
   },
 
   async postComment(setId, userId, text) {

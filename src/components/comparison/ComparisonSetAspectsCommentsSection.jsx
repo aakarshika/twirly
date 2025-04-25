@@ -6,7 +6,8 @@ import CommentList from './CommentList';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Heart, MessageSquare } from 'lucide-react';
 import Button from '../common/Button';
-const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
+
+const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet }) => {
   const { user } = useAuth();
   const { currentTheme } = useTheme();
   const [newComment, setNewComment] = useState('');
@@ -24,7 +25,7 @@ const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
     handleReply,
     loadMore,
     hasMore
-  } = useComments(setId, user?.id);
+  } = useComments(aspectSetId, user?.id);
 
   const onSubmitComment = (e) => {
     e.preventDefault();
@@ -55,31 +56,10 @@ const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
   return (
     <div className="space-y-2" >
       <div className="text-center" >
-        <div className="flex ">
-          <img
-            src={user?.profile_picture || 'https://images.pexels.com/photos/538969/pexels-photo-538969.jpeg'}
-            alt={user?.username || 'User'}
-            className="w-8 h-8 rounded-full mr-2"
-          />
-
-          <div className="flex">
-            <span className="font-bold text-lg">{user?.username || 'Anonymous'}</span>
-            <span><div className="w-1 h-1 bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{ marginTop: '8px', background: 'lightgray' }}></div></span>
-            <span className="font-normal text-xs text-gray-400 dark:text-gray-300" style={{ marginTop: '2px' }}>
-              {new Date(aspectSet?.created_at).toLocaleDateString()}
-            </span>
-          </div>
-        </div>
-        <div className="flex">
-          <div className="text-start ml-4 mb-4">
-            <h1 className="text-sm font-normal">{aspectSet?.comparison_sets?.description}</h1>
-          </div>
-        </div>
-
-        <div className="text-start ml-4 mb-4" style={{ backgroundColor: 'white', borderRadius: '4px' }}>
+        <div className="text-start mb-4" style={{ backgroundColor: 'white', borderRadius: '4px' }}>
           
           <div className="flex gap-3 mb-2">
-            <button onClick={() => onLike(aspectSet?.id)} className={`flex gap-1 text-xs ${aspectSet?.userReaction === 'like' ? 'text-amber-400' : 'text-gray-500 hover:text-amber-400'}`}>
+            <button onClick={() => onLike(aspectSetId)} className={`flex gap-1 text-xs ${aspectSet?.userReaction === 'like' ? 'text-amber-400' : 'text-gray-500 hover:text-amber-400'}`}>
               <Heart className={`w-3.5 h-3.5 ${aspectSet?.userReaction === 'like' ? 'fill-current' : ''}`} />
               {aspectSet?.reactions ? aspectSet?.reactions.length : 0}
             </button>
@@ -121,8 +101,9 @@ const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
           </div>
         )}
       </div>
+      <div className="h-1 w-full" style={{ backgroundColor: 'gray', marginBottom: '15px' }}></div>
     </div>
   );
 };
 
-export default ComparisonSetCommentsSection;
+export default ComparisonSetAspectsCommentsSection;

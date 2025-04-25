@@ -6,6 +6,8 @@ export const useComments = (setId, userId) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [commentVisibility, setCommentVisibility] = useState({});
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
     if (setId) {
@@ -16,13 +18,20 @@ export const useComments = (setId, userId) => {
   const fetchComments = async () => {
     try {
       setLoading(true);
-      const data = await comparisonSetService.fetchComments(setId, userId);
-      setComments(data);
+      const data = await comparisonSetService.fetchComments(setId, userId, page);
+      setComments(prev => page === 1 ? data.comments : [...prev, ...data.comments]);
+      setHasMore(data.hasMore);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadMore = async () => {
+    if (!hasMore || loading) return;
+    setPage(prev => prev + 1);
+    await fetchComments();
   };
 
   const handleSubmitComment = async (text) => {
@@ -107,6 +116,8 @@ export const useComments = (setId, userId) => {
     setCommentVisibility,
     handleSubmitComment,
     handleLikeComment,
-    handleReply
+    handleReply,
+    loadMore,
+    hasMore
   };
 }; 

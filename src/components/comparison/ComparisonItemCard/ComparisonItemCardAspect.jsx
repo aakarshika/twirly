@@ -8,7 +8,7 @@ import './ComparisonItemCard.css';
 import { ThumbsUp, X, Star } from 'lucide-react';
 import { COMPARISON_COLOR_SET } from '../../../lib/constants';
 
-const ComparisonItemCard = ({
+const ComparisonItemCardAspect = ({
   item,
   index,
   height,
@@ -26,7 +26,7 @@ const ComparisonItemCard = ({
 
   // Check if image exists and is valid
   useEffect(() => {
-    if (!item.image) {
+    if (!item.image_url) {
       setImageError(true);
       return;
     }
@@ -38,11 +38,11 @@ const ComparisonItemCard = ({
     img.onerror = () => {
       setImageError(true);
     };
-    img.src = item.image;
-  }, [item.image]);
+    img.src = item.image_url;
+  }, [item.image_url]);
 
   const handleItemClick = (e) => {
-      navigate(`/item/${item.id}`);
+    navigate(`/item/${item.id}`);
   };
 
   const startVoting = () => {
@@ -60,9 +60,10 @@ const ComparisonItemCard = ({
   const newHeight = (numericHeight / 3) + 'vh';
 
   const isVotedItem = userVoted && votedItemId === item.id;
-
-  const itemReviewData = itemReviews[item.id] || { reviews: [], metrics: {} };
-  const reviewCount = itemReviewData.reviews.length;
+  
+  // Properly handle itemReviews data
+  const itemReviewData = itemReviews && itemReviews[item.id] ? itemReviews[item.id] : { reviews: [], metrics: {} };
+  const reviewCount = itemReviewData.reviews ? itemReviewData.reviews.length : 0;
 
   // Function to get a lighter shade of a color
   const getLighterShade = (color) => {
@@ -70,12 +71,12 @@ const ComparisonItemCard = ({
     const r = parseInt(color.slice(1, 3), 16);
     const g = parseInt(color.slice(3, 5), 16);
     const b = parseInt(color.slice(5, 7), 16);
-    
+
     // Make it lighter by adding white
     const lighterR = Math.min(255, r + 40);
     const lighterG = Math.min(255, g + 40);
     const lighterB = Math.min(255, b + 40);
-    
+
     // Convert back to hex
     return `#${lighterR.toString(16).padStart(2, '0')}${lighterG.toString(16).padStart(2, '0')}${lighterB.toString(16).padStart(2, '0')}`;
   };
@@ -84,7 +85,6 @@ const ComparisonItemCard = ({
     <div
       className="comparison-item-card"
       style={{ height: newHeight }}
-      
     >
       <div
         className="card-container"
@@ -111,18 +111,26 @@ const ComparisonItemCard = ({
             </button>
           )}
 
+          {userVoted ? (
+            <span></span>
+          ) : (
+            <VotingAnimation
+              onStartVoting={startVoting}
+              onCancelVoting={() => { }}
+            />
+          )}
           {!imageError ? (
             <img
-              src={item.image}
+              src={item.image_url}
               alt={item.name}
               className="item-image"
               loading="lazy"
               onError={() => setImageError(true)}
             />
           ) : (
-            <div 
+            <div
               className="text-fallback"
-              style={{ 
+              style={{
                 background: userVoted ? getLighterShade(COMPARISON_COLOR_SET[index]) : 'rgba(22, 22, 22, 0.5)',
                 color: userVoted ? '#000' : '#fff'
               }}
@@ -131,32 +139,42 @@ const ComparisonItemCard = ({
                 <h3 className="text-fallback-title">{item.name}</h3>
                 <p className="text-fallback-description">{item.description}</p>
               </div>
-              <div className="flex items-center gap-2 content-overlay">
-                <VoteStats
-                  votes={item.votes}
-                  totalVotes={totalVotes}
-                  color={COMPARISON_COLOR_SET[index]}
-                  isVotedItem={isVotedItem}
-                  reviewCount={reviewCount}
-                  itemReviewData={itemReviewData}
-                />
-              </div>
+              {userVoted && (
+                <div className="flex items-center gap-2 content-overlay"
+                  onClick={() => {
+                    console.log("clicked")
+                    handleItemClick()
+                  }}
+                >
+                  <VoteStats
+                    votes={item.votes.length}
+                    totalVotes={totalVotes}
+                    color={COMPARISON_COLOR_SET[index]}
+                    isVotedItem={isVotedItem}
+                    reviewCount={reviewCount}
+                    itemReviewData={itemReviewData}
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>
 
         {!imageError && (
           <div className="absolute bottom-0 left-0 right-0 p-4 content-overlay">
-            <h3
-              className="item-name"
-            >
+            <h3 className="item-name">
               {item.name}
             </h3>
             <p className="item-description">{item.description}</p>
 
-              <div className="flex items-center gap-2" >
+            {userVoted ? (
+              <div className="flex items-center gap-2" onClick={() => {
+                console.log("clicked")
+                handleItemClick()
+              }}
+              >
                 <VoteStats
-                  votes={item.votes}
+                  votes={item.votes.length}
                   totalVotes={totalVotes}
                   color={COMPARISON_COLOR_SET[index]}
                   isVotedItem={isVotedItem}
@@ -164,6 +182,9 @@ const ComparisonItemCard = ({
                   itemReviewData={itemReviewData}
                 />
               </div>
+            ) : (
+              <span></span>
+            )}
           </div>
         )}
       </div>
@@ -171,4 +192,4 @@ const ComparisonItemCard = ({
   );
 };
 
-export default ComparisonItemCard; 
+export default ComparisonItemCardAspect; 

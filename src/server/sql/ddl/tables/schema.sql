@@ -55,6 +55,7 @@ CREATE TABLE items (
 CREATE TABLE comparison_sets (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255),
+    description TEXT,
     category_id INTEGER REFERENCES categories(id),
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
@@ -126,7 +127,7 @@ CREATE TABLE review_likes (
 -- Comments table
 CREATE TABLE comparison_set_comments (
     id SERIAL PRIMARY KEY,
-    set_id INTEGER REFERENCES comparison_sets(id) ON DELETE CASCADE,
+    set_id INTEGER REFERENCES comparison_set_aspects(id) ON DELETE CASCADE,
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     text TEXT NOT NULL,
     likes_count INTEGER DEFAULT 0,

@@ -61,7 +61,7 @@ const Reply = ({ reply, onLike, onReply, contentEditableRef, appendText }) => {
           </div>
         </div>
         <div className="text-gray-700 dark:text-gray-300 ml-8 text-sm">
-          {renderTextWithMentions(reply.text)}
+          <p style={{ textAlign: 'start' }}>{renderTextWithMentions(reply.text)}</p>
         </div>
 
         <div className="ml-8 flex items-center gap-3 mb-1">

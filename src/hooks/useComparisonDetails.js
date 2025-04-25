@@ -11,7 +11,9 @@ export const useComparisonDetails = (id) => {
     setUserVoted, 
     setVotedItemId,
     setCurrentSetId, 
-    setCurrentComparisonName
+    setCurrentComparisonName,
+    setCurrentComparisonDescription,
+    setCurrentSet
   } = useComparison();
   
   const { user } = useAuth();
@@ -40,6 +42,7 @@ export const useComparisonDetails = (id) => {
           .select(`
             id,
             name,
+            description,
             category_id,
             created_at,
             categories(name),
@@ -63,6 +66,8 @@ export const useComparisonDetails = (id) => {
 
         setCurrentSetId(data.id);
         setCurrentComparisonName(data.name);
+        setCurrentComparisonDescription(data.description);
+        setCurrentSet(data);
 
         // Check if user has voted in this set
         const hasVoted = await hasUserVoted(data.id, user);
@@ -73,7 +78,6 @@ export const useComparisonDetails = (id) => {
             .from('votes')
             .select('item_id')
             .eq('user_id', user.id)
-            .eq('set_id', data.id)
             .single();
 
           if (!voteError && voteData) {
@@ -87,7 +91,6 @@ export const useComparisonDetails = (id) => {
           const { count, error } = await supabase
             .from('votes')
             .select('*', { count: 'exact', head: true })
-            .eq('set_id', data.id)
             .eq('item_id', setItem.items.id);
 
           if (error) {
@@ -153,7 +156,7 @@ export const useComparisonDetails = (id) => {
     if (id) {
       fetchComparisonDetails();
     }
-  }, [id, setItems, setUserVoted, setVotedItemId, setCurrentSetId, setCurrentComparisonName]);
+  }, [id, setItems, setUserVoted, setVotedItemId, setCurrentSetId, setCurrentComparisonName, setCurrentComparisonDescription, setCurrentSet]);
 
   return { loading, error };
 }; 

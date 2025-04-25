@@ -11,7 +11,6 @@ const VotingAnimation = ({
   const [balloonHearts, setBalloonHearts] = useState([]);
 
   const handleTap = (e) => {
-    e.preventDefault();
     tapCountRef.current += 1;
 
     if (tapCountRef.current === 1) {

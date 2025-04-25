@@ -5,7 +5,6 @@ import { useComparison } from '../contexts/ComparisonContext';
 import { useHeader } from '../contexts/HeaderContext';
 import PollGrid from '../components/comparison/PollGrid';
 import BarChart from '../components/results/visualizations/BarChart';
-import ComparisonSetCommentsSection from '../components/comparison/ComparisonSetCommentsSection';
 import SetReviewModal from '../components/comparison/SetReviewModal';
 import SetCombinedReviewModal from '../components/comparison/SetCombinedReviewModal';
 import { useComparisonDetails } from '../hooks/useComparisonDetails';
@@ -24,6 +23,8 @@ const PollScreen = () => {
     votedItemId, 
     currentSetId,
     currentComparisonName,
+    currentComparisonDescription,
+    currentSet,
     handleVote,
     setActiveReviewItem,
     activeReviewItem,
@@ -205,6 +206,8 @@ const PollScreen = () => {
   console.log("items",items);
   console.log("id",id);
   console.log("currentComparisonName",currentComparisonName);
+  console.log("currentComparisonDescription",currentComparisonDescription);
+  console.log("currentSet",currentSet);
   useEffect(() => {
   }, [items]);
 
@@ -236,7 +239,12 @@ const PollScreen = () => {
   }
 
   return (
-    <div className="min-h-screen h-full flex flex-col max-w-4xl mx-auto" style={{ backgroundColor: currentTheme.colors.background }}>
+    <div className="min-h-screen h-full flex flex-col max-w-4xl mx-auto"
+    
+    style={{ 
+      backgroundColor: currentTheme.colors.background,
+      top: isHeaderVisible ? '64px' : '0px',
+    }}>
       
         <PollGrid 
           id={id}
@@ -247,15 +255,13 @@ const PollScreen = () => {
           userVoted={userVoted}
           onItemClick={handleItemClick}
           itemReviews={itemReviews}
+          setId={currentSetId}
+          set={currentSet}
         />
       <div 
         className="relative z-0 w-full transition-all duration-150 ease-in-out"
         style={{ 
-          marginTop: '100vh',
-          minHeight: '100vh',
           backgroundColor: currentTheme.colors.background,
-          transform: 'translateZ(0)',
-          willChange: 'transform'
         }}
       >
         {userVoted && <div className="w-full max-w-4xl mx-auto">
@@ -274,17 +280,16 @@ const PollScreen = () => {
               </div>
             </div>
           </div>
-          <div className="w-full p-4">
-            <div className="bg-gray-800 rounded-lg" style={{ backgroundColor: currentTheme.colors.background }}>
+          <div className="w-full p-4" style={{ backgroundColor: 'white' }}>
+            <div className="">
               <BarChart items={items} 
                       itemReviews={itemReviews} 
                       metrics={metrics} 
-                      comparisonMetrics={comparisonMetrics} />
+                      comparisonMetrics={comparisonMetrics}
+                      setId={currentSetId}
+                      set={currentSet}
+                      />
             </div>
-          </div>
-
-          <div className="w-full p-4">
-            <ComparisonSetCommentsSection setId={currentSetId} items={items} />
           </div>
 
         </div>}

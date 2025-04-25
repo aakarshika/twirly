@@ -30,8 +30,11 @@ const Comment = ({ comment, onLike, onReply, users, products }) => {
   };
 
   return (
-    <div className="p-2 rounded border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-      <div className="flex items-center">
+    <div className="flex">
+    <div className="w-1 h-auto bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{marginTop: '2px', background: 'lightgray'}}></div>
+    <div className="p-2 rounded bg-white dark:bg-gray-800">
+      <div className="flex">
+      
         <img
           src={comment.user?.profile_picture || 'https://images.pexels.com/photos/538969/pexels-photo-538969.jpeg'}
           alt={comment.user?.username || 'User'}
@@ -46,7 +49,7 @@ const Comment = ({ comment, onLike, onReply, users, products }) => {
           </span>
         </div>
       </div>
-      <p className="ml-10 text-sm text-gray-700 dark:text-gray-300">{comment.text}</p>
+      <p className="ml-10 text-sm text-gray-700 dark:text-gray-300" style={{     textAlign: 'start' }}>{comment.text}</p>
 
       <div className="ml-10 flex items-center gap-3 mb-2">
         <button onClick={() => onLike(comment.id)} className={`flex items-center gap-1 text-xs ${comment.userReaction === 'like' ? 'text-amber-400' : 'text-gray-500 hover:text-amber-400'}`}>
@@ -123,6 +126,7 @@ const Comment = ({ comment, onLike, onReply, users, products }) => {
           appendText={appendText}
         />
       ))}
+    </div>
     </div>
   );
 };

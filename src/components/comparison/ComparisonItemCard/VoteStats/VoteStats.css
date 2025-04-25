@@ -20,19 +20,17 @@
 .highlighted-aspect {
   background-color: rgb(198,198,198,0.4);
   color: #cecece; /* Dark teal text */
-  font-weight: bold; /* Bold text */
   border-radius: 5px; /* Rounded corners */
   padding: 4px; /* Padding around the text */
-  font-size: 0.5rem;
+  font-size: 0.1rem;
 }
 
 .highlighted-aspect-reply {
   background-color: rgba(225, 224, 224, 0.6);
   color: #cecece; /* Dark teal text */
-  font-weight: bold; /* Bold text */
   border-radius: 5px; /* Rounded corners */
   padding: 4px; /* Padding around the text */
-  font-size: 0.5rem;
+  font-size: 0.1rem;
 }
 .vote-label {
   font-size: 0.65rem;

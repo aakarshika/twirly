@@ -1,0 +1,151 @@
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useTheme } from '../contexts/ThemeContext';
+import { useHeader } from '../contexts/HeaderContext';
+import PollGrid from '../components/comparison/PollGrid';
+import BarChart from '../components/results/visualizations/BarChart';
+import ComparisonSetCommentsSection from '../components/comparison/ComparisonSetCommentsSection';
+import SetReviewModal from '../components/comparison/SetReviewModal';
+import SetCombinedReviewModal from '../components/comparison/SetCombinedReviewModal';
+import { useComparisonAspectDetails } from '../hooks/useComparisonAspectDetails';
+import Button from '../components/common/Button';
+import { MessageSquare, Star } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
+import ComparisonGridSkeleton from '../components/skeletons/ComparisonGridSkeleton';
+import ComparisonGrid from '../components/comparison/ComparisonGrid';
+import ComparisonItemCard from '../components/comparison/ComparisonItemCard/ComparisonItemCard';
+import ComparisonSetAspectsCommentsSection from '../components/comparison/ComparisonSetAspectsCommentsSection';
+import ComparisonItemCardAspect from '../components/comparison/ComparisonItemCard/ComparisonItemCardAspect';
+
+const PollScreenAspect = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { currentTheme } = useTheme();
+  const { isHeaderVisible } = useHeader();
+  const {
+    items,
+    currentSet,
+    currentAspectSet,
+    totalVotes,
+    userVoted,
+    votedItemId,
+    handleVote,
+    handleRevertVote,
+    itemReviews,
+    loading,
+    error } = useComparisonAspectDetails(id);
+
+  useEffect(() => {
+    setHeight('100vh');
+  });
+
+  const [height, setHeight] = useState('100vh');
+
+  if (loading) {
+    return (
+      <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background }}>
+        <ComparisonGridSkeleton />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background }}>
+        <div className="h-screen flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-red-500 mb-4">{error}</p>
+            <button
+              onClick={() => navigate(-1)}
+              className="px-4 py-2 bg-amber-400 text-black rounded-full font-semibold hover:bg-amber-300 transition-colors"
+            >
+              Go Back
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Ensure itemReviews is properly structured
+  const processedItemReviews = itemReviews || {};
+
+  return (
+    <div className="min-h-screen h-full flex flex-col max-w-4xl mx-auto"
+      style={{
+        backgroundColor: currentTheme.colors.background,
+        top: isHeaderVisible ? '64px' : '0px',
+      }}>
+      <div className="h-full flex flex-col max-w-4xl mx-auto">
+        <div className="flex-1">
+          <div className="text-center m-4">
+            <div className="flex justify-between">
+              <button
+                onClick={() => navigate('/comparison-aspect/' + (parseInt(id) - 1).toString())}
+                className="px-4 py-2 bg-gray-400 text-white rounded-full font-semibold hover:bg-amber-300 transition-colors"
+              >
+                Prev
+              </button>
+              <button
+                onClick={() => navigate('/comparison-aspect/' + (parseInt(id) + 1).toString())}
+                className="px-4 py-2 bg-amber-400 text-black rounded-full font-semibold hover:bg-amber-300 transition-colors"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-4 m-4" style={{ color: currentTheme.colors.primary }}>
+            <div className="grid-container">
+              <div style={{ color: currentTheme.colors.text }}>
+                <div className="flex justify-between items-center">
+                  <span style={{ color: currentTheme.colors.primary, padding: '15px' }} className="text-lg font-bold text-center">
+                    {currentSet?.name || 'Untitled Comparison'}
+                  </span>
+                </div>
+                <div className="flex justify-center items-center gap-2 mb-4">
+                  <p className="text-center text-sm text-gray-500" style={{ color: currentTheme.colors.text }}>Based on: </p>
+                  <p className="text-center text-sm text-gray-500 rounded-full px-2 py-1 bg-gray-200" style={{ color: currentTheme.colors.text }}>
+                    {(currentAspectSet?.metric_name || '').split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2"
+                style={{
+                  gap: '0vh'
+                }}
+              >
+                {items.map((item, i) => (
+                  <div key={item.id}>
+                    <ComparisonItemCardAspect
+                      key={item.id}
+                      item={item.items}
+                      index={i}
+                      height={height}
+                      totalVotes={totalVotes}
+                      itemReviews={processedItemReviews}
+                      userVoted={userVoted}
+                      votedItemId={votedItemId}
+                      handleVote={handleVote}
+                      handleRevertVote={handleRevertVote}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center m-4" style={{ color: currentTheme.colors.text, backgroundColor: 'white', borderRadius: '4px' }}>
+            <div className="w-full p-4">
+              <ComparisonSetCommentsSection setId={id} items={items} aspectSet={currentAspectSet} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default PollScreenAspect; 
