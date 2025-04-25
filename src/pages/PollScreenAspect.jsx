@@ -9,7 +9,7 @@ import SetReviewModal from '../components/comparison/SetReviewModal';
 import SetCombinedReviewModal from '../components/comparison/SetCombinedReviewModal';
 import { useComparisonAspectDetails } from '../hooks/useComparisonAspectDetails';
 import Button from '../components/common/Button';
-import { MessageSquare, Star } from 'lucide-react';
+import { ArrowRight, MessageSquare, Star } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import ComparisonGridSkeleton from '../components/skeletons/ComparisonGridSkeleton';
@@ -111,6 +111,7 @@ const PollScreenAspect = () => {
                     {(currentAspectSet?.metric_name || '').split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                   </p>
                 </div>
+
               </div>
               <div className="grid grid-cols-2"
                 style={{
@@ -135,8 +136,15 @@ const PollScreenAspect = () => {
                 ))}
               </div>
             </div>
+                
+                <button
+                      onClick={() => navigate('/comparison/' + currentAspectSet.set_id)}
+                      className=" w-full pull-right rounded-md "
+                    >
+                      <span className="flex items-center gap-2">Go To Comparison Page
+                      <ArrowRight size={16} /></span>
+                    </button>
           </div>
-
           <div className="text-center m-4" style={{ color: currentTheme.colors.text, backgroundColor: 'white', borderRadius: '4px' }}>
             <div className="w-full p-4">
               <ComparisonSetCommentsSection setId={id} items={items} aspectSet={currentAspectSet} />

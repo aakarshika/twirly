@@ -41,12 +41,9 @@ const Trending = () => {
               id,
               name,
               description,
-              image_url
+              image_url,
+              votes(count)
             )
-          ),
-          votes:votes(count),
-          participants:votes(
-            user_id
           ),
           comparison_set_aspects(
             metric_name

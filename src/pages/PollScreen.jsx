@@ -266,7 +266,7 @@ const PollScreen = () => {
         <div className="w-full max-w-4xl mx-auto">
 
           {/* Review Section */}
-          <div className="w-full p-4">
+          {/* <div className="w-full p-4">
             <div className="bg-gray-800 rounded-lg" style={{ backgroundColor: currentTheme.colors.background }}>
               <div className="flex justify-between items-center">
                 <Button
@@ -278,7 +278,7 @@ const PollScreen = () => {
                 </Button>
               </div>
             </div>
-          </div>
+          </div> */}
           <div className="w-full p-4" style={{ backgroundColor: 'white' }}>
             <div className="">
               <BarChart items={items} 

@@ -42,7 +42,7 @@ const PollGrid = ({ id, title, set, items, onVote, votedItemId, userVoted, curre
       <div className="h-full flex flex-col max-w-4xl mx-auto">
         <div className="flex-1">
 
-        <div className="text-center m-4">
+        {/* <div className="text-center m-4">
             <div className="flex justify-between">
             <button
               onClick={() => navigate('/comparison/'+(parseInt(currentId)-1).toString())}
@@ -57,7 +57,7 @@ const PollGrid = ({ id, title, set, items, onVote, votedItemId, userVoted, curre
               Next
             </button>
             </div>
-          </div>
+          </div> */}
           <ComparisonGrid 
             isHeaderVisible={isHeaderVisible}
             currentId={currentId}

@@ -2,10 +2,12 @@ import React from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { COMPARISON_COLOR_SET } from '../../../lib/constants';
 import ComparisonSetAspectsCommentsSection from '../../comparison/ComparisonSetAspectsCommentsSection';
-
+import Button from '../../common/Button';
+import { Info, MessageSquareShare, Play, Share, Star } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
   const { currentTheme } = useTheme();
-
+  const navigate = useNavigate();
   // Extract all unique metrics from the reviews
   const metricsArray = React.useMemo(() => {
     if (!itemReviews) return [];
@@ -34,7 +36,7 @@ const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
         }
       });
     });
-    return itemVotes ;
+    return itemVotes;
   };
 
   return (
@@ -53,17 +55,24 @@ const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
               <div className="flex-1 ">
                 <div className="h-auto rounded-sm overflow-hidden">
                   <div className="text-center" style={{ color: currentTheme.colors.text, backgroundColor: 'white' }}>
-
-                  <h4
+                    <div className="flex items-center justify-between">
+                      <h4
                         className="truncate block "
                         style={{ color: currentTheme.colors.textSecondary, textAlign: 'left' }}
-                      >
-                        {metric.metric_name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-                      </h4>
+                    >
+                      {metric.metric_name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                    </h4>
+                    <Button onClick={() => {
+                      console.log(metric);
+                      navigate(`/comparison-aspect/${metric.id}`);
+                    }} className="flex items-center gap-2">
+                      <Play size={16} />
+                    </Button>
+                    </div>
                     <div className="flex items-center gap-2">
-                      
+
                       <div className="flex-1 flex gap-1">
-                        
+
                         {items.map((item, i) => {
                           const value = getMetricAverageVotes(item.id, metric.metric_name);
                           const percentage = (value / (metric.votes.length || 1)) * 100;
