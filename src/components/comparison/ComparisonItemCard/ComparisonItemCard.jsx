@@ -99,17 +99,6 @@ const ComparisonItemCard = ({
         />
 
         <div className="image-container">
-          {isVotedItem && (
-            <button
-              className="you-voted-badge"
-              onClick={handleRevertClick}
-              type="button"
-            >
-              <ThumbsUp style={{ width: '12px', height: '12px' }} />
-              <span>Your vote</span>
-              <X style={{ width: '12px', height: '12px' }} />
-            </button>
-          )}
 
           {!imageError ? (
             <img
@@ -131,7 +120,11 @@ const ComparisonItemCard = ({
                 <h3 className="text-fallback-title">{item.name}</h3>
                 <p className="text-fallback-description">{item.description}</p>
               </div>
-              <div className="flex items-center gap-2 content-overlay">
+              <div className="flex items-center gap-2 content-overlay"
+                  onClick={() => {
+                    console.log("clicked")
+                    handleItemClick()
+                  }}>
                 <VoteStatsCombined
                   votes={item.votes}
                   totalVotes={totalVotes}
@@ -154,7 +147,11 @@ const ComparisonItemCard = ({
             </h3>
             <p className="item-description">{item.description}</p>
 
-              <div className="flex items-center gap-2" >
+              <div className="flex items-center gap-2" 
+                  onClick={() => {
+                    console.log("clicked")
+                    handleItemClick()
+                  }} >
                 <VoteStatsCombined
                   votes={item.votes}
                   totalVotes={totalVotes}

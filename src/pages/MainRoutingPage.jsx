@@ -19,6 +19,7 @@ import ForgotPassword from '../components/auth/ForgotPassword';
 import OnboardingFlow from '../components/onboarding/OnboardingFlow';
 import { userService } from '../services/userService';
 import PollScreenAspect from './PollScreenAspect';
+import ProductDetailsPage from './ProductDetailsPage';
 
 // Protected Route wrapper
 const ProtectedRoute = ({ children }) => {
@@ -142,7 +143,7 @@ const MainRoutingPage = () => {
               path="/product/:itemId"
               element={
                 <ProtectedRoute>
-                  <ProductDetails />
+                  <ProductDetailsPage />
                 </ProtectedRoute>
               }
             />

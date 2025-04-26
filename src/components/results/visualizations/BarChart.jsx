@@ -45,10 +45,10 @@ const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
       >
         {comparisonMetrics.map(metric => (
           <div
+          key={metric.id}
             className="divide-y"
           >
             <div
-              key={metric.metric_name}
               className=""
             >
 
@@ -63,7 +63,6 @@ const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
                       {metric.metric_name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                     </h4>
                     <Button onClick={() => {
-                      console.log(metric);
                       navigate(`/comparison-aspect/${metric.id}`);
                     }} className="flex items-center gap-2">
                       <Play size={16} />
@@ -76,8 +75,6 @@ const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
                         {items.map((item, i) => {
                           const value = getMetricAverageVotes(item.id, metric.metric_name);
                           const percentage = (value / (metric.votes.length || 1)) * 100;
-                          console.log(value);
-                          console.log(percentage);
 
                           return (
                             <div key={item.id}>

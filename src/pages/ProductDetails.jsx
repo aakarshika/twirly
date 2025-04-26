@@ -60,11 +60,9 @@ const ProductDetails = () => {
         const { data: setsData, error: setsError } = await supabase
           .from('comparison_sets')
           .select(`
-        *,
-        comparison_set_items!inner(*
-        ),
-        votes(*),
-        comments:comparison_set_comments(*)
+                  *,
+                  comparison_set_items!inner(*),
+                  comparison_set_aspects(*,comparison_set_comments(*))
           `)
           .eq('comparison_set_items.item_id', itemId);
 

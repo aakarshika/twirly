@@ -64,7 +64,7 @@ const heightTransform = useTransform(
 3. **Comparison Sets**
    - Primary key: id
    - Fields: name, category_id, user_id, created_at
-   - Foreign keys: category_id references categories(id), user_id references auth.users(id)
+   - Foreign keys: category_id references categories(id), user_id references user_preferences.user_id
    - Purpose: Groups of items being compared in a poll
 
 4. **Comparison Set Items**
@@ -76,65 +76,54 @@ const heightTransform = useTransform(
 5. **Votes**
    - Primary key: id
    - Fields: user_id, item_id, set_id, created_at
-   - Foreign keys: user_id references auth.users(id), item_id references items(id), set_id references comparison_sets(id)
+   - Foreign keys: user_id references user_preferences.user_id, item_id references items(id), set_id references comparison_set-aspects(id)
    - Purpose: Records user votes on items within comparison sets
 
-6. **Reviews**
+6. **Comparison Set Aspects**
    - Primary key: id
-   - Fields: user_id, item_id, text, likes, created_at, updated_at
-   - Foreign keys: user_id references auth.users(id), item_id references items(id)
-   - Purpose: Stores user-written reviews for items
+   - Fields: set_id, name, description, weight, created_at
+   - Foreign keys: set_id references comparison_sets(id)
+   - Purpose: Defines different aspects/criteria for comparing items within a set (e.g., price, quality, features)
+   - Note: Weight field allows prioritizing certain aspects over others when calculating overall scores
 
-7. **Review Metrics**
-   - Primary key: id
-   - Fields: review_id, metric_name, value, created_at
-   - Foreign key: review_id references reviews(id)
-   - Purpose: Stores detailed rating metrics for reviews
-
-8. **Review Likes**
-   - Primary key: id
-   - Fields: user_id, review_id, created_at
-   - Foreign keys: user_id references auth.users(id), review_id references reviews(id)
-   - Unique constraint: (user_id, review_id)
-   - Purpose: Tracks which users have liked which reviews
 
 9. **Comparison Set Comments**
    - Primary key: id
    - Fields: set_id, user_id, text, likes_count, dislikes_count, replies_count, is_edited, created_at, updated_at
-   - Foreign keys: set_id references comparison_sets(id), user_id references auth.users(id)
+   - Foreign keys: set_id references comparison_set_aspects(id), user_id references user_preferences.user_id
    - Purpose: Stores comments made on comparison sets
 
 10. **Comment Replies**
     - Primary key: id
     - Fields: parent_comment_id, user_id, text, likes_count, dislikes_count, is_edited, created_at, updated_at
-    - Foreign keys: parent_comment_id references comparison_set_comments(id), user_id references auth.users(id)
+    - Foreign keys: parent_comment_id references comparison_set_comments(id), user_id references user_preferences.user_id
     - Purpose: Stores replies to top-level comments
 
 11. **Comment Reactions**
     - Primary key: id
     - Fields: comment_id, reply_id, user_id, reaction_type, created_at
-    - Foreign keys: comment_id references comparison_set_comments(id), reply_id references comparison_set_comment_replies(id), user_id references auth.users(id)
+    - Foreign keys: comment_id references comparison_set_comments(id), reply_id references comparison_set_comment_replies(id), user_id references user_preferences.user_id
     - Constraints: reaction_type IN ('like', 'dislike')
     - Purpose: Tracks user reactions on comments and replies
 
 12. **User Preferences**
     - Primary key: id
     - Fields: user_id, username, display_name, bio, profile_image_url, theme_preference, language_preference, is_onboarding_complete, created_at, updated_at
-    - Foreign key: user_id references auth.users(id)
+    - Foreign key: user_id references user_preferences.user_id
     - Unique constraint: (user_id)
     - Purpose: Stores core user preferences and settings
 
 13. **User Notification Settings**
     - Primary key: id
     - Fields: user_id, email_notifications, push_notifications, marketing_emails, vote_notifications, comment_notifications, created_at, updated_at
-    - Foreign key: user_id references auth.users(id)
+    - Foreign key: user_id references user_preferences.user_id
     - Unique constraint: (user_id)
     - Purpose: Stores user notification preferences
 
 14. **User Category Preferences**
     - Primary key: id
     - Fields: user_id, category_id, is_favorite, created_at
-    - Foreign keys: user_id references auth.users(id), category_id references categories(id)
+    - Foreign keys: user_id references user_preferences.user_id, category_id references categories(id)
     - Unique constraint: (user_id, category_id)
     - Purpose: Stores user's preferred categories
 

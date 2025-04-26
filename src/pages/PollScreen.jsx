@@ -180,19 +180,7 @@ const PollScreen = () => {
     fetchReviews();
   }, [currentSetId, items, user]);
 
-  const handleItemClick = (item, position) => {
-    if (userVoted) {
-      setSelectedItem(item);
-      setPopupPosition(position);
-      setShowPopup(true);
-    }
-  };
 
-  const handleClosePopup = () => {
-    setShowPopup(false);
-    setSelectedItem(null);
-    setPopupPosition(null);
-  };
 
   const handleNextPoll = () => {
     // TODO: Implement next poll logic
@@ -203,11 +191,6 @@ const PollScreen = () => {
     setActiveReviewItem(item.id);
   };
 
-  console.log("items",items);
-  console.log("id",id);
-  console.log("currentComparisonName",currentComparisonName);
-  console.log("currentComparisonDescription",currentComparisonDescription);
-  console.log("currentSet",currentSet);
   useEffect(() => {
   }, [items]);
 
@@ -252,7 +235,6 @@ const PollScreen = () => {
           items={items}
           votedItemId={votedItemId}
           currentId={id}
-          onItemClick={handleItemClick}
           itemReviews={itemReviews}
           setId={currentSetId}
           set={currentSet}

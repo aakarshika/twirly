@@ -9,7 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 const UserDashboard = () => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('products');
+  const [activeTab, setActiveTab] = useState('overview');
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
