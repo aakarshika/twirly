@@ -1,6 +1,7 @@
 import React from 'react';
 import { Heart } from 'lucide-react';
 import './Reply.css';
+import { getPublicUrl } from '../../lib/utils';
 
 const Reply = ({ reply, onLike, onReply, contentEditableRef, appendText }) => {
   // Function to render text with highlighted mentions
@@ -48,12 +49,12 @@ const Reply = ({ reply, onLike, onReply, contentEditableRef, appendText }) => {
       <div className="p-1 w-full border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-start">
           <img
-            src={reply.user?.profile_picture || 'https://images.pexels.com/photos/1092644/pexels-photo-1092644.jpeg'}
+            src={getPublicUrl(reply.user?.profile_image_url)}
             alt={reply.user?.username || 'User'}
             className="w-6 h-6 rounded-full mr-2"
           />
           <div className="flex flex justify-start">
-            <span className="font-bold text-sm">{reply.user?.username || 'Anonymous'}</span>
+            <span className="font-bold text-sm">{reply.user?.display_name || 'Anonymous'}</span>
             <span><div className="w-1 h-1 bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{marginTop: '8px', background: 'lightgray'}}></div></span>
             <span className="font-normal text-xs text-gray-400 dark:text-gray-300" style={{marginTop: '2px'}}>
               {new Date(reply.created_at).toLocaleDateString()}

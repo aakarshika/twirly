@@ -112,8 +112,7 @@ export const getUserComparisons = async (userId) => {
         items:comparison_set_items(
           item:items(*)
         ),
-        votes(*),
-        comments:comparison_set_comments(*)
+        comparison_set_aspects(comments:comparison_set_comments(*))
       `)
       .eq('user_id', userId)
       .order('created_at', { ascending: false });

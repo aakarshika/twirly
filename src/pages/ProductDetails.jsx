@@ -154,7 +154,7 @@ const ProductDetails = () => {
         .from('reviews')
         .select(`
           *,
-          profiles (username),
+          user_preferences (username),
           review_metrics (*, comparison_sets(*)),
           review_likes (*)
         `, { count: 'exact' })

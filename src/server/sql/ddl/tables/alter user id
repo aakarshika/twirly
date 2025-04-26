@@ -1,0 +1,59 @@
+-- For comparison_sets table
+ALTER TABLE comparison_sets
+DROP CONSTRAINT IF EXISTS fk_comparison_sets_user_id;  -- Replace with actual constraint name
+ALTER TABLE comparison_sets
+ADD CONSTRAINT fk_comparison_sets_user_id FOREIGN KEY (user_id) REFERENCES user_preferences(user_id) ON DELETE CASCADE;
+
+-- For votes table
+ALTER TABLE votes
+DROP CONSTRAINT IF EXISTS fk_votes_user_id;  -- Replace with actual constraint name
+ALTER TABLE votes
+ADD CONSTRAINT fk_votes_user_id FOREIGN KEY (user_id) REFERENCES user_preferences(user_id) ON DELETE CASCADE;
+
+-- For reviews table
+ALTER TABLE reviews
+DROP CONSTRAINT IF EXISTS fk_reviews_user_id;  -- Replace with actual constraint name
+ALTER TABLE reviews
+ADD CONSTRAINT fk_reviews_user_id FOREIGN KEY (user_id) REFERENCES user_preferences(user_id) ON DELETE CASCADE;
+
+-- For review_likes table
+ALTER TABLE review_likes
+DROP CONSTRAINT IF EXISTS fk_review_likes_user_id;  -- Replace with actual constraint name
+ALTER TABLE review_likes
+ADD CONSTRAINT fk_review_likes_user_id FOREIGN KEY (user_id) REFERENCES user_preferences(user_id) ON DELETE CASCADE;
+
+-- For comparison_set_comments table
+ALTER TABLE comparison_set_comments
+DROP CONSTRAINT IF EXISTS fk_comparison_set_comments_user_id;  -- Replace with actual constraint name
+ALTER TABLE comparison_set_comments
+ADD CONSTRAINT fk_comparison_set_comments_user_id FOREIGN KEY (user_id) REFERENCES user_preferences(user_id) ON DELETE CASCADE;
+
+-- For comparison_set_comment_replies table
+ALTER TABLE comparison_set_comment_replies
+DROP CONSTRAINT IF EXISTS fk_comparison_set_comment_replies_user_id;  -- Replace with actual constraint name
+ALTER TABLE comparison_set_comment_replies
+ADD CONSTRAINT fk_comparison_set_comment_replies_user_id FOREIGN KEY (user_id) REFERENCES user_preferences(user_id) ON DELETE CASCADE;
+
+-- For comparison_set_comment_reactions table
+ALTER TABLE comparison_set_comment_reactions
+DROP CONSTRAINT IF EXISTS fk_comparison_set_comment_reactions_user_id;  -- Replace with actual constraint name
+ALTER TABLE comparison_set_comment_reactions
+ADD CONSTRAINT fk_comparison_set_comment_reactions_user_id FOREIGN KEY (user_id) REFERENCES user_preferences(user_id) ON DELETE CASCADE;
+
+-- For user_preferences table
+ALTER TABLE user_preferences
+DROP CONSTRAINT IF EXISTS fk_user_preferences_user_id;  -- Replace with actual constraint name
+ALTER TABLE user_preferences
+ADD CONSTRAINT fk_user_preferences_user_id FOREIGN KEY (user_id) REFERENCES user_preferences(user_id) ON DELETE CASCADE;  -- Note: This is self-referencing, assuming that's intended
+
+-- For user_notification_settings table
+ALTER TABLE user_notification_settings
+DROP CONSTRAINT IF EXISTS fk_user_notification_settings_user_id;  -- Replace with actual constraint name
+ALTER TABLE user_notification_settings
+ADD CONSTRAINT fk_user_notification_settings_user_id FOREIGN KEY (user_id) REFERENCES user_preferences(user_id) ON DELETE CASCADE;
+
+-- For user_category_preferences table
+ALTER TABLE user_category_preferences
+DROP CONSTRAINT IF EXISTS fk_user_category_preferences_user_id;  -- Replace with actual constraint name
+ALTER TABLE user_category_preferences
+ADD CONSTRAINT fk_user_category_preferences_user_id FOREIGN KEY (user_id) REFERENCES user_preferences(user_id) ON DELETE CASCADE;

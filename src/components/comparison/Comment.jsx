@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Heart, MessageSquare } from 'lucide-react';
 import Reply from './Reply';
 import useMentionInput from '../hooks/useMentionInput';
+import { getPublicUrl } from '../../lib/utils';
 
 const Comment = ({ comment, onLike, onReply, users, products }) => {
   const [replyText, setReplyText] = useState('');
@@ -36,13 +37,13 @@ const Comment = ({ comment, onLike, onReply, users, products }) => {
       <div className="flex">
       
         <img
-          src={comment.user?.profile_picture || 'https://images.pexels.com/photos/538969/pexels-photo-538969.jpeg'}
+          src={getPublicUrl(comment.user?.profile_image_url)}
           alt={comment.user?.username || 'User'}
           className="w-8 h-8 rounded-full mr-2"
         />
 
         <div className="flex flex justify-start">
-          <span className="font-bold text-sm">{comment.user?.username || 'Anonymous'}</span>
+          <span className="font-bold text-sm">{comment.user?.display_name || 'Anonymous'}</span>
           <span><div className="w-1 h-1 bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{ marginTop: '8px', background: 'lightgray' }}></div></span>
           <span className="font-normal text-xs text-gray-400 dark:text-gray-300" style={{ marginTop: '2px' }}>
             {new Date(comment.created_at).toLocaleDateString()}
@@ -61,7 +62,7 @@ const Comment = ({ comment, onLike, onReply, users, products }) => {
           setIsReplySectionExpanded(!isReplySectionExpanded);
         }} className="flex items-center gap-1 text-xs text-gray-500 hover:text-amber-400">
           <MessageSquare className="w-3.5 h-3.5" />
-          {isReplySectionExpanded ? ' Hide Replies' : comment.replies ? comment.replies.length + '   Reply' : '0   Reply'}
+          {isReplySectionExpanded ? ' Hide Replies' : comment.replies && comment.replies.length > 0 ? comment.replies.length + '   Repl'+ (comment.replies.length > 1 ? 'ies' : 'y') : ' Reply'}
         </button>
       </div>
 
@@ -85,7 +86,7 @@ const Comment = ({ comment, onLike, onReply, users, products }) => {
                 </div>
               </div>
 
-              <div className="text-gray-700 dark:text-gray-300 ml-8">
+              <div className="text-gray-700 dark:text-gray-300 ml-8 text-start">
                 <div
                   ref={contentEditableRef}
                   contentEditable

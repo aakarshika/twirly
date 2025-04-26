@@ -145,21 +145,6 @@ export const getItemReviews = async (itemId, page = 1, limit = 3) => {
     if (reviewsError) throw reviewsError;
     console.log('Fetched reviews:', reviews);
 
-    // Get user profiles for the reviews
-    const userIds = reviews.map(review => review.user_id);
-    const { data: userProfiles, error: profilesError } = await supabase
-      .from('profiles')
-      .select('id, username')
-      .in('id', userIds);
-
-    if (profilesError) throw profilesError;
-
-    // Create a map of user profiles for quick lookup
-    const userProfileMap = userProfiles.reduce((acc, profile) => {
-      acc[profile.id] = profile;
-      return acc;
-    }, {});
-
     // Transform reviews to include username
     const reviewsWithUsername = reviews.map(review => ({
       ...review,

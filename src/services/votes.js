@@ -12,17 +12,18 @@ export const getUserVotes = async (userId) => {
       .select(`
         id,
         created_at,
-        set:comparison_sets (
-          id,
-          name,
-          category:categories (
+        item_id,
+        comparison_set_aspects (
+        metric_name,
+          comparison_sets (
+            id,
             name
           )
         ),
-        item:items (
-          id,
-          name
-        )
+        voted_for:items (
+                id,
+                name
+              )
       `)
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
@@ -30,13 +31,7 @@ export const getUserVotes = async (userId) => {
     if (error) throw error;
 
     // Transform the data to match the UI requirements
-    return votes.map(vote => ({
-      id: vote.id,
-      comparisonSetName: vote.set?.name,
-      category: vote.set?.category?.name,
-      votedItem: vote.item?.name,
-      createdAt: vote.created_at
-    }));
+    return votes;
   } catch (error) {
     console.error('Error fetching user votes:', error);
     throw error;

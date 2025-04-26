@@ -1,5 +1,6 @@
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { supabase } from './supabase';
 
 /**
  * Combines multiple class names, resolving Tailwind CSS conflicts using tailwind-merge
@@ -112,4 +113,12 @@ export function getTopMetric(metrics) {
   );
   
   return { name: topName, value: topValue };
+}
+
+export function getPublicUrl(filePath) {
+  if (!filePath) return null;
+  const { data: { publicUrl } } = supabase.storage
+    .from('profile-pics')
+    .getPublicUrl(filePath);
+  return publicUrl;
 }

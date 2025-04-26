@@ -313,6 +313,15 @@ CREATE POLICY "Users can view their own preferences"
   ON user_preferences FOR SELECT
   USING (auth.uid() = user_id);
 
+CREATE POLICY "Anyone can view user preferences for comparison sets"
+  ON user_preferences FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM comparison_sets
+      WHERE comparison_sets.user_id = user_preferences.user_id
+    )
+  );
+
 CREATE POLICY "Users can update their own preferences"
   ON user_preferences FOR UPDATE
   USING (auth.uid() = user_id);

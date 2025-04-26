@@ -37,29 +37,22 @@ const ProfileSettings = () => {
         setError(null);
 
         // Fetch user preferences
-        const { data: preferences, error: preferencesError } = await supabase
+        const { data: profile, error: profileError } = await supabase
           .from('user_preferences')
           .select('*')
           .eq('user_id', user.id)
           .single();
 
-        if (preferencesError) throw preferencesError;
 
-        // Fetch basic profile data
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
 
         if (profileError) throw profileError;
 
         // If there's a profile image URL, get the public URL
-        if (preferences?.profile_image_url) {
+        if (profile?.profile_image_url) {
           // Extract just the file path from the URL if it's a full URL
-          const filePath = preferences.profile_image_url.includes('storage/v1/object/public/profile-pics/')
-            ? preferences.profile_image_url.split('storage/v1/object/public/profile-pics/')[1]
-            : preferences.profile_image_url;
+          const filePath = profile.profile_image_url.includes('storage/v1/object/public/profile-pics/')
+            ? profile.profile_image_url.split('storage/v1/object/public/profile-pics/')[1]
+            : profile.profile_image_url;
 
           console.log('Extracted file path:', filePath);
           const { data: { publicUrl } } = supabase.storage
@@ -75,7 +68,6 @@ const ProfileSettings = () => {
 
         setProfileData(prev => ({
           ...prev,
-          ...preferences,
           ...profile
         }));
       } catch (err) {
@@ -177,13 +169,7 @@ const ProfileSettings = () => {
           username: profileData.username,
           display_name: profileData.displayName,
           bio: profileData.bio,
-          phone: profileData.phone,
-          location: profileData.location,
-          website: profileData.website,
-          twitter_handle: profileData.socialLinks.twitter,
-          github_handle: profileData.socialLinks.github,
-          linkedin_handle: profileData.socialLinks.linkedin,
-          profile_image_url: profileData.profileImageUrl // Store the file path instead of public URL
+          profile_image_url: getPublicUrl(profileData.profile_image_url) // Store the file path instead of public URL
         });
 
       if (error) throw error;
@@ -193,7 +179,13 @@ const ProfileSettings = () => {
       setError(err.message);
     }
   };
-
+  const getPublicUrl = (filePath) => {
+    if (!filePath) return null;
+    const { data: { publicUrl } } = supabase.storage
+      .from('profile-pics')
+      .getPublicUrl(filePath);
+    return publicUrl;
+  };
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">

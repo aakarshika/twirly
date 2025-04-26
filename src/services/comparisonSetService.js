@@ -8,9 +8,9 @@ export const comparisonSetService = {
       .from('comparison_set_comments')
       .select(`
         *,
-        user:profiles(username),
+        user:user_preferences(*),
         reactions:comparison_set_comment_reactions(reaction_type, user_id),
-        replies:comparison_set_comment_replies(*,user:profiles(username))
+        replies:comparison_set_comment_replies(*,user:user_preferences(*))
       `, { count: 'exact' })
       .eq('set_id', setId)
       .order('created_at', { ascending: true })

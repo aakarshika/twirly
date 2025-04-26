@@ -10,9 +10,9 @@ export const getUserProfile = async (userId) => {
   try {
     // 1. Get the user profile
     const { data: profile, error: profileError } = await supabase
-      .from('profiles')
+      .from('user_preferences')
       .select('*')
-      .eq('id', userId)
+      .eq('user_id', userId)
       .single();
 
     if (profileError) throw profileError;
@@ -28,7 +28,7 @@ export const getUserProfile = async (userId) => {
 
     // Combine the data
     return {
-      ...profile,
+      profile: profile,
       votes_count: activitySummary.total_votes,
       reviews_count: activitySummary.total_reviews,
       products_count: activitySummary.total_products,
@@ -55,7 +55,7 @@ export const updateUserProfile = async (profileData) => {
 
   try {
     const { data, error } = await supabase
-      .from('profiles')
+      .from('user_preferences')
       .update(profileData)
       .eq('id', user.id)
       .select()

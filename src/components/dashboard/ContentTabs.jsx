@@ -5,27 +5,30 @@ import ComparisonsTab from './tabs/ComparisonsTab';
 import ReviewsTab from './tabs/ReviewsTab';
 import VotesTab from './tabs/VotesTab';
 import CommentsTab from './tabs/CommentsTab';
+import OverviewTab from './tabs/OverviewTab';
 
 
 const ContentTabs = ({ activeTab, setActiveTab }) => {
   const { currentTheme } = useTheme();
 
   const tabs = [
+    { id: 'overview', label: 'Overview' },
     { id: 'products', label: 'Products' },
     { id: 'comparisons', label: 'Comparisons' },
-    { id: 'reviews', label: 'Reviews' },
-    { id: 'votes', label: 'Votes' },
-    { id: 'comments', label: 'Comments' }
+    { id: 'comments', label: 'Reviews' },
+    { id: 'votes', label: 'Votes' }
   ];
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'products':
         return <ProductsTab />;
+      case 'overview':
+        return <OverviewTab />;
       case 'comparisons':
         return <ComparisonsTab />;
-      case 'reviews':
-        return <ReviewsTab />;
+      // case 'reviews':
+      //   return <ReviewsTab />;
       case 'votes':
         return <VotesTab />;
       case 'comments':

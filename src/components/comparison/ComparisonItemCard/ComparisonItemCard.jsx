@@ -57,7 +57,7 @@ const ComparisonItemCard = ({
 
   // Calculate height
   const numericHeight = parseFloat(height);
-  const newHeight = (numericHeight / 3) + 'vh';
+  const newHeight = (numericHeight / 4) + 'vh';
 
   const isVotedItem = userVoted && votedItemId === item.id;
 
@@ -123,8 +123,8 @@ const ComparisonItemCard = ({
             <div 
               className="text-fallback"
               style={{ 
-                background: userVoted ? getLighterShade(COMPARISON_COLOR_SET[index]) : 'rgba(22, 22, 22, 0.5)',
-                color: userVoted ? '#000' : '#fff'
+                background: getLighterShade(COMPARISON_COLOR_SET[index]) ,
+                color: '#000' 
               }}
             >
               <div className="text-fallback-content">

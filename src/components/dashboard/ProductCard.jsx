@@ -48,7 +48,7 @@ const ProductCard = ({ product, onUpdate, onDelete }) => {
       className="rounded-lg overflow-hidden"
       style={{ backgroundColor: currentTheme.colors.cardBackground }}
     >
-      <div className="relative aspect-square">
+      <div className="relative">
         {product.image_url ? (
           <img 
             src={product.image_url} 

@@ -67,7 +67,7 @@ const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet }) 
               setIsReplySectionExpanded(!isReplySectionExpanded);
             }} className="flex gap-1 text-xs text-gray-500 hover:text-amber-400">
               <MessageSquare className="w-3.5 h-3.5" />
-              {isReplySectionExpanded ? ' Hide Replies' : aspectSet?.replies ? aspectSet?.replies.length + '   Reply' : '0   Reply'}
+              {isReplySectionExpanded ? ' Hide Replies' : comments && comments.length > 0 ? comments.length + '   Comment'+ (comments.length > 1 ? 's' : '') : ' Be the first to comment'}
             </button>
           </div>
         </div>

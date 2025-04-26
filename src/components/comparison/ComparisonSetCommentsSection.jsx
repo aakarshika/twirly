@@ -6,6 +6,7 @@ import CommentList from './CommentList';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Heart, MessageSquare } from 'lucide-react';
 import Button from '../common/Button';
+import { getPublicUrl } from '../../lib/utils';
 const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
   const { user } = useAuth();
   const { currentTheme } = useTheme();
@@ -57,13 +58,13 @@ const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
       <div className="text-center" >
         <div className="flex ">
           <img
-            src={aspectSet?.comparison_sets?.user?.profile_picture || 'https://images.pexels.com/photos/538969/pexels-photo-538969.jpeg'}
-            alt={aspectSet?.comparison_sets?.user?.username || 'User'}
+            src={getPublicUrl(aspectSet?.comparison_sets?.user?.profile_image_url)}
+            alt={aspectSet?.comparison_sets?.user?.display_name || 'User'}
             className="w-8 h-8 rounded-full mr-2"
           />
 
           <div className="flex">
-            <span className="font-bold text-lg">{aspectSet?.comparison_sets?.user?.username || 'Anonymous'}</span>
+            <span className="font-bold text-lg">{aspectSet?.comparison_sets?.user?.display_name || 'Anonymous'}</span>
             <span><div className="w-1 h-1 bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{ marginTop: '8px', background: 'lightgray' }}></div></span>
             <span className="font-normal text-xs text-gray-400 dark:text-gray-300" style={{ marginTop: '2px' }}>
               {new Date(aspectSet?.created_at).toLocaleDateString()}
@@ -87,7 +88,7 @@ const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
               setIsReplySectionExpanded(!isReplySectionExpanded);
             }} className="flex gap-1 text-xs text-gray-500 hover:text-amber-400">
               <MessageSquare className="w-3.5 h-3.5" />
-              {isReplySectionExpanded ? ' Hide Replies' : aspectSet?.replies ? aspectSet?.replies.length + '   Reply' : '0   Reply'}
+              {isReplySectionExpanded ? ' Hide Replies' : comments && comments.length > 0 ? comments.length + '   Comment'+ (comments.length > 1 ? 's' : '') : ' Be the first to comment'}
             </button>
           </div>
         </div>

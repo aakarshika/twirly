@@ -18,13 +18,13 @@ const VoteCard = ({ vote }) => {
               className="font-semibold text-lg"
               style={{ color: currentTheme.colors.text }}
             >
-              {vote.comparisonSetName}
+              {vote.comparison_set_aspects?.comparison_sets?.name}
             </h3>
             <p 
               className="text-sm"
               style={{ color: currentTheme.colors.textSecondary }}
             >
-              {vote.category}
+              Based on: {(vote.comparison_set_aspects?.metric_name).split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
             </p>
           </div>
           <div className="flex items-center space-x-2">
@@ -32,7 +32,7 @@ const VoteCard = ({ vote }) => {
               className="text-sm"
               style={{ color: currentTheme.colors.textSecondary }}
             >
-              {new Date(vote.createdAt).toLocaleDateString()}
+              {new Date(vote.created_at).toLocaleDateString()}
             </span>
           </div>
         </div>
@@ -48,7 +48,7 @@ const VoteCard = ({ vote }) => {
             className="font-medium"
             style={{ color: currentTheme.colors.primary }}
           >
-            {vote.votedItem}
+            {vote.voted_for?.name}
           </span>
         </div>
       </div>

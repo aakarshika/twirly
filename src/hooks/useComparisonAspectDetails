@@ -45,8 +45,8 @@ export const useComparisonAspectDetails = (id) => {
         .select(`
           *,
           comparison_sets(
-            user:profiles(*),
             *,
+            user:user_preferences(*),
             comparison_set_items(
               *,
               items(*,votes(*))
