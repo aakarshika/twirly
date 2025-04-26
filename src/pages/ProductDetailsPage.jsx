@@ -49,37 +49,6 @@ const ProductDetailsPage = () => {
         
         console.log(setsData);
         
-        // Process the data for radar chart
-        const processRadarData = (set) => {
-          const items = set.allitems.map(item => item.items);
-          const aspects = set.comparison_set_aspects;
-          
-          const radarData = items.map(item => {
-            const metrics = {};
-            aspects.forEach(aspect => {
-              const totalVotes = aspect.votes.length;
-              const itemVotes = aspect.votes.filter(vote => vote.item_id === item.id).length;
-              metrics[aspect.metric_name] = (itemVotes / totalVotes) * 100;
-            });
-            return {
-              id: item.id,
-              name: item.name,
-              metrics
-            };
-          });
-          
-          return {
-            setTitle: set.name,
-            aspects: aspects.map(aspect => ({
-              name: aspect.metric_name,
-              description: aspect.description
-            })),
-            items: radarData
-          };
-        };
-
-        const processedData = setsData.map(processRadarData);
-        console.log('Processed Radar Data:', processedData);
         
         setComparisonSets(setsData);
         setLoading(false);

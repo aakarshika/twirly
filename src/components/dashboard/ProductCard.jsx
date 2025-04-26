@@ -35,7 +35,7 @@ const ProductCard = ({ product, onUpdate, onDelete }) => {
   const navigate = useNavigate();
 
   const handleItemClick = () => {
-    navigate(`/product/${product.id}`);
+    navigate(`/item/${product.id}`);
   };
   const handleCancel = () => {
     setEditedProduct({ ...product });

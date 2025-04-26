@@ -6,6 +6,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import ComparisonCard from './ComparisonCard';
 import CreateComparison from './CreateComparison';
 import ComparisonSetMetricsForm from '../../comparison/ComparisonSetMetricsForm';
+import { useNavigate } from 'react-router-dom';
 
 const ComparisonsTab = () => {
   const { currentTheme } = useTheme();
@@ -15,6 +16,7 @@ const ComparisonsTab = () => {
   const [error, setError] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingMetrics, setEditingMetrics] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (user) {
@@ -82,7 +84,7 @@ const ComparisonsTab = () => {
           My Comparisons
         </h2>
         <button
-          onClick={() => setShowCreateModal(true)}
+          onClick={() => navigate('/new-comparison/')}
           className="flex items-center space-x-2 px-4 py-2 rounded-lg font-medium"
           style={{ 
             backgroundColor: currentTheme.colors.primary,
@@ -119,15 +121,6 @@ const ComparisonsTab = () => {
         </div>
       )}
 
-      {showCreateModal && (
-        <CreateComparison
-          onClose={() => setShowCreateModal(false)}
-          onSuccess={() => {
-            setShowCreateModal(false);
-            fetchComparisons();
-          }}
-        />
-      )}
 
       {editingMetrics && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">

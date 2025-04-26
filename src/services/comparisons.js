@@ -2,64 +2,53 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
 /**
- * Create a new comparison set
+ * Create a new comparison set with items and aspects
  * @param {Object} comparisonData - The comparison set data
- * @param {string} userId - The ID of the user
  * @returns {Promise<Object>} The created comparison set
  */
-export const createComparison = async (comparisonData, userId) => {
-  if (!userId) {
-    throw new Error('User must be logged in to create a comparison');
-  }
+export const createComparison = async (comparisonData) => {
+  const { data: comparison, error: comparisonError } = await supabase
+    .from('comparison_sets')
+    .insert([
+      {
+        name: comparisonData.title,
+        description: comparisonData.description,
+        category_id: comparisonData.category_id,
+        user_id: comparisonData.user_id,
+        is_published: comparisonData.isPublished
+      }
+    ])
+    .select()
+    .single();
 
-  try {
-    // Create the comparison set
-    const { data: comparisonSet, error: setError } = await supabase
-      .from('comparison_sets')
-      .insert([{ 
-        name: comparisonData.name,
-        category_id: comparisonData.categoryId,
-        user_id: userId
-      }])
-      .select()
-      .single();
+  if (comparisonError) throw comparisonError;
 
-    if (setError) throw setError;
+  // Insert comparison set items
+  const { error: itemsError } = await supabase
+    .from('comparison_set_items')
+    .insert(
+      comparisonData.items.map(item => ({
+        set_id: comparison.id,
+        item_id: item.id
+      }))
+    );
 
-    // Add items to the comparison set
-    const comparisonSetItems = comparisonData.items.map(item => ({
-      set_id: comparisonSet.id,
-      item_id: item.id
-    }));
+  if (itemsError) throw itemsError;
 
-    const { error: itemsError } = await supabase
-      .from('comparison_set_items')
-      .insert(comparisonSetItems)
-      .select();
+  // Insert comparison set aspects
+  const { error: aspectsError } = await supabase
+    .from('comparison_set_aspects')
+    .insert(
+      comparisonData.aspects.map(aspect => ({
+        set_id: comparison.id,
+        metric_name: aspect.metric_name,
+        description: aspect.description
+      }))
+    );
 
-    if (itemsError) throw itemsError;
+  if (aspectsError) throw aspectsError;
 
-    // Fetch the complete comparison set with items
-    const { data: completeComparison, error: fetchError } = await supabase
-      .from('comparison_sets')
-      .select(`
-        *,
-        items:comparison_set_items(
-          item:items(*)
-        ),
-        votes(*),
-        comments:comparison_set_comments(*)
-      `)
-      .eq('id', comparisonSet.id)
-      .single();
-
-    if (fetchError) throw fetchError;
-
-    return completeComparison;
-  } catch (error) {
-    console.error('Error creating comparison:', error);
-    throw error;
-  }
+  return comparison;
 };
 
 /**
@@ -100,29 +89,26 @@ export const getComparisons = async (categoryId = null) => {
  * @returns {Promise<Array>} List of user's comparison sets
  */
 export const getUserComparisons = async (userId) => {
-  if (!userId) {
-    throw new Error('User ID is required to fetch comparisons');
-  }
+  const { data, error } = await supabase
+    .from('comparison_sets')
+    .select(`
+      *,
+      items:comparison_set_items (
+        item_id,
+        item:items(*)
+      ),
+      comparison_set_aspects (
+        id,
+        metric_name,
+        description,
+        comments:comparison_set_comments(*)
+      )
+    `)
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
 
-  try {
-    const { data, error } = await supabase
-      .from('comparison_sets')
-      .select(`
-        *,
-        items:comparison_set_items(
-          item:items(*)
-        ),
-        comparison_set_aspects(comments:comparison_set_comments(*))
-      `)
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-    return data;
-  } catch (error) {
-    console.error('Error fetching user comparisons:', error);
-    throw error;
-  }
+  if (error) throw error;
+  return data;
 };
 
 /**
@@ -156,15 +142,112 @@ export const addItemsToComparisonSet = async (setId, itemIds) => {
  * @returns {Promise<void>}
  */
 export const deleteComparisonSet = async (setId) => {
-  try {
-    const { error } = await supabase
-      .from('comparison_sets')
-      .delete()
-      .eq('id', setId);
+  const { error } = await supabase
+    .from('comparison_sets')
+    .delete()
+    .eq('id', setId);
 
-    if (error) throw error;
-  } catch (error) {
-    console.error('Error deleting comparison set:', error);
-    throw error;
-  }
+  if (error) throw error;
+};
+
+/**
+ * Get user's unpublished comparison set
+ * @param {string} userId - The ID of the user
+ * @returns {Promise<Object|null>} The unpublished comparison set or null if none exists
+ */
+export const getUnpublishedComparison = async (userId) => {
+  const { data, error } = await supabase
+    .from('comparison_sets')
+    .select(`
+      *,
+      comparison_set_items (
+        item_id,
+        items (
+          id,
+          name,
+          description,
+          image_url
+        )
+      ),
+      comparison_set_aspects (
+        id,
+        metric_name,
+        description,
+        weight
+      )
+    `)
+    .eq('user_id', userId)
+    .eq('is_published', false)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .single();
+
+  if (error && error.code !== 'PGRST116') throw error; // PGRST116 is "no rows returned" error
+  return data || null;
+};
+
+/**
+ * Update an existing comparison set
+ * @param {number} setId - The ID of the comparison set to update
+ * @param {Object} comparisonData - The updated comparison set data
+ * @returns {Promise<Object>} The updated comparison set
+ */
+export const updateComparison = async (setId, comparisonData) => {
+  // Update the comparison set
+  const { data: comparison, error: comparisonError } = await supabase
+    .from('comparison_sets')
+    .update({
+      name: comparisonData.title,
+      description: comparisonData.description,
+      category_id: comparisonData.category_id,
+      is_published: comparisonData.isPublished
+    })
+    .eq('id', setId)
+    .select()
+    .single();
+
+  if (comparisonError) throw comparisonError;
+
+  // Delete existing items and aspects
+  const { error: deleteItemsError } = await supabase
+    .from('comparison_set_items')
+    .delete()
+    .eq('set_id', setId);
+
+  if (deleteItemsError) throw deleteItemsError;
+
+  const { error: deleteAspectsError } = await supabase
+    .from('comparison_set_aspects')
+    .delete()
+    .eq('set_id', setId);
+
+  if (deleteAspectsError) throw deleteAspectsError;
+
+  // Insert new items
+  const { error: itemsError } = await supabase
+    .from('comparison_set_items')
+    .insert(
+      comparisonData.items.map(item => ({
+        set_id: setId,
+        item_id: item.id
+      }))
+    );
+
+  if (itemsError) throw itemsError;
+
+  // Insert new aspects
+  const { error: aspectsError } = await supabase
+    .from('comparison_set_aspects')
+    .insert(
+      comparisonData.aspects.map(aspect => ({
+        set_id: setId,
+        metric_name: aspect.metric_name,
+        description: aspect.description,
+        weight: aspect.weight
+      }))
+    );
+
+  if (aspectsError) throw aspectsError;
+
+  return comparison;
 }; 

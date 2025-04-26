@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ComparisonProvider } from '../contexts/ComparisonContext';
+import { ComparisonDraftProvider } from '../contexts/ComparisonDraftContext';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
@@ -20,6 +21,7 @@ import OnboardingFlow from '../components/onboarding/OnboardingFlow';
 import { userService } from '../services/userService';
 import PollScreenAspect from './PollScreenAspect';
 import ProductDetailsPage from './ProductDetailsPage';
+import CreateComparison from '../components/dashboard/tabs/CreateComparison';
 
 // Protected Route wrapper
 const ProtectedRoute = ({ children }) => {
@@ -104,89 +106,99 @@ const MainRoutingPage = () => {
 
   return (
     <ComparisonProvider>
-      <ScrollToTop />
-      <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background, color: currentTheme.colors.text }}>
-        <Header />
-        <main className="flex-grow">
-          <Routes>
-            {/* Public Routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
+      <ComparisonDraftProvider>
+        <ScrollToTop />
+        <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background, color: currentTheme.colors.text }}>
+          <Header />
+          <main className="flex-grow">
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
 
-            {/* Protected Routes */}
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Trending />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/comparison-aspect/:id"
-              element={
-                <ProtectedRoute>
-                  <PollScreenAspect />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/comparison/:id"
-              element={
-                <ProtectedRoute>
-                  <PollScreen />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/product/:itemId"
-              element={
-                <ProtectedRoute>
-                  <ProductDetailsPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/item/:itemId"
-              element={
-                <ProtectedRoute>
-                  <ItemPage />
-                </ProtectedRoute>
-              }
-            />
+              {/* Protected Routes */}
+              <Route
+                path="/"
+                element={
+                  <ProtectedRoute>
+                    <Trending />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/comparison-aspect/:id"
+                element={
+                  <ProtectedRoute>
+                    <PollScreenAspect />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/comparison/:id"
+                element={
+                  <ProtectedRoute>
+                    <PollScreen />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/new-comparison"
+                element={
+                  <ProtectedRoute>
+                    <CreateComparison />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/product/:itemId"
+                element={
+                  <ProtectedRoute>
+                    <ProductDetailsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/item/:itemId"
+                element={
+                  <ProtectedRoute>
+                    <ProductDetails />
+                  </ProtectedRoute>
+                }
+              />
 
-            {/* Onboarding Route */}
-            <Route
-              path="/onboarding"
-              element={
-                <OnboardingRoute>
-                  <OnboardingFlow />
-                </OnboardingRoute>
-              }
-            />
+              {/* Onboarding Route */}
+              <Route
+                path="/onboarding"
+                element={
+                  <OnboardingRoute>
+                    <OnboardingFlow />
+                  </OnboardingRoute>
+                }
+              />
 
-            {/* Protected Routes */}
-            <Route
-              path="/settings"
-              element={
-                <ProtectedRoute>
-                  <Settings />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <UserDashboard />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+              {/* Protected Routes */}
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute>
+                    <Settings />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <UserDashboard />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      </ComparisonDraftProvider>
     </ComparisonProvider>
   );
 };

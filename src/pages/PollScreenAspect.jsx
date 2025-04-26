@@ -113,7 +113,12 @@ const PollScreenAspect = () => {
                 </div>
 
               </div>
-              <div className="grid grid-cols-2"
+              <div className={`grid ${
+                  items.length === 1 ? 'grid-cols-1' :
+                  items.length === 2 ? 'grid-cols-2' :
+                  items.length === 3 ? 'grid-cols-3' :
+                  'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+                }`} 
                 style={{
                   gap: '0vh'
                 }}

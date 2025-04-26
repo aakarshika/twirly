@@ -121,23 +121,12 @@ export const createProduct = async (productData, userId) => {
  * @returns {Promise<Array>} List of matching products
  */
 export const searchProducts = async (query) => {
-  try {
-    const { data, error } = await supabase
-      .from('items')
-      .select(`
-        *,
-        categories (
-          name
-        )
-      `)
-      .ilike('name', `%${query}%`)
-      .order('created_at', { ascending: false })
-      .limit(10);
+  const { data, error } = await supabase
+    .from('items')
+    .select('*')
+    .ilike('name', `%${query}%`)
+    .limit(10);
 
-    if (error) throw error;
-    return data;
-  } catch (error) {
-    console.error('Error searching products:', error);
-    throw error;
-  }
+  if (error) throw error;
+  return data;
 }; 

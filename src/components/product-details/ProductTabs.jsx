@@ -3,6 +3,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import OverviewTab from './tabs/OverviewTab';
 import ReviewsTab from './tabs/ReviewsTab';
 import AppearancesTab from './tabs/AppearancesTab';
+import CommentAppearancesTab from './tabs/CommentAppearancesTab';
 
 const ProductTabs = ({ 
   activeTab, 
@@ -10,10 +11,6 @@ const ProductTabs = ({
   item, 
   reviews, 
   comparisonSets, 
-  activityData, 
-  categoryData, 
-  recentActivities, 
-  trends,
   hasMoreReviews,
   loadingReviews,
   loadMoreReviews
@@ -23,7 +20,7 @@ const ProductTabs = ({
   return (
     <div className="mb-8">
       <div className="flex space-x-4 border-b border-gray-700">
-        {['overview', 'reviews', 'appearances'].map((tab) => (
+        {['reviews', 'mentions', 'comparisons'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -40,27 +37,21 @@ const ProductTabs = ({
       </div>
 
       <div className="mt-8">
-        {activeTab === 'overview' && (
-          <OverviewTab 
-            item={item}
-            recentActivities={recentActivities}
-            categoryData={categoryData}
-            activityData={activityData}
-            trends={trends}
-          />
-        )}
-
         {activeTab === 'reviews' && (
           <ReviewsTab 
             reviews={reviews}
-            item={item}
             hasMoreReviews={hasMoreReviews}
             loadingReviews={loadingReviews}
             loadMoreReviews={loadMoreReviews}
           />
         )}
-
-        {activeTab === 'appearances' && (
+        {activeTab === 'mentions' && (
+          <CommentAppearancesTab 
+            comparisonSets={comparisonSets}
+            item={item}
+          />
+        )}
+        {activeTab === 'comparisons' && (
           <AppearancesTab 
             comparisonSets={comparisonSets}
             item={item}

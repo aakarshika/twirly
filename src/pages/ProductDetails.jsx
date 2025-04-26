@@ -18,18 +18,14 @@ const ProductDetails = () => {
   const [comparisonSets, setComparisonSets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('reviews');
   const [showReviewForm, setShowReviewForm] = useState(false);
-  const [activityData, setActivityData] = useState([]);
-  const [categoryData, setCategoryData] = useState([]);
-  const [recentActivities, setRecentActivities] = useState([]);
-  const [trends, setTrends] = useState({});
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreReviews, setHasMoreReviews] = useState(true);
   const [loadingMoreReviews, setLoadingMoreReviews] = useState(false);
-  const REVIEWS_PER_PAGE = 5;
+  const REVIEWS_PER_PAGE = 3;
 
   useEffect(() => {
     const fetchProductDetails = async () => {
@@ -60,9 +56,14 @@ const ProductDetails = () => {
         const { data: setsData, error: setsError } = await supabase
           .from('comparison_sets')
           .select(`
-                  *,
-                  comparison_set_items!inner(*),
-                  comparison_set_aspects(*,comparison_set_comments(*))
+            *,
+            currentitem:comparison_set_items!inner(items(*)),
+            allitems:comparison_set_items(items(*)),
+            comparison_set_aspects(
+                *,
+                comparison_set_comments(*),
+                votes(*)
+            )
           `)
           .eq('comparison_set_items.item_id', itemId);
 
@@ -75,10 +76,9 @@ const ProductDetails = () => {
           const { data: setReviews, error: reviewsError } = await supabase
             .from('reviews')
             .select(`
-              *,
-              review_metrics!inner (*)
+              *
             `)
-            .eq('review_metrics.set_id', set.id);
+            .eq('item_id', itemId);
 
           if (reviewsError) throw reviewsError;
 
@@ -100,39 +100,8 @@ const ProductDetails = () => {
           };
         }));
 
-        console.log(transformedSets);
+        console.log("transformedSets",transformedSets);
         setComparisonSets(transformedSets);
-
-        // Fetch recent activities for the product
-        const { data: recentActivities, error: recentError } = await supabase
-          .from('product_recent_activities')
-          .select('*')
-          .eq('item_id', itemId)
-          .order('created_at', { ascending: false })
-          .limit(5);
-
-        if (recentError) throw recentError;
-        setRecentActivities(recentActivities || []);
-
-        // Fetch activity trends for the product
-        const { data: trends, error: trendsError } = await supabase
-          .from('product_activity_trends')
-          .select('*')
-          .eq('item_id', itemId)
-          .select();
-
-        if (trendsError) throw trendsError;
-        setTrends(trends || {});
-
-        // Fetch weekly activity data for the product
-        const { data: activityData, error: activityError } = await supabase
-          .from('product_weekly_activity')
-          .select('*')
-          .eq('item_id', itemId)
-          .order('date', { ascending: true });
-
-        if (activityError) throw activityError;
-        setActivityData(activityData || []);
 
 
         setLoading(false);
@@ -152,8 +121,7 @@ const ProductDetails = () => {
         .from('reviews')
         .select(`
           *,
-          user_preferences (username),
-          review_metrics (*, comparison_sets(*)),
+          user_preferences (*),
           review_likes (*)
         `, { count: 'exact' })
         .eq('item_id', itemId)
@@ -196,13 +164,9 @@ const ProductDetails = () => {
         <ProductTabs
           activeTab={activeTab}
           setActiveTab={setActiveTab}
-          item={item}
           reviews={reviews}
+          item={item}
           comparisonSets={comparisonSets}
-          activityData={activityData}
-          categoryData={categoryData}
-          recentActivities={recentActivities}
-          trends={trends}
           hasMoreReviews={hasMoreReviews}
           loadingReviews={loadingMoreReviews}
           loadMoreReviews={loadMoreReviews}

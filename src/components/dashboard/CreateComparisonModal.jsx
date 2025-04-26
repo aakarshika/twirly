@@ -11,6 +11,7 @@ const CreateComparisonModal = ({ isOpen, onClose, onSubmit, products }) => {
   });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -148,64 +149,85 @@ const CreateComparisonModal = ({ isOpen, onClose, onSubmit, products }) => {
           </div>
 
           <div>
+            <label className="block text-sm font-medium mb-1" style={{ color: currentTheme.colors.text }}>
+              Search Products
+            </label>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full p-2 rounded"
+              style={{
+                backgroundColor: currentTheme.colors.background,
+                color: currentTheme.colors.text,
+                border: `1px solid ${currentTheme.colors.border}`
+              }}
+            />
+          </div>
+
+          <div>
             <label 
               className="block text-sm font-medium mb-2"
               style={{ color: currentTheme.colors.text }}
             >
               Select Products (2-4) *
             </label>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {products.map((product) => (
-                <div
-                  key={product.id}
-                  onClick={() => handleItemSelect(product.id)}
-                  className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                    formData.selectedItems.includes(product.id) ? 'ring-2' : ''
-                  }`}
-                  style={{ 
-                    backgroundColor: currentTheme.colors.background,
-                    border: `1px solid ${currentTheme.colors.border}`,
-                    ...(formData.selectedItems.includes(product.id) && {
-                      borderColor: currentTheme.colors.primary,
-                      backgroundColor: currentTheme.colors.primary + '10'
-                    })
-                  }}
-                >
-                  <div className="flex items-center space-x-3">
-                    {product.image_url && (
-                      <img
-                        src={product.image_url}
-                        alt={product.name}
-                        className="w-10 h-10 rounded object-cover"
-                      />
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <p 
-                        className="text-sm font-medium truncate"
-                        style={{ color: currentTheme.colors.text }}
-                      >
-                        {product.name}
-                      </p>
-                      {product.price && (
-                        <p 
-                          className="text-xs"
-                          style={{ color: currentTheme.colors.textSecondary }}
-                        >
-                          ${product.price}
-                        </p>
-                      )}
-                    </div>
-                    {formData.selectedItems.includes(product.id) && (
-                      <div 
-                        className="p-1 rounded-full"
-                        style={{ backgroundColor: currentTheme.colors.primary }}
-                      >
-                        <Check size={14} className="text-white" />
+            <div className="max-h-60 overflow-y-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                {products
+                  .filter(product => product.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                  .map((product) => (
+                    <div
+                      key={product.id}
+                      onClick={() => handleItemSelect(product.id)}
+                      className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                        formData.selectedItems.includes(product.id) ? 'ring-2' : ''
+                      }`}
+                      style={{ 
+                        backgroundColor: currentTheme.colors.background,
+                        border: `1px solid ${currentTheme.colors.border}`,
+                        ...(formData.selectedItems.includes(product.id) && {
+                          borderColor: currentTheme.colors.primary,
+                          backgroundColor: currentTheme.colors.primary + '10'
+                        })
+                      }}
+                    >
+                      <div className="flex items-center space-x-3">
+                        {product.image_url && (
+                          <img
+                            src={product.image_url}
+                            alt={product.name}
+                            className="w-10 h-10 rounded object-cover"
+                          />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p 
+                            className="text-sm font-medium truncate"
+                            style={{ color: currentTheme.colors.text }}
+                          >
+                            {product.name}
+                          </p>
+                          {product.price && (
+                            <p 
+                              className="text-xs"
+                              style={{ color: currentTheme.colors.textSecondary }}
+                            >
+                              ${product.price}
+                            </p>
+                          )}
+                        </div>
+                        {formData.selectedItems.includes(product.id) && (
+                          <div 
+                            className="p-1 rounded-full"
+                            style={{ backgroundColor: currentTheme.colors.primary }}
+                          >
+                            <Check size={14} className="text-white" />
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </div>
-              ))}
+                    </div>
+                  ))}
+              </div>
             </div>
           </div>
 
