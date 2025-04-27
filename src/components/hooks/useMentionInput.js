@@ -1,36 +1,76 @@
 import { useState, useRef } from 'react';
+import { useEffect } from 'react';
 
 const useMentionInput = (users, products) => {
-  const [text, setText] = useState('');
+  const [text, setText] = useState('Lol');
+  const [textToSave, setTextToSave] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [mode, setMode] = useState('normal');
-  const [triggerPosition, setTriggerPosition] = useState(-1);
   const contentEditableRef = useRef(null);
+  const [triggerPosition, setTriggerPosition] = useState(-1);
+  
+  const renderTextWithMentions = (text) => {
+    const words = text.split(' ');
+    const processedText = words.map(word => {
+      if (word.startsWith('@') && word.length > 1) {
+        console.log('word', word);
+        const matchSplit = word.split(/(@\(user\(([A-Za-z0-9_#]+)\)\[([0-9]+)\]\))+/g);
+        console.log('matchSplit', matchSplit);
+        const userName = unescapeMentionName(matchSplit[2]);
+  
+        return `<span class="highlighted-mention-user">${word}</span>`;
+      } else if (word.startsWith('#')) {
+        return `<span class="highlighted-mention-product">${word}</span>`;
+      } else {
+        return `<span class="normal-text">${word}</span>`;
+      }
+    });
+    return processedText.join(' ');
+  };
+
+const handleReplySubmit = (e) => {
+  e.preventDefault();
+  if (!text.trim()) return;
+
+  setText('');
+};
+  useEffect(() => {
+    if (contentEditableRef.current) {
+      const renderHtml = renderTextWithMentions(text);
+      contentEditableRef.current.innerHTML = renderHtml ;
+      moveCursorToEnd();
+    }
+  }, [text]);
+  useEffect(() => {
+    if (contentEditableRef.current) {
+      console.log("rendered:", contentEditableRef.current.innerHTML);
+      console.log("innerText:", contentEditableRef.current.innerText);
+      console.log("triggerPosition:", triggerPosition);
+    }
+  }, [text]);
+  const moveCursorToEnd = () => {
+    const range = document.createRange();
+    const selection = window.getSelection();
+    range.selectNodeContents(contentEditableRef.current);
+    range.collapse(false); // Move to end
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+  }
+
 
   const handleInputChange = (innerText) => {
     const value = innerText;
-
-    console.log('handleInputChange- contentEditableRef.current.innerText', contentEditableRef.current.innerText);
-    console.log('handleInputChange- e.target.innerText', innerText);
     setText(value);
+    setTriggerPosition(value.length - 1);
 
-    const selection = window.getSelection();
-    if (selection.rangeCount > 0) {
-      const range = selection.getRangeAt(0);
-      const rect = range.getBoundingClientRect();
-      const top = rect.top + window.scrollY;
-      const left = rect.left + window.scrollX;
-    }
 
     const lastChar = value.slice(-1);
     if (lastChar === '@') {
       setMode('mentionUser');
       setSuggestions(users);
-      setTriggerPosition(value.length - 1);
     } else if (lastChar === '#') {
       setMode('mentionProduct');
       setSuggestions(products);
-      setTriggerPosition(value.length - 1);
     } else {
       setMode('normal');
       setSuggestions([]);
@@ -38,59 +78,39 @@ const useMentionInput = (users, products) => {
   };
 
   const appendText = (textToAppend) => {
-    if (!contentEditableRef.current) return;
-
-    const currentText = contentEditableRef.current.innerText;
-    const newText = currentText + (currentText ? ' ' : '') + textToAppend;
-    contentEditableRef.current.innerText = newText;
-    
-    // Move cursor to end
-    const range = document.createRange();
-    const selection = window.getSelection();
-    range.selectNodeContents(contentEditableRef.current);
-    range.collapse(false);
-    selection.removeAllRanges();
-    selection.addRange(range);
-    
-    handleInputChange(newText);
+    handleInputChange(text + textToAppend);
   };
-
+  const escapeMentionName = (name) => {
+    return name
+      .replaceAll(/ /g, '#space#');
+  }
+  const unescapeMentionName = (name) => {
+    return name && name.length > 0 ? name
+      .replaceAll(/#space#/g, ' ') : '';
+  }
+  
   const insertMention = (mention) => {
-    const selection = window.getSelection();
-    const range = selection.getRangeAt(0);
-    const mentionText = mode === 'mentionUser' ? `@${mention} ` : `#${mention} `;
-    const text = contentEditableRef.current.innerText;
+    const aa = escapeMentionName(mention.items.name);
+    console.log('insertMention escaped', aa);
+    const mentionText = mode === 'mentionUser' ? `@(user(${aa})[${mention.items.id}]) ` : `#(product(${aa})[${mention.items.id}]) `;
 
     if (triggerPosition !== -1) {
       const newText = text.substring(0, triggerPosition) + mentionText + text.substring(triggerPosition + 1);
-      contentEditableRef.current.innerText = newText + ' ';
-
-      const newCursorPos = triggerPosition + mentionText.length;
-      const newRange = document.createRange();
-      const textNode = contentEditableRef.current.firstChild || contentEditableRef.current;
-      const safeCursorPos = Math.min(newCursorPos, textNode.length);
-
-      newRange.setStart(textNode, safeCursorPos);
-      newRange.setEnd(textNode, safeCursorPos);
-      selection.removeAllRanges();
-      selection.addRange(newRange);
       handleInputChange(newText);
     }
 
     setSuggestions([]);
     setTriggerPosition(-1);
-    if (contentEditableRef.current) {
-      contentEditableRef.current.focus();
-    }
   };
 
   return {
-    text,
-    setText,
     suggestions,
     mode,
+    text,
     contentEditableRef,
     handleInputChange,
+    // handleTyping,
+    handleReplySubmit,
     insertMention,
     appendText
   };

@@ -10,7 +10,7 @@ const CommentList = ({ comment, handleLikeComment, handleReply, commentVisibilit
     }));
   };
 
-  const users = ["John_Doe", "Jane_Doe", "John_Smith", "Jane_Smith"];
+  const users = [{ items: {name: "John Doe", id: 1}}, { items: {name: "Jane Doe", id: 2}}, { items: {name: "John_Smith", id: 3}}, { items: {name: "Jane_Smith", id: 4}}];
   return (
     <div className="">
       <Comment

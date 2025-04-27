@@ -1,0 +1,166 @@
+// File: src/components/comparison/ComparisonHeading.jsx
+
+import React from 'react';
+import { ChevronDown } from 'lucide-react';
+import { useComparison } from '../../contexts/ComparisonContext';
+import ComparisonItemCard from './ComparisonItemCard/ComparisonItemCard';
+import Button from '../common/Button';
+import ReviewForm from './ReviewForm';
+import { useState } from 'react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../../contexts/ThemeContext';
+import ComparisonGridSkeleton from '../skeletons/ComparisonGridSkeleton';
+import { COMPARISON_COLOR_SET } from '../../lib/constants';
+import { splitAndJoin } from '../../lib/utils';
+
+/**
+ * Grid component to display comparison items
+ */
+const ComparisonHeading = ({ isHeaderVisible, title, height, currentId, itemReviews, metrics, comparisonMetrics }) => {
+  
+  const { 
+    items, 
+    userVoted, 
+    loadNextSet,
+    completedSets,
+    currentSetIndex,
+    handleVote,
+    handleRevertVote,
+    votedItemId
+  } = useComparison();
+  // console.log("height in grid",height);
+
+  const { currentTheme } = useTheme();
+  console.log("comparisonMetrics in comparison heading", comparisonMetrics);
+  const navigate = useNavigate();
+
+  const handleNextPoll = () => {
+    if (currentId) {
+      navigate(`/comparison/${currentId+1}`);
+    }
+  };
+  // console.log('Height in ComparisonHeading:', height); // Check if height is logged correctly
+
+  const heightValue = height; 
+
+  // Extract the numeric part and convert it to a number
+  const numericHeight = parseFloat(heightValue); 
+  
+  // Divide by 4
+  const gap = '0vh'; 
+  const gap2 = (numericHeight / 100) + 'vh'; 
+
+  // Calculate total votes for percentage calculation
+  const totalVotes = items.reduce((sum, item) => sum + (item.votes || 0), 0);
+  items.forEach((item) => {
+    item.votesPercentage = (item.votes / totalVotes) * 100;
+  });
+  //calculate who won the comparison
+  const winner = items.reduce((max, item) => {
+    return (item.votes > max.votes) ? item : max;
+  }, items[0]);
+  //calculate for each item - which aspect they are shining at
+  items.forEach((item) => {
+    item.metric_votes = [];
+    comparisonMetrics.forEach((metric) => {
+      const itemVotes = metric.votes.filter((vote) => vote.item_id === item.id).length;
+      item.metric_votes.push({ metric_name: metric.metric_name, itemVotes: itemVotes});
+    });
+    item.shiningAt = item.metric_votes.sort((a, b) => b.itemVotes - a.itemVotes).slice(0, 1);
+  });
+  //for each metric, calculate which item is the winner
+  comparisonMetrics.forEach((metric) => {
+    metric.localWinner = items.sort((a, b) => b.metric_votes.find((vote) => vote.metric_name === metric.metric_name).itemVotes - a.metric_votes.find((vote) => vote.metric_name === metric.metric_name).itemVotes)[0];
+  });
+
+  //for each item - if he is the local winner, list all the metrics he is locally winning at
+  items.forEach((item) => {
+    item.localWinnerAt = comparisonMetrics.filter((metric) => metric.localWinner.id === item.id);
+  });
+
+  console.log("items in comparison heading", items);
+  console.log("local winners in comparison heading", comparisonMetrics);
+  return (
+    <div className="" style={{  color: currentTheme.colors.primary }}>
+      {/* Poll Title */}
+      <div className="comparison-grid-container">
+        <div style={{  color: currentTheme.colors.text }}>
+          <div className="flex justify-between items-center ">
+            
+            <span style={{  color: currentTheme.colors.primary, padding: '15px' }} className="text-lg font-bold text-center">
+              {title || 'Untitled Comparison'}
+            </span>
+          </div>
+        </div>
+        <div className={`grid ${
+          items.length === 1 ? 'grid-cols-1' :
+          items.length === 2 ? 'grid-cols-2' :
+          items.length === 3 ? 'grid-cols-3' :
+          'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+        }`} 
+          style={{ 
+            gap: gap
+          }}
+        >
+          {items.map((item, i) => {
+            const [error, setError] = useState(false);
+            return (
+            // items list with an image, name, and description
+            <div className={winner && winner.id === item.id ? 'flex items-center gap-2 bg-green-200 dark:bg-green-800/50 px-4 py-2 rounded-lg border-2 border-green-300 dark:border-green-700 shadow-sm' : 'flex items-center gap-2  px-4 py-2 shadow-sm'}>
+            <div className="flex flex-col items-start justify-center m-2 ">
+              <div key={item.id} className="flex flex-row items-center justify-center ">
+                {(!error && item.image && <img src={item.image} alt={""} className="w-10 h-10" onError={(e) => {
+                  setError(true);
+                }} />)}
+                <div className="flex flex-col items-start justify-center">
+                  <div className="flex flex-row">
+                    <div className="flex items-center justify-center">
+                      <div className="w-4 h-4 align-bottom rounded-full" style={{ backgroundColor: COMPARISON_COLOR_SET[i] }}></div>
+                    </div>
+                    <h4>{item.name}</h4>
+                  </div>
+                  <div className="flex flex-row items-center justify-center">
+                    <span className="text-sm text-gray-500">{item.description}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-row items-center justify-center">
+                <div className="flex flex-col items-start justify-center gap-2">
+                  {winner && winner.id === item.id && (
+                    <div className="">
+                      <span className="text-base font-semibold text-green-800 dark:text-green-200">
+                        🏆 Winning by {item.votesPercentage.toFixed(2)}%
+                      </span>
+                    </div>
+                  )}
+                  {item.shiningAt && item.shiningAt.length > 0 && (
+                    <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-full">
+                      <span className="text-sm font-medium text-blue-600 dark:text-blue-300">
+                        ⭐ Best at {item.shiningAt?.map((metric) => splitAndJoin(metric.metric_name)).join(', ')}
+                      </span>
+                    </div>
+                  )}
+                  {item.localWinnerAt && item.localWinnerAt.length > 0 && (
+                    <div className="flex items-center gap-2 bg-purple-50 dark:bg-purple-900/20 px-3 py-1.5 rounded-full">
+                      <span className="text-sm font-medium text-purple-600 dark:text-purple-300">
+                        🎯 Leading in {item.localWinnerAt?.map((metric) => splitAndJoin(metric.metric_name)).join(', ')}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            </div>
+          )})}
+        </div>
+      </div>
+      
+      {/* Review Form Modal */}
+      <ReviewForm />
+    </div>
+  );
+  
+};
+
+export default ComparisonHeading;

@@ -122,3 +122,28 @@ export function getPublicUrl(filePath) {
     .getPublicUrl(filePath);
   return publicUrl;
 }
+// Regular expression to match mentions in the format @[Display Name](user_id)
+const MENTION_REGEX = /@\[([^\]]+)\]\(([^)]+)\)/g;
+
+export const parseMentions = (text) => {
+  if (!text) return [];
+  
+  const mentions = [];
+  let match;
+  
+  while ((match = MENTION_REGEX.exec(text)) !== null) {
+    mentions.push({
+      display: match[1],
+      id: match[2],
+      index: match.index,
+      length: match[0].length
+    });
+  }
+  
+  return mentions;
+};
+
+//function to split text by _ and join with a space with first letter uppercase
+export function splitAndJoin(text) {
+  return text.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+}

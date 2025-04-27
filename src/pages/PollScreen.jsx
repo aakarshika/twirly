@@ -238,6 +238,8 @@ const PollScreen = () => {
           itemReviews={itemReviews}
           setId={currentSetId}
           set={currentSet}
+          metrics={metrics} 
+          comparisonMetrics={comparisonMetrics}
         />
       <div 
         className="relative z-0 w-full transition-all duration-150 ease-in-out"

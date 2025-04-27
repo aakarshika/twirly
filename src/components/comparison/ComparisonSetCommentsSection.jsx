@@ -11,7 +11,6 @@ const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
   const { user } = useAuth();
   const { currentTheme } = useTheme();
   const [newComment, setNewComment] = useState('');
-  const [products] = useState(() => items.map(item => item.name));
   const [isReplySectionExpanded, setIsReplySectionExpanded] = useState(false);
 
   const {
@@ -109,7 +108,7 @@ const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
               handleReply={handleReply}
               commentVisibility={commentVisibility}
               setCommentVisibility={setCommentVisibility}
-              products={products}
+              products={items}
             />
           </div>
         ))}

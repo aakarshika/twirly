@@ -28,7 +28,7 @@ export const getUserComments = async (userId) => {
         )
       `)
       .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: true });
 
     if (commentsError) throw commentsError;
 

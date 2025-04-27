@@ -4,38 +4,61 @@ import './Reply.css';
 import { getPublicUrl } from '../../lib/utils';
 
 const Reply = ({ reply, onLike, onReply, contentEditableRef, appendText }) => {
+
+  const unescapeMentionName = (name) => {
+    return name
+      .replaceAll(/#space#/g, ' ');
+  }
+  
   // Function to render text with highlighted mentions
-  const renderTextWithMentions = (text) => {
-    text = text.trim();
-    // replace multiple spaces with a single space
-    text = text.replace(/\n+/g, ' <br> ');
-    text = text.replace(/\s+/g, ' ');
-    text = text+' ';
-    const words = text.split(' '); // Split the text into words
-    return words.map((word, index) => {
-      const key = `${word}-${index}`; // Create a unique key using the word and index
-      if (word === '<br>') {
-        return <br key={key} />;
-      } else if (word.length > 1 && word.startsWith('@')) {
-        return (
-          <span key={key}>
-            <span className="highlighted-mention-user">
-              {word}
-            </span>
-          </span>
-        );
-      } else if (word.length > 1 && word.startsWith('#')) {
-        return (
-          <span key={key}>
-            <span className="highlighted-mention-product">
-              {word}
-            </span>
-          </span>
-        );
+  const renderMentionText = (text) => {
+    // Split the text based on the mention pattern: @(user(...)[id])
+    const mentionPattern = /(@\(user\(([A-Za-z0-9_#]+)\)+\[([0-9]+)\]\))+/g;
+    
+    // Split the text into regular parts and mentions
+    const parts = text.split(mentionPattern);
+  
+    var a = null;
+
+    // Render the text
+    var i = 3;
+    var matchStarted = false;
+    a = parts.map((part, index) => {
+      const matches = part.match(/(@\(user\(([A-Za-z0-9_#]+)\)\[([0-9]+)\]\))+/g);
+      if (matchStarted){
+        i ++;
+        if (i <= 2){
+          return ;
+        }
       }
-      return <span key={key}>{' ' + word}</span>; // Add space back for normal words
+      if (matches) {
+        i = 0;
+        matchStarted = true;  
+        const matchSplit = part.split(/(@\(user\(([A-Za-z0-9_#]+)\)\[([0-9]+)\]\))+/g);
+        const userName = matchSplit[2];
+        const userId = matchSplit[3];
+  
+        // Render mention as a clickable span or any other element
+        return(
+          <span key={index} className="highlighted-mention-user" onClick={() => handleMentionClick(userId)}>
+            @{unescapeMentionName(userName)}
+          </span>
+        );
+      } else {
+        // This is regular text, just render it normally
+        return (<span key={index}>{part}</span>);
+      }
     });
+    return a;
   };
+  
+  
+  const handleMentionClick = (userId) => {
+    // Handle the mention click (e.g., show user profile or navigate)
+    console.log("Mention clicked, userId:", userId);
+  };
+  
+  
 
   const handleReplyClick = () => {
     if (appendText && reply.user?.username) {
@@ -62,7 +85,7 @@ const Reply = ({ reply, onLike, onReply, contentEditableRef, appendText }) => {
           </div>
         </div>
         <div className="text-gray-700 dark:text-gray-300 ml-8 text-sm">
-          <p style={{ textAlign: 'start' }}>{renderTextWithMentions(reply.text)}</p>
+          <p style={{ textAlign: 'start' }}>{renderMentionText(reply.text)}</p>
         </div>
 
         <div className="ml-8 flex items-center gap-3 mb-1">

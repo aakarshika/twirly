@@ -4,7 +4,8 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useHeader } from '../../contexts/HeaderContext';
 import ComparisonGrid from './ComparisonGrid';
 import { useNavigate } from 'react-router-dom';
-const PollGrid = ({ id, title, set, items, onVote, votedItemId, userVoted, currentId, itemReviews, setId }) => {
+import ComparisonHeading from './ComparisonHeading';
+const PollGrid = ({ id, title, set, items, onVote, votedItemId, userVoted, currentId, itemReviews, setId, metrics, comparisonMetrics }) => {
   const { currentTheme } = useTheme();
   const { isHeaderVisible } = useHeader();
   const { scrollY } = useScroll();
@@ -41,24 +42,7 @@ const PollGrid = ({ id, title, set, items, onVote, votedItemId, userVoted, curre
       {/* ComparisonHeader  */}
       <div className="h-full flex flex-col max-w-4xl mx-auto">
         <div className="flex-1">
-
-        {/* <div className="text-center m-4">
-            <div className="flex justify-between">
-            <button
-              onClick={() => navigate('/comparison/'+(parseInt(currentId)-1).toString())}
-              className="px-4 py-2 bg-gray-400 text-white rounded-full font-semibold hover:bg-amber-300 transition-colors"
-            >
-              Prev
-            </button>
-            <button
-              onClick={() => navigate('/comparison/'+(parseInt(currentId)+1).toString())}
-              className="px-4 py-2 bg-amber-400 text-black rounded-full font-semibold hover:bg-amber-300 transition-colors"
-            >
-              Next
-            </button>
-            </div>
-          </div> */}
-          <ComparisonGrid 
+          <ComparisonHeading 
             isHeaderVisible={isHeaderVisible}
             currentId={currentId}
             height={height} 
@@ -68,6 +52,8 @@ const PollGrid = ({ id, title, set, items, onVote, votedItemId, userVoted, curre
             votedItemId={votedItemId}
             userVoted={userVoted}
             itemReviews={itemReviews}
+            metrics={metrics}
+            comparisonMetrics={comparisonMetrics}
           />
         </div>
 

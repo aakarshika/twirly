@@ -2,34 +2,70 @@ import React, { useState, useRef } from 'react';
 import { Heart, MessageSquare } from 'lucide-react';
 import Reply from './Reply';
 import useMentionInput from '../hooks/useMentionInput';
-import { getPublicUrl } from '../../lib/utils';
+import {  getPublicUrl } from '../../lib/utils';
 
-const Comment = ({ comment, onLike, onReply, users, products }) => {
+const Comment = ({ comment, onLike, onReply, onToggleVisibility, isVisible, users, products }) => {
   const [replyText, setReplyText] = useState('');
   const [isReplying, setIsReplying] = useState(false);
   const [isReplySectionExpanded, setIsReplySectionExpanded] = useState(false);
 
   const {
-    text,
-    setText,
     suggestions,
     mode,
     contentEditableRef,
     handleInputChange,
+    // handleTyping,
     insertMention,
     appendText,
+    text,
+    handleReplySubmit
   } = useMentionInput(users, products);
 
-  const handleReplySubmit = (e) => {
-    e.preventDefault();
-    if (!text.trim()) return;
+  const renderTextWithMentions = (text) => {
+    if (!text) return null;
+    
+    // Split text by @ mentions
+    const parts = text.split(/(\w+)/);
+    
+    let startCodeIndex = -1;
+    let userName = " ";
+    let nameEndIndex = -1;
+    const a = parts.map((part, index) => {
+      if (part == ' @['){
+        startCodeIndex = index;
+        userName = " ";
+        nameEndIndex = -1;
+        return null;
+      }
+      if (startCodeIndex == -1) return part;
 
-    onReply(comment.id, text);
-    setText('');
-    setIsReplying(true);
-    setIsReplySectionExpanded(true);
-  };
-
+      if (startCodeIndex+1 <= index && part != "](" ){
+        userName = userName+ part;
+      }
+      else if(part == "]("){
+        const ss = userName + " ";
+        nameEndIndex = index;
+        return (
+          <span key={index} >
+            <span className="bg-amber-100 text-amber-800 rounded px-1">
+              {ss}
+            </span>
+          </span>
+          )
+      }
+      if (nameEndIndex+1 <= index && index <= startCodeIndex+9){
+        return null;
+      }
+      if (nameEndIndex+10 == index){
+        startCodeIndex = -1;
+        return null;
+      }
+      return;
+    });
+  
+    return a;
+  }
+  
   return (
     <div className="flex">
     <div className="w-1 h-auto bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{marginTop: '2px', background: 'lightgray'}}></div>
@@ -50,8 +86,9 @@ const Comment = ({ comment, onLike, onReply, users, products }) => {
           </span>
         </div>
       </div>
-      <p className="ml-10 text-sm text-gray-700 dark:text-gray-300" style={{     textAlign: 'start' }}>{comment.text}</p>
-
+      <p className="ml-10 text-sm text-gray-700 dark:text-gray-300" style={{     textAlign: 'start' }}>
+        {renderTextWithMentions(comment.text)}
+      </p>
       <div className="ml-10 flex items-center gap-3 mb-2">
         <button onClick={() => onLike(comment.id)} className={`flex items-center gap-1 text-xs ${comment.userReaction === 'like' ? 'text-amber-400' : 'text-gray-500 hover:text-amber-400'}`}>
           <Heart className={`w-3.5 h-3.5 ${comment.userReaction === 'like' ? 'fill-current' : ''}`} />
@@ -67,7 +104,13 @@ const Comment = ({ comment, onLike, onReply, users, products }) => {
       </div>
 
       {isReplying && isReplySectionExpanded && (
-        <form onSubmit={handleReplySubmit} className="mt-1">
+        <form onSubmit={(e) => {
+
+          onReply(comment.id, text);
+          setIsReplying(true);
+          setIsReplySectionExpanded(true);
+          handleReplySubmit(e)
+        }} className="mt-1">
           <div className="flex">
             <div className="w-1 h-auto bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{ marginTop: '2px', background: 'lightgray' }}></div>
             <div className="p-1 w-full border-b border-gray-200 dark:border-gray-700">
@@ -92,6 +135,7 @@ const Comment = ({ comment, onLike, onReply, users, products }) => {
                   contentEditable
                   onInput={
                     (e) => {
+                      // handleTyping(e)
                       handleInputChange(e.target.innerText);
                     }
                   }
@@ -102,8 +146,8 @@ const Comment = ({ comment, onLike, onReply, users, products }) => {
                 {suggestions?.length > 0 && (
                   <ul className="suggestions-list">
                     {suggestions.map((item) => (
-                      <li key={item} onClick={() => insertMention(item)}>
-                        {item}
+                      <li key={item.items.id+'-'+comment.id} onClick={() => insertMention(item)}>
+                        {item.items.name}
                       </li>
                     ))}
                   </ul>
@@ -123,7 +167,6 @@ const Comment = ({ comment, onLike, onReply, users, products }) => {
           reply={reply} 
           onLike={onLike}
           onReply={onReply}
-          contentEditableRef={contentEditableRef}
           appendText={appendText}
         />
       ))}
