@@ -80,7 +80,13 @@ const ComparisonItemCardAspect = ({
     // Convert back to hex
     return `#${lighterR.toString(16).padStart(2, '0')}${lighterG.toString(16).padStart(2, '0')}${lighterB.toString(16).padStart(2, '0')}`;
   };
-
+  //get lighter shade for input string "rgb(135, 139, 164)" and return rgb(r,g,b,alpha)
+  const getLighterShadeString = (color) => {
+    const r = color.slice(4, 7);
+    const g = color.slice(9, 12);
+    const b = color.slice(14, 17);
+    return `rgba(${r}, ${g}, ${b}, 0.5)`;
+  };
   return (
     <div
       className="comparison-item-card"
@@ -94,7 +100,7 @@ const ComparisonItemCardAspect = ({
         }}
       >
         <ColorCoding
-          color={COMPARISON_COLOR_SET[index]}
+          color={item.item_color_string}
           isActive={isVotedItem}
         />
 
@@ -131,7 +137,7 @@ const ComparisonItemCardAspect = ({
             <div
               className="text-fallback"
               style={{
-                background: userVoted ? getLighterShade(COMPARISON_COLOR_SET[index]) : 'rgba(22, 22, 22, 0.5)',
+                background: userVoted ? getLighterShadeString(item.item_color_string) : 'rgba(22, 22, 22, 0.5)',
                 color: userVoted ? '#000' : '#fff'
               }}
             >
@@ -149,7 +155,7 @@ const ComparisonItemCardAspect = ({
                   <VoteStats
                     votes={item.votes.length}
                     totalVotes={totalVotes}
-                    color={COMPARISON_COLOR_SET[index]}
+                    color={item.item_color_string}
                     isVotedItem={isVotedItem}
                     reviewCount={reviewCount}
                     itemReviewData={itemReviewData}

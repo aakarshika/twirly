@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { getUserVotes } from '../../../services/votes';
 import { useAuth } from '../../../contexts/AuthContext';
+import { splitAndJoin } from '../../../lib/utils';
 
 const VoteCard = ({ vote }) => {
   const { currentTheme } = useTheme();
@@ -20,12 +21,13 @@ const VoteCard = ({ vote }) => {
             >
               {vote.comparison_set_aspects?.comparison_sets?.name}
             </h3>
-            <p 
-              className="text-sm"
-              style={{ color: currentTheme.colors.textSecondary }}
+
+            <h4 
+              className="text-sm rounded-full px-2 py-1"
+              style={{ color: 'white', backgroundColor: currentTheme.colors.primary, marginBottom: '10px'}}
             >
-              Based on: {(vote.comparison_set_aspects?.metric_name).split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-            </p>
+              Based on: {splitAndJoin(vote.comparison_set_aspects?.metric_name)}
+            </h4>
           </div>
           <div className="flex items-center space-x-2">
             <span 

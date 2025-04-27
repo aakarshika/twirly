@@ -11,7 +11,6 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import ComparisonGridSkeleton from '../skeletons/ComparisonGridSkeleton';
-import { COMPARISON_COLOR_SET } from '../../lib/constants';
 import { splitAndJoin } from '../../lib/utils';
 
 /**
@@ -107,8 +106,16 @@ const ComparisonHeading = ({ isHeaderVisible, title, height, currentId, itemRevi
             const [error, setError] = useState(false);
             return (
             // items list with an image, name, and description
-            <div className={winner && winner.id === item.id ? 'flex items-center gap-2 bg-green-200 dark:bg-green-800/50 px-4 py-2 rounded-lg border-2 border-green-300 dark:border-green-700 shadow-sm' : 'flex items-center gap-2  px-4 py-2 shadow-sm'}>
-            <div className="flex flex-col items-start justify-center m-2 ">
+            <div className={winner && winner.id === item.id ? 'flex items-center gap-2  px-4 py-2 rounded-lg  shadow-sm' : 'flex items-center gap-2  px-4 py-2 shadow-sm'}
+            style={{
+              backgroundColor: winner && winner.id !== item.id ? currentTheme.colors.background : item.item_color_string
+            }}
+            >
+            <div className="flex flex-col items-start justify-center m-2 "
+            onClick={() => {
+              navigate(`/item/${item.id}`);
+            }}
+            >
               <div key={item.id} className="flex flex-row items-center justify-center ">
                 {(!error && item.image && <img src={item.image} alt={""} className="w-10 h-10" onError={(e) => {
                   setError(true);
@@ -116,7 +123,7 @@ const ComparisonHeading = ({ isHeaderVisible, title, height, currentId, itemRevi
                 <div className="flex flex-col items-start justify-center">
                   <div className="flex flex-row">
                     <div className="flex items-center justify-center">
-                      <div className="w-4 h-4 align-bottom rounded-full" style={{ backgroundColor: COMPARISON_COLOR_SET[i] }}></div>
+                      <div className="w-4 h-4 align-bottom rounded-full" style={{ backgroundColor: item.item_color_string }}></div>
                     </div>
                     <h4>{item.name}</h4>
                   </div>

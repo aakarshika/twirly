@@ -55,16 +55,17 @@ const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
               <div className="flex-1 ">
                 <div className="h-auto rounded-sm overflow-hidden">
                   <div className="text-center" style={{ color: currentTheme.colors.text, backgroundColor: 'white' }}>
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-row items-center justify-center">
                       <h4
-                        className="truncate block "
-                        style={{ color: currentTheme.colors.textSecondary, textAlign: 'left' }}
+                        className="truncate block align-center rounded-sm bg-gray-100 p-1 mr-2 ml-2 mb-2"
+                        style={{ color: currentTheme.colors.textSecondary }}
                     >
                       {metric.metric_name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
                     </h4>
                     <Button onClick={() => {
                       navigate(`/comparison-aspect/${metric.id}`);
                     }} className="flex items-center gap-2">
+                      
                       <Play size={16} />
                     </Button>
                     </div>
@@ -96,7 +97,7 @@ const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
                                     className="h-full rounded-sm transition-all duration-300 flex items-center justify-end px-1"
                                     style={{
                                       width: `${percentage}%`,
-                                      backgroundColor: currentTheme.colors[item.color] || COMPARISON_COLOR_SET[i]
+                                      backgroundColor: item.item_color_string
                                     }}
                                   >
                                     <span

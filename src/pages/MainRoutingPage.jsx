@@ -22,6 +22,7 @@ import { userService } from '../services/userService';
 import PollScreenAspect from './PollScreenAspect';
 import ProductDetailsPage from './ProductDetailsPage';
 import CreateComparison from '../components/dashboard/tabs/CreateComparison';
+import SearchPage from './SearchPage';
 
 // Protected Route wrapper
 const ProtectedRoute = ({ children }) => {
@@ -116,6 +117,16 @@ const MainRoutingPage = () => {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+
+              {/* Search Route */}
+              <Route
+                path="/search"
+                element={
+                  <ProtectedRoute>
+                    <SearchPage />
+                  </ProtectedRoute>
+                }
+              />
 
               {/* Protected Routes */}
               <Route

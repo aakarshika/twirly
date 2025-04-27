@@ -147,3 +147,10 @@ export const parseMentions = (text) => {
 export function splitAndJoin(text) {
   return text.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 }
+
+export function randomPastelColor() {
+  const r = Math.floor(128 + Math.random() * 127);
+  const g = Math.floor(128 + Math.random() * 127);
+  const b = Math.floor(128 + Math.random() * 127);
+  return `rgb(${r}, ${g}, ${b})`;
+}

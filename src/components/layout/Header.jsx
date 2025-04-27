@@ -9,6 +9,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import ThemeSwitcher from '../ThemeSwitcher';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
+import SearchBar from '../search/SearchBar';
 
 /**
  * Header component with app title, navigation, and main actions
@@ -85,6 +86,11 @@ const Header = () => {
             </Link>
           </div>
 
+          {/* Search Bar */}
+          <div className="hidden md:block flex-1 max-w-xl mx-8">
+            <SearchBar setMenuOpen={() => setIsMenuOpen(false)} />
+          </div>
+
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
@@ -144,6 +150,10 @@ const Header = () => {
       {isMenuOpen && (
         <div className="md:hidden">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+            {/* Mobile Search Bar */}
+            <div className="px-3 py-2">
+              <SearchBar setMenuOpen={() => setIsMenuOpen(false)} />
+            </div>
             {navItems.map((item) => (
               <Link
                 onClick={() => setIsMenuOpen(false)}

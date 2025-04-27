@@ -50,12 +50,7 @@ export const useComparisonDetails = (id) => {
               id, 
               item_id,
               set_id,
-              items(
-                id,
-                name,
-                description,
-                image_url
-              )
+              items(*)
             )
           `)
           .eq('id', comparisonId)
@@ -118,6 +113,7 @@ export const useComparisonDetails = (id) => {
               name: setItem.items.name,
               description: setItem.items.description,
               image: setItem.items.image_url,
+              item_color_string: setItem.items.item_color_string,
               category: data.categories?.name || 'Uncategorized',
               votes: voteCount,
               reviews: reviews.reviews.map(review => ({
@@ -136,6 +132,7 @@ export const useComparisonDetails = (id) => {
               name: setItem.items.name,
               description: setItem.items.description,
               image: setItem.items.image_url,
+              item_color_string: setItem.items.item_color_string,
               category: data.categories?.name || 'Uncategorized',
               votes: voteCounts.find(vc => vc.itemId === setItem.items.id)?.count || 0,
               reviews: [],

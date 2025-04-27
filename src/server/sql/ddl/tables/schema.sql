@@ -98,32 +98,6 @@ CREATE TABLE reviews (
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Review metrics table
--- Stores detailed rating metrics for reviews
--- Primary key: id
--- Foreign key: review_id
-CREATE TABLE review_metrics (
-    id SERIAL PRIMARY KEY,
-    review_id INTEGER REFERENCES reviews(id) ON DELETE CASCADE,
-    metric_name VARCHAR(50) NOT NULL,
-    value DECIMAL(3,2) NOT NULL,
-    set_id INTEGER REFERENCES comparison_sets(id) ON DELETE CASCADE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
--- Review likes table
--- Tracks which users have liked which reviews
--- Primary key: id
--- Foreign keys: user_id, review_id
--- Unique constraint: (user_id, review_id) to prevent duplicate likes
-CREATE TABLE review_likes (
-    id SERIAL PRIMARY KEY,
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-    review_id INTEGER REFERENCES reviews(id) ON DELETE CASCADE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(user_id, review_id)
-);
-
 -- Comments table
 CREATE TABLE comparison_set_comments (
     id SERIAL PRIMARY KEY,

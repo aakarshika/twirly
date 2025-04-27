@@ -17,6 +17,7 @@ import ComparisonGrid from '../components/comparison/ComparisonGrid';
 import ComparisonItemCard from '../components/comparison/ComparisonItemCard/ComparisonItemCard';
 import ComparisonSetAspectsCommentsSection from '../components/comparison/ComparisonSetAspectsCommentsSection';
 import ComparisonItemCardAspect from '../components/comparison/ComparisonItemCard/ComparisonItemCardAspect';
+import { splitAndJoin } from '../lib/utils';
 
 const PollScreenAspect = () => {
   const { id } = useParams();
@@ -107,8 +108,9 @@ const PollScreenAspect = () => {
                 </div>
                 <div className="flex justify-center items-center gap-2 mb-4">
                   <p className="text-center text-sm text-gray-500" style={{ color: currentTheme.colors.text }}>Based on: </p>
-                  <p className="text-center text-sm text-gray-500 rounded-full px-2 py-1 bg-gray-200" style={{ color: currentTheme.colors.text }}>
-                    {(currentAspectSet?.metric_name || '').split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                  <p className="text-center text-sm text-gray-500 rounded-full px-2 py-1 bg-gray-200" 
+              style={{ color: 'white', backgroundColor: currentTheme.colors.primary, marginBottom: '10px'}}>
+                    {splitAndJoin(currentAspectSet?.metric_name)}
                   </p>
                 </div>
 
