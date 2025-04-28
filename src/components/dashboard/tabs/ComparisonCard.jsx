@@ -7,33 +7,46 @@ import { useNavigate } from 'react-router-dom';
 const ComparisonItem = ({ item, user, getVoteCount, getCommentCount }) => {
   const { currentTheme } = useTheme();
   const [imgSrc, setImgSrc] = useState(item?.image_url);
+  const [imageError, setImageError] = useState(false);
 
   return (
     <div
       className="flex items-center space-x-3 p-3 rounded-lg"
-      style={{ 
+      style={{
         backgroundColor: currentTheme.colors.background,
         border: `1px solid ${currentTheme.colors.border}`
       }}
     >
-      <img
-        src={imgSrc}
-        alt={item?.name || 'Item'}
-        onError={() => setImgSrc('https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg')}
-        className="w-12 h-12 rounded-lg object-cover"
-      />
+      <div className="relative">
+        {item.image_url && !imageError && (<img
+          src={item.image_url}
+          alt={item.name}
+          className="w-24 h-24 object-cover"
+          onError={(e) => {
+            e.target.style.display = 'none';
+            e.target.nextSibling.style.display = 'flex';
+            setImageError(true);
+          }}
+        />)}
+      </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center space-x-2">
-          <p 
+
+          <div
+            className="w-4 h-4 object-cover"
+            style={{ backgroundColor: item.item_color_string }}
+          >
+          </div>
+          <p
             className="text-sm font-medium truncate"
             style={{ color: currentTheme.colors.text }}
           >
             {item?.name || 'Unnamed Item'}
           </p>
           {user && item?.user_id === user.id && (
-            <span 
+            <span
               className="text-xs px-2 py-0.5 rounded"
-              style={{ 
+              style={{
                 backgroundColor: currentTheme.colors.primary + '20',
                 color: currentTheme.colors.primary
               }}
@@ -42,11 +55,14 @@ const ComparisonItem = ({ item, user, getVoteCount, getCommentCount }) => {
             </span>
           )}
         </div>
+        <div className="text-sm text-gray-500">
+          {item.description}
+        </div>
         <div className="flex items-center space-x-2 mt-1">
           {item?.price && (
-            <span 
+            <span
               className="text-xs px-2 py-0.5 rounded"
-              style={{ 
+              style={{
                 backgroundColor: currentTheme.colors.background,
                 color: currentTheme.colors.textSecondary
               }}
@@ -54,24 +70,6 @@ const ComparisonItem = ({ item, user, getVoteCount, getCommentCount }) => {
               ${item.price.toFixed(2)}
             </span>
           )}
-          <div className="flex items-center space-x-1">
-            <ThumbsUp size={14} style={{ color: currentTheme.colors.textSecondary }} />
-            <span 
-              className="text-xs"
-              style={{ color: currentTheme.colors.textSecondary }}
-            >
-              {getVoteCount(item?.id)}
-            </span>
-          </div>
-          <div className="flex items-center space-x-1">
-            <MessageSquare size={14} style={{ color: currentTheme.colors.textSecondary }} />
-            <span 
-              className="text-xs"
-              style={{ color: currentTheme.colors.textSecondary }}
-            >
-              {getCommentCount()}
-            </span>
-          </div>
         </div>
       </div>
     </div>
@@ -101,18 +99,18 @@ const ComparisonCard = ({ comparison, onDelete, onEditMetrics }) => {
   const placeholdersNeeded = 3 - (comparison?.items?.length || 0);
 
   return (
-    <div 
-      onClick={() => handleComparisonClick(comparison)}
+    <div
       className="rounded-lg overflow-hidden flex flex-col"
-      style={{ 
+      style={{
         backgroundColor: currentTheme.colors.card,
         border: `1px solid ${currentTheme.colors.border}`,
         color: currentTheme.colors.text
       }}
     >
       <div className="p-4 flex-grow">
-        <div className="flex justify-between items-start mb-4">
-          <h3 
+        <div className="flex justify-between items-start mb-4" 
+      onClick={() => handleComparisonClick(comparison)}>
+          <h3
             className="font-medium text-lg"
             style={{ color: currentTheme.colors.text }}
           >
@@ -122,9 +120,9 @@ const ComparisonCard = ({ comparison, onDelete, onEditMetrics }) => {
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                onEditMetrics(comparison);
+                navigate(`/edit-comparison/${comparison.id}`);
               }}
-              className="p-2 rounded-full hover:bg-gray-700"
+              className="p-2 rounded-full hover:bg-gray-700 z-10"
               title="Edit Metrics"
             >
               <Settings size={18} style={{ color: currentTheme.colors.textSecondary }} />
@@ -134,7 +132,7 @@ const ComparisonCard = ({ comparison, onDelete, onEditMetrics }) => {
                 e.stopPropagation();
                 onDelete(comparison.id);
               }}
-              className="p-2 rounded-full hover:bg-gray-700"
+              className="p-2 rounded-full hover:bg-gray-700 z-10"
               title="Delete Comparison"
             >
               <Trash2 size={18} style={{ color: currentTheme.colors.error }} />
@@ -157,7 +155,7 @@ const ComparisonCard = ({ comparison, onDelete, onEditMetrics }) => {
             <div
               key={`placeholder-${index}`}
               className="flex items-center space-x-3 p-3 rounded-lg"
-              style={{ 
+              style={{
                 backgroundColor: currentTheme.colors.background,
                 border: `1px solid ${currentTheme.colors.border}`
               }}
@@ -171,23 +169,8 @@ const ComparisonCard = ({ comparison, onDelete, onEditMetrics }) => {
           ))}
         </div>
       </div>
-
-      <div className="px-4 py-3" style={{ backgroundColor: currentTheme.colors.cardBackgroundAlt }}>
-        <button
-          onClick={() => navigate(`/comparison/${comparison.id}`)}
-          className="flex items-center justify-center w-full py-2 rounded-lg font-medium"
-          style={{ 
-            backgroundColor: currentTheme.colors.primary,
-            color: currentTheme.colors.buttonText
-          }}
-        >
-          <ExternalLink size={16} className="mr-2" />
-          View Comparison
-        </button>
-      </div>
     </div>
   );
 };
 
-export default ComparisonCard; 
-  
+export default ComparisonCard;

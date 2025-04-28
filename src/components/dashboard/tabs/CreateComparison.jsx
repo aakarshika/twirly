@@ -3,14 +3,15 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useComparisonDraft } from '../../../contexts/ComparisonDraftContext';
 import { searchProducts } from '../../../services/products';
-import { createComparison, getUnpublishedComparison, updateComparison } from '../../../services/comparisons';
+import { createComparison, getUnpublishedComparison, updateComparison, getComparison } from '../../../services/comparisons';
 import { X, Check, Search, User, Trash2, Plus } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const CreateComparison = () => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { id } = useParams();
   const { 
     draft, 
     addItem, 
@@ -30,41 +31,53 @@ const CreateComparison = () => {
   const hasLoadedData = useRef(false);
 
   useEffect(() => {
-    const loadUnpublishedComparison = async () => {
+    const loadComparisonData = async () => {
       if (!user || hasLoadedData.current) return;
 
       try {
         setLoading(true);
-        const unpublishedData = await getUnpublishedComparison(user.id);
-        
-        if (unpublishedData) {
-          setExistingComparisonId(unpublishedData.id);
+        let comparisonData;
+
+        if (id) {
+          // Load existing comparison for editing
+          comparisonData = await getComparison(id, user.id);
+          console.log(comparisonData, 'comparisonData', id);
+          setExistingComparisonId(id);
+        } else {
+          // Load unpublished comparison for new creation
+          comparisonData = await getUnpublishedComparison(user.id);
+          if (comparisonData) {
+            setExistingComparisonId(comparisonData.id);
+          }
+        }
+        console.log(comparisonData, 'comparisonData', id);
+        if (comparisonData) {
           // Transform the data to match the draft format
           updateDraft({
-            title: unpublishedData.name,
-            description: unpublishedData.description,
-            category_id: unpublishedData.category_id,
-            items: unpublishedData.comparison_set_items.map(item => item.items),
-            aspects: unpublishedData.comparison_set_aspects.map(aspect => ({
+            title: comparisonData.name,
+            description: comparisonData.description,
+            category_id: comparisonData.category_id,
+            items: comparisonData.comparison_set_items.map(item => item.items),
+            aspects: comparisonData.comparison_set_aspects.map(aspect => ({
               id: aspect.id,
               metric_name: aspect.metric_name,
               description: aspect.description,
               weight: aspect.weight || 1
             })),
-            isPublished: false
+            isPublished: comparisonData.isPublished || false
           });
         }
         hasLoadedData.current = true;
       } catch (err) {
-        setError('Failed to load unpublished comparison');
+        setError('Failed to load comparison data');
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
 
-    loadUnpublishedComparison();
-  }, [user]);
+    loadComparisonData();
+  }, [user, id]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -98,7 +111,14 @@ const CreateComparison = () => {
         await updateComparison(existingComparisonId, {
           ...draft,
           user_id: user.id,
-          isPublished: false
+          isPublished: false,
+          items: draft.items.map(item => ({
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            image_url: item.image_url,
+            item_color_string: item.item_color_string
+          }))
         });
       } else {
         await createComparison({
@@ -126,7 +146,14 @@ const CreateComparison = () => {
         await updateComparison(existingComparisonId, {
           ...draft,
           user_id: user.id,
-          isPublished: true
+          isPublished: true,
+          items: draft.items.map(item => ({
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            image_url: item.image_url,
+            item_color_string: item.item_color_string
+          }))
         });
       } else {
         await createComparison({

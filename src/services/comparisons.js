@@ -51,6 +51,7 @@ export const createComparison = async (comparisonData) => {
   return comparison;
 };
 
+
 /**
  * Get user's comparison sets
  * @returns {Promise<Array>} List of user's comparison sets
@@ -151,6 +152,49 @@ export const deleteComparisonSet = async (setId) => {
 };
 
 /**
+ * Get a comparison by ID
+ * @param {number} id - The ID of the comparison to get
+ * @returns {Promise<Object>} The comparison object
+ */
+export const getComparison = async (id, userId) => {
+
+
+
+  try {
+    const { data, error } = await supabase
+      .from('comparison_sets')
+      .select(`
+      *,
+      comparison_set_items (
+        item_id,
+        items (
+          id,
+          name,
+          description,
+          image_url,
+          item_color_string
+        )
+      ),
+      comparison_set_aspects (
+        id,
+        metric_name,
+        description,
+        weight
+      )
+    `)
+    .eq('user_id', userId)
+    .eq('id', id)
+      .single();
+    if (error) throw error;
+    console.log(data, 'data', id);
+    return data;
+  } catch (error) {
+    console.error('Error fetching comparisons:', error);
+    throw error;
+  }
+};
+
+/**
  * Get user's unpublished comparison set
  * @param {string} userId - The ID of the user
  * @returns {Promise<Object|null>} The unpublished comparison set or null if none exists
@@ -208,46 +252,100 @@ export const updateComparison = async (setId, comparisonData) => {
 
   if (comparisonError) throw comparisonError;
 
-  // Delete existing items and aspects
-  const { error: deleteItemsError } = await supabase
+  // Get existing items and aspects
+  const { data: existingItems, error: existingItemsError } = await supabase
     .from('comparison_set_items')
-    .delete()
+    .select('id, item_id')
     .eq('set_id', setId);
 
-  if (deleteItemsError) throw deleteItemsError;
+  if (existingItemsError) throw existingItemsError;
 
-  const { error: deleteAspectsError } = await supabase
+  const { data: existingAspects, error: existingAspectsError } = await supabase
     .from('comparison_set_aspects')
-    .delete()
+    .select('id')
     .eq('set_id', setId);
 
-  if (deleteAspectsError) throw deleteAspectsError;
+  if (existingAspectsError) throw existingAspectsError;
 
-  // Insert new items
-  const { error: itemsError } = await supabase
-    .from('comparison_set_items')
-    .insert(
-      comparisonData.items.map(item => ({
-        set_id: setId,
-        item_id: item.id
-      }))
-    );
+  // Delete items that are no longer in the comparison
+  const itemsToDelete = existingItems
+    .filter(existing => !comparisonData.items.some(item => item.id === existing.item_id))
+    .map(item => item.id);
 
-  if (itemsError) throw itemsError;
+  if (itemsToDelete.length > 0) {
+    const { error: deleteItemsError } = await supabase
+      .from('comparison_set_items')
+      .delete()
+      .in('id', itemsToDelete);
 
-  // Insert new aspects
-  const { error: aspectsError } = await supabase
-    .from('comparison_set_aspects')
-    .insert(
-      comparisonData.aspects.map(aspect => ({
-        set_id: setId,
-        metric_name: aspect.metric_name,
-        description: aspect.description,
-        weight: aspect.weight
-      }))
-    );
+    if (deleteItemsError) throw deleteItemsError;
+  }
 
-  if (aspectsError) throw aspectsError;
+  // Add new items
+  const itemsToAdd = comparisonData.items
+    .filter(item => !existingItems.some(existing => existing.item_id === item.id))
+    .map(item => ({
+      set_id: setId,
+      item_id: item.id
+    }));
+
+  if (itemsToAdd.length > 0) {
+    const { error: addItemsError } = await supabase
+      .from('comparison_set_items')
+      .insert(itemsToAdd);
+
+    if (addItemsError) throw addItemsError;
+  }
+
+  // Delete aspects that are no longer in the comparison
+  const aspectsToDelete = existingAspects
+    .filter(existing => !comparisonData.aspects.some(aspect => aspect.id === existing.id))
+    .map(aspect => aspect.id);
+
+  if (aspectsToDelete.length > 0) {
+    const { error: deleteAspectsError } = await supabase
+      .from('comparison_set_aspects')
+      .delete()
+      .in('id', aspectsToDelete);
+
+    if (deleteAspectsError) throw deleteAspectsError;
+  }
+
+  // Add new aspects
+  const aspectsToAdd = comparisonData.aspects
+    .filter(aspect => !existingAspects.some(existing => existing.id === aspect.id))
+    .map(aspect => ({
+      set_id: setId,
+      metric_name: aspect.metric_name,
+      description: aspect.description,
+      weight: aspect.weight
+    }));
+
+  if (aspectsToAdd.length > 0) {
+    const { error: addAspectsError } = await supabase
+      .from('comparison_set_aspects')
+      .insert(aspectsToAdd);
+
+    if (addAspectsError) throw addAspectsError;
+  }
+
+  // Update existing aspects
+  const aspectsToUpdate = comparisonData.aspects
+    .filter(aspect => existingAspects.some(existing => existing.id === aspect.id))
+    .map(aspect => ({
+      id: aspect.id,
+      metric_name: aspect.metric_name,
+      description: aspect.description,
+      weight: aspect.weight
+    }));
+
+  if (aspectsToUpdate.length > 0) {
+    const { error: updateAspectsError } = await supabase
+      .from('comparison_set_aspects')
+      .upsert(aspectsToUpdate);
+
+    if (updateAspectsError) throw updateAspectsError;
+  }
 
   return comparison;
 }; 

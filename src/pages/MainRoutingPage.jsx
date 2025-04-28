@@ -162,6 +162,14 @@ const MainRoutingPage = () => {
                 }
               />
               <Route
+                path="/edit-comparison/:id"
+                element={
+                  <ProtectedRoute>
+                    <CreateComparison />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
                 path="/product/:itemId"
                 element={
                   <ProtectedRoute>
