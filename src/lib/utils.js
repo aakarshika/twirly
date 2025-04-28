@@ -154,3 +154,10 @@ export function randomPastelColor() {
   const b = Math.floor(128 + Math.random() * 127);
   return `rgb(${r}, ${g}, ${b})`;
 }
+// get random pastel color in hex
+export function randomPastelColorHex() {
+  const r = Math.floor(128 + Math.random() * 127);
+  const g = Math.floor(128 + Math.random() * 127);
+  const b = Math.floor(128 + Math.random() * 127);
+  return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+}

@@ -3,11 +3,46 @@ import { Heart, MessageSquare } from 'lucide-react';
 import Reply from './Reply';
 import {  getPublicUrl } from '../../lib/utils';
 import useMentionInput from '../../hooks/useMentionInput';
-
+import { useAuth } from '../../contexts/AuthContext';
+import { userService } from '../../services/userService';
+import { useEffect } from 'react';
+import { supabase } from '../../lib/supabase';
 const Comment = ({ comment, onLike, onReply, onToggleVisibility, isVisible, users, products }) => {
+  const { user } = useAuth();
   const [replyText, setReplyText] = useState('');
   const [isReplying, setIsReplying] = useState(false);
   const [isReplySectionExpanded, setIsReplySectionExpanded] = useState(false);
+  const [userPreferences, setUserPreferences] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (!user) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Fetch user preferences
+        const { data: profile, error: profileError } = await supabase
+          .from('user_preferences')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (profileError) throw profileError;
+
+        setUserPreferences(profile);
+      } catch (error) {
+        console.error('Error fetching user preferences:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfileData();
+  }, [user]);
 
   const {
     suggestions,
@@ -20,6 +55,8 @@ const Comment = ({ comment, onLike, onReply, onToggleVisibility, isVisible, user
     text,
     handleReplySubmit
   } = useMentionInput(users, products);
+
+
 
   const renderTextWithMentions = (text) => {
     if (!text) return null;
@@ -95,7 +132,7 @@ const Comment = ({ comment, onLike, onReply, onToggleVisibility, isVisible, user
           {comment.reactions ? comment.reactions.length : 0}
         </button>
         <button onClick={() => {
-          setIsReplying(!isReplying);
+          setIsReplying(!isReplySectionExpanded);
           setIsReplySectionExpanded(!isReplySectionExpanded);
         }} className="flex items-center gap-1 text-xs text-gray-500 hover:text-amber-400">
           <MessageSquare className="w-3.5 h-3.5" />
@@ -107,7 +144,7 @@ const Comment = ({ comment, onLike, onReply, onToggleVisibility, isVisible, user
         <form onSubmit={(e) => {
 
           onReply(comment.id, text);
-          setIsReplying(true);
+          setIsReplying(false);
           setIsReplySectionExpanded(true);
           handleReplySubmit(e)
         }} className="mt-1">
@@ -116,12 +153,12 @@ const Comment = ({ comment, onLike, onReply, onToggleVisibility, isVisible, user
             <div className="p-1 w-full border-b border-gray-200 dark:border-gray-700">
               <div className="flex items-start mb-1">
                 <img
-                  src={comment.user?.profile_picture || 'https://images.pexels.com/photos/1092644/pexels-photo-1092644.jpeg'}
-                  alt={comment.user?.username || 'User'}
+                  src={getPublicUrl(userPreferences?.profile_image_url)}
+                  alt={userPreferences?.display_name || 'User'} 
                   className="w-6 h-6 rounded-full mr-2"
                 />
                 <div className="flex flex justify-start">
-                  <span className="font-bold text-sm">{comment.user?.username || 'Anonymous'}</span>
+                  <span className="font-bold text-sm">{userPreferences?.display_name || 'WWWWWWW'}</span>
                   <span><div className="w-1 h-1 bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{ marginTop: '8px', background: 'lightgray' }}></div></span>
                   <span className="font-normal text-xs text-gray-400 dark:text-gray-300" style={{ marginTop: '2px' }}>
                     {new Date().toLocaleDateString()}

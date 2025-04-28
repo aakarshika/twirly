@@ -70,7 +70,7 @@ export const comparisonSetService = {
   async getUserPreferences(userId) {
     const { data, error } = await supabase
       .from('user_preferences')
-      .select('display_name')
+      .select('*')
       .eq('user_id', userId)
       .single();
 

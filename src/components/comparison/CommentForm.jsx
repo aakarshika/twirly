@@ -69,13 +69,13 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment }) => {
   );
 
   return (
-    <form onSubmit={handleSubmitComment} className="mb-4">
+    <form onSubmit={handleSubmitComment} className="flex flex-col gap-2 mb-4">
       <MentionsInput
         value={newComment}
         onChange={(e) => setNewComment(e.target.value)}
         style={mentionStyles}
         placeholder="Add a comment... (use @ to mention users)"
-        className="w-full"
+        className="w-full h-12"
       >
         <Mention
           trigger="@"

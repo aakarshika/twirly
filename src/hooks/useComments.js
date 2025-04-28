@@ -44,7 +44,8 @@ export const useComments = (setId, userId) => {
       const enrichedComment = {
         ...comment,
         user: { 
-          username: userPreferences?.display_name || 'Someone'
+          profile_image_url: userPreferences?.profile_image_url,
+          display_name: userPreferences?.display_name || 'Someone'
         }
       };
 
@@ -90,7 +91,8 @@ export const useComments = (setId, userId) => {
       const enrichedReply = {
         ...reply,
         user: { 
-          username: userPreferences?.display_name || 'Someone'
+          profile_image_url: userPreferences?.profile_image_url,
+          display_name: userPreferences?.display_name || 'Someone'
         }
       };
 

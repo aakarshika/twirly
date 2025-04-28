@@ -8,7 +8,7 @@ import { useHeader } from '../contexts/HeaderContext';
 import { MessageSquare, TrendingUp, Users } from 'lucide-react';
 import { COMPARISON_COLOR_SET } from '../lib/constants';
 import { randomPastelColor, splitAndJoin } from '../lib/utils';
-import TrendingCard from './TrendingCard';
+import TrendingCard from '../components/common-cards/TrendingCard';
 
 const Trending = () => {
   const [trendingSets, setTrendingSets] = useState([]);

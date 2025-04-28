@@ -21,7 +21,7 @@ import { userService } from '../services/userService';
 import PollScreenAspect from './PollScreenAspect';
 import CreateComparison from '../components/dashboard/tabs/CreateComparison';
 import SearchPage from './SearchPage';
-
+import AddProductModal from '../components/dashboard/AddProductModal';
 // Protected Route wrapper
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
@@ -172,6 +172,23 @@ const MainRoutingPage = () => {
                 element={
                   <ProtectedRoute>
                     <ProductDetails />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/dashboard/products/add"
+                element={
+                  <ProtectedRoute>
+                    <AddProductModal />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path="/dashboard/products/edit/:id"
+                element={
+                  <ProtectedRoute>
+                    <AddProductModal />
                   </ProtectedRoute>
                 }
               />

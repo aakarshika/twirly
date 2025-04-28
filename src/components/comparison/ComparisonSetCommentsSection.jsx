@@ -30,6 +30,7 @@ const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
     e.preventDefault();
     handleSubmitComment(newComment);
     setNewComment('');
+    setIsReplySectionExpanded(false);
   };
 
   if (loading) {

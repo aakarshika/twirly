@@ -5,7 +5,6 @@ import { useHeader } from '../contexts/HeaderContext';
 import PollGrid from '../components/comparison/PollGrid';
 import BarChart from '../components/results/visualizations/BarChart';
 import ComparisonSetCommentsSection from '../components/comparison/ComparisonSetCommentsSection';
-import { useComparisonAspectDetails } from '../hooks/useComparisonAspectDetails';
 import Button from '../components/common/Button';
 import { ArrowRight, MessageSquare, Star } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -13,6 +12,7 @@ import { useAuth } from '../contexts/AuthContext';
 import ComparisonGridSkeleton from '../components/skeletons/ComparisonGridSkeleton';
 import ComparisonItemCardAspect from '../components/comparison/ComparisonItemCard/ComparisonItemCardAspect';
 import { splitAndJoin } from '../lib/utils';
+import { useComparisonAspectDetails } from '../hooks/useComparisonAspectDetails';
 
 const PollScreenAspect = () => {
   const { id } = useParams();

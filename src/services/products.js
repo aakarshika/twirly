@@ -1,5 +1,22 @@
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+
+
+/**
+ * Get a product by ID
+ * @param {number} productId - The ID of the product to get
+ * @returns {Promise<Object>} The product
+ */
+export const getProduct = async (productId) => {
+  const { data, error } = await supabase
+    .from('items')
+    .select('*')
+    .eq('id', productId)
+    .single();
+
+  if (error) throw error;
+  return data;
+};
 /**
  * Get user's products with their metrics
  * @param {string} userId - The ID of the user
@@ -74,6 +91,8 @@ export const deleteProduct = async (productId) => {
     throw error;
   }
 };
+
+
 
 /**
  * Create a new product

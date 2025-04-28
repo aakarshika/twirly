@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
-import OverviewTab from './tabs/OverviewTab';
 import ReviewsTab from './tabs/ReviewsTab';
 import AppearancesTab from './tabs/AppearancesTab';
 import CommentAppearancesTab from './tabs/CommentAppearancesTab';

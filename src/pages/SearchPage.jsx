@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Search, Filter } from 'lucide-react';
-import { useTheme } from '../contexts/ThemeContext';
 import { searchService } from '../services/searchService';
 import { Link } from 'react-router-dom';
-import TrendingCard from './TrendingCard';
-
+import TrendingCard from '../components/common-cards/TrendingCard';
+import ItemCard from '../components/common-cards/ItemCard';
+import { useTheme } from '../contexts/ThemeContext';
+import { getPublicUrl } from '../lib/utils';
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
@@ -55,50 +56,9 @@ const SearchPage = () => {
 
   const renderItemCard = (item) => {
     return (
-      <Link
-        to={`/item/${item.id}`}
-        className="block p-4 rounded-lg hover:bg-gray-50"
-        style={{
-          backgroundColor: currentTheme.colors.card,
-          borderColor: currentTheme.colors.border,
-          border: '1px solid'
-        }}
-      >
-        <div className="flex items-start">
-          <div className="w-16 h-16 rounded-lg overflow-hidden mr-4 flex-shrink-0">
-            {item.image_url ? (
-              <img
-                src={item.image_url}
-                alt={item.name}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  e.target.nextSibling.style.display = 'flex';
-                }}
-              />
-            ) : (
-              <div
-                className="w-full h-full flex items-center justify-center text-2xl font-bold"
-                style={{ backgroundColor: currentTheme.colors.primary }}
-              >
-                {item.name.charAt(0).toUpperCase()}
-              </div>
-            )}
-          </div>
-          <div>
-            <h3 className="font-medium" style={{ color: currentTheme.colors.text }}>
-              {item.name}
-            </h3>
-            {item.description && (
-              <div>
-                <p className="text-sm mt-1" style={{ color: currentTheme.colors.textSecondary }}>
-                  {item.description}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-      </Link>
+      <div key={item.id}>
+        <ItemCard item={item} />
+      </div>
     );
   };
 
@@ -126,7 +86,7 @@ const SearchPage = () => {
           <div className="w-12 h-12 rounded-full overflow-hidden mr-4">
             {user.profile_image_url ? (
               <img
-                src={user.profile_image_url}
+                src={getPublicUrl(user.profile_image_url)}
                 alt={user.username}
                 className="w-full h-full object-cover"
               />
