@@ -76,7 +76,7 @@ const ComparisonItem = ({ item, user, getVoteCount, getCommentCount }) => {
   );
 };
 
-const ComparisonCard = ({ comparison, onDelete, onEditMetrics }) => {
+const ComparisonCard = ({ comparison, onDelete }) => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
   const navigate = useNavigate();

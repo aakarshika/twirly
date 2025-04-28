@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useHeader } from '../../contexts/HeaderContext';
-import ComparisonGrid from './ComparisonGrid';
 import { useNavigate } from 'react-router-dom';
 import ComparisonHeading from './ComparisonHeading';
 const PollGrid = ({ id, title, set, items, onVote, votedItemId, userVoted, currentId, itemReviews, setId, metrics, comparisonMetrics }) => {

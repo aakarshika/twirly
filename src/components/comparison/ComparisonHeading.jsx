@@ -3,8 +3,6 @@
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useComparison } from '../../contexts/ComparisonContext';
-import ComparisonItemCard from './ComparisonItemCard/ComparisonItemCard';
-import Button from '../common/Button';
 import { useState } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';

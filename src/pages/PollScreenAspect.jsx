@@ -11,9 +11,6 @@ import { ArrowRight, MessageSquare, Star } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import ComparisonGridSkeleton from '../components/skeletons/ComparisonGridSkeleton';
-import ComparisonGrid from '../components/comparison/ComparisonGrid';
-import ComparisonItemCard from '../components/comparison/ComparisonItemCard/ComparisonItemCard';
-import ComparisonSetAspectsCommentsSection from '../components/comparison/ComparisonSetAspectsCommentsSection';
 import ComparisonItemCardAspect from '../components/comparison/ComparisonItemCard/ComparisonItemCardAspect';
 import { splitAndJoin } from '../lib/utils';
 

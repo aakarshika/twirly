@@ -4,8 +4,6 @@ import { Plus, Trash2, ExternalLink, MessageSquare, ThumbsUp, Settings, X } from
 import { getUserComparisons, deleteComparisonSet } from '../../../services/comparisons';
 import { useAuth } from '../../../contexts/AuthContext';
 import ComparisonCard from './ComparisonCard';
-import CreateComparison from './CreateComparison';
-import ComparisonSetMetricsForm from '../../comparison/ComparisonSetMetricsForm';
 import { useNavigate } from 'react-router-dom';
 
 const ComparisonsTab = () => {
@@ -14,8 +12,6 @@ const ComparisonsTab = () => {
   const [comparisons, setComparisons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [editingMetrics, setEditingMetrics] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,15 +46,6 @@ const ComparisonsTab = () => {
       setError('Failed to delete comparison');
       console.error(err);
     }
-  };
-
-  const handleEditMetrics = (comparison) => {
-    setEditingMetrics(comparison);
-  };
-
-  const handleMetricsComplete = () => {
-    setEditingMetrics(null);
-    fetchComparisons();
   };
 
   if (loading) {
@@ -115,32 +102,12 @@ const ComparisonsTab = () => {
               key={comparison.id} 
               comparison={comparison}
               onDelete={handleDelete}
-              onEditMetrics={() => handleEditMetrics(comparison)}
             />
           ))}
         </div>
       )}
 
 
-      {editingMetrics && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-800 rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-semibold text-white">Edit Comparison Metrics</h3>
-              <button
-                onClick={() => setEditingMetrics(null)}
-                className="text-gray-400 hover:text-white"
-              >
-                <X size={24} />
-              </button>
-            </div>
-            <ComparisonSetMetricsForm
-              setId={editingMetrics.id}
-              onComplete={handleMetricsComplete}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };
