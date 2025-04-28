@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { Heart, MessageSquare } from 'lucide-react';
 import Reply from './Reply';
-import useMentionInput from '../hooks/useMentionInput';
 import {  getPublicUrl } from '../../lib/utils';
+import useMentionInput from '../../hooks/useMentionInput';
 
 const Comment = ({ comment, onLike, onReply, onToggleVisibility, isVisible, users, products }) => {
   const [replyText, setReplyText] = useState('');

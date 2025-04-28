@@ -26,25 +26,8 @@ export const submitReview = async (itemId, userId, text, metrics) => {
 
     if (reviewError) throw reviewError;
 
-    // Insert review metrics
-    const metricsData = Object.entries(metrics).map(([metric_name, value]) => ({
-      review_id: review.id,
-      metric_name,
-      value: parseFloat(value)
-    }));
-
-    const { error: metricsError } = await supabase
-      .from('review_metrics')
-      .insert(metricsData);
-
-    if (metricsError) throw metricsError;
-
-
-    if (updateError) throw updateError;
-
     return {
-      review,
-      metrics: metricsData
+      review
     };
   } catch (error) {
     console.error('Error submitting review:', error);
@@ -214,10 +197,6 @@ export const getUserReviews = async (userId) => {
           category:categories (
             name
           )
-        ),
-        review_metrics (
-          metric_name,
-          value
         )
       `)
       .eq('user_id', userId)
@@ -232,11 +211,7 @@ export const getUserReviews = async (userId) => {
       category: review.item.category.name,
       text: review.text,
       likes: review.likes,
-      created_at: review.created_at,
-      // Calculate average rating from metrics
-      rating: review.review_metrics.length > 0 
-        ? review.review_metrics.reduce((acc, metric) => acc + metric.value, 0) / review.review_metrics.length
-        : 0
+      created_at: review.created_at
     }));
   } catch (error) {
     console.error('Error fetching user reviews:', error);

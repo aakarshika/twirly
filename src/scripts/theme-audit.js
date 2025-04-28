@@ -24,7 +24,6 @@ const componentsToCheck = [
   'src/components/reviews/ReviewSection.jsx',
   'src/components/reviews/ReviewList.jsx',
   'src/components/reviews/ReviewCard.jsx',
-  'src/components/reviews/ReviewForm.jsx',
   'src/components/reviews/ReviewMetrics.jsx',
 
   // Profile Components

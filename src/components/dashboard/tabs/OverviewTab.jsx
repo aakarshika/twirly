@@ -1,7 +1,4 @@
 import React, { useState } from 'react';
-import { useTheme } from '../../../contexts/ThemeContext';
-import ProductList from '../ProductList';
-import AddProductModal from '../AddProductModal';
 import ActivityOverview from '../ActivityOverview';
 import { useEffect } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';

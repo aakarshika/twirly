@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { useTheme } from '../contexts/ThemeContext';
-import ReviewForm from '../components/comparison/ReviewForm';
 import ProductHeader from '../components/product-details/ProductHeader';
 import QuickStats from '../components/product-details/QuickStats';
 import ProductTabs from '../components/product-details/ProductTabs';
@@ -171,23 +170,6 @@ const ProductDetails = () => {
           loadingReviews={loadingMoreReviews}
           loadMoreReviews={loadMoreReviews}
         />
-        {/* Review Form Modal */}
-        {showReviewForm && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-gray-800 rounded-xl p-6 max-w-2xl w-full mx-4">
-              <h2 className="text-2xl font-bold mb-4" style={{ color: currentTheme.colors.text }}>
-                Write a Review
-              </h2>
-              <ReviewForm />
-              <button
-                onClick={() => setShowReviewForm(false)}
-                className="mt-4 px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

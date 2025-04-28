@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import ProfileHeader from '../components/dashboard/ProfileHeader';
-import ActivityOverview from '../components/dashboard/ActivityOverview';
 import ContentTabs from '../components/dashboard/ContentTabs';
 import { getUserProfile } from '../services/users';
 import { useAuth } from '../contexts/AuthContext';

@@ -5,7 +5,6 @@ import { ChevronDown } from 'lucide-react';
 import { useComparison } from '../../contexts/ComparisonContext';
 import ComparisonItemCard from './ComparisonItemCard/ComparisonItemCard';
 import Button from '../common/Button';
-import ReviewForm from './ReviewForm';
 import { useState } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -163,8 +162,6 @@ const ComparisonHeading = ({ isHeaderVisible, title, height, currentId, itemRevi
         </div>
       </div>
       
-      {/* Review Form Modal */}
-      <ReviewForm />
     </div>
   );
   

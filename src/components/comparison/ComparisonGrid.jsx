@@ -5,7 +5,6 @@ import { ChevronDown } from 'lucide-react';
 import { useComparison } from '../../contexts/ComparisonContext';
 import ComparisonItemCard from './ComparisonItemCard/ComparisonItemCard';
 import Button from '../common/Button';
-import ReviewForm from './ReviewForm';
 
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -100,8 +99,6 @@ const ComparisonGrid = ({ isHeaderVisible, title, height, currentId, itemReviews
         </div>
       </div>
       
-      {/* Review Form Modal */}
-      <ReviewForm />
     </div>
   );
   

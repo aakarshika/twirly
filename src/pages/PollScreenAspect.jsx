@@ -5,8 +5,6 @@ import { useHeader } from '../contexts/HeaderContext';
 import PollGrid from '../components/comparison/PollGrid';
 import BarChart from '../components/results/visualizations/BarChart';
 import ComparisonSetCommentsSection from '../components/comparison/ComparisonSetCommentsSection';
-import SetReviewModal from '../components/comparison/SetReviewModal';
-import SetCombinedReviewModal from '../components/comparison/SetCombinedReviewModal';
 import { useComparisonAspectDetails } from '../hooks/useComparisonAspectDetails';
 import Button from '../components/common/Button';
 import { ArrowRight, MessageSquare, Star } from 'lucide-react';

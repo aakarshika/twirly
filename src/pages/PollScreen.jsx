@@ -5,8 +5,6 @@ import { useComparison } from '../contexts/ComparisonContext';
 import { useHeader } from '../contexts/HeaderContext';
 import PollGrid from '../components/comparison/PollGrid';
 import BarChart from '../components/results/visualizations/BarChart';
-import SetReviewModal from '../components/comparison/SetReviewModal';
-import SetCombinedReviewModal from '../components/comparison/SetCombinedReviewModal';
 import { useComparisonDetails } from '../hooks/useComparisonDetails';
 import Button from '../components/common/Button';
 import { MessageSquare, Star } from 'lucide-react';
@@ -58,23 +56,6 @@ const PollScreen = () => {
 
       if (error) throw error;
 
-      // Fetch existing reviews for this user
-      const { data: existingReviews, error: reviewsError } = await supabase
-        .from('reviews')
-        .select(`
-          id,
-          item_id,
-          review_metrics!inner (
-            metric_name,
-            value,
-            set_id
-          )
-        `)
-        .eq('user_id', user.id)
-        .eq('review_metrics.set_id', currentSetId);
-
-      if (reviewsError) throw reviewsError;
-
       // Initialize metrics with default values for each item and metric
       const defaultMetrics = {};
       const reviewIds = {};
@@ -85,15 +66,6 @@ const PollScreen = () => {
           defaultMetrics[item.id][aspect.metric_name] = 0;
         });
 
-        // Check if this item has an existing review
-        const existingReview = existingReviews?.find(review => review.item_id === item.id);
-        if (existingReview) {
-          reviewIds[item.id] = existingReview.id;
-          // Set the metrics from the existing review
-          existingReview.review_metrics.forEach(metric => {
-            defaultMetrics[item.id][metric.metric_name] = metric.value;
-          });
-        }
       });
 
       setMetrics(defaultMetrics);
@@ -108,76 +80,6 @@ const PollScreen = () => {
 
   useEffect(() => {
     fetchSetMetrics();
-  }, [currentSetId, items, user]);
-
-  useEffect(() => {
-    const fetchReviews = async () => {
-      if (!currentSetId || !user) return;
-      
-      try {
-        setLoadingReviews(true);
-        // Fetch all reviews for the set
-        const { data: reviews, error: reviewsError } = await supabase
-          .from('reviews')
-          .select(`
-            id,
-            item_id,
-            user_id,
-            review_metrics!inner (
-              metric_name,
-              value,
-              set_id
-            )
-          `)
-          .eq('review_metrics.set_id', currentSetId);
-
-        if (reviewsError) throw reviewsError;
-
-        // Check if user has reviewed all items
-        const userReviews = reviews.filter(review => review.user_id === user.id);
-        const userReviewedItems = new Set(userReviews.map(review => review.item_id));
-        const allItemsReviewed = items.every(item => userReviewedItems.has(item.id));
-        
-        setHasReviewed(allItemsReviewed);
-
-        // Group reviews by item_id
-        const reviewsByItem = reviews.reduce((acc, review) => {
-          if (!acc[review.item_id]) {
-            acc[review.item_id] = {
-              reviews: [],
-              metrics: {}
-            };
-          }
-          
-          // Calculate average metrics for this item
-          review.review_metrics.forEach(metric => {
-            if (!acc[review.item_id].metrics[metric.metric_name]) {
-              acc[review.item_id].metrics[metric.metric_name] = {
-                total: 0,
-                count: 0,
-                average: 0
-              };
-            }
-            acc[review.item_id].metrics[metric.metric_name].total += metric.value;
-            acc[review.item_id].metrics[metric.metric_name].count += 1;
-            acc[review.item_id].metrics[metric.metric_name].average = 
-              acc[review.item_id].metrics[metric.metric_name].total / 
-              acc[review.item_id].metrics[metric.metric_name].count;
-          });
-
-          acc[review.item_id].reviews.push(review);
-          return acc;
-        }, {});
-
-        setItemReviews(reviewsByItem);
-      } catch (error) {
-        console.error('Error fetching reviews:', error);
-      } finally {
-        setLoadingReviews(false);
-      }
-    };
-
-    fetchReviews();
   }, [currentSetId, items, user]);
 
 
@@ -275,15 +177,6 @@ const PollScreen = () => {
 
         </div>
       </div>
-      {activeReviewItem && <SetReviewModal />}
-      <SetCombinedReviewModal 
-        comparisonMetrics={comparisonMetrics}
-        existingReviewIds={existingReviewIds}
-        loading={loading}
-        metrics={metrics}
-        setMetrics={setMetrics}
-        fetchSetMetrics={fetchSetMetrics}
-      />
     </div>
   );
 };
