@@ -222,7 +222,7 @@ const MainRoutingPage = () => {
               />
             </Routes>
           </main>
-          <Footer />
+          {/* <Footer /> */}
         </div>
       </ComparisonDraftProvider>
     </ComparisonProvider>

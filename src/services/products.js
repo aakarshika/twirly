@@ -51,10 +51,31 @@ export const getUserProducts = async (userId) => {
  * Update a product
  * @param {number} productId - The ID of the product to update
  * @param {Object} productData - The updated product data
+ * @param {string} userId - The ID of the user updating the product
  * @returns {Promise<Object>} The updated product
  */
-export const updateProduct = async (productId, productData) => {
+export const updateProduct = async (productId, productData, userId) => {
+  if (!userId) {
+    throw new Error('User ID is required to update a product');
+  }
+
   try {
+    // First check if the product exists and belongs to the user
+    const { data: existingProduct, error: checkError } = await supabase
+      .from('items')
+      .select('*')
+      .eq('id', productId)
+      .eq('user_id', userId)
+      .single();
+
+    if (checkError) {
+      if (checkError.code === 'PGRST116') {
+        throw new Error(`Product with ID ${productId} not found or you don't have permission to update it`);
+      }
+      throw checkError;
+    }
+
+    // If product exists and belongs to user, proceed with update
     const { data, error } = await supabase
       .from('items')
       .update({
@@ -62,6 +83,7 @@ export const updateProduct = async (productId, productData) => {
         updated_at: new Date().toISOString()
       })
       .eq('id', productId)
+      .eq('user_id', userId)  // Add this to ensure user can only update their own items
       .select()
       .single();
 

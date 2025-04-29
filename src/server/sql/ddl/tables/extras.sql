@@ -12,3 +12,31 @@ REFERENCES profiles(id);
    ADD CONSTRAINT fk_reviews_user
    FOREIGN KEY (user_id)  -- or the actual column name that references profiles
    REFERENCES profiles(id);
+
+-- Enable Row Level Security for items table
+ALTER TABLE items ENABLE ROW LEVEL SECURITY;
+
+-- Policy to allow users to update their own items
+CREATE POLICY "Users can update their own items"
+ON items
+FOR UPDATE
+USING (auth.uid() = user_id)
+WITH CHECK (auth.uid() = user_id);
+
+-- Policy to allow users to select their own items
+CREATE POLICY "Users can view their own items"
+ON items
+FOR SELECT
+USING (auth.uid() = user_id);
+
+-- Policy to allow users to insert their own items
+CREATE POLICY "Users can insert their own items"
+ON items
+FOR INSERT
+WITH CHECK (auth.uid() = user_id);
+
+-- Policy to allow users to delete their own items
+CREATE POLICY "Users can delete their own items"
+ON items
+FOR DELETE
+USING (auth.uid() = user_id);

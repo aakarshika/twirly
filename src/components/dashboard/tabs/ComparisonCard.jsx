@@ -141,32 +141,17 @@ const ComparisonCard = ({ comparison, onDelete }) => {
         </div>
 
         <div className="space-y-3">
-          {comparison?.items?.map((setItem) => (
+          {comparison?.items?.map((setItem) => {
+            console.log(setItem, comparison.id + "_" + setItem.item_id);
+            return (
             <ComparisonItem
-              key={setItem.item.id}
+              key={comparison.id + "_" + setItem.id}
               item={setItem.item}
               user={user}
               getVoteCount={getVoteCount}
               getCommentCount={getCommentCount}
             />
-          ))}
-
-          {[...Array(Math.max(0, placeholdersNeeded))].map((_, index) => (
-            <div
-              key={`placeholder-${index}`}
-              className="flex items-center space-x-3 p-3 rounded-lg"
-              style={{
-                backgroundColor: currentTheme.colors.background,
-                border: `1px solid ${currentTheme.colors.border}`
-              }}
-            >
-              <div className="w-12 h-12 rounded-lg bg-gray-200"></div>
-              <div className="flex-1">
-                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2 mt-2"></div>
-              </div>
-            </div>
-          ))}
+          )})}
         </div>
       </div>
     </div>

@@ -96,6 +96,7 @@ export const getUserComparisons = async (userId) => {
       *,
       items:comparison_set_items (
         item_id,
+        id,
         item:items(*)
       ),
       comparison_set_aspects (

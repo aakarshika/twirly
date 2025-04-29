@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { X, Plus } from 'lucide-react';
+import { X, Plus, Pencil } from 'lucide-react';
 import { createProduct } from '../../services/products';
 import { randomPastelColor, randomPastelColorHex } from '../../lib/utils';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -64,7 +64,7 @@ const AddProductModal = () => {
 
     try {
       if (id) {
-        await updateProduct(id,  formData);
+        await updateProduct(id, formData, user.id);
       } else {
         const product = await createProduct({
           ...formData,
@@ -73,12 +73,16 @@ const AddProductModal = () => {
         }, user.id);
       }
     } catch (err) {
-      setError('Failed to create product. Please try again.');
+      if (err.message && err.message.includes('not found')) {
+        setError('The product you are trying to update no longer exists or you don\'t have permission to update it.');
+      } else {
+        setError('Failed to save product. Please try again.');
+      }
       console.error(err);
-    } finally {
-      setLoading(false);
-      navigate('/dashboard');
+      return; // Don't navigate away if there's an error
     }
+    setLoading(false);
+    navigate('/dashboard');
   };
 
   const handleChange = (e) => {
@@ -195,7 +199,7 @@ const AddProductModal = () => {
             <input
               type="url"
               name="image_url"
-              value={formData.image_url}
+              value={formData.image_url || ''}
               onChange={handleChange}
               className="w-full p-2 rounded"
               style={{
@@ -232,10 +236,12 @@ const AddProductModal = () => {
             >
               {loading ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              ) : id ? (
+                <Pencil size={16} />
               ) : (
                 <Plus size={16} />
               )}
-              <span>Add Product</span>
+              {id ? (<span>Update Product</span>) : (<span>Add Product</span>)}
             </button>
           </div>
         </form>

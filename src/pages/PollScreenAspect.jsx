@@ -76,37 +76,22 @@ const PollScreenAspect = () => {
       }}>
       <div className="h-full flex flex-col max-w-4xl mx-auto">
         <div className="flex-1">
-          <div className="text-center m-4">
-            <div className="flex justify-between">
-              <button
-                onClick={() => navigate('/comparison-aspect/' + (parseInt(id) - 1).toString())}
-                className="px-4 py-2 bg-gray-400 text-white rounded-full font-semibold hover:bg-amber-300 transition-colors"
-              >
-                Prev
-              </button>
-              <button
-                onClick={() => navigate('/comparison-aspect/' + (parseInt(id) + 1).toString())}
-                className="px-4 py-2 bg-amber-400 text-black rounded-full font-semibold hover:bg-amber-300 transition-colors"
-              >
-                Next
-              </button>
-            </div>
-          </div>
 
           <div className="space-y-4 m-4" style={{ color: currentTheme.colors.primary }}>
-            <div className="grid-container">
+            <div className="shadow-md rounded-md p-4" style={{ backgroundColor: currentTheme.colors.card }}>
               <div style={{ color: currentTheme.colors.text }}>
-                <div className="flex justify-between items-center">
-                  <span style={{ color: currentTheme.colors.primary, padding: '15px' }} className="text-lg font-bold text-center">
+                <div className="" >
+                  <div className="rounded-full gap-2 m-2 px-4 py-1 w-fit" style={{ backgroundColor: currentTheme.colors.primary }}>
+                    <span className="text-sm" style={{ color: currentTheme.colors.card }}>Who is the most </span>
+                    <span className="text-bold " style={{ color: 'white' }} >
+                      {splitAndJoin(currentAspectSet?.metric_name)}
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center justify-center m-4">
+                  <span style={{ color: currentTheme.colors.primary }} className="text-md font-bold text-center">
                     {currentSet?.name || 'Untitled Comparison'}
                   </span>
-                </div>
-                <div className="flex justify-center items-center gap-2 mb-4">
-                  <p className="text-center text-sm text-gray-500" style={{ color: currentTheme.colors.text }}>Based on: </p>
-                  <p className="text-center text-sm text-gray-500 rounded-full px-2 py-1 bg-gray-200" 
-              style={{ color: 'white', backgroundColor: currentTheme.colors.primary, marginBottom: '10px'}}>
-                    {splitAndJoin(currentAspectSet?.metric_name)}
-                  </p>
                 </div>
 
               </div>
@@ -153,6 +138,23 @@ const PollScreenAspect = () => {
             </div>
           </div>
         </div>
+{/* Navigation Buttons, needs to be fixed to be on the bottom of the screen. should not move when scrolled.  */}
+        <div className="flex flex-row fixed bottom-0 right-0 justify-between text-center m-4 z-10">
+              <button
+                onClick={() => navigate('/comparison-aspect/' + (parseInt(id) - 1).toString())}
+                className="px-4 py-2 bg-gray-400 text-white rounded-full font-semibold hover:bg-amber-300 transition-colors"
+              >
+                Prev
+              </button>
+              <button
+                onClick={() => navigate('/comparison-aspect/' + (parseInt(id) + 1).toString())}
+                style={{ backgroundColor: currentTheme.colors.primary }}
+                className="flex flex-row items-center gap-2 px-4 py-2 bg-amber-400 text-black rounded-full font-semibold hover:bg-amber-300 transition-colors"
+              >
+                Next
+                <ArrowRight size={16} />
+              </button>
+          </div>
       </div>
     </div>
   );
