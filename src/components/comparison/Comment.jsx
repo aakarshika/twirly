@@ -7,7 +7,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { userService } from '../../services/userService';
 import { useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
-const Comment = ({ comment, onLike, onReply, onToggleVisibility, isVisible, users, products }) => {
+const Comment = ({ comment, onLike, onReply, onToggleVisibility, isVisible,   products }) => {
   const { user } = useAuth();
   const [replyText, setReplyText] = useState('');
   const [isReplying, setIsReplying] = useState(false);
@@ -15,6 +15,7 @@ const Comment = ({ comment, onLike, onReply, onToggleVisibility, isVisible, user
   const [userPreferences, setUserPreferences] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const users = [{ items: {name: "John Doe", id: 1}}, { items: {name: "Jane Doe", id: 2}}, { items: {name: "John_Smith", id: 3}}, { items: {name: "Jane_Smith", id: 4}}];
 
 
   useEffect(() => {
@@ -55,7 +56,6 @@ const Comment = ({ comment, onLike, onReply, onToggleVisibility, isVisible, user
     text,
     handleReplySubmit
   } = useMentionInput(users, products);
-
 
 
   const renderTextWithMentions = (text) => {

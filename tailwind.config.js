@@ -6,6 +6,8 @@ export default {
   ],
   theme: {
     extend: {
+        'safe-area-inset-top': 'env(safe-area-inset-top)',
+        'safe-area-inset-bottom': 'env(safe-area-inset-bottom)',
       colors: {
         background: "#000000",
         foreground: "#FFFFFF",

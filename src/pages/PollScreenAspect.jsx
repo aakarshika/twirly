@@ -81,9 +81,9 @@ const PollScreenAspect = () => {
             <div className="shadow-md rounded-md p-4" style={{ backgroundColor: currentTheme.colors.card }}>
               <div style={{ color: currentTheme.colors.text }}>
                 <div className="" >
-                  <div className="rounded-full gap-2 m-2 px-4 py-1 w-fit" style={{ backgroundColor: currentTheme.colors.primary }}>
-                    <span className="text-sm" style={{ color: currentTheme.colors.card }}>Who is the most </span>
-                    <span className="text-bold " style={{ color: 'white' }} >
+                  <div className="rounded-full gap-2 m-2 px-4 py-1 w-full" style={{ backgroundColor: currentTheme.colors.primary }}>
+                    {/* <span className="text-sm" style={{ color: currentTheme.colors.card }}>Vote for the most </span> */}
+                    <span className="text-md " style={{ color: 'white' }} >
                       {splitAndJoin(currentAspectSet?.metric_name)}
                     </span>
                   </div>

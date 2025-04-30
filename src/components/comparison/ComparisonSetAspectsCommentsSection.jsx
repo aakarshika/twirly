@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useComments } from '../../hooks/useComments';
 import CommentForm from './CommentForm';
-import CommentList from './CommentList';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Heart, MessageSquare } from 'lucide-react';
 import Button from '../common/Button';
-
+import Comment from './Comment';
 const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet }) => {
   const { user } = useAuth();
   const { currentTheme } = useTheme();
@@ -81,13 +80,13 @@ const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet }) 
         )}
         {comments.map((comment) => (
           <div key={comment.id}>
-            <CommentList
-              comment={comment}
-              handleLikeComment={handleLikeComment}
-              handleReply={handleReply}
-              commentVisibility={commentVisibility}
-              setCommentVisibility={setCommentVisibility}
-              products={items}
+          <Comment
+            comment={comment}
+            onLike={handleLikeComment}
+            onReply={handleReply}
+            onToggleVisibility={toggleVisibility}
+            isVisible={commentVisibility[comment.id]}
+            products={items}
             />
           </div>
         ))}

@@ -10,7 +10,7 @@ import ThemeSwitcher from '../ThemeSwitcher';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import SearchBar from '../search/SearchBar';
-
+import './Header.css';
 /**
  * Header component with app title, navigation, and main actions
  */
@@ -32,21 +32,43 @@ const Header = () => {
     const controlHeader = () => {
       const currentScrollY = window.scrollY;
       
-      if (currentScrollY > lastScrollY) { // scrolling down
-        setIsHeaderVisible(false);
-      } else { // scrolling up
+      // Add a threshold to prevent header from hiding on small scrolls
+      const scrollThreshold = 10;
+      
+      if (currentScrollY > lastScrollY && currentScrollY > scrollThreshold) {
+        setIsHeaderVisible(true);
+      } else {
         setIsHeaderVisible(true);
       }
       
       setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener('scroll', controlHeader);
+    // Use passive event listener for better performance
+    window.addEventListener('scroll', controlHeader, { passive: true });
 
     return () => {
       window.removeEventListener('scroll', controlHeader);
     };
   }, [lastScrollY, setIsHeaderVisible]);
+
+  const handleMenuClick = (e) => {
+    e.stopPropagation();
+    setIsMenuOpen(!isMenuOpen);
+  };
+
+  const handleClickOutside = (e) => {
+    if (isMenuOpen && !e.target.closest('.mobile-menu') && !e.target.closest('.menu-button')) {
+      setIsMenuOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   const navItems = [
     { name: 'Trending', icon: <Home size={20} />, path: '/' },
@@ -67,7 +89,7 @@ const Header = () => {
 
   return (
     <header
-      className={`sticky top-0 z-40 w-full border-b transition-transform duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-40 w-full border-b transition-transform duration-300 header-safe-area ${
         isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
       }`}
       style={{
@@ -75,8 +97,8 @@ const Header = () => {
         borderColor: currentTheme.colors.border,
       }}
     >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
+      <div className="container mx-auto px-4 header-content">
+        <div className="flex items-center justify-between h-full">
           {/* Logo and Title */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center">
@@ -86,7 +108,7 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* Search Bar */}
+          {/* Search Bar - Hidden on mobile */}
           <div className="hidden md:block flex-1 max-w-xl mx-8">
             <SearchBar setMenuOpen={() => setIsMenuOpen(false)} />
           </div>
@@ -114,7 +136,7 @@ const Header = () => {
                 </div>
               </div>
             ) : (
-              <div className="flex items-center space-x-4">
+              <div className="hidden md:flex items-center space-x-4">
                 <Link
                   to="/login"
                   className="text-sm font-medium"
@@ -137,8 +159,10 @@ const Header = () => {
 
             {/* Mobile menu button */}
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700"
+              onClick={handleMenuClick}
+              className="md:hidden p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 z-10"
+              style={{ color: currentTheme.colors.text }}
+              aria-label="Toggle menu"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -148,8 +172,11 @@ const Header = () => {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <div 
+          className="md:hidden z-50 mobile-menu"        >
+          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-4" 
+          // style={{ backgroundColor: currentTheme.colors.background }}
+          >
             {/* Mobile Search Bar */}
             <div className="px-3 py-2">
               <SearchBar setMenuOpen={() => setIsMenuOpen(false)} />
@@ -159,7 +186,7 @@ const Header = () => {
                 onClick={() => setIsMenuOpen(false)}
                 key={item.name}
                 to={item.path}
-                className="flex items-center px-3 py-2 text-base font-medium rounded-md"
+                className="flex items-center px-3 py-3 text-base font-medium rounded-md"
                 style={{
                   color: currentTheme.colors.text,
                   backgroundColor: currentTheme.colors.card,
@@ -169,6 +196,29 @@ const Header = () => {
                 <span className="ml-3">{item.name}</span>
               </Link>
             ))}
+            {!user && (
+              <div className="flex flex-col space-y-2 px-3 py-2">
+                <Link
+                  to="/login"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-center py-2 rounded-lg"
+                  style={{ color: currentTheme.colors.text }}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="text-center py-2 rounded-lg"
+                  style={{
+                    backgroundColor: currentTheme.colors.primary,
+                    color: currentTheme.colors.buttonText
+                  }}
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare } from 'lucide-react';
 // eslint-disable-next-line react/default-props-match-prop-types
 import { MentionsInput, Mention } from 'react-mentions';
@@ -6,6 +6,7 @@ import { supabase } from '../../lib/supabase';
 
 const CommentForm = ({ newComment, setNewComment, handleSubmitComment }) => {
   const [users, setUsers] = useState([]);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     // Fetch users for mentions
@@ -27,6 +28,15 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment }) => {
     fetchUsers();
   }, []);
 
+  const handleBlur = () => {
+    if (window.visualViewport) {
+      // Reset viewport when keyboard is dismissed
+      // window.scrollTo(0, 0);
+      document.body.style.zoom = '100%';
+      document.body.style.transform = 'scale(1)';
+    }
+  };
+
   const mentionStyles = {
     control: {
       backgroundColor: 'white',
@@ -34,6 +44,7 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment }) => {
       fontWeight: 'normal',
     },
     input: {
+      fontSize: 16,
       margin: 0,
       padding: '8px',
       border: '1px solid #e2e8f0',
@@ -76,6 +87,16 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment }) => {
         style={mentionStyles}
         placeholder="Add a comment... (use @ to mention users)"
         className="w-full h-12"
+        inputRef={inputRef}
+        onFocus={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          console.log('focus');
+        }}
+        onBlur={() => {
+          handleBlur();
+          console.log('blur');
+        }}
       >
         <Mention
           trigger="@"

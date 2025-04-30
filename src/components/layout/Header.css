@@ -1,0 +1,37 @@
+/* iOS Safe Area Insets */
+:root {
+    --safe-area-inset-top: 0px;
+}
+
+/* iOS-specific styles */
+@supports (-webkit-touch-callout: none) {
+    :root {
+        --safe-area-inset-top: env(safe-area-inset-top, 47px);
+    }
+}
+
+/* Android-specific styles */
+@supports not (-webkit-touch-callout: none) {
+    :root {
+        --safe-area-inset-top: 24px;
+        --status-bar-height: 24px;
+    }
+}
+
+/* Header specific styles */
+.header-safe-area {
+    padding-top: var(--safe-area-inset-top);
+}
+
+.header-content {
+    height: 4rem;
+}
+
+.header-container {
+    padding-top: var(--safe-area-inset-top);
+    height: calc(64px + var(--safe-area-inset-top));
+}
+
+.mobile-menu {
+    padding-top: calc(var(--safe-area-inset-top));
+}

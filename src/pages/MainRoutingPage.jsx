@@ -109,7 +109,12 @@ const MainRoutingPage = () => {
         <ScrollToTop />
         <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background, color: currentTheme.colors.text }}>
           <Header />
-          <main className="flex-grow">
+          <main 
+            className="flex-grow"
+            style={{ 
+              paddingTop: 'calc(4rem + var(--safe-area-inset-top))'
+            }}
+          >
             <Routes>
               {/* Public Routes */}
               <Route path="/login" element={<Login />} />

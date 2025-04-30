@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useComments } from '../../hooks/useComments';
 import CommentForm from './CommentForm';
-import CommentList from './CommentList';
 import { useTheme } from '../../contexts/ThemeContext';
 import { Heart, MessageSquare } from 'lucide-react';
 import Button from '../common/Button';
 import { getPublicUrl } from '../../lib/utils';
+import Comment from './Comment';
 const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
   const { user } = useAuth();
   const { currentTheme } = useTheme();
@@ -101,18 +101,26 @@ const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
             />
           </div>
         )}
-        {comments.map((comment) => (
+        {comments.map((comment) => {
+          const toggleVisibility = () => {
+            setCommentVisibility(prev => ({
+              ...prev,
+              [comment.id]: !prev[comment.id]
+            }));
+          };
+          return (
           <div key={comment.id}>
-            <CommentList
-              comment={comment}
-              handleLikeComment={handleLikeComment}
-              handleReply={handleReply}
-              commentVisibility={commentVisibility}
-              setCommentVisibility={setCommentVisibility}
-              products={items}
-            />
+
+          <Comment
+            comment={comment}
+            onLike={handleLikeComment}
+            onReply={handleReply}
+            onToggleVisibility={toggleVisibility}
+            isVisible={commentVisibility[comment.id]}
+            products={items}
+          />
           </div>
-        ))}
+        )})}
 
         {hasMore && (
           <div className="text-start ml-4 mb-4" style={{ backgroundColor: 'white', borderRadius: '4px' }}>
