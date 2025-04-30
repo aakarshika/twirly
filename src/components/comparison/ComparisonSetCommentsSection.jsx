@@ -7,12 +7,12 @@ import { Heart, MessageSquare } from 'lucide-react';
 import Button from '../common/Button';
 import { getPublicUrl } from '../../lib/utils';
 import Comment from './Comment';
+import { supabase } from '../../lib/supabase';
+import { useEffect } from 'react';
+import LoadingOrError from '../common/LoadingOrError';
+import CommentHeader from './CommentHeader';
 const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
   const { user } = useAuth();
-  const { currentTheme } = useTheme();
-  const [newComment, setNewComment] = useState('');
-  const [isReplySectionExpanded, setIsReplySectionExpanded] = useState(false);
-
   const {
     comments,
     loading,
@@ -21,86 +21,115 @@ const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
     setCommentVisibility,
     handleSubmitComment,
     handleLikeComment,
-    handleReply,
     loadMore,
+    setLoading,
+    setError,
+    fetchComments,
+    handleReply,
+    setPage,
     hasMore
   } = useComments(setId, user?.id);
+  const { currentTheme } = useTheme();
+  const [newComment, setNewComment] = useState('');
+  const [userPreferences, setUserPreferences] = useState(null);
+  const [users, setUsers] = useState([]);
 
-  const onSubmitComment = (e) => {
-    e.preventDefault();
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (!user) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Fetch user preferences
+        const { data: profile, error: profileError } = await supabase
+          .from('user_preferences')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (profileError) throw profileError;
+
+        setUserPreferences(profile);
+      } catch (error) {
+        console.error('Error fetching user preferences:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfileData();
+  }, [user]);
+
+  useEffect(() => {
+    // Fetch users for mentions
+    const fetchUsers = async () => {
+      const { data, error } = await supabase
+        .from('user_preferences')
+        .select('user_id, display_name, username')
+        .limit(10);
+
+      if (!error && data) {
+        setUsers(data.map(user => ({
+          id: user.user_id,
+          display: user.display_name || user.username,
+          username: user.username
+        })));
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const onSubmitComment = () => {
+    console.log('onSubmitComment', newComment);
     handleSubmitComment(newComment);
     setNewComment('');
-    setIsReplySectionExpanded(false);
   };
+  useEffect(() => {
+    if (setId) {
+      setPage(1);
+      fetchComments();
+    }
+  }, [setId]);
 
   if (loading) {
     return (
-      <div className="p-4">
-        <div className="animate-pulse space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg" />
-          ))}
-        </div>
-      </div>
+      <LoadingOrError type="loading" />
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 text-red-500">
-        Error loading comments: {error}
-      </div>
+      <LoadingOrError type="error" />
     );
   }
 
   return (
     <div className="space-y-2" >
-      <div className="text-center" >
-        <div className="flex ">
-          <img
-            src={getPublicUrl(aspectSet?.comparison_sets?.user?.profile_image_url)}
-            alt={aspectSet?.comparison_sets?.user?.display_name || 'User'}
-            className="w-8 h-8 rounded-full mr-2"
-          />
-
-          <div className="flex">
-            <span className="font-bold text-lg">{aspectSet?.comparison_sets?.user?.display_name || 'Anonymous'}</span>
-            <span><div className="w-1 h-1 bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{ marginTop: '8px', background: 'lightgray' }}></div></span>
-            <span className="font-normal text-xs text-gray-400 dark:text-gray-300" style={{ marginTop: '2px' }}>
-              {new Date(aspectSet?.created_at).toLocaleDateString()}
-            </span>
-          </div>
-        </div>
-        <div className="flex">
-          <div className="text-start ml-4 mb-4">
-            <h1 className="text-sm font-normal">{aspectSet?.comparison_sets?.description}</h1>
-          </div>
-        </div>
-
-        <div className="text-start ml-4 mb-4" style={{ backgroundColor: 'white', borderRadius: '4px' }}>
-          
-          <div className="flex gap-3 mb-2">
-            <button onClick={() => onLike(aspectSet?.id)} className={`flex gap-1 text-xs ${aspectSet?.userReaction === 'like' ? 'text-amber-400' : 'text-gray-500 hover:text-amber-400'}`}>
-              <Heart className={`w-3.5 h-3.5 ${aspectSet?.userReaction === 'like' ? 'fill-current' : ''}`} />
-              {aspectSet?.reactions ? aspectSet?.reactions.length : 0}
-            </button>
-            <button onClick={() => {
-              setIsReplySectionExpanded(!isReplySectionExpanded);
-            }} className="flex gap-1 text-xs text-gray-500 hover:text-amber-400">
-              <MessageSquare className="w-3.5 h-3.5" />
-              {isReplySectionExpanded ? ' Hide Replies' : comments && comments.length > 0 ? comments.length + '   Comment'+ (comments.length > 1 ? 's' : '') : ' Be the first to comment'}
-            </button>
-          </div>
-        </div>
-        {isReplySectionExpanded && (
-          <div className="text-start ml-4 mb-4" style={{ backgroundColor: 'white', borderRadius: '4px' }}>
-            <CommentForm
-              newComment={newComment}
-              setNewComment={setNewComment}
-              handleSubmitComment={onSubmitComment}
-            />
-          </div>
-        )}
+      <div className="text-center w-full" >
+        <CommentHeader
+          type="Comment"
+          comment={aspectSet}
+          onLike={handleLikeComment}
+          replyClicked={() => {
+          }}
+          profile_image_url={aspectSet?.comparison_sets?.user?.profile_image_url}
+          display_name={aspectSet?.comparison_sets?.user?.display_name}
+          created_at={aspectSet?.comparison_sets?.created_at}
+          text={aspectSet?.comparison_sets?.description}
+          userReaction={aspectSet?.comparison_sets?.userReaction}
+          reactions={aspectSet?.comparison_sets?.reactions}
+          numReplies={comments?.length}
+        />
+        <CommentForm
+          newComment={newComment}
+          setNewComment={setNewComment}
+          handleSubmitComment={onSubmitComment}
+          users={users}
+          userPreferences={userPreferences}
+          type="Comment"
+        />
         {comments.map((comment) => {
           const toggleVisibility = () => {
             setCommentVisibility(prev => ({
@@ -114,10 +143,12 @@ const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
           <Comment
             comment={comment}
             onLike={handleLikeComment}
-            onReply={handleReply}
             onToggleVisibility={toggleVisibility}
             isVisible={commentVisibility[comment.id]}
             products={items}
+            users={users}
+            handleReply={handleReply}
+            userPreferences={userPreferences}
           />
           </div>
         )})}

@@ -57,7 +57,7 @@ const ComparisonItemCardAspect = ({
 
   // Calculate height
   const numericHeight = parseFloat(height);
-  const newHeight = (numericHeight / 3) + 'vh';
+  const newHeight = (numericHeight*2 / 7) + 'vh';
 
   const isVotedItem = userVoted && votedItemId === item.id;
   

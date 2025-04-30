@@ -13,7 +13,7 @@ import ComparisonGridSkeleton from '../components/skeletons/ComparisonGridSkelet
 import ComparisonItemCardAspect from '../components/comparison/ComparisonItemCard/ComparisonItemCardAspect';
 import { splitAndJoin } from '../lib/utils';
 import { useComparisonAspectDetails } from '../hooks/useComparisonAspectDetails';
-
+import './PollScreenAspect.css';
 const PollScreenAspect = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -77,8 +77,8 @@ const PollScreenAspect = () => {
       <div className="h-full flex flex-col max-w-4xl mx-auto">
         <div className="flex-1">
 
-          <div className="space-y-4 m-4" style={{ color: currentTheme.colors.primary }}>
-            <div className="shadow-md rounded-md p-4" style={{ backgroundColor: currentTheme.colors.card }}>
+          <div className="space-y-4 m-4 " style={{ color: currentTheme.colors.primary }}>
+            <div className="shadow-md rounded-md p-4 mobile-friendly-margin-bottom" style={{ backgroundColor: currentTheme.colors.card }}>
               <div style={{ color: currentTheme.colors.text }}>
                 <div className="" >
                   <div className="rounded-full gap-2 m-2 px-4 py-1 w-full" style={{ backgroundColor: currentTheme.colors.primary }}>
@@ -102,7 +102,7 @@ const PollScreenAspect = () => {
                   'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
                 }`} 
                 style={{
-                  gap: '0vh'
+                  gap: '1vh'
                 }}
               >
                 {items.map((item, i) => (
@@ -132,23 +132,25 @@ const PollScreenAspect = () => {
                       <ArrowRight size={16} /></span>
                     </button>
           </div>
-          <div className="text-center m-4" style={{ color: currentTheme.colors.text, backgroundColor: 'white', borderRadius: '4px' }}>
-            <div className="w-full p-4">
-              <ComparisonSetCommentsSection setId={id} items={items} aspectSet={currentAspectSet} />
+          {userVoted && (
+            <div className="text-center m-1" style={{ color: currentTheme.colors.text, backgroundColor: 'white', borderRadius: '4px' }}>
+              <div className="w-full p-4">
+                <ComparisonSetCommentsSection setId={id} items={items} aspectSet={currentAspectSet} />
+              </div>
             </div>
-          </div>
+          )}
         </div>
 {/* Navigation Buttons, needs to be fixed to be on the bottom of the screen. should not move when scrolled.  */}
         <div className="flex flex-row fixed bottom-0 right-0 justify-between text-center m-4 z-10">
-              <button
+              {/* <button
                 onClick={() => navigate('/comparison-aspect/' + (parseInt(id) - 1).toString())}
                 className="px-4 py-2 bg-gray-400 text-white rounded-full font-semibold hover:bg-amber-300 transition-colors"
               >
                 Prev
-              </button>
+              </button> */}
               <button
                 onClick={() => navigate('/comparison-aspect/' + (parseInt(id) + 1).toString())}
-                style={{ backgroundColor: currentTheme.colors.primary }}
+                style={{ backgroundColor: currentTheme.colors.primary, marginBottom: '20px' }}
                 className="flex flex-row items-center gap-2 px-4 py-2 bg-amber-400 text-black rounded-full font-semibold hover:bg-amber-300 transition-colors"
               >
                 Next

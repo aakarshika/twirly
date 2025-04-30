@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { comparisonSetService } from '../services/comparisonSetService';
 
 export const useComments = (setId, userId) => {
@@ -9,16 +9,11 @@ export const useComments = (setId, userId) => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  useEffect(() => {
-    if (setId) {
-      fetchComments();
-    }
-  }, [setId]);
-
   const fetchComments = async () => {
     try {
       setLoading(true);
       const data = await comparisonSetService.fetchComments(setId, userId, page);
+      console.log('data', data);
       setComments(prev => page === 1 ? data.comments : [...prev, ...data.comments]);
       setHasMore(data.hasMore);
     } catch (err) {
@@ -29,8 +24,11 @@ export const useComments = (setId, userId) => {
   };
 
   const loadMore = async () => {
+    console.log('loadMore', hasMore, loading);
     if (!hasMore || loading) return;
+    console.log('loadMore', hasMore, loading);
     setPage(prev => prev + 1);
+    console.log('loadMore', hasMore, loading);
     await fetchComments();
   };
 
@@ -76,12 +74,17 @@ export const useComments = (setId, userId) => {
         }
         return c;
       }));
+      //timeout
+      setTimeout(() => {
+        console.log('comments', comments);
+      }, 1000);
     } catch (err) {
       setError(err.message);
     }
   };
 
   const handleReply = async (commentId, text) => {
+    console.log('handleReply', commentId, text);
     if (!text.trim() || !userId) return;
 
     try {
@@ -95,17 +98,27 @@ export const useComments = (setId, userId) => {
           display_name: userPreferences?.display_name || 'Someone'
         }
       };
+      console.log('enrichedReply', enrichedReply);
 
-      setComments(prev => prev.map(c => {
-        if (c.id === commentId) {
-          return {
+      setComments(prev => {
+        console.log('prev', prev);
+        return prev.map(c => {
+          console.log('c', c);
+          if (c.id === commentId) {
+            return {
             ...c,
             replies: [enrichedReply, ...(c.replies || [])]
           };
         }
         return c;
-      }));
+      });
+    });
+      //timeout
+      setTimeout(() => {
+        console.log('comments', comments);
+      }, 1000);
     } catch (err) {
+      console.log('error', err);
       setError(err.message);
     }
   };
@@ -120,6 +133,10 @@ export const useComments = (setId, userId) => {
     handleLikeComment,
     handleReply,
     loadMore,
+    setLoading,
+    setError,
+    setPage,
+    fetchComments,
     hasMore
   };
 }; 

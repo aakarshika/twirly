@@ -1,0 +1,22 @@
+/* iOS Safe Area Insets */
+:root {
+    --safe-area-inset-bottom: 0px;
+}
+
+/* iOS-specific styles */
+@supports (-webkit-touch-callout: none) {
+    :root {
+        --safe-area-inset-bottom: env(safe-area-inset-bottom, 34px);
+    }
+}
+
+/* Android-specific styles */
+@supports not (-webkit-touch-callout: none) {
+    :root {
+        --safe-area-inset-bottom: 24px;
+    }
+}
+
+.mobile-friendly-margin-bottom {
+    margin-bottom: calc(var(--safe-area-inset-bottom));
+}

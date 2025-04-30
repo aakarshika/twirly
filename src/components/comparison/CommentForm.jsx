@@ -3,30 +3,11 @@ import { MessageSquare } from 'lucide-react';
 // eslint-disable-next-line react/default-props-match-prop-types
 import { MentionsInput, Mention } from 'react-mentions';
 import { supabase } from '../../lib/supabase';
+import { getPublicUrl } from '../../lib/utils';
 
-const CommentForm = ({ newComment, setNewComment, handleSubmitComment }) => {
-  const [users, setUsers] = useState([]);
+const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, userPreferences, type }) => {
   const inputRef = useRef(null);
-
-  useEffect(() => {
-    // Fetch users for mentions
-    const fetchUsers = async () => {
-      const { data, error } = await supabase
-        .from('user_preferences')
-        .select('user_id, display_name, username')
-        .limit(10);
-
-      if (!error && data) {
-        setUsers(data.map(user => ({
-          id: user.user_id,
-          display: user.display_name || user.username,
-          username: user.username
-        })));
-      }
-    };
-
-    fetchUsers();
-  }, []);
+  const [focus, setFocus] = useState(false);
 
   const handleBlur = () => {
     if (window.visualViewport) {
@@ -48,7 +29,6 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment }) => {
       margin: 0,
       padding: '8px',
       border: '1px solid #e2e8f0',
-      borderRadius: '0.375rem',
       backgroundColor: 'white',
       color: '#1a202c',
       '&:focus': {
@@ -73,48 +53,80 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment }) => {
   };
 
   const renderSuggestion = (suggestion, search, highlightedDisplay) => (
-    <div className="flex items-center gap-2">
+    <div className="flex items-start gap-2">
       <span className="font-medium">{highlightedDisplay}</span>
       <span className="text-gray-500 text-sm">@{suggestion.username}</span>
     </div>
   );
 
   return (
-    <form onSubmit={handleSubmitComment} className="flex flex-col gap-2 mb-4">
-      <MentionsInput
-        value={newComment}
-        onChange={(e) => setNewComment(e.target.value)}
-        style={mentionStyles}
-        placeholder="Add a comment... (use @ to mention users)"
-        className="w-full h-12"
-        inputRef={inputRef}
-        onFocus={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log('focus');
-        }}
-        onBlur={() => {
-          handleBlur();
-          console.log('blur');
-        }}
-      >
-        <Mention
-          trigger="@"
-          data={users}
-          renderSuggestion={renderSuggestion}
-          className="bg-amber-100 text-amber-800 rounded px-1"
-          appendSpaceOnAdd={true}
-          displayTransform={(id, display) => `@${display}`}
+
+    <div className="flex">
+    <div className="w-1 h-auto bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{marginTop: '2px', background: 'lightgray'}}></div>
+    <div className="w-full p-2 bg-white dark:bg-gray-800">
+      
+    <>
+      <div className="flex">
+      
+        <img
+          src={getPublicUrl(userPreferences?.profile_image_url)}
+          alt={userPreferences?.display_name || 'User'}
+          className="w-8 h-8 rounded-full mr-2"
         />
-      </MentionsInput>
-      <button
-        type="submit"
-        className="mt-1 px-3 py-1.5 bg-amber-400 text-black rounded font-medium hover:bg-amber-300 transition-colors flex items-center gap-1.5 text-sm"
-      >
-        <MessageSquare className="w-3.5 h-3.5" />
-        Post Comment
-      </button>
-    </form>
+
+        <div className="flex flex-col w-full">
+          <span className="font-bold text-start text-sm">{userPreferences?.display_name || 'Anonymous'}</span>
+          <div className="w-full">
+            <div  className="flex flex-col w-full">
+              <MentionsInput
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                style={mentionStyles}
+                placeholder={focus ? `${type}@user #product` : `Add ${type}...`}
+                className="w-full h-10 "
+                inputRef={inputRef}
+                onFocus={(e) => {
+                  setFocus(true);
+                  console.log('focus');
+                }}
+                onBlur={() => {
+                  setTimeout(() => {
+                    setFocus(false);
+                    handleBlur();
+                    console.log('blur');
+                  }, 200);
+                }}
+              >
+                <Mention
+                  trigger="@"
+                  data={users}
+                  renderSuggestion={renderSuggestion}
+                  className="bg-amber-100 text-amber-800 px-1"
+                  appendSpaceOnAdd={true}
+                  displayTransform={(id, display) => `@${display}`}
+                />
+              </MentionsInput>
+              {newComment.length > 0 && (
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('handleSubmitComment', newComment);
+                    handleSubmitComment();
+                  }}
+                  className="mt-1 px-3 py-1.5 bg-amber-400 text-black font-small hover:bg-amber-300 transition-colors flex items-center gap-1.5 text-sm"
+                >
+                  <MessageSquare className="w-3.5 h-3.5" />
+                  Post {type}
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+      </>
+    </div>
+    </div>
   );
 };
 
