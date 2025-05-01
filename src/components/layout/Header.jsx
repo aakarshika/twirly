@@ -1,7 +1,7 @@
 // File: src/components/layout/Header.jsx
 
 import React, { useState, useEffect } from 'react';
-import { Sparkles, RefreshCw, PlusCircle, Menu, X, Sun, Moon, Home, BarChart2, Settings, User, Building2 } from 'lucide-react';
+import { Sparkles, RefreshCw, PlusCircle, Menu, X, Sun, Moon, Home, BarChart2, Settings, User, Building2, ArrowLeft } from 'lucide-react';
 import { useComparison } from '../../contexts/ComparisonContext';
 import { useHeader } from '../../contexts/HeaderContext';
 import Button from '../common/Button';
@@ -97,8 +97,16 @@ const Header = () => {
         borderColor: currentTheme.colors.border,
       }}
     >
-      <div className="container mx-auto px-4 header-content">
-        <div className="flex items-center justify-between h-full">
+      {window.location.pathname !== '/' && (<button onClick={() => {
+        console.log('back button clicked');
+        navigate(-1);
+      }}>
+      <div className="flex items-center justify-between h-full">
+       <ArrowLeft size={24} /> Back
+      </div>
+      </button>)}
+        <div className="container mx-auto px-4 header-content">
+          <div className="flex items-center justify-between h-full">
           {/* Logo and Title */}
           <div className="flex items-center">
             <Link to="/" className="flex items-center">

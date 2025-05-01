@@ -11,7 +11,7 @@ import { supabase } from '../../lib/supabase';
 import { useEffect } from 'react';
 import LoadingOrError from '../common/LoadingOrError';
 import CommentHeader from './CommentHeader';
-const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
+const ComparisonCommentsInshort = ({ aspectSetId, items, aspectSet }) => {
   const { user } = useAuth();
   const {
     comments,
@@ -28,7 +28,7 @@ const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
     handleReply,
     setPage,
     hasMore
-  } = useComments(setId, user?.id);
+  } = useComments(aspectSetId, user?.id);
   const { currentTheme } = useTheme();
   const [newComment, setNewComment] = useState('');
   const [userPreferences, setUserPreferences] = useState(null);
@@ -87,11 +87,11 @@ const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
     setNewComment('');
   };
   useEffect(() => {
-    if (setId) {
+    if (aspectSetId) {
       setPage(1);
       fetchComments();
     }
-  }, [setId]);
+  }, [aspectSetId]);
 
   if (loading) {
     return (
@@ -101,35 +101,13 @@ const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
 
   if (error) {
     return (
-      <LoadingOrError type="error" />
+      <LoadingOrError type="error" error={error} />
     );
   }
 
   return (
     <div className="space-y-2" >
       <div className="text-center w-full" >
-        <CommentHeader
-          type="Comment"
-          comment={aspectSet}
-          onLike={handleLikeComment}
-          replyClicked={() => {
-          }}
-          profile_image_url={aspectSet?.comparison_sets?.user?.profile_image_url}
-          display_name={aspectSet?.comparison_sets?.user?.display_name}
-          created_at={aspectSet?.comparison_sets?.created_at}
-          text={aspectSet?.comparison_sets?.description}
-          userReaction={aspectSet?.comparison_sets?.userReaction}
-          reactions={aspectSet?.comparison_sets?.reactions}
-          numReplies={comments?.length}
-        />
-        <CommentForm
-          newComment={newComment}
-          setNewComment={setNewComment}
-          handleSubmitComment={onSubmitComment}
-          users={users}
-          userPreferences={userPreferences}
-          type="Comment"
-        />
         {comments.map((comment) => {
           const toggleVisibility = () => {
             setCommentVisibility(prev => ({
@@ -165,4 +143,4 @@ const ComparisonSetCommentsSection = ({ setId, items, aspectSet }) => {
   );
 };
 
-export default ComparisonSetCommentsSection;
+export default ComparisonCommentsInshort;

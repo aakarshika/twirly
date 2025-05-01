@@ -103,7 +103,7 @@ const ComparisonHeading = ({ isHeaderVisible, title, height, currentId, itemRevi
             const [error, setError] = useState(false);
             return (
             // items list with an image, name, and description
-            <div className={winner && winner.id === item.id ? 'flex items-center gap-2  px-4 py-2 rounded-lg  shadow-sm' : 'flex items-center gap-2  px-4 py-2 shadow-sm'}
+            <div key={item.id} className={winner && winner.id === item.id ? 'flex items-center gap-2  px-4 py-2 rounded-lg  shadow-sm' : 'flex items-center gap-2  px-4 py-2 shadow-sm'}
             style={{
               backgroundColor: winner && winner.id !== item.id ? currentTheme.colors.background : item.item_color_string
             }}

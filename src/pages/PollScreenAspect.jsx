@@ -4,7 +4,6 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useHeader } from '../contexts/HeaderContext';
 import PollGrid from '../components/comparison/PollGrid';
 import BarChart from '../components/results/visualizations/BarChart';
-import ComparisonSetCommentsSection from '../components/comparison/ComparisonSetCommentsSection';
 import Button from '../components/common/Button';
 import { ArrowRight, MessageSquare, Star } from 'lucide-react';
 import { supabase } from '../lib/supabase';
@@ -14,12 +13,16 @@ import ComparisonItemCardAspect from '../components/comparison/ComparisonItemCar
 import { splitAndJoin } from '../lib/utils';
 import { useComparisonAspectDetails } from '../hooks/useComparisonAspectDetails';
 import './PollScreenAspect.css';
+import ComparisonSetAspectsCommentsSection from '../components/comparison/ComparisonSetAspectsCommentsSection';
+
 const PollScreenAspect = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { currentTheme } = useTheme();
   const { isHeaderVisible } = useHeader();
+  const [showStartAnimation, setShowStartAnimation] = useState(false);
+  const [showEndAnimation, setShowEndAnimation] = useState(false);
   const {
     items,
     currentSet,
@@ -31,8 +34,21 @@ const PollScreenAspect = () => {
     handleRevertVote,
     itemReviews,
     loading,
-    error } = useComparisonAspectDetails(id);
+    error,
+    fetchComparisonDetails
+  } = useComparisonAspectDetails(id);
 
+    useEffect(() => {
+      console.log('id', id);
+      if (id) {
+        fetchComparisonDetails();
+      }
+    setShowStartAnimation(true);
+    const timer = setTimeout(() => {
+      setShowStartAnimation(false);
+    }, 500); // Match this with the animation duration
+    return () => clearTimeout(timer);
+  }, [id]);
   useEffect(() => {
     setHeight('100vh');
   });
@@ -42,7 +58,6 @@ const PollScreenAspect = () => {
   if (loading) {
     return (
       <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background }}>
-        <ComparisonGridSkeleton />
       </div>
     );
   }
@@ -73,12 +88,14 @@ const PollScreenAspect = () => {
       style={{
         backgroundColor: currentTheme.colors.background,
         top: isHeaderVisible ? '64px' : '0px',
+        position: 'relative',
+        paddingBottom: '80px'
       }}>
       <div className="h-full flex flex-col max-w-4xl mx-auto">
         <div className="flex-1">
 
           <div className="space-y-4 m-4 " style={{ color: currentTheme.colors.primary }}>
-            <div className="shadow-md rounded-md p-4 mobile-friendly-margin-bottom" style={{ backgroundColor: currentTheme.colors.card }}>
+            <div className={`shadow-md rounded-md p-4 mobile-friendly-margin-bottom ${showStartAnimation ? 'vote-animation' : showEndAnimation ? 'vote-animation-reverse' : ''}`} style={{ backgroundColor: currentTheme.colors.card }}>
               <div style={{ color: currentTheme.colors.text }}>
                 <div className="" >
                   <div className="rounded-full gap-2 m-2 px-4 py-1 w-full" style={{ backgroundColor: currentTheme.colors.primary }}>
@@ -95,12 +112,11 @@ const PollScreenAspect = () => {
                 </div>
 
               </div>
-              <div className={`grid ${
-                  items.length === 1 ? 'grid-cols-1' :
+              <div className={`grid ${items.length === 1 ? 'grid-cols-1' :
                   items.length === 2 ? 'grid-cols-2' :
-                  items.length === 3 ? 'grid-cols-3' :
-                  'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
-                }`} 
+                    items.length === 3 ? 'grid-cols-3' :
+                      'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+                }`}
                 style={{
                   gap: '1vh'
                 }}
@@ -123,40 +139,47 @@ const PollScreenAspect = () => {
                 ))}
               </div>
             </div>
-                
-                <button
-                      onClick={() => navigate('/comparison/' + currentAspectSet.set_id)}
-                      className=" w-full pull-right rounded-md "
-                    >
-                      <span className="flex items-center gap-2">Go To Comparison Page
-                      <ArrowRight size={16} /></span>
-                    </button>
+
+            <button
+              onClick={() => navigate('/comparison/' + currentAspectSet.set_id)}
+              className=" w-full pull-right rounded-md "
+            >
+              <span className="flex items-center gap-2">Go To Comparison Page
+                <ArrowRight size={16} /></span>
+            </button>
           </div>
           {userVoted && (
             <div className="text-center m-1" style={{ color: currentTheme.colors.text, backgroundColor: 'white', borderRadius: '4px' }}>
               <div className="w-full p-4">
-                <ComparisonSetCommentsSection setId={id} items={items} aspectSet={currentAspectSet} />
+                <ComparisonSetAspectsCommentsSection aspectSetId={id} items={items} aspectSet={currentAspectSet} />
               </div>
+              <span className="text-2xl">. . .</span>
             </div>
           )}
         </div>
-{/* Navigation Buttons, needs to be fixed to be on the bottom of the screen. should not move when scrolled.  */}
-        <div className="flex flex-row fixed bottom-0 right-0 justify-between text-center m-4 z-10">
-              {/* <button
+      </div>
+      {/* Navigation Buttons */}
+      <div className="flex flex-row fixed bottom-0 right-0 justify-between text-center z-10 mobile-friendly-margin-bottom" style={{ backgroundColor: 'transparent' }}>
+        {/* <button
                 onClick={() => navigate('/comparison-aspect/' + (parseInt(id) - 1).toString())}
                 className="px-4 py-2 bg-gray-400 text-white rounded-full font-semibold hover:bg-amber-300 transition-colors"
               >
                 Prev
               </button> */}
-              <button
-                onClick={() => navigate('/comparison-aspect/' + (parseInt(id) + 1).toString())}
-                style={{ backgroundColor: currentTheme.colors.primary, marginBottom: '20px' }}
-                className="flex flex-row items-center gap-2 px-4 py-2 bg-amber-400 text-black rounded-full font-semibold hover:bg-amber-300 transition-colors"
-              >
-                Next
-                <ArrowRight size={16} />
-              </button>
-          </div>
+        <button
+          onClick={() => {
+            setShowEndAnimation(true);
+            setTimeout(() => {
+              setShowEndAnimation(false);
+              navigate('/comparison-aspect/' + (parseInt(id) + 1).toString())
+            }, 500);
+          }}
+          style={{ backgroundColor: currentTheme.colors.primary, marginBottom: '20px' }}
+          className="flex flex-row items-center gap-2 px-4 py-2 bg-amber-400 text-black rounded-full font-semibold hover:bg-amber-300 transition-colors"
+        >
+          Next
+          <ArrowRight size={16} />
+        </button>
       </div>
     </div>
   );

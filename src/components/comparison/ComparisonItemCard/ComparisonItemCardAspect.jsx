@@ -22,7 +22,8 @@ const ComparisonItemCardAspect = ({
   const navigate = useNavigate();
   const { currentTheme } = useTheme();
   const [isVoting, setIsVoting] = useState(false);
-  const [imageError, setImageError] = useState(false);
+  const [imageError, setImageError] = useState(true);
+  const [showStartAnimation, setShowStartAnimation] = useState(false);
 
   // Check if image exists and is valid
   useEffect(() => {
@@ -40,6 +41,15 @@ const ComparisonItemCardAspect = ({
     };
     img.src = item.image_url;
   }, [item.image_url]);
+
+  // Add effect to handle animation when userVoted changes
+  useEffect(() => {
+      setShowStartAnimation(true);
+      const timer = setTimeout(() => {
+        setShowStartAnimation(false);
+      }, 500); 
+      return () => clearTimeout(timer);
+  }, [userVoted]);
 
   const handleItemClick = (e) => {
     navigate(`/item/${item.id}`);
@@ -65,21 +75,6 @@ const ComparisonItemCardAspect = ({
   const itemReviewData = itemReviews && itemReviews[item.id] ? itemReviews[item.id] : { reviews: [], metrics: {} };
   const reviewCount = itemReviewData.reviews ? itemReviewData.reviews.length : 0;
 
-  // Function to get a lighter shade of a color
-  const getLighterShade = (color) => {
-    // Convert hex to RGB
-    const r = parseInt(color.slice(1, 3), 16);
-    const g = parseInt(color.slice(3, 5), 16);
-    const b = parseInt(color.slice(5, 7), 16);
-
-    // Make it lighter by adding white
-    const lighterR = Math.min(255, r + 40);
-    const lighterG = Math.min(255, g + 40);
-    const lighterB = Math.min(255, b + 40);
-
-    // Convert back to hex
-    return `#${lighterR.toString(16).padStart(2, '0')}${lighterG.toString(16).padStart(2, '0')}${lighterB.toString(16).padStart(2, '0')}`;
-  };
   //get lighter shade for input string "rgb(135, 139, 164)" and return rgb(r,g,b,alpha)
   const getLighterShadeString = (color) => {
     const r = color.slice(4, 7);
@@ -89,7 +84,9 @@ const ComparisonItemCardAspect = ({
   };
   return (
     <div
-      className="comparison-item-card"
+      className={`comparison-item-card 
+        ${showStartAnimation ? 'vote-animation' : ''}
+        `}
       style={{ height: newHeight }}
     >
       <div

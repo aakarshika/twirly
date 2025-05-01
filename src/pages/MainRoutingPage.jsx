@@ -112,7 +112,8 @@ const MainRoutingPage = () => {
           <main 
             className="flex-grow"
             style={{ 
-              paddingTop: 'calc(4rem + var(--safe-area-inset-top))'
+              backgroundColor: 'white',
+              paddingTop: 'calc( var(--safe-area-inset-top))'
             }}
           >
             <Routes>

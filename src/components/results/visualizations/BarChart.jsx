@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { COMPARISON_COLOR_SET } from '../../../lib/constants';
-import ComparisonSetAspectsCommentsSection from '../../comparison/ComparisonSetAspectsCommentsSection';
+import ComparisonCommentsInshort from '../../comparison/ComparisonCommentsInshort';
 import Button from '../../common/Button';
 import { Info, MessageSquareShare, Play, Share, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -119,7 +119,7 @@ const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
                       </div>
                     </div>
                     <div className="w-full mt-4" style={{ textAlign: 'left' }}>
-                      <ComparisonSetAspectsCommentsSection aspectSetId={metric.id} items={items} aspectSet={metric} />
+                      <ComparisonCommentsInshort aspectSetId={metric.id} items={items} aspectSet={metric} />
                     </div>
                   </div>
                 </div>

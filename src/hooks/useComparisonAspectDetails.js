@@ -18,16 +18,10 @@ export const useComparisonAspectDetails = (id) => {
   const [totalVotes, setTotalVotes] = useState(0);
   const [userVoted, setUserVoted] = useState(false);
   const [votedItemId, setVotedItemId] = useState(null);
-  useEffect(() => {
-    if (id) {
-      fetchComparisonDetails();
-    }
-  }, [id, user]);
-
   const fetchComparisonDetails = async () => {
     try {
       setLoading(true);
-      
+      console.log('id fetchComparisonDetails', id);
       const comparisonId = parseInt(id);
       if (isNaN(comparisonId)) {
         throw new Error('Invalid comparison aspect set ID');
@@ -39,7 +33,7 @@ export const useComparisonAspectDetails = (id) => {
         design: 3.5,
         performance: 3.5
       };
-      
+      console.log('comparisonId', comparisonId);
       const { data, error } = await supabase
         .from('comparison_set_aspects')
         .select(`
@@ -75,7 +69,6 @@ export const useComparisonAspectDetails = (id) => {
         )?.items.id;
 
         setUserVoted(userVoted);
-        // setUserVoted(false);
         setVotedItemId(votedItemId);
       } else {
         setUserVoted(false);
@@ -104,7 +97,11 @@ export const useComparisonAspectDetails = (id) => {
     } catch (error) {
       console.error('Error voting:', error);
     } finally {
-      fetchComparisonDetails();
+      //update userVoted and votedItemId
+      setUserVoted(true);
+      setVotedItemId(itemId);
+      setItems(items.map(item => item.items.id === itemId ? {...item, items: {...item.items, votes: [...item.items.votes, {user_id: user.id, item_id: itemId, set_id: id}]}} : item));
+      setTotalVotes(items.reduce((acc, item) => acc + item.items.votes.length, 0));
     }
   };
 
@@ -122,8 +119,11 @@ export const useComparisonAspectDetails = (id) => {
     } catch (error) {
       console.error('Error reverting vote:', error);
     } finally {
-      fetchComparisonDetails();
+      setUserVoted(false);
+      setVotedItemId(null);
+      setItems(items.map(item => ({...item, items: {...item.items, votes: item.items.votes.filter(vote => vote.user_id !== user.id)}})));
+      setTotalVotes(items.reduce((acc, item) => acc + item.items.votes.length, 0));
     }
   };
-  return { loading, error, items, currentSet, currentAspectSet, reviews, averageMetrics, totalVotes, userVoted, votedItemId, handleVote, handleRevertVote };
+  return { loading, error, items, currentSet, currentAspectSet, reviews, averageMetrics, totalVotes, userVoted, votedItemId, handleVote, handleRevertVote, fetchComparisonDetails };
 }; 

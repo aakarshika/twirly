@@ -9,26 +9,17 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, us
   const inputRef = useRef(null);
   const [focus, setFocus] = useState(false);
 
-  const handleBlur = () => {
-    if (window.visualViewport) {
-      // Reset viewport when keyboard is dismissed
-      // window.scrollTo(0, 0);
-      document.body.style.zoom = '100%';
-      document.body.style.transform = 'scale(1)';
-    }
-  };
 
   const mentionStyles = {
     control: {
       backgroundColor: 'white',
-      fontSize: 14,
+      fontSize: 12,
       fontWeight: 'normal',
     },
     input: {
       fontSize: 16,
       margin: 0,
       padding: '8px',
-      border: '1px solid #e2e8f0',
       backgroundColor: 'white',
       color: '#1a202c',
       '&:focus': {
@@ -63,7 +54,7 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, us
 
     <div className="flex">
     <div className="w-1 h-auto bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{marginTop: '2px', background: 'lightgray'}}></div>
-    <div className="w-full p-2 bg-white dark:bg-gray-800">
+    <div className="w-full p-2 bg-white">
       
     <>
       <div className="flex">
@@ -76,25 +67,19 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, us
 
         <div className="flex flex-col w-full">
           <span className="font-bold text-start text-sm">{userPreferences?.display_name || 'Anonymous'}</span>
-          <div className="w-full">
+          <div className="w-full rounded-lg"
+          style={{border: '2px solid #e2e8f0'}}>
             <div  className="flex flex-col w-full">
               <MentionsInput
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 style={mentionStyles}
                 placeholder={focus ? `${type}@user #product` : `Add ${type}...`}
-                className="w-full h-10 "
+                className="w-full min-h-10 h-auto rounded-lg"
                 inputRef={inputRef}
                 onFocus={(e) => {
                   setFocus(true);
                   console.log('focus');
-                }}
-                onBlur={() => {
-                  setTimeout(() => {
-                    setFocus(false);
-                    handleBlur();
-                    console.log('blur');
-                  }, 200);
                 }}
               >
                 <Mention
@@ -107,6 +92,7 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, us
                 />
               </MentionsInput>
               {newComment.length > 0 && (
+                <div className="flex justify-start">
                 <button
                   onClick={(e) => {
                     e.preventDefault();
@@ -114,11 +100,19 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, us
                     console.log('handleSubmitComment', newComment);
                     handleSubmitComment();
                   }}
-                  className="mt-1 px-3 py-1.5 bg-amber-400 text-black font-small hover:bg-amber-300 transition-colors flex items-center gap-1.5 text-sm"
+                  className="w-auto mt-1 px-3 py-1.5 justify-start bg-amber-400 rounded-md text-black font-small hover:bg-amber-300 transition-colors flex items-start gap-1.5 text-sm"
                 >
-                  <MessageSquare className="w-3.5 h-3.5" />
-                  Post {type}
+                  {type}
                 </button>
+                <button
+                  onClick={() => {
+                    setNewComment('');
+                  }}
+                  className="w-auto mt-1 px-3 py-1.5 justify-start bg-white-400 rounded-md text-black font-small hover:bg-amber-300 transition-colors flex items-start gap-1.5 text-sm"
+                >
+                  Cancel
+                </button>
+                </div>
               )}
             </div>
           </div>

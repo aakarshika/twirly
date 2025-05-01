@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
-const LoadingOrError = ({type}) => {
+const LoadingOrError = ({type, error}) => {
   const { currentTheme } = useTheme();
   if (type == "loading") {
     return (

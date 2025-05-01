@@ -10,7 +10,7 @@ import { supabase } from '../../lib/supabase';
 import CommentForm from './CommentForm';
 import { useComments } from '../../hooks/useComments';
 import CommentHeader from './CommentHeader';
-const Comment = ({ comment, onLike, onReply, onToggleVisibility, isVisible,   products, users, userPreferences, handleReply }) => {
+const Comment = ({ comment, onLike, onReply,  isVisible,   products, users, userPreferences, handleReply }) => {
   const [isReplying, setIsReplying] = useState(comment.replies?.length > 0);
   const [isReplySectionExpanded, setIsReplySectionExpanded] = useState(comment.replies?.length > 0);
   const [newComment, setNewComment] = useState('');

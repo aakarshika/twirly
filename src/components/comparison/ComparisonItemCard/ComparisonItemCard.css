@@ -146,4 +146,22 @@
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+@keyframes voteRotation {
+  0% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(90deg);
+  }
+  100% {
+    transform: rotateY(180deg);
+  }
+}
+
+.vote-animation {
+  animation: voteRotation 0.5s ease-in-out;
+  transform-style: preserve-3d;
+  perspective: 1000px;
 } 
