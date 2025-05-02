@@ -128,7 +128,8 @@ const PollScreen = () => {
     
     style={{ 
       backgroundColor: currentTheme.colors.background,
-      top: isHeaderVisible ? '64px' : '0px',
+        position: 'relative',
+        top: isHeaderVisible ? '64px' : '0px',
     }}>
       
         <PollGrid 
@@ -165,7 +166,7 @@ const PollScreen = () => {
               </div>
             </div>
           </div> */}
-          <div className="w-full p-4" style={{ backgroundColor: 'white' }}>
+          <div className="w-full p-1" style={{ backgroundColor: 'white' }}>
             <div className="">
               <BarChart items={items} 
                       itemReviews={itemReviews} 

@@ -84,6 +84,8 @@ const Trending = () => {
     <div 
       className="min-h-screen py-8"
       style={{ 
+        position: 'relative',
+        top: isHeaderVisible ? '64px' : '0px',
         backgroundColor: currentTheme.colors.background
       }}
     >

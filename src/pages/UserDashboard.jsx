@@ -4,7 +4,7 @@ import ProfileHeader from '../components/dashboard/ProfileHeader';
 import ContentTabs from '../components/dashboard/ContentTabs';
 import { getUserProfile } from '../services/users';
 import { useAuth } from '../contexts/AuthContext';
-
+import { useHeader } from '../contexts/HeaderContext';
 const UserDashboard = () => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
@@ -12,6 +12,7 @@ const UserDashboard = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { isHeaderVisible } = useHeader();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,8 +43,11 @@ const UserDashboard = () => {
   if (loading) {
     return (
       <div 
-        className="min-h-screen p-4 md:p-8 flex items-center justify-center"
-        style={{ backgroundColor: currentTheme.colors.background }}
+        className="min-h-screen p-4 p-y-8 md:p-8 flex items-center justify-center"
+        style={{ backgroundColor: currentTheme.colors.background,
+          position: 'relative',
+          top: isHeaderVisible ? '64px' : '0px',
+        }}
       >
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
@@ -82,7 +86,10 @@ const UserDashboard = () => {
   return (
     <div 
       className="min-h-screen p-4 md:p-8"
-      style={{ backgroundColor: currentTheme.colors.background }}
+      style={{ backgroundColor: currentTheme.colors.background,
+        position: 'relative',
+        top: isHeaderVisible ? '64px' : '0px',
+      }}
     >
       <div className="max-w-7xl mx-auto">
         <ProfileHeader userData={userData} />

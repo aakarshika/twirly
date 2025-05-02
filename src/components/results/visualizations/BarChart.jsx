@@ -46,7 +46,7 @@ const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
         {comparisonMetrics.map(metric => (
           <div
           key={metric.id}
-            className="divide-y"
+            className="divide-y shadow-md rounded-sm p-2"
           >
             <div
               className=""
@@ -57,7 +57,7 @@ const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
                   <div className="text-center" style={{ color: currentTheme.colors.text, backgroundColor: 'white' }}>
                     <div className="flex flex-row items-center justify-between">
                       <h4
-                        className="truncate block align-left rounded-full bg-gray-100 p-1 mr-2 ml-2 mb-2 px-4"
+                        className="truncate block align-left rounded-full bg-gray-100 p-1 mr-2 ml-2 mb-2  mt-2 px-4"
                         style={{ backgroundColor: currentTheme.colors.primary, color: 'white' }}
                     >
                       {metric.metric_name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}

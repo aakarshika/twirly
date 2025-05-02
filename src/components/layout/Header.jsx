@@ -97,22 +97,15 @@ const Header = () => {
         borderColor: currentTheme.colors.border,
       }}
     >
-      {window.location.pathname !== '/' && (<button onClick={() => {
-        console.log('back button clicked');
-        navigate(-1);
-      }}>
-      <div className="flex items-center justify-between h-full">
-       <ArrowLeft size={24} /> Back
-      </div>
-      </button>)}
         <div className="container mx-auto px-4 header-content">
           <div className="flex items-center justify-between h-full">
           {/* Logo and Title */}
-          <div className="flex items-center">
+          <div className="flex flex-row items-center">
             <Link to="/" className="flex items-center">
-              <img src="/public/teleport.png" alt="Twirly Logo" className="w-8 h-8 mr-2" />
-              {/* <Sparkles className="text-amber-400" size={24} /> */}
-              <h1 className="ml-2 text-lg font-bold" style={{ color: currentTheme.colors.text }}>{pageName}</h1>
+            <div className="flex flex-col items-center">
+              <img src="/public_logo.png" alt="Twirly Logo" className="w-10 h-10 mr-2" />
+            </div>
+            <h1 className="ml-2 text-lg font-bold" style={{ color: currentTheme.colors.text }}>{pageName}</h1>
             </Link>
           </div>
 

@@ -7,6 +7,7 @@ import TrendingCard from '../components/common-cards/TrendingCard';
 import ItemCard from '../components/common-cards/ItemCard';
 import { useTheme } from '../contexts/ThemeContext';
 import { getPublicUrl } from '../lib/utils';
+import { useHeader } from '../contexts/HeaderContext';
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
@@ -21,7 +22,7 @@ const SearchPage = () => {
   const [results, setResults] = useState({ sets: [], items: [], users: [] });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-
+  const { isHeaderVisible } = useHeader();
   useEffect(() => {
     const fetchResults = async () => {
       if (!query) return;
@@ -169,7 +170,10 @@ const SearchPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8" style={{
+      position: 'relative',
+      top: isHeaderVisible ? '64px' : '0px',
+    }}>
       {/* Search Header */}
       <div className="mb-8">
         <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto">

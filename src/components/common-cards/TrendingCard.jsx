@@ -68,7 +68,6 @@ const TrendingCard = ({set}) => {
           {set.comparison_set_items?.slice(0, 4).map((it, index) => {
             set.imageError = false;
             const item = it.items;
-            console.log(item, voted_item_id);
             return (
               <div
                 key={item.id}

@@ -1,5 +1,16 @@
 {
   "appId": "com.twirly.app",
   "appName": "twirly",
-  "webDir": "dist"
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "ios": {
+    "contentInset": "always"
+  },
+  "android": {
+    "allowMixedContent": true
+  }
 }

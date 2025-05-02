@@ -65,14 +65,61 @@ const ComparisonHeading = ({ isHeaderVisible, title, height, currentId, itemRevi
     });
     item.shiningAt = item.metric_votes.sort((a, b) => b.itemVotes - a.itemVotes).slice(0, 1);
   });
-  //for each metric, calculate which item is the winner
+
+  // Check if there are any clear leaders across all metrics
+  let hasAnyLeader = false;
   comparisonMetrics.forEach((metric) => {
-    metric.localWinner = items.sort((a, b) => b.metric_votes.find((vote) => vote.metric_name === metric.metric_name).itemVotes - a.metric_votes.find((vote) => vote.metric_name === metric.metric_name).itemVotes)[0];
+    const itemVotes = items.map(item => ({
+      id: item.id,
+      votes: item.metric_votes.find(vote => vote.metric_name === metric.metric_name).itemVotes
+    }));
+    
+    const maxVotes = Math.max(...itemVotes.map(item => item.votes));
+    const itemsWithMaxVotes = itemVotes.filter(item => item.votes === maxVotes);
+    
+    if (maxVotes > 0 && itemsWithMaxVotes.length === 1) {
+      hasAnyLeader = true;
+    }
   });
 
-  //for each item - if he is the local winner, list all the metrics he is locally winning at
+  //for each metric, find the item with the most votes
+  comparisonMetrics.forEach((metric) => {
+    const itemVotes = items.map(item => ({
+      id: item.id,
+      votes: item.metric_votes.find(vote => vote.metric_name === metric.metric_name).itemVotes
+    }));
+    
+    const maxVotes = Math.max(...itemVotes.map(item => item.votes));
+    const itemsWithMaxVotes = itemVotes.filter(item => item.votes === maxVotes);
+    
+    if (maxVotes > 0) {
+      if (hasAnyLeader) {
+        // If there's any leader, only show the single leader
+        metric.leader = itemsWithMaxVotes.length === 1 ? itemsWithMaxVotes[0] : null;
+        metric.isTied = false;
+      } else {
+        // If no leaders anywhere, show all items with max votes
+        metric.leadingItems = itemsWithMaxVotes;
+        metric.isTied = true;
+      }
+    } else {
+      metric.leader = null;
+      metric.leadingItems = [];
+      metric.isTied = false;
+    }
+  });
+
+  //for each item - list all the metrics they are leading or tied in
   items.forEach((item) => {
-    item.localWinnerAt = comparisonMetrics.filter((metric) => metric.localWinner.id === item.id);
+    if (hasAnyLeader) {
+      item.leadingMetrics = comparisonMetrics.filter(metric => 
+        metric.leader && metric.leader.id === item.id
+      );
+    } else {
+      item.leadingMetrics = comparisonMetrics.filter(metric => 
+        metric.leadingItems && metric.leadingItems.some(leadingItem => leadingItem.id === item.id)
+      );
+    }
   });
 
   console.log("items in comparison heading", items);
@@ -138,17 +185,20 @@ const ComparisonHeading = ({ isHeaderVisible, title, height, currentId, itemRevi
                       </span>
                     </div>
                   )}
-                  {item.shiningAt && item.shiningAt.length > 0 && (
+                  {/* {item.shiningAt && item.shiningAt.length > 0 && (
                     <div className="flex items-center gap-2 bg-blue-50 dark:bg-blue-900/20 px-3 py-1.5 rounded-full">
                       <span className="text-sm font-medium text-blue-600 dark:text-blue-300">
                         ⭐ Best at {item.shiningAt?.map((metric) => splitAndJoin(metric.metric_name)).join(', ')}
                       </span>
                     </div>
-                  )}
-                  {item.localWinnerAt && item.localWinnerAt.length > 0 && (
+                  )} */}
+                  {item.leadingMetrics && item.leadingMetrics.length > 0 && (
                     <div className="flex items-center gap-2 bg-purple-50 dark:bg-purple-900/20 px-3 py-1.5 rounded-full">
                       <span className="text-sm font-medium text-purple-600 dark:text-purple-300">
-                        🎯 Leading in {item.localWinnerAt?.map((metric) => splitAndJoin(metric.metric_name)).join(', ')}
+                        {hasAnyLeader ? '🎯 Leading in ' : '🤝 Tied for leading in '}
+                        {item.leadingMetrics?.map((metric) => 
+                          splitAndJoin(metric.metric_name)
+                        ).join(', ')}
                       </span>
                     </div>
                   )}

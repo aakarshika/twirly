@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { useHeader } from '../contexts/HeaderContext';
+import { useSwipeable } from 'react-swipeable';
 import PollGrid from '../components/comparison/PollGrid';
 import BarChart from '../components/results/visualizations/BarChart';
 import Button from '../components/common/Button';
@@ -38,11 +39,28 @@ const PollScreenAspect = () => {
     fetchComparisonDetails
   } = useComparisonAspectDetails(id);
 
-    useEffect(() => {
-      console.log('id', id);
-      if (id) {
-        fetchComparisonDetails();
-      }
+  const handlers = useSwipeable({
+    onSwipedLeft: () => {
+      setShowEndAnimation(true);
+      setTimeout(() => {
+        setShowEndAnimation(false);
+        navigate('/comparison-aspect/' + (parseInt(id) + 1).toString());
+      }, 500);
+    },
+    preventDefaultTouchmoveEvent: false,
+    trackMouse: true,
+    delta: 10,
+    swipeDuration: 500,
+    touchEventOptions: { passive: true },
+    trackTouch: true,
+    rotationAngle: 0,
+  });
+
+  useEffect(() => {
+    console.log('id', id);
+    if (id) {
+      fetchComparisonDetails();
+    }
     setShowStartAnimation(true);
     const timer = setTimeout(() => {
       setShowStartAnimation(false);
@@ -91,7 +109,7 @@ const PollScreenAspect = () => {
         position: 'relative',
         paddingBottom: '80px'
       }}>
-      <div className="h-full flex flex-col max-w-4xl mx-auto">
+      <div className="h-full flex flex-col max-w-4xl mx-auto" {...handlers}>
         <div className="flex-1">
 
           <div className="space-y-4 m-4 " style={{ color: currentTheme.colors.primary }}>
@@ -166,20 +184,7 @@ const PollScreenAspect = () => {
               >
                 Prev
               </button> */}
-        <button
-          onClick={() => {
-            setShowEndAnimation(true);
-            setTimeout(() => {
-              setShowEndAnimation(false);
-              navigate('/comparison-aspect/' + (parseInt(id) + 1).toString())
-            }, 500);
-          }}
-          style={{ backgroundColor: currentTheme.colors.primary, marginBottom: '20px' }}
-          className="flex flex-row items-center gap-2 px-4 py-2 bg-amber-400 text-black rounded-full font-semibold hover:bg-amber-300 transition-colors"
-        >
-          Next
-          <ArrowRight size={16} />
-        </button>
+        {/* Next button removed in favor of swipe */}
       </div>
     </div>
   );

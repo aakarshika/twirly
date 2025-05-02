@@ -6,7 +6,7 @@ import ProductHeader from '../components/product-details/ProductHeader';
 import QuickStats from '../components/product-details/QuickStats';
 import ProductTabs from '../components/product-details/ProductTabs';
 import { useAuth } from '../contexts/AuthContext';
-
+import { useHeader } from '../contexts/HeaderContext';
 const ProductDetails = () => {
   const { itemId } = useParams();
   const { currentTheme } = useTheme();
@@ -19,7 +19,8 @@ const ProductDetails = () => {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('reviews');
   const [showReviewForm, setShowReviewForm] = useState(false);
-  
+  const { isHeaderVisible } = useHeader();
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMoreReviews, setHasMoreReviews] = useState(true);
@@ -156,7 +157,10 @@ const ProductDetails = () => {
   if (!item) return <div className="p-4">Product not found</div>;
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background }}>
+    <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background,
+      position: 'relative',
+      top: isHeaderVisible ? '64px' : '0px',
+    }}>
       <div className="max-w-7xl mx-auto px-4 py-8">
         <ProductHeader item={item} />
         <QuickStats comparisonSets={comparisonSets} reviews={reviews} />

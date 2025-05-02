@@ -52,10 +52,12 @@ const ComparisonItemCardAspect = ({
   }, [userVoted]);
 
   const handleItemClick = (e) => {
+    e.stopPropagation();
     navigate(`/item/${item.id}`);
   };
 
-  const startVoting = () => {
+  const startVoting = (e) => {
+    e.stopPropagation();
     if (userVoted) return;
     handleVote(item.id);
   };
@@ -88,6 +90,7 @@ const ComparisonItemCardAspect = ({
         ${showStartAnimation ? 'vote-animation' : ''}
         `}
       style={{ height: newHeight }}
+      onClick={handleItemClick}
     >
       <div
         className="card-container"

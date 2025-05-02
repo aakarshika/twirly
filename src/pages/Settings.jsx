@@ -9,7 +9,7 @@ import BillingSettings from '../components/settings/BillingSettings';
 import SecuritySettings from '../components/settings/SecuritySettings';
 import LanguageSettings from '../components/settings/LanguageSettings';
 import HelpSettings from '../components/settings/HelpSettings';
-
+import { useHeader } from '../contexts/HeaderContext';
 const Settings = () => {
   const { currentTheme } = useTheme();
   const { user, signOut } = useAuth();
@@ -17,7 +17,7 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState('profile');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-
+  const { isHeaderVisible } = useHeader();
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
@@ -68,7 +68,10 @@ const Settings = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background }}>
+    <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background,
+      position: 'relative',
+      top: isHeaderVisible ? '64px' : '0px',
+    }}>
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
