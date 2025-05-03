@@ -9,12 +9,8 @@ const VotingAnimation = ({
   const tapTimerRef = useRef(null);
   const [showSingleHeart, setShowSingleHeart] = useState(false);
   const [balloonHearts, setBalloonHearts] = useState([]);
-  const touchStartY = useRef(0);
 
   const handleTap = (e) => {
-    // Store the initial touch Y position
-    touchStartY.current = e.touches ? e.touches[0].clientY : e.clientY;
-    
     tapCountRef.current += 1;
 
     if (tapCountRef.current === 1) {
@@ -31,7 +27,7 @@ const VotingAnimation = ({
       tapCountRef.current = 0;
       
       // Cast vote immediately
-      onStartVoting();
+      onStartVoting(e);
       
       // Create multiple balloon hearts
       const newBalloonHearts = Array.from({ length: 10 }, (_, i) => ({
@@ -48,25 +44,14 @@ const VotingAnimation = ({
     }
   };
 
-  const handleTouchEnd = (e) => {
-    // Only prevent default if it was a tap (not a scroll)
-    const touchEndY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY;
-    const deltaY = Math.abs(touchEndY - touchStartY.current);
-    
-    // If the movement was less than 10px, consider it a tap
-    if (deltaY < 10) {
-      e.preventDefault();
-    }
-  };
-
   return (
     <div 
       className="voting-animation-container"
       onTouchStart={handleTap}
-      onTouchEnd={handleTouchEnd}
+      onTouchEnd={(e) => e.preventDefault()}
       onMouseDown={handleTap}
-      onMouseUp={handleTouchEnd}
-      onMouseLeave={handleTouchEnd}
+      onMouseUp={(e) => e.preventDefault()}
+      onMouseLeave={(e) => e.preventDefault()}
     >
       {/* <div className="voting-instruction">
         Double tap to vote
