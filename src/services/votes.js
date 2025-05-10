@@ -14,6 +14,7 @@ export const getUserVotes = async (userId) => {
         created_at,
         item_id,
         comparison_set_aspects (
+          id,
         metric_name,
           comparison_sets (
             id,

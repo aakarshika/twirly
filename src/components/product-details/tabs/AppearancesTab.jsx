@@ -103,6 +103,10 @@ const AppearancesTab = ({ item, comparisonSets }) => {
                     }]}
                   />
                 </div>)}
+                {!userVoted && (<div className="m-2 rounded-lg p-4"
+          style={{ backgroundColor: 'white' }}>
+                  <p>Play all to unlock metrics</p>
+                </div>)}
         </div>
       )})}
       {(!comparisonSets || comparisonSets.length === 0) && (

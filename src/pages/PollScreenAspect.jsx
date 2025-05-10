@@ -35,7 +35,8 @@ const PollScreenAspect = () => {
     itemReviews,
     loading,
     error,
-    fetchComparisonDetails
+    fetchComparisonDetails,
+    handleLikeComparisonAspectSet
   } = useComparisonAspectDetails(id);
 
   const handlers = useSwipeable({
@@ -46,11 +47,11 @@ const PollScreenAspect = () => {
         navigate('/comparison-aspect/' + (parseInt(id) + 1).toString());
       }, 500);
     },
-    preventDefaultTouchmoveEvent: false,
+    preventDefaultTouchmoveEvent: true,
     trackMouse: true,
     delta: 10,
     swipeDuration: 500,
-    touchEventOptions: { passive: true },
+    touchEventOptions: { passive: false },
     trackTouch: true,
     rotationAngle: 0,
   });
@@ -113,8 +114,15 @@ const PollScreenAspect = () => {
       style={{
         backgroundColor: currentTheme.colors.background,
         top: isHeaderVisible ? '64px' : '0px',
-        position: 'relative',
-        paddingBottom: '80px'
+        paddingBottom: '80px',
+        transform: 'translateZ(0)',
+        WebkitTransform: 'translateZ(0)',
+        backfaceVisibility: 'hidden',
+        WebkitBackfaceVisibility: 'hidden',
+        perspective: '1000',
+        WebkitPerspective: '1000',
+        transformStyle: 'preserve-3d',
+        WebkitTransformStyle: 'preserve-3d'
       }}>
 
       <div className="h-full items-end">
@@ -126,7 +134,7 @@ const PollScreenAspect = () => {
           <ChevronRight size={24} style={{ color: 'white' }} />
         </button>
       </div>
-      <div className="h-full flex flex-col max-w-4xl mx-auto relative" {...handlers}>
+      <div className="h-full flex flex-col max-w-4xl mx-auto" {...handlers}>
         <div className="">
           <div className="space-y-4 m-4 " style={{ color: currentTheme.colors.primary }}>
 
@@ -182,7 +190,13 @@ const PollScreenAspect = () => {
           {(
             <div className="text-center m-1" style={{ color: currentTheme.colors.text, backgroundColor: 'white', borderRadius: '4px' }}>
               <div className="w-full p-4">
-                <ComparisonSetAspectsCommentsSection userVoted={userVoted} aspectSetId={id} items={items} aspectSet={currentAspectSet} />
+                <ComparisonSetAspectsCommentsSection 
+                userVoted={userVoted} 
+                aspectSetId={id} 
+                items={items} 
+                aspectSet={currentAspectSet}
+                handleLikeComparisonAspectSet={handleLikeComparisonAspectSet}
+                />
               </div>
               <span className="text-2xl">. . .</span>
             </div>

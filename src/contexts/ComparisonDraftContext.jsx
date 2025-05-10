@@ -29,6 +29,13 @@ export const ComparisonDraftProvider = ({ children }) => {
     }
   };
 
+  const addCategory = (category) => {
+    setDraft(prev => ({
+      ...prev,
+      category_id: category.id
+    }));
+  };
+
   const removeItem = (itemId) => {
     setDraft(prev => ({
       ...prev,
@@ -71,6 +78,7 @@ export const ComparisonDraftProvider = ({ children }) => {
   const value = {
     draft,
     addItem,
+    addCategory,
     removeItem,
     addAspect,
     removeAspect,

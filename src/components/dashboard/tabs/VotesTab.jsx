@@ -3,10 +3,10 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { getUserVotes } from '../../../services/votes';
 import { useAuth } from '../../../contexts/AuthContext';
 import { splitAndJoin } from '../../../lib/utils';
-
+import { useNavigate } from 'react-router-dom';
 const VoteCard = ({ vote }) => {
   const { currentTheme } = useTheme();
-
+  const navigate = useNavigate();
   return (
     <div 
       className="rounded-lg overflow-hidden"
@@ -14,7 +14,11 @@ const VoteCard = ({ vote }) => {
     >
       <div className="p-4">
         <div className="flex justify-between items-start mb-4">
-          <div>
+          <div
+            onClick={() => {
+              navigate(`/comparison-aspect/${vote.comparison_set_aspects?.id}`);
+            }}
+          >
             <h3 
               className="font-semibold text-lg"
               style={{ color: currentTheme.colors.text }}

@@ -134,11 +134,13 @@ CREATE TABLE comparison_set_comment_reactions (
     reaction_type VARCHAR(10) CHECK (reaction_type IN ('like', 'dislike')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT reaction_target_check CHECK (
-        (comment_id IS NOT NULL AND reply_id IS NULL) OR
-        (comment_id IS NULL AND reply_id IS NOT NULL)
+        (comment_id IS NOT NULL) OR
+        (reply_id IS NOT NULL) OR
+        (aspect_set_id IS NOT NULL)
     ),
     CONSTRAINT unique_comment_reaction UNIQUE (user_id, comment_id),
-    CONSTRAINT unique_reply_reaction UNIQUE (user_id, reply_id)
+    CONSTRAINT unique_reply_reaction UNIQUE (user_id, reply_id),
+    CONSTRAINT unique_reply_reaction UNIQUE (user_id, aspect_set_id)
 );
 
 -- User preferences table

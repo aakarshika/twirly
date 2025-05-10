@@ -7,7 +7,7 @@ const ItemCard = ({item}) => {
     return (
       <Link
         to={`/item/${item.id}`}
-        className="block p-4 rounded-lg hover:bg-gray-50"
+        className="block p-2 rounded-lg hover:bg-gray-50"
         style={{
           backgroundColor: currentTheme.colors.card,
           borderColor: currentTheme.colors.border,
@@ -15,7 +15,7 @@ const ItemCard = ({item}) => {
         }}
       >
         <div className="flex items-start">
-          <div className="w-16 h-16 rounded-lg overflow-hidden mr-4 flex-shrink-0">
+          <div className="w-14 h-14 rounded-lg overflow-hidden mr-2 flex-shrink-0">
             {item.image_url ? (
               <img
                 src={item.image_url}

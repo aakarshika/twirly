@@ -10,7 +10,7 @@ import Comment from './Comment';
 import { supabase } from '../../lib/supabase';
 import { useEffect } from 'react';
 import LoadingOrError from '../common/LoadingOrError';
-import CommentHeader from './CommentHeader';
+
 const ComparisonCommentsInshort = ({ aspectSetId, items, aspectSet }) => {
   const { user } = useAuth();
   const {

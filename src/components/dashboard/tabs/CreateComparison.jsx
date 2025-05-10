@@ -2,11 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useComparisonDraft } from '../../../contexts/ComparisonDraftContext';
-import { searchProducts } from '../../../services/products';
+import { searchProducts, searchCategories } from '../../../services/products';
 import { createComparison, getUnpublishedComparison, updateComparison, getComparison } from '../../../services/comparisons';
-import { X, Check, Search, User, Trash2, Plus } from 'lucide-react';
+import { X, Check, Search, User, Trash2, Plus, PlusIcon, PlusCircle } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useHeader } from '../../../contexts/HeaderContext';
+import ItemCard from '../../common-cards/ItemCard';
 
 const CreateComparison = () => {
   const { currentTheme } = useTheme();
@@ -16,6 +17,7 @@ const CreateComparison = () => {
   const { 
     draft, 
     addItem, 
+    addCategory,
     removeItem, 
     addAspect, 
     removeAspect, 
@@ -24,6 +26,8 @@ const CreateComparison = () => {
   } = useComparisonDraft();
 
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchCategoryQuery, setSearchCategoryQuery] = useState('');
+  const [searchCategoryResults, setSearchCategoryResults] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -104,6 +108,29 @@ const CreateComparison = () => {
     const debounceTimer = setTimeout(fetchProducts, 300);
     return () => clearTimeout(debounceTimer);
   }, [searchQuery]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      if (searchCategoryQuery.length < 1) {
+        setSearchCategoryResults([]);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        const results = await searchCategories(searchCategoryQuery);
+        setSearchCategoryResults(results);
+      } catch (err) {
+        setError('Failed to search categories');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const debounceTimer = setTimeout(fetchCategories, 300);
+    return () => clearTimeout(debounceTimer);
+  }, [searchCategoryQuery]);
 
   const handleSaveDraft = async () => {
     if (!validateDraft()) return;
@@ -208,7 +235,7 @@ const CreateComparison = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4" style={{ backgroundColor: currentTheme.colors.background, paddingTop: isHeaderVisible ? '64px' : '0px' }}>
+    <div className="max-w-4xl mx-auto p-4" style={{ backgroundColor: currentTheme.colors.card, paddingTop: isHeaderVisible ? '64px' : '0px' }}>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
           Describe your set
@@ -280,19 +307,39 @@ const CreateComparison = () => {
         </div> */}
 
         <div>
-          <select
-            value={draft.category_id || ''}
-            onChange={(e) => updateDraft({ category_id: e.target.value })}
-            className="w-full p-3"
-            style={{ 
-              backgroundColor: currentTheme.colors.background,
-              color: currentTheme.colors.text,
-              borderBottom: `1px solid ${currentTheme.colors.border}`
-            }}
-          >
-            <option value="">+ Category Tags</option>
-            {/* Add categories here */}
-          </select>
+          <div className="relative">
+            <input
+              type="text"
+              value={searchCategoryQuery}
+              onChange={(e) => setSearchCategoryQuery(e.target.value)}
+              className="w-full p-3 pl-10"
+              style={{ 
+                backgroundColor: currentTheme.colors.background,
+                color: currentTheme.colors.text,
+                borderBottom: `1px solid ${currentTheme.colors.border}`
+              }}
+              placeholder="Add category tags..."
+            />
+            <PlusCircle className="absolute left-3 top-3.5" size={20} style={{ color: currentTheme.colors.textSecondary }} />
+          </div>
+          {searchCategoryResults.length > 0 && (
+            <div className="border w-auto"
+             style={{ backgroundColor: currentTheme.colors.background }}
+             onClick={() => {
+              addCategory(searchCategoryResults);
+              setSearchCategoryQuery('');
+             }}
+             >
+              {searchCategoryResults.map((category) => (
+                <div key={category.id} className="p-3 hover:bg-opacity-5 cursor-pointer flex-row items-center">
+                  <div className=" items-start">
+                    <p className="text-sm">{category.name}</p>
+                  </div>
+                  <Plus size={20} />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div>
@@ -310,52 +357,59 @@ const CreateComparison = () => {
               placeholder="Search items..."
             />
             <Search className="absolute left-3 top-3.5" size={20} style={{ color: currentTheme.colors.textSecondary }} />
-          </div>
-          {searchResults.length > 0 && (
-            <div className="mt-1 border" style={{ backgroundColor: currentTheme.colors.background }}>
-              {searchResults.map((product) => (
-                <div
-                  key={product.id}
-                  className="p-3 hover:bg-opacity-5 cursor-pointer flex justify-between items-center"
-                  style={{
-                    backgroundColor: currentTheme.colors.primary + '10',
-                    color: currentTheme.colors.text,
-                    borderBottom: `1px solid ${currentTheme.colors.border}`
-                  }}
-                  onClick={() => addItem(product)}
-                >
-                  {product.image_url && product.image_url != '' && (<img src={product.image_url} className="w-10 h-10 rounded" onError={(e) => {
-                    e.target.src = '/images/default-product-image.png';
-                  }} />)}
-                  {!product.image_url && product.image_url != '' && (<img src={'/images/default-product-image.png'}  className="w-10 h-10 rounded" />)}
-                  <div className="flex w-full ml-2 flex-col align-left" style={{ color: currentTheme.colors.text }}>
-                    <p className="text-sm">{product.name}</p>
-                    <p className="text-xs">{product.description}</p></div>
-                  <Plus size={20} />
-                </div>
-              ))}
+            {searchResults.length > 0 && (
+              <div className="mt-1 border" style={{ backgroundColor: currentTheme.colors.background }}>
+                {searchResults.map((product) => (
+                  <div
+                    key={product.id}
+                    className="p-3 hover:bg-opacity-5 cursor-pointer flex justify-between items-center"
+                    style={{
+                      backgroundColor: currentTheme.colors.primary + '10',
+                      color: currentTheme.colors.text,
+                      borderBottom: `1px solid ${currentTheme.colors.border}`
+                    }}
+                    onClick={() => {
+                      addItem(product);
+                      setSearchQuery('');
+                    }}
+                  >
+                    {product.image_url && product.image_url != '' && (<img src={product.image_url} className="w-10 h-10 rounded" onError={(e) => {
+                      e.target.src = '/images/default-product-image.png';
+                    }} />)}
+                    {!product.image_url && product.image_url != '' && (<img src={'/images/default-product-image.png'}  className="w-10 h-10 rounded" />)}
+                    <div className="flex w-full ml-2 flex-col align-left" style={{ color: currentTheme.colors.text }}>
+                      <p className="text-sm">{product.name}</p>
+                      <p className="text-xs">{product.description}</p></div>
+                    <Plus size={20} />
+                  </div>
+                ))}
+              </div>
+            )}
             </div>
-          )}
-        </div>
+          </div>
 
         <div>
-          <h2 className="text-lg font-medium mb-2" style={{ color: currentTheme.colors.text }}>
-            Selected Items ({draft.items.length})
-          </h2>
-          <div className="border" style={{ backgroundColor: currentTheme.colors.background }}>
+          <div className={`grid ${
+          draft.items.length === 1 ? 'grid-cols-1' :
+          draft.items.length === 2 ? 'grid-cols-2' :
+          draft.items.length === 3 ? 'grid-cols-3' :
+          'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 rounded-lg gap-2 p-2'
+        }`} 
+        style={{
+          backgroundColor: currentTheme.colors.background,
+          border: `1px solid ${currentTheme.colors.border}`,
+          borderRadius: '10px'
+        }}
+        >
             {draft.items.map((item) => (
               <div
                 key={item.id}
-                className="p-3 flex justify-between items-center"
-                style={{ 
-                  borderBottom: `1px solid ${currentTheme.colors.border}`,
-                  color: currentTheme.colors.text
-                }}
+                className="items-center relative w-full h-full"
               >
-                <span>{item.name}</span>
+                <ItemCard item={item} />
                 <button
                   onClick={() => removeItem(item.id)}
-                  className="p-1 hover:bg-opacity-5"
+                  className="p-1 rounded-full bg-white-50 absolute top-2 right-2 z-10"
                   style={{ 
                     backgroundColor: currentTheme.colors.error + '10',
                     color: currentTheme.colors.error
@@ -363,7 +417,7 @@ const CreateComparison = () => {
                 >
                   <Trash2 size={16} />
                 </button>
-              </div>
+                </div>
             ))}
           </div>
         </div>

@@ -14,6 +14,8 @@ const CommentHeader = ({ onLike, isReplySectionExpanded, replyClicked,
     text,
     userReaction,
     reactions,
+    comment,
+    objectId,
     numReplies
  }) => {
   const navigate = useNavigate();
@@ -61,7 +63,7 @@ const CommentHeader = ({ onLike, isReplySectionExpanded, replyClicked,
         </div>
       </div>
       <div className="ml-8 mt-2 flex items-center gap-3 mb-2">
-        <button onClick={() => onLike(id)} className={`flex items-center gap-1 text-xs ${userReaction === 'like' ? 'text-amber-400' : 'text-gray-500 hover:text-amber-400'}`}>
+        <button onClick={() => onLike(objectId, type)} className={`flex items-center gap-1 text-xs ${userReaction === 'like' ? 'text-amber-400' : 'text-gray-500 hover:text-amber-400'}`}>
           <Heart className={`w-3.5 h-3.5 ${userReaction === 'like' ? 'fill-current' : ''}`} />
           {reactions ? reactions.length : 0}
         </button>

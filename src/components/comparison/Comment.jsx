@@ -1,5 +1,4 @@
 import React, { useState, useRef } from 'react';
-import { Heart, MessageSquare } from 'lucide-react';
 import Reply from './Reply';
 import {  getPublicUrl } from '../../lib/utils';
 import useMentionInput from '../../hooks/useMentionInput';
@@ -41,6 +40,7 @@ const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPre
         setIsReplying={setIsReplying}
         userReaction={comment.userReaction}
         reactions={comment.reactions}
+        objectId={comment.id}
         numReplies={comment.replies?.length}
         items={items}
       />

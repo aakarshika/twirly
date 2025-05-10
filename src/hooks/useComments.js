@@ -53,31 +53,44 @@ export const useComments = (setId, userId) => {
     }
   };
 
-  const handleLikeComment = async (commentId) => {
+  const handleLikeComment = async (commentId, type) => {
     if (!userId) return;
-
     try {
-      const comment = comments.find(c => c.id === commentId);
-      const hasLiked = comment.userReaction === 'like';
 
-      await comparisonSetService.toggleLike(commentId, userId, hasLiked);
-
-      setComments(prev => prev.map(c => {
-        if (c.id === commentId) {
-          return {
-            ...c,
-            userReaction: hasLiked ? null : 'like',
-            reactions: hasLiked 
-              ? c.reactions.filter(r => r.user_id !== userId)
-              : [...c.reactions, { user_id: userId, reaction_type: 'like' }]
-          };
-        }
-        return c;
-      }));
-      //timeout
-      setTimeout(() => {
-        console.log('comments', comments);
-      }, 1000);
+      if (type == 'Reply') {
+        const comment = comments.find(c => c.id === commentId);
+        const hasLiked = comment.reactions?.find(r => r.user_id === userId)?.reaction_type === 'like';
+        await comparisonSetService.toggleCommentLike(commentId, userId, hasLiked);
+        setComments(prev => prev.map(c => {
+          if (c.id === commentId) {
+            return {
+                ...c,
+                userReaction: hasLiked ? null : 'like',
+                reactions: hasLiked ? c.reactions.filter(r => r.user_id !== userId) : [...c.reactions, { user_id: userId, reaction_type: 'like' }]
+            };
+          }
+          return c;
+        }));
+      } else if (type == 'LastReply') {
+        const comment = comments.find(c => c.replies?.some(r => r.id === commentId));
+        const hasLiked = comment.replies?.find(r => r.id === commentId)?.reactions?.find(r => r.user_id === userId)?.reaction_type === 'like';
+        await comparisonSetService.toggleReplyLike(commentId, userId, hasLiked);
+        setComments(prev => prev.map(c => {
+            return {
+              ...c,
+              replies: c.replies.map(r => {
+                if (r.id === commentId) {
+                  return {
+                    ...r,
+                    userReaction: hasLiked ? null : 'like',
+                    reactions: hasLiked ? r.reactions.filter(r => r.user_id !== userId) : [...r.reactions, { user_id: userId, reaction_type: 'like' }]
+                  };
+                }
+                return r;
+              })
+            };
+        }));
+      }
     } catch (err) {
       setError(err.message);
     }

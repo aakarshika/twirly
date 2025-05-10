@@ -166,8 +166,22 @@ export const searchProducts = async (query) => {
     .from('items')
     .select('*')
     .ilike('name', `%${query}%`)
-    .limit(10);
+    .limit(5);
 
   if (error) throw error;
   return data;
 }; 
+
+//  search categories
+/*
+*/
+export const searchCategories = async (query) => {
+  const { data, error } = await supabase
+    .from('categories')
+    .select('*')
+    .ilike('name', `%${query}%`)
+    .limit(5);
+
+  if (error) throw error;
+  return data;
+};

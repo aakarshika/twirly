@@ -84,3 +84,13 @@ CREATE POLICY "Anyone can view comment replies"
 CREATE POLICY "Authenticated users can create and update their own replies"
   ON comparison_set_comment_replies FOR ALL
   USING (auth.uid() = user_id);
+
+
+-- RLS Policies for comment replies
+CREATE POLICY "Anyone can view comment replies"
+  ON comparison_set_comment_reactions FOR SELECT
+  USING (true);
+
+CREATE POLICY "Authenticated users can create and update their own replies"
+  ON comparison_set_comment_reactions FOR ALL
+  USING (auth.uid() = user_id);

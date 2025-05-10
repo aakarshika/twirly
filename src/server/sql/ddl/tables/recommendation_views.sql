@@ -28,13 +28,10 @@ LEFT JOIN (
 ) comments_count ON csa.id = comments_count.set_id
 ORDER BY popularity_score DESC;
 
-
+drop  VIEW searchable_items ;
 CREATE VIEW searchable_items AS
 SELECT 
-    i.id,
-    i.name,
-    i.description,
-    i.image_url,
+    i.*,
     COALESCE(AVG(r.likes), 0) AS avg_likes,
     COUNT(r.id) AS review_count
 FROM items i

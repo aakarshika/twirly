@@ -10,7 +10,7 @@ export const comparisonSetService = {
         *,
         user:user_preferences(*),
         reactions:comparison_set_comment_reactions(reaction_type, user_id),
-        replies:comparison_set_comment_replies(*,user:user_preferences(*))
+        replies:comparison_set_comment_replies(*,user:user_preferences(*),reactions:comparison_set_comment_reactions(reaction_type, user_id))
       `, { count: 'exact' })
       .eq('set_id', setId)
       .order('created_at', { ascending: false, referencedTable: 'comparison_set_comment_replies' })
@@ -23,7 +23,10 @@ export const comparisonSetService = {
       comments: data.map(comment => ({
         ...comment,
         userReaction: comment.reactions?.find(r => r.user_id === userId)?.reaction_type || null,
-        replies: comment.replies || []
+        replies: comment.replies.map(r => ({
+          ...r,
+          userReaction: r.reactions?.find(r => r.user_id === userId)?.reaction_type || null
+        })) || []
       })),
       total: count,
       page,
@@ -43,7 +46,7 @@ export const comparisonSetService = {
     return data;
   },
 
-  async toggleLike(commentId, userId, hasLiked) {
+  async toggleCommentLike(commentId, userId, hasLiked) {
     if (hasLiked) {
       await supabase
         .from('comparison_set_comment_reactions')
@@ -54,6 +57,20 @@ export const comparisonSetService = {
       await supabase
         .from('comparison_set_comment_reactions')
         .insert([{ comment_id: commentId, user_id: userId, reaction_type: 'like' }]);
+    }
+  },
+
+  async toggleReplyLike(replyId, userId, hasLiked) {
+    if (hasLiked) {
+      await supabase
+        .from('comparison_set_comment_reactions')
+        .delete()
+        .eq('reply_id', replyId)
+        .eq('user_id', userId);
+    } else {
+      await supabase
+        .from('comparison_set_comment_reactions')
+        .insert([{ reply_id: replyId, user_id: userId, reaction_type: 'like' }]);
     }
   },
 

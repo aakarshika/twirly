@@ -38,6 +38,7 @@ export const useComparisonAspectDetails = (id) => {
         .from('comparison_set_aspects')
         .select(`
           *,
+          reactions:comparison_set_comment_reactions(reaction_type, user_id),
           comparison_sets(
             *,
             user:user_preferences(*),
@@ -55,7 +56,7 @@ export const useComparisonAspectDetails = (id) => {
       if (!data) throw new Error('Comparison not found');
 
       setCurrentSet(data.comparison_sets);
-      setCurrentAspectSet(data);
+      setCurrentAspectSet({...data, userReaction: data.reactions.find(r => r.user_id === user.id)?.reaction_type});
       setItems(data.comparison_sets.comparison_set_items);
       setTotalVotes(data.comparison_sets.comparison_set_items.reduce((acc, item) => acc + item.items.votes.length, 0));
       
@@ -104,7 +105,25 @@ export const useComparisonAspectDetails = (id) => {
       setTotalVotes(items.reduce((acc, item) => acc + item.items.votes.length, 0));
     }
   };
-
+  const handleLikeComparisonAspectSet = async (id, type) => {
+    console.log('handleLikeComparisonAspectSet', id, type);
+    const hasLiked = currentAspectSet.reactions?.find(r => r.user_id === user.id)?.reaction_type === 'like';
+    if (hasLiked) {
+      await supabase
+        .from('comparison_set_comment_reactions')
+        .delete()
+        .eq('aspect_set_id', id)
+        .eq('user_id', user.id);
+    } else {
+      await supabase
+        .from('comparison_set_comment_reactions')
+        .insert([{ aspect_set_id: id, user_id: user.id, reaction_type: 'like' }]);
+    }
+    setCurrentAspectSet(prev => ({...prev, 
+      userReaction: hasLiked ? null : 'like',
+      reactions: hasLiked ? prev.reactions.filter(r => r.user_id !== user.id) : [...prev.reactions, {user_id: user.id, reaction_type: 'like'}]
+    }));
+  };
   const handleRevertVote = async () => {
     try {
       const { data, error } = await supabase
@@ -125,5 +144,5 @@ export const useComparisonAspectDetails = (id) => {
       setTotalVotes(items.reduce((acc, item) => acc + item.items.votes.length, 0));
     }
   };
-  return { loading, error, items, currentSet, currentAspectSet, reviews, averageMetrics, totalVotes, userVoted, votedItemId, handleVote, handleRevertVote, fetchComparisonDetails };
+  return { loading, error, items, currentSet, currentAspectSet, reviews, averageMetrics, totalVotes, userVoted, votedItemId, handleVote, handleRevertVote, fetchComparisonDetails, handleLikeComparisonAspectSet };
 }; 

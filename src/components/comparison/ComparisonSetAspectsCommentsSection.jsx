@@ -12,7 +12,7 @@ import { useEffect } from 'react';
 import LoadingOrError from '../common/LoadingOrError';
 import CommentHeader from './CommentHeader';
 import { useNavigate } from 'react-router-dom';
-const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, aspectSet }) => {
+const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, aspectSet, handleLikeComparisonAspectSet }) => {
   const { user } = useAuth();
   const {
     comments,
@@ -106,41 +106,50 @@ const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, as
     );
   }
 
+  console.log('userReaction', aspectSet);
+  console.log('reactions', aspectSet);
   return (
     <div className="space-y-2" >
       <div className="text-center w-full" >
         <div className="flex flex-col w-full">
           <div className="flex  w-full">
             <div className="flex-1 text-md">
+
               <CommentHeader
                 type="Comment"
                 comment={aspectSet}
-                onLike={handleLikeComment}
+                onLike={handleLikeComparisonAspectSet}
                 replyClicked={() => {
                 }}
                 profile_image_url={aspectSet?.comparison_sets?.user?.profile_image_url}
                 display_name={aspectSet?.comparison_sets?.user?.username}
                 created_at={aspectSet?.comparison_sets?.created_at}
                 text={aspectSet?.description}
-                userReaction={aspectSet?.comparison_sets?.userReaction}
-                reactions={aspectSet?.comparison_sets?.reactions}
+                userReaction={aspectSet?.userReaction}
+                reactions={aspectSet?.reactions}
+                objectId={aspectSetId}
                 numReplies={comments?.length}
                 items={items}
               />
-
+              {userVoted && (<div className="flex-1 text-md">
+                <div
+                  onClick={() => navigate('/comparison/' + aspectSet?.comparison_sets?.id)}
+                  className=" flex justify-between  rounded-md p-2"
+                  style={{ border: '1px solid ' + currentTheme.colors.primary, color: currentTheme.colors.primary }}
+                >
+                  <span className="text-sm" style={{ color: currentTheme.colors.primary }}>See Comparison
+                    </span>
+                    <ChartArea size={20} style={{ color: currentTheme.colors.primary }} />
+                </div>
+              </div>)}
             </div>
-            {userVoted && (<button
-              onClick={() => navigate('/comparison/' + aspectSet?.comparison_sets?.id)}
-              className=" w-auto pull-right rounded-md "
-            >
-              <span className="flex text-sm items-center gap-2" style={{ color: currentTheme.colors.primary }}>See <br></br>Comparison
-                <ChartArea size={16} /></span>
-            </button>)}
           </div>
           <div className="flex bg-gray-200 h-1 w-full"></div>
 
         </div>
-        {userVoted && (<CommentForm
+        {
+        userVoted && 
+        (<CommentForm
           newComment={newComment}
           setNewComment={setNewComment}
           handleSubmitComment={onSubmitComment}
@@ -149,7 +158,9 @@ const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, as
           userPreferences={userPreferences}
           type="Comment"
         />)}
-        {userVoted && (comments.map((comment) => {
+        {
+        userVoted && 
+        (comments.map((comment) => {
           const toggleVisibility = () => {
             setCommentVisibility(prev => ({
               ...prev,

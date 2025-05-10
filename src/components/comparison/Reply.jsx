@@ -27,6 +27,7 @@ const Reply = ({ reply, onLike, onReply, appendText, items }) => {
           text={reply.text}
           userReaction={reply.userReaction}
           reactions={reply.reactions}
+          objectId={reply.id}
           numReplies={reply.replies?.length}
           items={items}
         />
