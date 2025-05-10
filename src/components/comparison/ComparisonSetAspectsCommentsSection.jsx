@@ -118,12 +118,13 @@ const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, as
               replyClicked={() => {
               }}
               profile_image_url={aspectSet?.comparison_sets?.user?.profile_image_url}
-              display_name={aspectSet?.comparison_sets?.user?.display_name}
+              display_name={aspectSet?.comparison_sets?.user?.username}
               created_at={aspectSet?.comparison_sets?.created_at}
-              text={aspectSet?.comparison_sets?.description}
+              text={aspectSet?.description}
               userReaction={aspectSet?.comparison_sets?.userReaction}
               reactions={aspectSet?.comparison_sets?.reactions}
               numReplies={comments?.length}
+              items={items}
             />
           </div>
           {userVoted && (<button
@@ -139,7 +140,7 @@ const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, as
           setNewComment={setNewComment}
           handleSubmitComment={onSubmitComment}
           users={users}
-          itemsssss={items}
+          items={items}
           userPreferences={userPreferences}
           type="Comment"
         />)}

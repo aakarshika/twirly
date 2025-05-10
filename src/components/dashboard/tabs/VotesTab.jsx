@@ -58,23 +58,22 @@ const VoteCard = ({ vote }) => {
   );
 };
 
-const VotesTab = ({  }) => {
+const VotesTab = ({ userId, isPublic }) => {
   const { currentTheme } = useTheme();
-  const { user } = useAuth();
   const [votes, setVotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchVotes = async () => {
-      if (!user) {
+      if (!userId) {
         setError('You must be logged in to view your votes');
         setLoading(false);
         return;
       }
 
       try {
-        const data = await getUserVotes(user.id);
+        const data = await getUserVotes(userId);
         setVotes(data);
       } catch (err) {
         setError('Failed to fetch votes');
@@ -85,7 +84,7 @@ const VotesTab = ({  }) => {
     };
 
     fetchVotes();
-  }, [user]);
+  }, [userId]);
 
   if (loading) {
     return (

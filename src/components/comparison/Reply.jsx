@@ -6,7 +6,7 @@ import useMentionInput from '../../hooks/useMentionInput';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import CommentHeader from './CommentHeader';
-const Reply = ({ reply, onLike, onReply, appendText, products }) => {
+const Reply = ({ reply, onLike, onReply, appendText, items }) => {
 
 
   return (
@@ -22,12 +22,13 @@ const Reply = ({ reply, onLike, onReply, appendText, products }) => {
             console.log('replyClicked');
           }}
           profile_image_url={reply.user?.profile_image_url}
-          display_name={reply.user?.display_name}
+          display_name={reply.user?.username}
           created_at={reply.created_at}
           text={reply.text}
           userReaction={reply.userReaction}
           reactions={reply.reactions}
           numReplies={reply.replies?.length}
+          items={items}
         />
 
       </div>

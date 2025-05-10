@@ -7,9 +7,11 @@ import { randomPastelColor, randomPastelColorHex } from '../../lib/utils';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getProduct, updateProduct } from '../../services/products';
 import { useEffect } from 'react';
+import { useHeader } from '../../contexts/HeaderContext';
 
 const AddProductModal = () => {
   const { currentTheme } = useTheme();
+  const { isHeaderVisible } = useHeader();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams();
@@ -96,7 +98,9 @@ const AddProductModal = () => {
   return (
       <div
         className="w-full max-w-md rounded-lg p-6"
-        style={{ backgroundColor: currentTheme.colors.background }}
+        style={{ backgroundColor: currentTheme.colors.background,
+          marginTop: isHeaderVisible ? '64px' : '0px'
+         }}
         onClick={e => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">

@@ -93,7 +93,8 @@ const ActivityOverview = ({
   recentActivities = [],
   trends = {},
   activityData = [],
-  categoryData = []
+  categoryData = [],
+  isPublic = true
 }) => {
   const { currentTheme } = useTheme();
 
@@ -101,12 +102,12 @@ const ActivityOverview = ({
   return (
     <div className="space-y-6">
       <div>
-        <h2 
+        {!isPublic && (<h2 
           className="text-xl font-semibold mb-4"
           style={{ color: currentTheme.colors.text }}
         >
-          Activity Overview
-        </h2>
+          Your Activity Overview
+        </h2>)}
         <ActivityStats
           votesCount={votesCount}
           reviewsCount={reviewsCount}
@@ -115,7 +116,7 @@ const ActivityOverview = ({
           likesCount={likesCount}
         />
       </div>
-
+{ !isPublic && (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <h3 
@@ -152,11 +153,12 @@ const ActivityOverview = ({
           </div>
         </div>
       </div>
-
+)}
+{ !isPublic && (
       <ActivityVisualizations 
         activityData={activityData}
         categoryData={categoryData}
-      />
+      />)}
     </div>
   );
 };

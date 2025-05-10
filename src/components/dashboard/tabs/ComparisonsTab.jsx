@@ -6,27 +6,26 @@ import { useAuth } from '../../../contexts/AuthContext';
 import ComparisonCard from './ComparisonCard';
 import { useNavigate } from 'react-router-dom';
 
-const ComparisonsTab = () => {
+const ComparisonsTab = ({ userId, isPublic }) => {
   const { currentTheme } = useTheme();
-  const { user } = useAuth();
   const [comparisons, setComparisons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (user) {
+    if (userId) {
       fetchComparisons();
     } else {
       setError('You must be logged in to view your comparisons');
       setLoading(false);
     }
-  }, [user]);
+  }, [userId]);
 
   const fetchComparisons = async () => {
     try {
       setLoading(true);
-      const data = await getUserComparisons(user.id);
+      const data = await getUserComparisons(userId);
       setComparisons(data);
     } catch (err) {
       setError('Failed to fetch comparisons');
@@ -68,9 +67,9 @@ const ComparisonsTab = () => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold" style={{ color: currentTheme.colors.text }}>
-          My Comparisons
+          {isPublic ? 'Comparisons' : 'My Comparisons'}
         </h2>
-        <button
+        {(!isPublic && <button
           onClick={() => navigate('/new-comparison/')}
           className="flex items-center space-x-2 px-4 py-2 rounded-lg font-medium"
           style={{ 
@@ -80,7 +79,7 @@ const ComparisonsTab = () => {
         >
           <Plus size={16} />
           <span>Create Comparison</span>
-        </button>
+        </button>)}
       </div>
 
       {comparisons.length === 0 ? (
@@ -102,6 +101,7 @@ const ComparisonsTab = () => {
               key={comparison.id} 
               comparison={comparison}
               onDelete={handleDelete}
+              isPublic={isPublic}
             />
           ))}
         </div>

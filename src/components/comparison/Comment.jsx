@@ -11,7 +11,7 @@ import CommentForm from './CommentForm';
 import { useComments } from '../../hooks/useComments';
 import CommentHeader from './CommentHeader';
 const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPreferences, handleReply }) => {
-  const [isReplying, setIsReplying] = useState(comment.replies?.length > 0);
+  const [isReplying, setIsReplying] = useState(false);
   const [isReplySectionExpanded, setIsReplySectionExpanded] = useState(comment.replies?.length > 0);
   const [newComment, setNewComment] = useState('');
 
@@ -25,7 +25,6 @@ const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPre
   };
   return (
     <div className="flex">
-    <div className="w-1 h-auto bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{marginTop: '2px', background: 'lightgray'}}></div>
     <div className="p-2 rounded bg-white dark:bg-gray-800 w-full">
       <CommentHeader
           type="Reply"
@@ -36,14 +35,16 @@ const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPre
           setIsReplySectionExpanded(!isReplySectionExpanded);
         }}
         profile_image_url={comment.user?.profile_image_url}
-        display_name={comment.user?.display_name}
+        display_name={comment.user?.username}
         created_at={comment.created_at}
         text={comment.text}
         setIsReplying={setIsReplying}
         userReaction={comment.userReaction}
         reactions={comment.reactions}
         numReplies={comment.replies?.length}
+        items={items}
       />
+      <div style={{ scale: '0.9' }}>
       {isReplying && isReplySectionExpanded && (
             <CommentForm
               newComment={newComment}
@@ -53,19 +54,22 @@ const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPre
                 onSubmitComment();
               }}
               users={users}
-              itemsssss={items}
+              items={items}
               userPreferences={userPreferences}
               type="Reply"
             />
       )}
-
+      </div>
+      <div style={{ scale: '0.9' }}>
       {isReplySectionExpanded && comment.replies?.map(reply => (
         <Reply 
           key={reply.id} 
           reply={reply} 
           onLike={onLike}
+          items={items}
         />
       ))}
+      </div>
     </div>
     </div>
   );

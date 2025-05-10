@@ -33,7 +33,7 @@ const ProductTabs = ({
   return (
     <div className="mb-8">
       <div className="flex space-x-4 border-b border-gray-700">
-        {['reviews', 'mentions', 'comparisons'].map((tab) => (
+        {['mentions', 'comparisons'].map((tab) => (
           <button
             key={tab}
             onClick={() => handleTabClick(tab)}
@@ -50,14 +50,6 @@ const ProductTabs = ({
       </div>
 
       <div className="mt-8">
-        {activeTab === 'reviews' && (
-          <ReviewsTab 
-            reviews={reviews}
-            hasMoreReviews={hasMoreReviews}
-            loadingReviews={loadingReviews}
-            loadMoreReviews={loadMoreReviews}
-          />
-        )}
         {activeTab === 'mentions' && (
           <CommentAppearancesTab 
             comparisonSets={comparisonSets}

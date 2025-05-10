@@ -52,7 +52,6 @@ const ComparisonItemCardAspect = ({
   }, [userVoted]);
 
   const handleItemClick = (e) => {
-    e.stopPropagation();
     navigate(`/item/${item.id}`);
   };
 
@@ -90,7 +89,6 @@ const ComparisonItemCardAspect = ({
         ${showStartAnimation ? 'vote-animation' : ''}
         `}
       style={{ height: newHeight }}
-      onClick={handleItemClick}
     >
       <div
         className="card-container"
@@ -147,6 +145,10 @@ const ComparisonItemCardAspect = ({
               </div>
               {userVoted && (
                 <div className="flex items-center gap-2 content-overlay"
+                  style={{
+                      cursor: 'pointer',
+                      backgroundColor: item.item_color_string,
+                  }}
                   onClick={() => {
                     console.log("clicked")
                     handleItemClick()
@@ -174,7 +176,9 @@ const ComparisonItemCardAspect = ({
             <p className="item-description">{item.description}</p>
 
             {userVoted ? (
-              <div className="flex items-center gap-2" onClick={() => {
+              <div className="flex items-center gap-2" style={{
+                cursor: 'pointer',
+              }} onClick={() => {
                 console.log("clicked")
                 handleItemClick()
               }}

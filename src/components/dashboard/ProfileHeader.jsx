@@ -3,7 +3,8 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getPublicUrl } from '../../lib/utils';
-const ProfileHeader = ({ userData }) => {
+
+const ProfileHeader = ({ userData, isPublic = false }) => {
   const { currentTheme } = useTheme();
   const navigate = useNavigate();
 
@@ -21,9 +22,7 @@ const ProfileHeader = ({ userData }) => {
       style={{ backgroundColor: currentTheme.colors.cardBackground }}
     >
       <div className="flex items-center space-x-4">
-
         <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center">
-          <User size={48} className="text-gray-400" />
           {userData?.profile?.profile_image_url && (
             <img 
               src={getPublicUrl(userData.profile.profile_image_url)} 
@@ -37,7 +36,7 @@ const ProfileHeader = ({ userData }) => {
             className="text-2xl font-bold"
             style={{ color: currentTheme.colors.text }}
           >
-            {userData?.profile?.display_name }
+            {userData?.profile?.username}
           </h1>
           <p
             className="text-sm"
@@ -45,19 +44,29 @@ const ProfileHeader = ({ userData }) => {
           >
             Member since {userData?.profile?.created_at ? formatDate(userData.profile.created_at) : 'Unknown'}
           </p>
+          {userData?.profile?.bio && (
+            <p
+              className="mt-2 text-sm"
+              style={{ color: currentTheme.colors.textSecondary }}
+            >
+              {userData.profile.bio}
+            </p>
+          )}
         </div>
       </div>
 
-      <button
-        onClick={() => navigate('/settings')}
-        className="mt-4 md:mt-0 px-4 py-2 rounded-lg font-medium"
-        style={{
-          backgroundColor: currentTheme.colors.primary,
-          color: currentTheme.colors.buttonText
-        }}
-      >
-        Edit Profile
-      </button>
+      {!isPublic && (
+        <button
+          onClick={() => navigate('/settings')}
+          className="mt-4 md:mt-0 px-4 py-2 rounded-lg font-medium"
+          style={{
+            backgroundColor: currentTheme.colors.primary,
+            color: currentTheme.colors.buttonText
+          }}
+        >
+          Edit Profile
+        </button>
+      )}
     </div>
   );
 };

@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { getUserComments } from '../../../services/comments';
 import { useAuth } from '../../../contexts/AuthContext';
+import { splitAndJoin } from '../../../lib/utils';
+import { renderTextWithMentions } from '../../../lib/commentUtils';
 
 const CommentCard = ({ comment }) => {
   const { currentTheme } = useTheme();
-
+  console.log(comment);
   return (
     <div 
       className="rounded-lg overflow-hidden"
@@ -18,13 +20,13 @@ const CommentCard = ({ comment }) => {
               className="font-semibold text-lg"
               style={{ color: currentTheme.colors.text }}
             >
-              {comment.comparisonSetName}
+              {splitAndJoin(comment.comparison_set_aspects.metric_name)}
             </h3>
             <p 
               className="text-sm"
               style={{ color: currentTheme.colors.textSecondary }}
             >
-              {comment.category}
+              {comment.comparison_set_aspects.comparison_sets.name}
             </p>
           </div>
           <div className="flex items-center space-x-2">
@@ -32,7 +34,7 @@ const CommentCard = ({ comment }) => {
               className="text-sm"
               style={{ color: currentTheme.colors.textSecondary }}
             >
-              {new Date(comment.createdAt).toLocaleDateString()}
+              {new Date(comment.created_at).toLocaleDateString()}
             </span>
             {comment.isEdited && (
               <span 
@@ -45,13 +47,9 @@ const CommentCard = ({ comment }) => {
           </div>
         </div>
         
-        <p 
-          className="mb-4"
-          style={{ color: currentTheme.colors.text }}
-        >
-          {comment.text}
-        </p>
-
+        <p className="text-sm text-gray-700 dark:text-gray-300" style={{ textAlign: 'start' }}>
+        <span dangerouslySetInnerHTML={{ __html: renderTextWithMentions(comment.text, []) }} />
+      </p>
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-1">
@@ -98,24 +96,24 @@ const CommentCard = ({ comment }) => {
   );
 };
 
-const CommentsTab = ({  }) => {
+const CommentsTab = ({ userId, isPublic }) => {
   const { currentTheme } = useTheme();
-  const { user } = useAuth();
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchComments = async () => {
-      if (!user) {
+      if (!userId) {
         setError('You must be logged in to view your comments');
         setLoading(false);
         return;
       }
 
       try {
-        const data = await getUserComments(user.id);
-        setComments(data);
+        const data = await getUserComments(userId);
+        console.log(data);
+        setComments(data.comments);
       } catch (err) {
         setError('Failed to fetch comments');
         console.error(err);
@@ -125,7 +123,7 @@ const CommentsTab = ({  }) => {
     };
 
     fetchComments();
-  }, [user]);
+  }, [userId]);
 
   if (loading) {
     return (

@@ -5,14 +5,12 @@ import { MentionsInput, Mention } from 'react-mentions';
 import { supabase } from '../../lib/supabase';
 import { getPublicUrl } from '../../lib/utils';
 
-const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, itemsssss, userPreferences, type }) => {
+const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, items, userPreferences, type }) => {
   const inputRef = useRef(null);
   const [focus, setFocus] = useState(false);
 
-  console.log('Raw itemsssss:', itemsssss);
   
-  const itemsToDisplay = itemsssss?.map(item => {
-    console.log('Processing item:', item);
+  const itemsToDisplay = items?.map(item => {
     return {
       id: item.items.id,
       display: item.items.name,
@@ -20,7 +18,6 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
     };
   }) || [];
   
-  console.log('Transformed itemsToDisplay:', itemsToDisplay);
 
   const mentionStyles = {
     control: {
@@ -74,18 +71,18 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
 
   return (
     <div className="flex">
-      <div className="w-1 h-auto bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{marginTop: '2px', background: 'lightgray'}}></div>
+      {type == 'Reply' && (<div className="w-1 h-auto bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{marginTop: '2px', background: 'lightgray'}}></div>)}
       <div className="w-full p-2 bg-white">
         <>
           <div className="flex">
             <img
               src={getPublicUrl(userPreferences?.profile_image_url)}
               alt={userPreferences?.display_name || 'User'}
-              className="w-8 h-8 rounded-full mr-2"
+              className="w-6 h-6 rounded-full mr-2"
             />
 
             <div className="flex flex-col w-full">
-              <span className="font-bold text-start text-sm">{userPreferences?.display_name || 'Anonymous'}</span>
+              <span className="font-bold text-start text-md">{userPreferences?.display_name || 'Anonymous'}</span>
               <div className="w-full" style={{border: '1px solid #e2e8f0'}}>
                 <div className="flex flex-col w-full">
                   <MentionsInput

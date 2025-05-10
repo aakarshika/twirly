@@ -8,11 +8,11 @@ import VotesTab from './tabs/VotesTab';
 import CommentsTab from './tabs/CommentsTab';
 import OverviewTab from './tabs/OverviewTab';
 
-const ContentTabs = ({ activeTab, setActiveTab }) => {
+const ContentTabs = ({ activeTab, setActiveTab, userId,username, isPublic = true }) => {
   const { currentTheme } = useTheme();
   const navigate = useNavigate();
   const { tab } = useParams();
-
+  console.log(tab, username, userId, isPublic);
   useEffect(() => {
     if (tab && tab !== activeTab) {
       setActiveTab(tab);
@@ -21,31 +21,35 @@ const ContentTabs = ({ activeTab, setActiveTab }) => {
 
   const tabs = [
     { id: 'overview', label: 'Overview' },
+    { id: 'comments', label: 'Reviews' },
     { id: 'products', label: 'Products' },
     { id: 'comparisons', label: 'Comparisons' },
-    { id: 'comments', label: 'Reviews' },
     { id: 'votes', label: 'Votes' }
   ];
 
   const handleTabClick = (tabId) => {
     setActiveTab(tabId);
-    navigate(`/dashboard/${tabId}`);
+    if (isPublic) {
+      navigate(`/user/${username}/${tabId}`);
+    } else {
+      navigate(`/dashboard/${tabId}`);
+    }
   };
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'products':
-        return <ProductsTab />;
+        return <ProductsTab userId={userId} isPublic={isPublic} />;
       case 'overview':
-        return <OverviewTab />;
+        return <OverviewTab userId={userId} isPublic={isPublic} />;
       case 'comparisons':
-        return <ComparisonsTab />;
+        return <ComparisonsTab userId={userId} isPublic={isPublic} />;
       // case 'reviews':
       //   return <ReviewsTab />;
       case 'votes':
-        return <VotesTab />;
+        return <VotesTab userId={userId} isPublic={isPublic} />;
       case 'comments':
-        return <CommentsTab />;
+        return <CommentsTab userId={userId} isPublic={isPublic} />;
       default:
         return null;
     }

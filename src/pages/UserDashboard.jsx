@@ -82,7 +82,6 @@ const UserDashboard = () => {
       </div>
     );
   }
-
   return (
     <div 
       className="min-h-screen p-4 md:p-8"
@@ -92,14 +91,16 @@ const UserDashboard = () => {
       }}
     >
       <div className="max-w-7xl mx-auto">
-        <ProfileHeader userData={userData} />
+        <ProfileHeader userData={userData} isPublic={false} />
         
 
         <div className="mt-8">
           <ContentTabs 
             activeTab={activeTab} 
             setActiveTab={setActiveTab}
-            userId={userData.id}
+            userId={user.id}
+            username={user.username}
+            isPublic={false}
           />
         </div>
 

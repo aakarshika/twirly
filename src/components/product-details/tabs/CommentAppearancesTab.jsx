@@ -5,6 +5,7 @@ import { supabase } from '../../../lib/supabase';
 import { Heart, MessageSquare } from 'lucide-react';
 import Button from '../../common/Button';
 import { getPublicUrl } from '../../../lib/utils';
+import { renderTextWithMentions } from '../../../lib/commentUtils';
 
 const CommentAppearancesTab = ({ comparisonSets, item }) => {
   const { user } = useAuth();
@@ -14,6 +15,7 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [itemColorCoding, setItemColorCoding] = useState([]);
 
   useEffect(() => {
     if (comparisonSets?.length > 0) {
@@ -36,7 +38,7 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
           *,
           user:user_preferences(*),
           reactions:comparison_set_comment_reactions(reaction_type, user_id),
-          replies:comparison_set_comment_replies(*,user:user_preferences(*)),
+          comparison_set_comment_replies(*,user:user_preferences(*)),
           set:comparison_set_aspects(
             *,comparison_sets(
             id,
@@ -47,7 +49,9 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
           )
           )
         `, { count: 'exact' })
-        .in('set_id', comparisonSets.map(s=> s.aspects.map(a=> a.id)))
+        // .like('comparison_set_comment_replies.text', `%(${item.id})%`)
+        // .like('text', `%(${item.id})%`)
+        .or(`text.ilike.%${item.id}%`,`text.ilike.%${item.id}%`)
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
@@ -57,6 +61,13 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
       console.log("filteredComments",filteredComments);
 
       setComments(prev => page === 1 ? filteredComments : [...prev, ...filteredComments]);
+      const itemCoding = [];
+      data.forEach(c => {
+        c.set.comparison_sets.items.forEach(i => {
+            itemCoding.push(i.item);
+          });
+      });
+      setItemColorCoding(itemCoding);
       setHasMore(count > offset + limit);
     } catch (err) {
       setError(err.message);
@@ -146,12 +157,12 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
             <div className="flex items-center space-x-2">
               <img
                 src={getPublicUrl(comment.user?.profile_image_url || '/default-avatar.png')}
-                alt={comment.user?.display_name || 'User'}
+                alt={comment.user?.username || 'User'}
                 className="w-8 h-8 rounded-full"
               />
               <div>
                 <p className="font-medium text-gray-900 dark:text-gray-100">
-                  {comment.user?.display_name || 'Anonymous'}
+                  {comment.user?.username || 'Anonymous'}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   @ '{comment.set.comparison_sets.name}'
@@ -176,7 +187,9 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
               </div>
             </div>
           </div>
-          <p className="mt-2 text-gray-700 dark:text-gray-300">{comment.text}</p>
+          <p className="mt-2 text-gray-700 dark:text-gray-300" style={{ textAlign: 'start' }}>
+            <span dangerouslySetInnerHTML={{ __html: renderTextWithMentions(comment.text, itemColorCoding) }} />
+          </p>
           {comment.replies?.length > 0 && (
             <div className="mt-4 space-y-2">
               {comment.replies.map((reply) => (
@@ -184,11 +197,11 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
                   <div className="flex items-center space-x-2">
                     <img
                       src={getPublicUrl( reply.user?.profile_image_url || '/default-avatar.png')}
-                      alt={reply.user?.display_name || 'User'}
+                      alt={reply.user?.username || 'User'}
                       className="w-6 h-6 rounded-full"
                     />
                     <p className="font-medium text-gray-900 dark:text-gray-100">
-                      {reply.user?.display_name || 'Anonymous'}
+                      {reply.user?.username || 'Anonymous'}
                     </p>
                   </div>
                   <p className="mt-1 text-gray-700 dark:text-gray-300">{reply.text}</p>

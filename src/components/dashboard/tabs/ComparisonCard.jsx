@@ -76,7 +76,7 @@ const ComparisonItem = ({ item, user, getVoteCount, getCommentCount }) => {
   );
 };
 
-const ComparisonCard = ({ comparison, onDelete }) => {
+const ComparisonCard = ({ comparison, onDelete, isPublic }) => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -116,7 +116,7 @@ const ComparisonCard = ({ comparison, onDelete }) => {
           >
             {comparison?.name || 'Unnamed Comparison'}
           </h3>
-          <div className="flex space-x-2">
+          {(!isPublic && <div className="flex space-x-2">
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -137,7 +137,7 @@ const ComparisonCard = ({ comparison, onDelete }) => {
             >
               <Trash2 size={18} style={{ color: currentTheme.colors.error }} />
             </button>
-          </div>
+          </div>)}
         </div>
 
         <div className="space-y-3">

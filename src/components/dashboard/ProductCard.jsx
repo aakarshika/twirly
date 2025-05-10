@@ -4,7 +4,7 @@ import { Edit2, Trash2, Save, X } from 'lucide-react';
 import { updateProduct, deleteProduct } from '../../services/products';
 import { useNavigate } from 'react-router-dom';
 import ItemCard from '../common-cards/ItemCard';
-const ProductCard = ({ product, onUpdate, onDelete }) => {
+const ProductCard = ({ product, onUpdate, onDelete, isPublic }) => {
   const { currentTheme } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [editedProduct, setEditedProduct] = useState({ ...product });
@@ -51,7 +51,7 @@ const ProductCard = ({ product, onUpdate, onDelete }) => {
     >
       <div className="relative">
         <ItemCard item={product} />
-        <div className="absolute top-2 right-2 flex space-x-2 z-12">
+        {(!isPublic && <div className="absolute top-2 right-2 flex space-x-2 z-12">
           <button
             onClick={() => {
               console.log('editing product', product.id);
@@ -69,7 +69,7 @@ const ProductCard = ({ product, onUpdate, onDelete }) => {
           >
             <Trash2 size={16} style={{ color: currentTheme.colors.buttonText }} />
           </button>
-        </div>
+        </div>)}
       </div>
       
     </div>

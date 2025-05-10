@@ -17,7 +17,7 @@ const ProductDetails = () => {
   const [comparisonSets, setComparisonSets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('reviews');
+  const [activeTab, setActiveTab] = useState('mentions');
   const [showReviewForm, setShowReviewForm] = useState(false);
   const { isHeaderVisible } = useHeader();
 

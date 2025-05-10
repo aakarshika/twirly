@@ -4,16 +4,15 @@ import { useAuth } from '../../contexts/AuthContext';
 import ProductCard from './ProductCard';
 import { getUserProducts } from '../../services/products';
 
-const ProductList = ({ products, setProducts }) => {
+const ProductList = ({ products, setProducts, userId, isPublic }) => {
   const { currentTheme } = useTheme();
-  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data = await getUserProducts(user.id);
+        const data = await getUserProducts(userId);
         setProducts(data);
       } catch (err) {
         setError('Failed to fetch products');
@@ -24,7 +23,7 @@ const ProductList = ({ products, setProducts }) => {
     };
 
     fetchProducts();
-  }, [setProducts, user]);
+  }, [setProducts, userId]);
 
   const handleProductUpdate = (updatedProduct) => {
     setProducts(products.map(product => 
@@ -91,6 +90,7 @@ const ProductList = ({ products, setProducts }) => {
           product={product}
           onUpdate={handleProductUpdate}
           onDelete={handleProductDelete}
+          isPublic={isPublic}
         />
       ))}
     </div>

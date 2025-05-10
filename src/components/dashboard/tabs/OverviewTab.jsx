@@ -5,8 +5,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { getUserProfile } from '../../../services/users';
 import { getWeeklyActivity, getCategoryDistribution, getRecentActivities, getActivityTrends } from '../../../services/activity';
 
-const OverviewTab = () => {
-  const { user } = useAuth();
+const OverviewTab = ({ userId, isPublic }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userData, setUserData] = useState({});
@@ -18,7 +17,7 @@ const OverviewTab = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!user) return;
+      if (!userId) return;
 
       try {
         setLoading(true);
@@ -31,11 +30,11 @@ const OverviewTab = () => {
           recentActivitiesData,
           activityTrends
         ] = await Promise.all([
-          getUserProfile(user.id),
-          getWeeklyActivity(user.id),
-          getCategoryDistribution(user.id),
-          getRecentActivities(user.id),
-          getActivityTrends(user.id)
+          getUserProfile(userId),
+          getWeeklyActivity(userId),
+          getCategoryDistribution(userId),
+          getRecentActivities(userId),
+          getActivityTrends(userId)
         ]);
 
         setUserData(userProfile);
@@ -52,7 +51,7 @@ const OverviewTab = () => {
     };
 
     fetchData();
-  }, [user]);
+  }, [userId]);
 
   return (
     
@@ -67,6 +66,7 @@ const OverviewTab = () => {
       trends={trends}
       activityData={activityData}
       categoryData={categoryData}
+      isPublic={isPublic}
     />
   </div>
   );

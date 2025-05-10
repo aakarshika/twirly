@@ -3,7 +3,7 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import ProductList from '../ProductList';
 import { useNavigate } from 'react-router-dom';
 
-const ProductsTab = () => {
+const ProductsTab = ({ userId, isPublic }) => {
   const { currentTheme } = useTheme();
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
@@ -18,9 +18,9 @@ const ProductsTab = () => {
           className="text-xl font-semibold"
           style={{ color: currentTheme.colors.text }}
         >
-          Your Products
+          {isPublic ? 'Products' : 'Your Products'}
         </h2>
-        <button
+        {(!isPublic && <button
           onClick={() => {
             navigate('/dashboard/products/add');
           }}
@@ -31,10 +31,10 @@ const ProductsTab = () => {
           }}
         >
           Add Product
-        </button>
+        </button>)}
       </div>
       
-      <ProductList products={products} setProducts={setProducts} />
+      <ProductList products={products} setProducts={setProducts} userId={userId} isPublic={isPublic} />
       
     </div>
   );

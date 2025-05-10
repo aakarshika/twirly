@@ -23,6 +23,7 @@ import CreateComparison from '../components/dashboard/tabs/CreateComparison';
 import SearchPage from './SearchPage';
 import AddProductModal from '../components/dashboard/AddProductModal';
 import { useSwipeable } from 'react-swipeable';
+import UserProfile from './UserProfile';
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
@@ -154,6 +155,8 @@ const MainRoutingPage = () => {
                 <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>}/>
                 <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>}/>
                 <Route path="/dashboard/:tab" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>}/>
+                <Route path="/user/:username" element={<UserProfile />} />
+                <Route path="/user/:username/:tab" element={<UserProfile />} />
 
                 {/* Onboarding Route */}
                 <Route
