@@ -40,3 +40,24 @@ CREATE POLICY "Users can delete their own items"
 ON items
 FOR DELETE
 USING (auth.uid() = user_id);
+
+-- Enable Row Level Security for comparison_set_aspects table
+ALTER TABLE comparison_set_aspects ENABLE ROW LEVEL SECURITY;
+
+-- Policy to allow users to view aspects
+CREATE POLICY "Anyone can view comparison set aspects"
+ON comparison_set_aspects
+FOR SELECT
+USING (true);
+
+-- Policy to allow users to manage their own aspects
+CREATE POLICY "Users can manage their own aspects"
+ON comparison_set_aspects
+FOR ALL
+USING (
+  EXISTS (
+    SELECT 1 FROM comparison_sets
+    WHERE comparison_sets.id = comparison_set_aspects.set_id
+    AND comparison_sets.user_id = auth.uid()
+  )
+);

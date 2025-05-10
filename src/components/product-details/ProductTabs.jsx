@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useNavigate, useParams } from 'react-router-dom';
 import ReviewsTab from './tabs/ReviewsTab';
 import AppearancesTab from './tabs/AppearancesTab';
 import CommentAppearancesTab from './tabs/CommentAppearancesTab';
@@ -15,6 +16,19 @@ const ProductTabs = ({
   loadMoreReviews
 }) => {
   const { currentTheme } = useTheme();
+  const navigate = useNavigate();
+  const { itemId, tab } = useParams();
+
+  useEffect(() => {
+    if (tab && tab !== activeTab) {
+      setActiveTab(tab);
+    }
+  }, [tab, activeTab, setActiveTab]);
+
+  const handleTabClick = (tabId) => {
+    setActiveTab(tabId);
+    navigate(`/item/${itemId}/${tabId}`);
+  };
 
   return (
     <div className="mb-8">
@@ -22,7 +36,7 @@ const ProductTabs = ({
         {['reviews', 'mentions', 'comparisons'].map((tab) => (
           <button
             key={tab}
-            onClick={() => setActiveTab(tab)}
+            onClick={() => handleTabClick(tab)}
             className={`px-4 py-2 font-medium ${
               activeTab === tab
                 ? 'border-b-2 border-blue-500 text-blue-500'
@@ -56,7 +70,6 @@ const ProductTabs = ({
             item={item}
           />
         )}
-
       </div>
     </div>
   );

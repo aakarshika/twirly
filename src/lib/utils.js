@@ -124,6 +124,7 @@ export function getPublicUrl(filePath) {
 }
 // Regular expression to match mentions in the format @[Display Name](user_id)
 const MENTION_REGEX = /@\[([^\]]+)\]\(([^)]+)\)/g;
+const PRODUCT_REGEX = /#\[([^\]]+)\]\(([^)]+)\)/g;
 
 export const parseMentions = (text) => {
   if (!text) return [];
@@ -136,11 +137,54 @@ export const parseMentions = (text) => {
       display: match[1],
       id: match[2],
       index: match.index,
-      length: match[0].length
+      length: match[0].length,
+      type: 'user'
     });
   }
   
-  return mentions;
+  while ((match = PRODUCT_REGEX.exec(text)) !== null) {
+    mentions.push({
+      display: match[1],
+      id: match[2],
+      index: match.index,
+      length: match[0].length,
+      type: 'product'
+    });
+  }
+  
+  return mentions.sort((a, b) => a.index - b.index);
+};
+
+export const renderTextWithMentions = (text) => {
+  if (!text) return null;
+  
+  const mentions = parseMentions(text);
+  if (mentions.length === 0) return text;
+  
+  const parts = [];
+  let lastIndex = 0;
+  
+  mentions.forEach((mention) => {
+    // Add text before the mention
+    if (mention.index > lastIndex) {
+      parts.push(text.slice(lastIndex, mention.index));
+    }
+    
+    // Add the mention with appropriate styling
+    const mentionElement = mention.type === 'user' 
+      ? `<span class="bg-amber-100 text-amber-800 px-1 rounded">@${mention.display}</span>`
+      : `<span class="bg-blue-100 text-blue-800 px-1 rounded">#${mention.display}</span>`;
+    
+    parts.push(mentionElement);
+    lastIndex = mention.index + mention.length;
+  });
+  
+  // Add any remaining text
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  
+  return parts.join('');
 };
 
 //function to split text by _ and join with a space with first letter uppercase

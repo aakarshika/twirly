@@ -3,7 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useComments } from '../../hooks/useComments';
 import CommentForm from './CommentForm';
 import { useTheme } from '../../contexts/ThemeContext';
-import { Heart, MessageSquare } from 'lucide-react';
+import { ArrowRight, ChartArea, Heart, MessageSquare } from 'lucide-react';
 import Button from '../common/Button';
 import { getPublicUrl } from '../../lib/utils';
 import Comment from './Comment';
@@ -11,7 +11,8 @@ import { supabase } from '../../lib/supabase';
 import { useEffect } from 'react';
 import LoadingOrError from '../common/LoadingOrError';
 import CommentHeader from './CommentHeader';
-const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet }) => {
+import { useNavigate } from 'react-router-dom';
+const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, aspectSet }) => {
   const { user } = useAuth();
   const {
     comments,
@@ -33,7 +34,7 @@ const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet }) 
   const [newComment, setNewComment] = useState('');
   const [userPreferences, setUserPreferences] = useState(null);
   const [users, setUsers] = useState([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchProfileData = async () => {
       if (!user) return;
@@ -108,29 +109,41 @@ const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet }) 
   return (
     <div className="space-y-2" >
       <div className="text-center w-full" >
-        <CommentHeader
-          type="Comment"
-          comment={aspectSet}
-          onLike={handleLikeComment}
-          replyClicked={() => {
-          }}
-          profile_image_url={aspectSet?.comparison_sets?.user?.profile_image_url}
-          display_name={aspectSet?.comparison_sets?.user?.display_name}
-          created_at={aspectSet?.comparison_sets?.created_at}
-          text={aspectSet?.comparison_sets?.description}
-          userReaction={aspectSet?.comparison_sets?.userReaction}
-          reactions={aspectSet?.comparison_sets?.reactions}
-          numReplies={comments?.length}
-        />
-        <CommentForm
+        <div className="flex  w-full">
+          <div className="flex-1 text-md">
+            <CommentHeader
+              type="Comment"
+              comment={aspectSet}
+              onLike={handleLikeComment}
+              replyClicked={() => {
+              }}
+              profile_image_url={aspectSet?.comparison_sets?.user?.profile_image_url}
+              display_name={aspectSet?.comparison_sets?.user?.display_name}
+              created_at={aspectSet?.comparison_sets?.created_at}
+              text={aspectSet?.comparison_sets?.description}
+              userReaction={aspectSet?.comparison_sets?.userReaction}
+              reactions={aspectSet?.comparison_sets?.reactions}
+              numReplies={comments?.length}
+            />
+          </div>
+          {userVoted && (<button
+            onClick={() => navigate('/comparison/' + aspectSet?.comparison_sets?.id)}
+            className=" w-auto pull-right rounded-md "
+          >
+            <span className="flex text-sm items-center gap-2" style={{ color: currentTheme.colors.primary }}>See <br></br>Comparison
+              <ChartArea size={16} /></span>
+          </button>)}
+        </div>
+        {userVoted && (<CommentForm
           newComment={newComment}
           setNewComment={setNewComment}
           handleSubmitComment={onSubmitComment}
           users={users}
+          itemsssss={items}
           userPreferences={userPreferences}
           type="Comment"
-        />
-        {comments.map((comment) => {
+        />)}
+        {userVoted && (comments.map((comment) => {
           const toggleVisibility = () => {
             setCommentVisibility(prev => ({
               ...prev,
@@ -138,20 +151,21 @@ const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet }) 
             }));
           };
           return (
-          <div key={comment.id}>
+            <div key={comment.id}>
 
-          <Comment
-            comment={comment}
-            onLike={handleLikeComment}
-            onToggleVisibility={toggleVisibility}
-            isVisible={commentVisibility[comment.id]}
-            products={items}
-            users={users}
-            handleReply={handleReply}
-            userPreferences={userPreferences}
-          />
-          </div>
-        )})}
+              <Comment
+                comment={comment}
+                onLike={handleLikeComment}
+                onToggleVisibility={toggleVisibility}
+                isVisible={commentVisibility[comment.id]}
+                items={items}
+                users={users}
+                handleReply={handleReply}
+                userPreferences={userPreferences}
+              />
+            </div>
+          )
+        }))}
 
         {hasMore && (
           <div className="text-start ml-4 mb-4" style={{ backgroundColor: 'white', borderRadius: '4px' }}>

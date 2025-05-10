@@ -6,7 +6,7 @@ import { useSwipeable } from 'react-swipeable';
 import PollGrid from '../components/comparison/PollGrid';
 import BarChart from '../components/results/visualizations/BarChart';
 import Button from '../components/common/Button';
-import { ArrowRight, MessageSquare, Star } from 'lucide-react';
+import { ArrowRight, MessageSquare, Star, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import ComparisonGridSkeleton from '../components/skeletons/ComparisonGridSkeleton';
@@ -73,6 +73,14 @@ const PollScreenAspect = () => {
 
   const [height, setHeight] = useState('100vh');
 
+  const handleNextNavigation = () => {
+    setShowEndAnimation(true);
+    setTimeout(() => {
+      setShowEndAnimation(false);
+      navigate('/comparison-aspect/' + (parseInt(id) + 1).toString());
+    }, 500);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background }}>
@@ -109,12 +117,29 @@ const PollScreenAspect = () => {
         position: 'relative',
         paddingBottom: '80px'
       }}>
-      <div className="h-full flex flex-col max-w-4xl mx-auto" {...handlers}>
-        <div className="flex-1">
 
+      <div className="h-full items-end">
+        <button
+          onClick={handleNextNavigation}
+          className="absolute right-1 z-10 p-2 rounded-full shadow-lg "
+          style={{ backgroundColor: currentTheme.colors.primary, marginTop: '90%' }}
+        >
+          <ChevronRight size={24} style={{ color: 'white' }} />
+        </button>
+      </div>
+      <div className="h-full flex flex-col max-w-4xl mx-auto relative" {...handlers}>
+        <div className="">
           <div className="space-y-4 m-4 " style={{ color: currentTheme.colors.primary }}>
+
+
             <div className={`shadow-md rounded-md p-4 mobile-friendly-margin-bottom ${showStartAnimation ? 'vote-animation' : showEndAnimation ? 'vote-animation-reverse' : ''}`} style={{ backgroundColor: currentTheme.colors.card }}>
+
               <div style={{ color: currentTheme.colors.text }}>
+                <div className="flex items-center justify-center m-4">
+                  <span style={{ color: currentTheme.colors.primary }} className="text-md font-bold text-center">
+                    {currentSet?.name || 'Untitled Comparison'}
+                  </span>
+                </div>
                 <div className="" >
                   <div className="rounded-full gap-2 m-2 px-4 py-1 w-full" style={{ backgroundColor: currentTheme.colors.primary }}>
                     {/* <span className="text-sm" style={{ color: currentTheme.colors.card }}>Vote for the most </span> */}
@@ -123,68 +148,47 @@ const PollScreenAspect = () => {
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center justify-center m-4">
-                  <span style={{ color: currentTheme.colors.primary }} className="text-md font-bold text-center">
-                    {currentSet?.name || 'Untitled Comparison'}
-                  </span>
-                </div>
 
               </div>
-              <div className={`grid ${items.length === 1 ? 'grid-cols-1' :
+              <div>
+                <div className={`grid ${items.length === 1 ? 'grid-cols-1' :
                   items.length === 2 ? 'grid-cols-2' :
                     items.length === 3 ? 'grid-cols-3' :
                       'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
-                }`}
-                style={{
-                  gap: '1vh'
-                }}
-              >
-                {items.map((item, i) => (
-                  <div key={item.id}>
-                    <ComparisonItemCardAspect
-                      key={item.id}
-                      item={item.items}
-                      index={i}
-                      height={height}
-                      totalVotes={totalVotes}
-                      itemReviews={processedItemReviews}
-                      userVoted={userVoted}
-                      votedItemId={votedItemId}
-                      handleVote={handleVote}
-                      handleRevertVote={handleRevertVote}
-                    />
-                  </div>
-                ))}
+                  }`}
+                  style={{
+                    gap: '1vh'
+                  }}
+                >
+                  {items.map((item, i) => (
+                    <div key={item.id}>
+                      <ComparisonItemCardAspect
+                        key={item.id}
+                        item={item.items}
+                        index={i}
+                        height={height}
+                        totalVotes={totalVotes}
+                        itemReviews={processedItemReviews}
+                        userVoted={userVoted}
+                        votedItemId={votedItemId}
+                        handleVote={handleVote}
+                        handleRevertVote={handleRevertVote}
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-
-            <button
-              onClick={() => navigate('/comparison/' + currentAspectSet.set_id)}
-              className=" w-full pull-right rounded-md "
-            >
-              <span className="flex items-center gap-2">Go To Comparison Page
-                <ArrowRight size={16} /></span>
-            </button>
           </div>
-          {userVoted && (
+          {(
             <div className="text-center m-1" style={{ color: currentTheme.colors.text, backgroundColor: 'white', borderRadius: '4px' }}>
               <div className="w-full p-4">
-                <ComparisonSetAspectsCommentsSection aspectSetId={id} items={items} aspectSet={currentAspectSet} />
+                <ComparisonSetAspectsCommentsSection userVoted={userVoted} aspectSetId={id} items={items} aspectSet={currentAspectSet} />
               </div>
               <span className="text-2xl">. . .</span>
             </div>
           )}
         </div>
-      </div>
-      {/* Navigation Buttons */}
-      <div className="flex flex-row fixed bottom-0 right-0 justify-between text-center z-10 mobile-friendly-margin-bottom" style={{ backgroundColor: 'transparent' }}>
-        {/* <button
-                onClick={() => navigate('/comparison-aspect/' + (parseInt(id) - 1).toString())}
-                className="px-4 py-2 bg-gray-400 text-white rounded-full font-semibold hover:bg-amber-300 transition-colors"
-              >
-                Prev
-              </button> */}
-        {/* Next button removed in favor of swipe */}
       </div>
     </div>
   );

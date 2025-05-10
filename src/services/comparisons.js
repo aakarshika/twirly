@@ -113,30 +113,6 @@ export const getUserComparisons = async (userId) => {
   return data;
 };
 
-/**
- * Add items to a comparison set
- * @param {number} setId - The ID of the comparison set
- * @param {Array<number>} itemIds - Array of item IDs to add
- * @returns {Promise<void>}
- */
-export const addItemsToComparisonSet = async (setId, itemIds) => {
-  try {
-    const items = itemIds.map(itemId => ({
-      comparison_set_id: setId,
-      item_id: itemId,
-      created_at: new Date().toISOString()
-    }));
-
-    const { error } = await supabase
-      .from('comparison_set_items')
-      .insert(items);
-
-    if (error) throw error;
-  } catch (error) {
-    console.error('Error adding items to comparison set:', error);
-    throw error;
-  }
-};
 
 /**
  * Delete a comparison set

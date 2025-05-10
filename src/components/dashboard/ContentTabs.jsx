@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useNavigate, useParams } from 'react-router-dom';
 import ProductsTab from './tabs/ProductsTab';
 import ComparisonsTab from './tabs/ComparisonsTab';
 import ReviewsTab from './tabs/ReviewsTab';
@@ -7,9 +8,16 @@ import VotesTab from './tabs/VotesTab';
 import CommentsTab from './tabs/CommentsTab';
 import OverviewTab from './tabs/OverviewTab';
 
-
 const ContentTabs = ({ activeTab, setActiveTab }) => {
   const { currentTheme } = useTheme();
+  const navigate = useNavigate();
+  const { tab } = useParams();
+
+  useEffect(() => {
+    if (tab && tab !== activeTab) {
+      setActiveTab(tab);
+    }
+  }, [tab, activeTab, setActiveTab]);
 
   const tabs = [
     { id: 'overview', label: 'Overview' },
@@ -18,6 +26,11 @@ const ContentTabs = ({ activeTab, setActiveTab }) => {
     { id: 'comments', label: 'Reviews' },
     { id: 'votes', label: 'Votes' }
   ];
+
+  const handleTabClick = (tabId) => {
+    setActiveTab(tabId);
+    navigate(`/dashboard/${tabId}`);
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -47,7 +60,7 @@ const ContentTabs = ({ activeTab, setActiveTab }) => {
         {tabs.map(tab => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => handleTabClick(tab.id)}
             className={`px-4 py-2 font-medium whitespace-nowrap ${
               activeTab === tab.id
                 ? 'border-b-2'

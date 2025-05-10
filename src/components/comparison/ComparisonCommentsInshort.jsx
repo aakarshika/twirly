@@ -123,7 +123,7 @@ const ComparisonCommentsInshort = ({ aspectSetId, items, aspectSet }) => {
             onLike={handleLikeComment}
             onToggleVisibility={toggleVisibility}
             isVisible={commentVisibility[comment.id]}
-            products={items}
+            items={items}
             users={users}
             handleReply={handleReply}
             userPreferences={userPreferences}

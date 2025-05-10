@@ -33,5 +33,5 @@
 }
 
 .mobile-menu {
-    padding-top: calc(var(--safe-area-inset-top));
+    padding-top: 1px;
 }

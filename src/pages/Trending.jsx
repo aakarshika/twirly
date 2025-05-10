@@ -82,7 +82,7 @@ const Trending = () => {
 
   return (
     <div 
-      className="min-h-screen py-8"
+      className="min-h-screen py-2"
       style={{ 
         position: 'relative',
         top: isHeaderVisible ? '64px' : '0px',

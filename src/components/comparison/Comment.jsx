@@ -10,7 +10,7 @@ import { supabase } from '../../lib/supabase';
 import CommentForm from './CommentForm';
 import { useComments } from '../../hooks/useComments';
 import CommentHeader from './CommentHeader';
-const Comment = ({ comment, onLike, onReply,  isVisible,   products, users, userPreferences, handleReply }) => {
+const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPreferences, handleReply }) => {
   const [isReplying, setIsReplying] = useState(comment.replies?.length > 0);
   const [isReplySectionExpanded, setIsReplySectionExpanded] = useState(comment.replies?.length > 0);
   const [newComment, setNewComment] = useState('');
@@ -23,7 +23,6 @@ const Comment = ({ comment, onLike, onReply,  isVisible,   products, users, user
     setIsReplying(false);
     setIsReplySectionExpanded(true);
   };
-  
   return (
     <div className="flex">
     <div className="w-1 h-auto bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{marginTop: '2px', background: 'lightgray'}}></div>
@@ -54,6 +53,7 @@ const Comment = ({ comment, onLike, onReply,  isVisible,   products, users, user
                 onSubmitComment();
               }}
               users={users}
+              itemsssss={items}
               userPreferences={userPreferences}
               type="Reply"
             />

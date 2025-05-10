@@ -97,9 +97,10 @@ const SwipeBackWrapper = ({ children }) => {
     preventDefaultTouchmoveEvent: true,
     trackMouse: true
   });
+  const { currentTheme } = useTheme();
 
   return (
-    <div {...handlers} className="h-full w-full">
+    <div {...handlers} className="h-full w-full" style={{ backgroundColor: currentTheme.colors.background }}>
       {children}
     </div>
   );
@@ -133,92 +134,26 @@ const MainRoutingPage = () => {
             <main 
               className="flex-grow"
               style={{ 
-                backgroundColor: 'white',
+                backgroundColor: currentTheme.colors.background,
                 paddingTop: 'calc( var(--safe-area-inset-top))'
               }}
             >
               <Routes>
-                {/* Public Routes */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-
-                {/* Search Route */}
-                <Route
-                  path="/search"
-                  element={
-                    <ProtectedRoute>
-                      <SearchPage />
-                    </ProtectedRoute>
-                  }
-                />
-
+                
                 {/* Protected Routes */}
-                <Route
-                  path="/"
-                  element={
-                    <ProtectedRoute>
-                      <Trending />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/comparison-aspect/:id"
-                  element={
-                    <ProtectedRoute>
-                      <PollScreenAspect />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/comparison/:id"
-                  element={
-                    <ProtectedRoute>
-                      <PollScreen />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/new-comparison"
-                  element={
-                    <ProtectedRoute>
-                      <CreateComparison />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/edit-comparison/:id"
-                  element={
-                    <ProtectedRoute>
-                      <CreateComparison />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/item/:itemId"
-                  element={
-                    <ProtectedRoute>
-                      <ProductDetails />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/dashboard/products/add"
-                  element={
-                    <ProtectedRoute>
-                      <AddProductModal />
-                    </ProtectedRoute>
-                  }
-                />
-
-                <Route
-                  path="/dashboard/products/edit/:id"
-                  element={
-                    <ProtectedRoute>
-                      <AddProductModal />
-                    </ProtectedRoute>
-                  }
-                />
+                <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>}/>
+                <Route path="/" element={<ProtectedRoute><Trending /></ProtectedRoute>}/>
+                <Route path="/comparison-aspect/:id" element={<ProtectedRoute><PollScreenAspect /></ProtectedRoute>}/>
+                <Route path="/comparison/:id" element={<ProtectedRoute><PollScreen /></ProtectedRoute>}/>
+                <Route path="/new-comparison" element={<ProtectedRoute><CreateComparison /></ProtectedRoute>}/>
+                <Route path="/edit-comparison/:id" element={<ProtectedRoute><CreateComparison /></ProtectedRoute>}/>
+                <Route path="/item/:itemId" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>}/>
+                <Route path="/item/:itemId/:tab" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>}/>
+                <Route path="/dashboard/products/add" element={<ProtectedRoute><AddProductModal /></ProtectedRoute>}/>
+                <Route path="/dashboard/products/edit/:id" element={<ProtectedRoute><AddProductModal /></ProtectedRoute>}/>
+                <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>}/>
+                <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>}/>
+                <Route path="/dashboard/:tab" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>}/>
 
                 {/* Onboarding Route */}
                 <Route
@@ -230,23 +165,11 @@ const MainRoutingPage = () => {
                   }
                 />
 
-                {/* Protected Routes */}
-                <Route
-                  path="/settings"
-                  element={
-                    <ProtectedRoute>
-                      <Settings />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <UserDashboard />
-                    </ProtectedRoute>
-                  }
-                />
+                {/* Public Routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+
               </Routes>
             </main>
           </SwipeBackWrapper>

@@ -6,6 +6,7 @@ import { searchProducts } from '../../../services/products';
 import { createComparison, getUnpublishedComparison, updateComparison, getComparison } from '../../../services/comparisons';
 import { X, Check, Search, User, Trash2, Plus } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useHeader } from '../../../contexts/HeaderContext';
 
 const CreateComparison = () => {
   const { currentTheme } = useTheme();
@@ -29,6 +30,8 @@ const CreateComparison = () => {
   const [newAspect, setNewAspect] = useState({ metric_name: '', description: '', weight: 1 });
   const [existingComparisonId, setExistingComparisonId] = useState(null);
   const hasLoadedData = useRef(false);
+  
+  const { isHeaderVisible } = useHeader();
 
   useEffect(() => {
     const loadComparisonData = async () => {
@@ -205,12 +208,12 @@ const CreateComparison = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
+    <div className="max-w-4xl mx-auto p-4" style={{ backgroundColor: currentTheme.colors.background, paddingTop: isHeaderVisible ? '64px' : '0px' }}>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
-          Create New Comparison
+          Describe your set
         </h1>
-        <div className="space-x-2">
+        <div className="flex flex-row space-x-2">
           <button
             onClick={handleSaveDraft}
             className="px-4 py-2 font-medium border"
@@ -261,7 +264,7 @@ const CreateComparison = () => {
           />
         </div>
 
-        <div>
+        {/* <div>
           <textarea
             value={draft.description}
             onChange={(e) => updateDraft({ description: e.target.value })}
@@ -274,7 +277,7 @@ const CreateComparison = () => {
             placeholder="Description"
             rows={3}
           />
-        </div>
+        </div> */}
 
         <div>
           <select
@@ -287,7 +290,7 @@ const CreateComparison = () => {
               borderBottom: `1px solid ${currentTheme.colors.border}`
             }}
           >
-            <option value="">Select a category</option>
+            <option value="">+ Category Tags</option>
             {/* Add categories here */}
           </select>
         </div>
@@ -304,7 +307,7 @@ const CreateComparison = () => {
                 color: currentTheme.colors.text,
                 borderBottom: `1px solid ${currentTheme.colors.border}`
               }}
-              placeholder="Search products..."
+              placeholder="Search items..."
             />
             <Search className="absolute left-3 top-3.5" size={20} style={{ color: currentTheme.colors.textSecondary }} />
           </div>
@@ -314,14 +317,20 @@ const CreateComparison = () => {
                 <div
                   key={product.id}
                   className="p-3 hover:bg-opacity-5 cursor-pointer flex justify-between items-center"
-                  style={{ 
+                  style={{
                     backgroundColor: currentTheme.colors.primary + '10',
                     color: currentTheme.colors.text,
                     borderBottom: `1px solid ${currentTheme.colors.border}`
                   }}
                   onClick={() => addItem(product)}
                 >
-                  <span>{product.name}</span>
+                  {product.image_url && product.image_url != '' && (<img src={product.image_url} className="w-10 h-10 rounded" onError={(e) => {
+                    e.target.src = '/images/default-product-image.png';
+                  }} />)}
+                  {!product.image_url && product.image_url != '' && (<img src={'/images/default-product-image.png'}  className="w-10 h-10 rounded" />)}
+                  <div className="flex w-full ml-2 flex-col align-left" style={{ color: currentTheme.colors.text }}>
+                    <p className="text-sm">{product.name}</p>
+                    <p className="text-xs">{product.description}</p></div>
                   <Plus size={20} />
                 </div>
               ))}

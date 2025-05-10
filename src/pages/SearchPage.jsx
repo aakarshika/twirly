@@ -170,7 +170,7 @@ const SearchPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8" style={{
+    <div className="container mx-auto px-4" style={{
       position: 'relative',
       top: isHeaderVisible ? '64px' : '0px',
     }}>
