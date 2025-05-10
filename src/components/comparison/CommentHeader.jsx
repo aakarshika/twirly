@@ -19,8 +19,8 @@ const CommentHeader = ({ onLike, isReplySectionExpanded, replyClicked,
   const navigate = useNavigate();
   const itemColorCoding = items?.map(item => {
     return {
-      id: item.items.id,
-      item_color_string: item.items.item_color_string
+      id: item.items ? item.items.id : item.id,
+      item_color_string: item.items ? item.items.item_color_string : item.item_color_string
     }
   }) || [];
   return (

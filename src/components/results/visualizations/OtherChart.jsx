@@ -13,7 +13,6 @@ import {
   ArcElement
 } from 'chart.js';
 import { Bar, Bubble, Line, Pie, PolarArea, Radar } from 'react-chartjs-2';
-import { COMPARISON_COLOR_SET_2 } from '../../../lib/constants';
 
 ChartJS.register(
   RadialLinearScale,
@@ -28,25 +27,26 @@ ChartJS.register(
   Legend
 );
 
-const OtherChart = ({ data }) => {
+const OtherChart = ({ data, selectedChart }) => {
   if (!data || !data[0]) return null;
 
   const { aspects, items } = data[0];
   console.log('Aspects:', aspects);
   console.log('Items:', items);
+  console.log('aaaaaaa',items[0].item_color_string.substring(0, items[0].item_color_string.length - 1));
   
   const chartDataRadar = {
     labels: aspects.map(aspect => (aspect.name).split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')),
     datasets: items.map((item, index) => ({
       label: item.name,
       data: aspects.map(aspect => item.metrics[aspect.name]),
-      backgroundColor: COMPARISON_COLOR_SET_2[index] +`, 0.2)`,
-      borderColor: COMPARISON_COLOR_SET_2[index] +`, 1)`,
+      backgroundColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 0.2)`,
+      borderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
       borderWidth: 2,
-      pointBackgroundColor: COMPARISON_COLOR_SET_2[index] +`, 1)`,
+      pointBackgroundColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
       pointBorderColor: '#fff',
       pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: COMPARISON_COLOR_SET_2[index] +`, 1)`
+      pointHoverBorderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`
     }))
   };
 
@@ -55,7 +55,7 @@ const OtherChart = ({ data }) => {
     datasets: items.map((item, index) => ({
       label: item.name,
       data: aspects.map(aspect => item.metrics[aspect.name]),
-      borderColor: COMPARISON_COLOR_SET_2[index] +`, 1)`,
+      borderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
       borderWidth: 2,
       fill: false,
       tension: 0.4
@@ -67,8 +67,8 @@ const OtherChart = ({ data }) => {
     datasets: items.map((item, index) => ({
       label: item.name,
       data: aspects.map(aspect => item.metrics[aspect.name]),
-      backgroundColor: COMPARISON_COLOR_SET_2[index] +`, 0.2)`,
-      borderColor: COMPARISON_COLOR_SET_2[index] +`, 1)`,
+      backgroundColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 0.2)`,
+      borderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
       borderWidth: 2,
       fill: false,
       tension: 0.4
@@ -80,8 +80,8 @@ const OtherChart = ({ data }) => {
     datasets: items.map((item, index) => ({
       label: item.name,
       data: aspects.map(aspect => item.metrics[aspect.name]),
-      backgroundColor: COMPARISON_COLOR_SET_2[index] +`, 0.2)`,
-      borderColor: COMPARISON_COLOR_SET_2[index] +`, 1)`,
+      backgroundColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 0.2)`,
+      borderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
       borderWidth: 2,
       fill: false,
       tension: 0.4
@@ -91,15 +91,11 @@ const OtherChart = ({ data }) => {
   const chartDataBubble = {
     labels: aspects.map(aspect => (aspect.name).split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')),
     datasets: items.map((item, index) => {
-      console.log('Metrics for item:', item.name, item.metrics);
 
       const xValues = aspects.map(aspect => item.metrics[aspect.name]?.x || 0);
       const yValues = aspects.map(aspect => item.metrics[aspect.name]?.y || 0);
       const rValues = aspects.map(aspect => item.metrics[aspect.name]?.r || 0);
 
-      console.log('xValues:', xValues);
-      console.log('yValues:', yValues);
-      console.log('rValues:', rValues);
 
       const xMin = Math.min(...xValues);
       const xMax = Math.max(...xValues);
@@ -117,8 +113,8 @@ const OtherChart = ({ data }) => {
       return {
         label: item.name,
         data: normalizedData,
-        backgroundColor: COMPARISON_COLOR_SET_2[index] +`, 0.2)`,
-        borderColor: COMPARISON_COLOR_SET_2[index] +`, 1)`,
+        backgroundColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 0.2)`,
+        borderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
         borderWidth: 2,
         fill: false,
         tension: 0.4
@@ -131,8 +127,8 @@ const OtherChart = ({ data }) => {
     datasets: items.map((item, index) => ({
       label: item.name,
       data: aspects.map(aspect => item.metrics[aspect.name]),
-      backgroundColor: COMPARISON_COLOR_SET_2[index] +`, 0.2)`,
-      borderColor: COMPARISON_COLOR_SET_2[index] +`, 1)`,
+      backgroundColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 0.2)`,
+      borderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
       borderWidth: 2,
       fill: false,
       tension: 0.4
@@ -245,7 +241,6 @@ const OtherChart = ({ data }) => {
     }
   };
   
-  const [selectedChart, setSelectedChart] = useState('radar');
 
   useEffect(() => {
     // Cleanup function to destroy the chart instance
@@ -259,17 +254,6 @@ const OtherChart = ({ data }) => {
 
   return (
     <div>
-      <div className="flex justify-center mb-4">
-        {['radar', 'line', 'bar', 'pie', 'bubble', 'polar'].map((item) => (
-          <button
-            key={item}
-            onClick={() => setSelectedChart(item)}
-            className={`px-4 py-2 rounded-md ${selectedChart === item ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
-          >
-            {item}
-          </button>
-        ))}
-      </div>
       <div className="grid grid-cols-2 gap-4">
         {selectedChart === 'radar' && <Radar data={chartDataRadar} options={optionsRadar} />}
         {selectedChart === 'line' && <Line data={chartDataLine} options={optionsLine} />}

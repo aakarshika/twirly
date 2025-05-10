@@ -33,12 +33,12 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
 
       // Get all comments from comparison sets that include this item
       const { data, error, count } = await supabase
-        .from('comparison_set_comments')
-        .select(`
+      .rpc('fetch_filtered_comments', { search: item.id.toString() })
+      .select(`
           *,
           user:user_preferences(*),
           reactions:comparison_set_comment_reactions(reaction_type, user_id),
-          comparison_set_comment_replies(*,user:user_preferences(*)),
+          replies:comparison_set_comment_replies(*,user:user_preferences(*)),
           set:comparison_set_aspects(
             *,comparison_sets(
             id,
@@ -49,9 +49,7 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
           )
           )
         `, { count: 'exact' })
-        // .like('comparison_set_comment_replies.text', `%(${item.id})%`)
-        // .like('text', `%(${item.id})%`)
-        .or(`text.ilike.%${item.id}%`,`text.ilike.%${item.id}%`)
+        .like('replies.text', `%(${item.id})%`)
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
@@ -204,7 +202,9 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
                       {reply.user?.username || 'Anonymous'}
                     </p>
                   </div>
-                  <p className="mt-1 text-gray-700 dark:text-gray-300">{reply.text}</p>
+                  <p className="mt-1 text-gray-700 dark:text-gray-300" style={{ textAlign: 'start' }}>
+                    <span dangerouslySetInnerHTML={{ __html: renderTextWithMentions(reply.text, itemColorCoding) }} />
+                  </p>
                 </div>
               ))}
             </div>

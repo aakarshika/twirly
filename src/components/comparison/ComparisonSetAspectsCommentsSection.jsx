@@ -73,7 +73,7 @@ const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, as
       if (!error && data) {
         setUsers(data.map(user => ({
           id: user.user_id,
-          display: user.display_name || user.username,
+          display:  user.username,
           username: user.username
         })));
       }
@@ -109,31 +109,36 @@ const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, as
   return (
     <div className="space-y-2" >
       <div className="text-center w-full" >
-        <div className="flex  w-full">
-          <div className="flex-1 text-md">
-            <CommentHeader
-              type="Comment"
-              comment={aspectSet}
-              onLike={handleLikeComment}
-              replyClicked={() => {
-              }}
-              profile_image_url={aspectSet?.comparison_sets?.user?.profile_image_url}
-              display_name={aspectSet?.comparison_sets?.user?.username}
-              created_at={aspectSet?.comparison_sets?.created_at}
-              text={aspectSet?.description}
-              userReaction={aspectSet?.comparison_sets?.userReaction}
-              reactions={aspectSet?.comparison_sets?.reactions}
-              numReplies={comments?.length}
-              items={items}
-            />
+        <div className="flex flex-col w-full">
+          <div className="flex  w-full">
+            <div className="flex-1 text-md">
+              <CommentHeader
+                type="Comment"
+                comment={aspectSet}
+                onLike={handleLikeComment}
+                replyClicked={() => {
+                }}
+                profile_image_url={aspectSet?.comparison_sets?.user?.profile_image_url}
+                display_name={aspectSet?.comparison_sets?.user?.username}
+                created_at={aspectSet?.comparison_sets?.created_at}
+                text={aspectSet?.description}
+                userReaction={aspectSet?.comparison_sets?.userReaction}
+                reactions={aspectSet?.comparison_sets?.reactions}
+                numReplies={comments?.length}
+                items={items}
+              />
+
+            </div>
+            {userVoted && (<button
+              onClick={() => navigate('/comparison/' + aspectSet?.comparison_sets?.id)}
+              className=" w-auto pull-right rounded-md "
+            >
+              <span className="flex text-sm items-center gap-2" style={{ color: currentTheme.colors.primary }}>See <br></br>Comparison
+                <ChartArea size={16} /></span>
+            </button>)}
           </div>
-          {userVoted && (<button
-            onClick={() => navigate('/comparison/' + aspectSet?.comparison_sets?.id)}
-            className=" w-auto pull-right rounded-md "
-          >
-            <span className="flex text-sm items-center gap-2" style={{ color: currentTheme.colors.primary }}>See <br></br>Comparison
-              <ChartArea size={16} /></span>
-          </button>)}
+          <div className="flex bg-gray-200 h-1 w-full"></div>
+
         </div>
         {userVoted && (<CommentForm
           newComment={newComment}

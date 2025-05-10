@@ -140,19 +140,27 @@ const ComparisonHeading = ({ isHeaderVisible, title, height, currentId, itemRevi
           items.length === 1 ? 'grid-cols-1' :
           items.length === 2 ? 'grid-cols-2' :
           items.length === 3 ? 'grid-cols-3' :
-          'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+          'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 ml-1 mr-1 rounded-lg'
         }`} 
           style={{ 
-            gap: gap
+            gap: gap,
+            backgroundColor: currentTheme.colors.card
           }}
         >
           {items.map((item, i) => {
             const [error, setError] = useState(false);
             return (
-            // items list with an image, name, and description
-            <div key={item.id} className={winner && winner.id === item.id ? 'flex items-center gap-2  px-4 py-2 rounded-lg  shadow-sm' : 'flex items-center gap-2  px-4 py-2 shadow-sm'}
+              <div className="flex flex-col w-full h-full p-2 "
+              style={{
+                backgroundColor: 'white'
+              }}
+              >
+            <div key={item.id} className={winner && winner.id === item.id 
+            ? 'flex items-center gap-2  px-4 py-2 rounded-lg  shadow-md w-full h-full rounded-lg' 
+            : 'flex items-center gap-2  px-4 py-2 shadow-md w-full h-full rounded-lg'}
             style={{
-              backgroundColor: winner && winner.id !== item.id ? currentTheme.colors.background : item.item_color_string
+              backgroundColor: winner && winner.id !== item.id ? 
+              item.item_color_string.substring(0, item.item_color_string.length - 1) + ', 0.2)' : item.item_color_string
             }}
             >
             <div className="flex flex-col items-start justify-center m-2 "
@@ -166,17 +174,34 @@ const ComparisonHeading = ({ isHeaderVisible, title, height, currentId, itemRevi
                 }} />)}
                 <div className="flex flex-col items-start justify-center">
                   <div className="flex flex-row">
-                    <div className="flex items-center justify-center">
-                      <div className="w-4 h-4 align-bottom rounded-full" style={{ backgroundColor: item.item_color_string }}></div>
-                    </div>
-                    <h4>{item.name}</h4>
+                    {winner && winner.id !== item.id && (<div className="flex items-center justify-center">
+                      {/* clip the following circle to be inside its container */}
+                      
+                       <div className="absolute align-bottom rounded-full" 
+                      style={{ backgroundColor: item.item_color_string.substring(0, item.item_color_string.length - 1) + ', 0.3)',
+                        width: 16* (100+2*item.votesPercentage)/40 + 'px',
+                        height: 16* (100+2*item.votesPercentage)/40 + 'px',
+                        zIndex: 0,
+                        marginLeft: '50px',
+                        marginTop: '50px'
+                       }}></div>
+                       <div className="absolute align-bottom rounded-full" 
+                      style={{ backgroundColor: item.item_color_string.substring(0, item.item_color_string.length - 1) + ', 0.5)',
+                        width: 16* (100+2*item.votesPercentage)/70 + 'px',
+                        height: 16* (100+2*item.votesPercentage)/70 + 'px',
+                        zIndex: 0,
+                        marginLeft: '50px',
+                        marginTop: '50px'
+                       }}></div>
+                    </div>)}
+                    <h4 className="ml-2 z-10">{item.name}</h4>
                   </div>
-                  <div className="flex flex-row items-center justify-center">
+                  <div className="flex flex-row items-center justify-center z-10">
                     <span className="text-sm text-gray-500">{item.description}</span>
                   </div>
                 </div>
               </div>
-              <div className="flex flex-row items-center justify-center">
+              <div className="flex flex-row items-center justify-center z-10">
                 <div className="flex flex-col items-start justify-center gap-2">
                   {winner && winner.id === item.id && (
                     <div className="">
@@ -193,8 +218,8 @@ const ComparisonHeading = ({ isHeaderVisible, title, height, currentId, itemRevi
                     </div>
                   )} */}
                   {item.leadingMetrics && item.leadingMetrics.length > 0 && (
-                    <div className="flex items-center gap-2 bg-purple-50 dark:bg-purple-900/20 px-3 py-1.5 rounded-full">
-                      <span className="text-sm font-medium text-purple-600 dark:text-purple-300">
+                    <div className="flex items-center gap-2 bg-purple-50 dark:bg-purple-900/20 px-3 py-1.5 rounded-lg">
+                      <span className="text-sm font-medium text-purple-600 dark:text-purple-300 px-2">
                         {hasAnyLeader ? '🎯 Leading in ' : '🤝 Tied for leading in '}
                         {item.leadingMetrics?.map((metric) => 
                           splitAndJoin(metric.metric_name)
@@ -204,6 +229,7 @@ const ComparisonHeading = ({ isHeaderVisible, title, height, currentId, itemRevi
                   )}
                 </div>
               </div>
+            </div>
             </div>
             </div>
           )})}

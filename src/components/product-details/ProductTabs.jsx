@@ -32,7 +32,7 @@ const ProductTabs = ({
 
   return (
     <div className="mb-8">
-      <div className="flex space-x-4 border-b border-gray-700">
+      <div className="flex space-x-4 border-b border-gray-700 sticky top-0 z-10">
         {['mentions', 'comparisons'].map((tab) => (
           <button
             key={tab}

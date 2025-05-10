@@ -5,7 +5,11 @@ import ComparisonCommentsInshort from '../../comparison/ComparisonCommentsInshor
 import Button from '../../common/Button';
 import { Info, MessageSquareShare, Play, Share, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../../../lib/supabase';
+import { useState } from 'react';
+import { useAuth } from '../../../contexts/AuthContext';
 const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
+  const { user } = useAuth();
   const { currentTheme } = useTheme();
   const navigate = useNavigate();
   // Extract all unique metrics from the reviews
@@ -43,7 +47,22 @@ const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
     <div className="w-full">
       <div
       >
-        {comparisonMetrics.map(metric => (
+        {comparisonMetrics.map(metric => {
+          const [userVoted, setUserVoted] = useState(false);
+          const fetchUserVoted = async () => {
+            const { data: userVoted, error: userVotedError } = await supabase
+              .from('votes')
+              .select('*')
+              .eq('user_id', user.id)
+              .eq('set_id', metric.id)
+              .select();
+            return userVoted;
+          };
+          fetchUserVoted().then(data => {
+            setUserVoted(data.length > 0);
+          });
+
+          return (
           <div
           key={metric.id}
             className="divide-y shadow-md rounded-sm p-2"
@@ -69,6 +88,8 @@ const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
                       <Play size={16} />
                     </Button>
                     </div>
+                    {userVoted && (
+                      <>
                     <div className="flex items-center gap-2">
 
                       <div className="flex-1 flex gap-1">
@@ -121,12 +142,14 @@ const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
                     <div className="w-full mt-4" style={{ textAlign: 'left' }}>
                       <ComparisonCommentsInshort aspectSetId={metric.id} items={items} aspectSet={metric} />
                     </div>
+                    </>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        ))}
+        )})}
       </div>
     </div>
   );

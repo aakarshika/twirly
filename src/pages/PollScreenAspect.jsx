@@ -4,7 +4,6 @@ import { useTheme } from '../contexts/ThemeContext';
 import { useHeader } from '../contexts/HeaderContext';
 import { useSwipeable } from 'react-swipeable';
 import PollGrid from '../components/comparison/PollGrid';
-import BarChart from '../components/results/visualizations/BarChart';
 import Button from '../components/common/Button';
 import { ArrowRight, MessageSquare, Star, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';

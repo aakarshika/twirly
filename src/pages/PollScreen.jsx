@@ -166,7 +166,7 @@ const PollScreen = () => {
               </div>
             </div>
           </div> */}
-          <div className="w-full p-1" style={{ backgroundColor: 'white' }}>
+          <div className="w-full p-1" style={{ backgroundColor: 'white', marginBottom: '100px' }}>
             <div className="">
               <BarChart items={items} 
                       itemReviews={itemReviews} 

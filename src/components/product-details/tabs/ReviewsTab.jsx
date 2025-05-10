@@ -20,7 +20,7 @@ const ReviewsTab = ({ reviews,  hasMoreReviews, loadingReviews, loadMoreReviews}
                     <img src={getPublicUrl(review.user_preferences?.profile_image_url || '/default-avatar.png')} alt="Profile" className="w-full h-full object-cover rounded-full" />
                   </div>
                   <div>
-                    <p className="font-medium" style={{ color: currentTheme.colors.textSecondary }}>{review.user_preferences?.display_name || 'Anonymous'}</p>
+                    <p className="font-medium" style={{ color: currentTheme.colors.textSecondary }}>{review.user_preferences?.username || 'Anonymous'}</p>
                     <p className="text-xs" style={{ color: currentTheme.colors.textSecondary }}>
                       {new Date(review.created_at).toLocaleDateString()}
                     </p>
