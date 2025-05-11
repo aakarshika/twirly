@@ -155,7 +155,7 @@ const ActivityOverview = ({
       </div>
 )}
 { !isPublic && (
-      <div className='rounded-lg p-4' style={{ backgroundColor: currentTheme.colors.card }}>
+      <div >
       <ActivityVisualizations 
         activityData={activityData}
         categoryData={categoryData}
