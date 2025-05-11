@@ -47,7 +47,7 @@ export const feedbackService = {
     const { data, error } = await supabase
       .from('feedback')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('status', { ascending: true });
 
     if (error) throw error;
     return data;

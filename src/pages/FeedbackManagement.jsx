@@ -118,7 +118,11 @@ const FeedbackManagement = () => {
               <tr key={feedback.id} className="border-b hover:bg-gray-50">
                 <td className="px-4 py-2">{feedback.name}</td>
                 <td className="px-4 py-2 capitalize">{feedback.type}</td>
-                <td className="px-4 py-2 capitalize">{feedback.priority}</td>
+                <td className="px-4 py-2 capitalize">
+                  <div className='flex items-center gap-2 rounded-full px-2 py-1' style={{ backgroundColor: feedback.priority === 'high' ? '#ef4444' : feedback.priority === 'medium' ? '#f59e0b' : '#34d399' }}>
+                    {feedback.priority}
+                  </div>
+                </td>
                 <td className="px-4 py-2">
                   <div className="max-w-md">
                     <p className={!expandedMessages[feedback.id] ? "line-clamp-2" : ""}>
