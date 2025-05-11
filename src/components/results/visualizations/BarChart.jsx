@@ -111,7 +111,7 @@ const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
                               <div className="flex-1 min-w-[6rem]">
                                 <div
                                   className="h-auto rounded-sm overflow-hidden"
-                                  style={{ backgroundColor: currentTheme.colors.background }}
+                                  style={{ backgroundColor: '#f0f0f0' }}
                                 >
 
                                   <div

@@ -19,7 +19,12 @@ const ContentTabs = ({ activeTab, setActiveTab, userId,username, isPublic = true
     }
   }, [tab, activeTab, setActiveTab]);
 
-  const tabs = [
+  const tabs = isPublic ? [
+    { id: 'overview', label: 'Overview' },
+    { id: 'comments', label: 'Reviews' },
+    { id: 'products', label: 'Products' },
+    { id: 'comparisons', label: 'Comparisons' }
+  ] : [
     { id: 'overview', label: 'Overview' },
     { id: 'comments', label: 'Reviews' },
     { id: 'products', label: 'Products' },
@@ -47,7 +52,7 @@ const ContentTabs = ({ activeTab, setActiveTab, userId,username, isPublic = true
       // case 'reviews':
       //   return <ReviewsTab />;
       case 'votes':
-        return <VotesTab userId={userId} isPublic={isPublic} />;
+        return isPublic ? null : <VotesTab userId={userId} isPublic={isPublic} />;
       case 'comments':
         return <CommentsTab userId={userId} isPublic={isPublic} />;
       default:

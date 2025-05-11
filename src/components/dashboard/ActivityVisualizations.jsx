@@ -217,10 +217,15 @@ const ActivityVisualizations = ({
   activityData = [],
   categoryData = []
 }) => {
+  const { currentTheme } = useTheme();
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className='rounded-lg p-4' style={{ backgroundColor: currentTheme.colors.card }}>
       <ActivityChart data={activityData} />
+      </div>
+      <div className='rounded-lg p-4' style={{ backgroundColor: currentTheme.colors.card }}>
       <CategoryDistribution data={categoryData} />
+      </div>
     </div>
   );
 };
