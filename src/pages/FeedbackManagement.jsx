@@ -3,7 +3,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { feedbackService } from '../services/feedbackService';
 import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
-import { FiImage } from 'react-icons/fi';
+import { FiImage, FiTrash2 } from 'react-icons/fi';
 
 const ADMIN_EMAILS = ['aakarshika93@gmail.com', 'great.shivam19@gmail.com'];
 
@@ -12,6 +12,8 @@ const FeedbackManagement = () => {
   const { user } = useAuth();
   const [feedbackList, setFeedbackList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [feedbackToDelete, setFeedbackToDelete] = useState(null);
 
   // Check if user is admin
   const isAdmin = user && ADMIN_EMAILS.includes(user.email);
@@ -43,6 +45,28 @@ const FeedbackManagement = () => {
       );
     } catch (error) {
       console.error('Error updating feedback status:', error);
+    }
+  };
+
+  const openDeleteModal = (feedback) => {
+    setFeedbackToDelete(feedback);
+    setDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModalOpen(false);
+    setFeedbackToDelete(null);
+  };
+
+  const handleDelete = async () => {
+    if (!feedbackToDelete) return;
+    
+    try {
+      await feedbackService.deleteFeedback(feedbackToDelete.id);
+      setFeedbackList(prev => prev.filter(item => item.id !== feedbackToDelete.id));
+      closeDeleteModal();
+    } catch (error) {
+      console.error('Error deleting feedback:', error);
     }
   };
 
@@ -78,6 +102,7 @@ const FeedbackManagement = () => {
               <th className="px-4 py-2 text-left">Image</th>
               <th className="px-4 py-2 text-left">Status</th>
               <th className="px-4 py-2 text-left">Date</th>
+              <th className="px-4 py-2 text-left">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -121,11 +146,56 @@ const FeedbackManagement = () => {
                 <td className="px-4 py-2 text-xs text-gray-500">
                   {new Date(feedback.created_at).toLocaleString()}
                 </td>
+                <td className="px-4 py-2">
+                  <button
+                    onClick={() => openDeleteModal(feedback)}
+                    className="p-2 text-red-600 hover:text-red-800 transition-colors"
+                    title="Delete feedback"
+                  >
+                    <FiTrash2 className="w-5 h-5" />
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div 
+            className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
+            style={{ backgroundColor: currentTheme.colors.background }}
+          >
+            <h3 className="text-xl font-bold mb-4" style={{ color: currentTheme.colors.text }}>
+              Delete Feedback
+            </h3>
+            <p className="mb-6" style={{ color: currentTheme.colors.text }}>
+              Are you sure you want to delete this feedback? This action cannot be undone.
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={closeDeleteModal}
+                className="px-4 py-2 rounded"
+                style={{ 
+                  backgroundColor: currentTheme.colors.secondary,
+                  color: currentTheme.colors.text
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 rounded text-white"
+                style={{ backgroundColor: '#ef4444' }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -61,5 +61,34 @@ export const feedbackService = {
 
     if (error) throw error;
     return data;
+  },
+
+  async deleteFeedback(id) {
+    // First, get the feedback to check if it has an image
+    const { data: feedback, error: fetchError } = await supabase
+      .from('feedback')
+      .select('image_url')
+      .eq('id', id)
+      .single();
+
+    if (fetchError) throw fetchError;
+
+    // If there's an image, delete it from storage
+    if (feedback?.image_url) {
+      const imagePath = feedback.image_url.split('/').pop();
+      const { error: storageError } = await supabase.storage
+        .from(FEEDBACK_BUCKET)
+        .remove([imagePath]);
+
+      if (storageError) throw storageError;
+    }
+
+    // Delete the feedback record
+    const { error: deleteError } = await supabase
+      .from('feedback')
+      .delete()
+      .eq('id', id);
+
+    if (deleteError) throw deleteError;
   }
 }; 

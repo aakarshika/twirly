@@ -27,6 +27,7 @@ ALTER TABLE feedback ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Allow public to insert feedback" ON feedback;
 DROP POLICY IF EXISTS "Allow admin emails to view feedback" ON feedback;
 DROP POLICY IF EXISTS "Allow admin emails to update feedback status" ON feedback;
+DROP POLICY IF EXISTS "Allow admin emails to delete feedback" ON feedback;
 
 -- Create new policies
 -- Allow anyone to insert feedback (including unauthenticated users)
@@ -57,6 +58,17 @@ CREATE POLICY "Allow admin emails to update feedback status"
         )
     )
     WITH CHECK (true);
+
+-- Allow only specific admin emails to delete feedback
+CREATE POLICY "Allow admin emails to delete feedback"
+    ON feedback FOR DELETE
+    TO authenticated
+    USING (
+        auth.jwt() ->> 'email' IN (
+            'aakarshika93@gmail.com',
+            'great.shivam19@gmail.com'
+        )
+    );
 
 -- Grant necessary permissions
 GRANT ALL ON feedback TO authenticated;
