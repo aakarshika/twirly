@@ -8,7 +8,7 @@ const StatCard = ({ title, value, icon }) => {
   return (
     <div 
       className="flex-1 p-4 rounded-lg"
-      style={{ backgroundColor: currentTheme.colors.cardBackground }}
+      style={{ backgroundColor: currentTheme.colors.background }}
     >
       <div className="flex items-center justify-between">
         <div>
