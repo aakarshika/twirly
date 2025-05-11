@@ -14,6 +14,7 @@ import UserDashboard from './UserDashboard';
 import { useTheme } from '../contexts/ThemeContext';
 import Settings from './Settings';
 import Login from '../components/auth/Login';
+import Landing from '../components/auth/Landing';
 import Signup from '../components/auth/Signup';
 import ForgotPassword from '../components/auth/ForgotPassword';
 import OnboardingFlow from '../components/onboarding/OnboardingFlow';
@@ -70,7 +71,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!user) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/landing" />;
   }
 
   if (checkingOnboarding) {
@@ -177,18 +178,17 @@ const MainRoutingPage = () => {
                   {/* Waiting Verification Route */}
                   <Route path="/waiting-verification" element={<WaitingVerification />} />
 
-                  {/* Public Routes */}
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                </Routes>
-              </main>
-            </SwipeBackWrapper>
-            <FloatingFeedbackButton />
-            <FeedbackModal />
-            {/* <Footer /> */}
-          </div>
-        </FeedbackProvider>
+                {/* Public Routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/landing" element={<Landing />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+
+              </Routes>
+            </main>
+          </SwipeBackWrapper>
+          {/* <Footer /> */}
+        </div>
       </ComparisonDraftProvider>
     </ComparisonProvider>
   );
