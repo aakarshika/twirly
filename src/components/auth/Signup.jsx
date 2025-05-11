@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
 import { useAuth } from '../../contexts/AuthContext';
-
+import { useTheme } from '../../contexts/ThemeContext';
 export default function Signup() {
   const { user } = useAuth();
   const [formData, setFormData] = useState({
@@ -13,10 +13,11 @@ export default function Signup() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { currentTheme } = useTheme();
 
   // Redirect if user is already logged in
   if (user) {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/waiting-verification" replace />;
   }
 
   const validateForm = () => {
@@ -66,8 +67,9 @@ export default function Signup() {
     setLoading(true);
 
     try {
-      await authService.signUp(formData.email, formData.password);
-      navigate('/onboarding');
+      const user = await authService.signUp(formData.email, formData.password);
+      console.log(user);
+      navigate('/waiting-verification', { replace: true });
     } catch (error) {
       setError(error.message || 'Failed to create account. Please try again.');
     } finally {
@@ -76,7 +78,8 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"
+         style={{ backgroundColor: currentTheme.colors.background }}>
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -100,6 +103,11 @@ export default function Signup() {
                 required
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="you@example.com"
+                style={{
+                  backgroundColor: currentTheme.colors.background,
+                  borderColor: currentTheme.colors.border,
+                  color: currentTheme.colors.text,
+                }}
                 value={formData.email}
                 onChange={handleChange}
               />
@@ -116,6 +124,11 @@ export default function Signup() {
                 required
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="••••••••"
+                style={{
+                  backgroundColor: currentTheme.colors.background,
+                  borderColor: currentTheme.colors.border,
+                  color: currentTheme.colors.text,
+                }}
                 value={formData.password}
                 onChange={handleChange}
               />
@@ -132,6 +145,11 @@ export default function Signup() {
                 required
                 className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="••••••••"
+                style={{
+                  backgroundColor: currentTheme.colors.background,
+                  borderColor: currentTheme.colors.border,
+                  color: currentTheme.colors.text,
+                }}
                 value={formData.confirmPassword}
                 onChange={handleChange}
               />

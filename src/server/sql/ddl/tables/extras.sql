@@ -61,3 +61,31 @@ USING (
     AND comparison_sets.user_id = auth.uid()
   )
 );
+
+-- Rate limiting for authentication attempts
+CREATE POLICY "Rate limit auth attempts"
+ON auth.users
+FOR ALL
+USING (
+  (SELECT COUNT(*) FROM auth.users 
+   WHERE created_at > NOW() - INTERVAL '1 hour') < 10
+);
+
+-- Rate limiting for API endpoints
+CREATE POLICY "Rate limit API requests"
+ON items
+FOR ALL
+USING (
+  (SELECT COUNT(*) FROM items 
+   WHERE created_at > NOW() - INTERVAL '1 minute') < 100
+);
+
+-- Rate limiting for comments
+CREATE POLICY "Rate limit comments"
+ON comparison_set_comments
+FOR ALL
+USING (
+  (SELECT COUNT(*) FROM comparison_set_comments 
+   WHERE user_id = auth.uid() 
+   AND created_at > NOW() - INTERVAL '1 minute') < 5
+);

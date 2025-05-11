@@ -42,7 +42,7 @@ const SupabaseTest = () => {
   if (loading) {
     return (
       <div className="text-white">
-        <p>Loading...</p>
+        <p>lllLoading...</p>
         <p className="text-sm text-gray-400">Connecting to Supabase...</p>
       </div>
     );

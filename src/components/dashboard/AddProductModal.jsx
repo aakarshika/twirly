@@ -9,6 +9,46 @@ import { getProduct, updateProduct } from '../../services/products';
 import { useEffect } from 'react';
 import { useHeader } from '../../contexts/HeaderContext';
 
+// Validation functions
+const validateName = (name) => {
+  const trimmedName = name.trim();
+  if (!trimmedName) {
+    return 'Product name is required';
+  }
+  if (trimmedName.length < 3) {
+    return 'Product name must be at least 3 characters long';
+  }
+  if (trimmedName.length > 100) {
+    return 'Product name must be less than 100 characters';
+  }
+  // Check for special characters
+  if (!/^[a-zA-Z0-9\s\-_&.,()]+$/.test(trimmedName)) {
+    return 'Product name contains invalid characters';
+  }
+  return null;
+};
+
+const validateDescription = (description) => {
+  const trimmedDesc = description.trim();
+  if (!trimmedDesc) {
+    return 'Product description is required';
+  }
+  if (trimmedDesc.length < 10) {
+    return 'Description must be at least 10 characters long';
+  }
+  if (trimmedDesc.length > 1000) {
+    return 'Description must be less than 1000 characters';
+  }
+  return null;
+};
+
+const sanitizeInput = (input) => {
+  return input
+    .trim()
+    .replace(/[<>]/g, '') // Remove potential HTML tags
+    .replace(/\s+/g, ' '); // Replace multiple spaces with single space
+};
+
 const AddProductModal = () => {
   const { currentTheme } = useTheme();
   const { isHeaderVisible } = useHeader();
@@ -24,7 +64,10 @@ const AddProductModal = () => {
     item_color_string: randomPastelColorHex()
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [errors, setErrors] = useState({
+    name: null,
+    description: null
+  });
 
   useEffect(() => {
     if (id) {
@@ -40,26 +83,53 @@ const AddProductModal = () => {
       console.error(err);
     }
   };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    const sanitizedValue = sanitizeInput(value);
+    
+    setFormData(prev => ({
+      ...prev,
+      [name]: sanitizedValue
+    }));
+
+    // Validate on change
+    if (name === 'name') {
+      setErrors(prev => ({
+        ...prev,
+        name: validateName(sanitizedValue)
+      }));
+    } else if (name === 'description') {
+      setErrors(prev => ({
+        ...prev,
+        description: validateDescription(sanitizedValue)
+      }));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
 
-    // Basic validation
-    if (!formData.name.trim()) {
-      setError('Product name is required');
-      setLoading(false);
-      return;
-    }
+    // Validate all fields
+    const nameError = validateName(formData.name);
+    const descriptionError = validateDescription(formData.description);
 
-    if (!formData.description.trim()) {
-      setError('Product description is required');
+    setErrors({
+      name: nameError,
+      description: descriptionError
+    });
+
+    if (nameError || descriptionError) {
       setLoading(false);
       return;
     }
 
     if (formData.price && isNaN(parseFloat(formData.price))) {
-      setError('Price must be a valid number');
+      setErrors(prev => ({
+        ...prev,
+        price: 'Price must be a valid number'
+      }));
       setLoading(false);
       return;
     }
@@ -70,29 +140,25 @@ const AddProductModal = () => {
       } else {
         const product = await createProduct({
           ...formData,
-          // Only include category_id if they have values
           ...(formData.category_id && { category_id: parseInt(formData.category_id) })
         }, user.id);
       }
+      navigate('/dashboard');
     } catch (err) {
       if (err.message && err.message.includes('not found')) {
-        setError('The product you are trying to update no longer exists or you don\'t have permission to update it.');
+        setErrors(prev => ({
+          ...prev,
+          general: 'The product you are trying to update no longer exists or you don\'t have permission to update it.'
+        }));
       } else {
-        setError('Failed to save product. Please try again.');
+        setErrors(prev => ({
+          ...prev,
+          general: 'Failed to save product. Please try again.'
+        }));
       }
       console.error(err);
-      return; // Don't navigate away if there's an error
     }
     setLoading(false);
-    navigate('/dashboard');
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
   };
 
   return (
@@ -112,7 +178,7 @@ const AddProductModal = () => {
           </h2>
         </div>
 
-        {error && (
+        {errors.general && (
           <div
             className="mb-4 p-3 rounded-lg text-sm"
             style={{
@@ -120,7 +186,7 @@ const AddProductModal = () => {
               color: currentTheme.colors.error
             }}
           >
-            {error}
+            {errors.general}
           </div>
         )}
 
@@ -160,13 +226,18 @@ const AddProductModal = () => {
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full p-2 rounded"
+                  className={`w-full p-2 rounded ${errors.name ? 'border-red-500' : ''}`}
                   style={{
                     backgroundColor: currentTheme.colors.background,
                     color: currentTheme.colors.text,
-                    border: `1px solid ${currentTheme.colors.border}`
+                    border: `1px solid ${errors.name ? currentTheme.colors.error : currentTheme.colors.border}`
                   }}
                 />
+                {errors.name && (
+                  <p className="text-sm mt-1" style={{ color: currentTheme.colors.error }}>
+                    {errors.name}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -184,13 +255,18 @@ const AddProductModal = () => {
               onChange={handleChange}
               required
               rows={3}
-              className="w-full p-2 rounded"
+              className={`w-full p-2 rounded ${errors.description ? 'border-red-500' : ''}`}
               style={{
                 backgroundColor: currentTheme.colors.background,
                 color: currentTheme.colors.text,
-                border: `1px solid ${currentTheme.colors.border}`
+                border: `1px solid ${errors.description ? currentTheme.colors.error : currentTheme.colors.border}`
               }}
             />
+            {errors.description && (
+              <p className="text-sm mt-1" style={{ color: currentTheme.colors.error }}>
+                {errors.description}
+              </p>
+            )}
           </div>
 
           <div>

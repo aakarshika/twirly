@@ -24,25 +24,21 @@ import SearchPage from './SearchPage';
 import AddProductModal from '../components/dashboard/AddProductModal';
 import { useSwipeable } from 'react-swipeable';
 import UserProfile from './UserProfile';
-
+import WaitingVerification from '../components/auth/WaitingVerification';
 const ProtectedRoute = ({ children }) => {
-  const { user } = useAuth();
-  return user ? children : <Navigate to="/login" />;
-};
-
-// Onboarding Route wrapper
-const OnboardingRoute = ({ children }) => {
   const { user, loading } = useAuth();
   const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
-  const [isChecking, setIsChecking] = useState(true);
+  const [isChecking, setIsChecking] = useState(false);
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
       if (!user) return;
-      
+      setIsChecking(true);
       try {
-        const preferences = await userService.getUserPreferences(user.id);
-        setIsOnboardingComplete(preferences && preferences.username);
+        const prefs = await userService.getUserPreferences(user.id);
+        const cats = await userService.getUserCategoryPreferences(user.id);
+        const notif = await userService.getUserNotificationSettings(user.id);
+        setIsOnboardingComplete(prefs && prefs.display_name && cats.length > 0 && notif.created_at !== notif.updated_at);
       } catch (error) {
         console.error('Error checking onboarding status:', error);
         setIsOnboardingComplete(false);
@@ -54,25 +50,32 @@ const OnboardingRoute = ({ children }) => {
     checkOnboardingStatus();
   }, [user]);
 
-  if (loading || isChecking) {
+  if (loading ) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-gray-600">Loading User...</p>
         </div>
       </div>
     );
   }
-
+  if (isChecking) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Click on the link sent to your email to verify your account</p>
+        </div>
+      </div>
+    );
+  }  
   if (!user) {
     return <Navigate to="/login" />;
   }
-
-  if (isOnboardingComplete) {
-    return <Navigate to="/dashboard" />;
+  if (user && !isOnboardingComplete) {
+    return <OnboardingFlow />;
   }
-
   return children;
 };
 
@@ -119,7 +122,7 @@ const MainRoutingPage = () => {
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: currentTheme.colors.background }}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <p className="mt-4 text-gray-600">Loading?...</p>
         </div>
       </div>
     );
@@ -152,21 +155,15 @@ const MainRoutingPage = () => {
                 <Route path="/item/:itemId/:tab" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>}/>
                 <Route path="/dashboard/products/add" element={<ProtectedRoute><AddProductModal /></ProtectedRoute>}/>
                 <Route path="/dashboard/products/edit/:id" element={<ProtectedRoute><AddProductModal /></ProtectedRoute>}/>
-                <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>}/>
+                <Route path="/settings/*" element={<ProtectedRoute><Settings /></ProtectedRoute>}/>
                 <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>}/>
                 <Route path="/dashboard/:tab" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>}/>
                 <Route path="/user/:username" element={<UserProfile />} />
                 <Route path="/user/:username/:tab" element={<UserProfile />} />
 
-                {/* Onboarding Route */}
-                <Route
-                  path="/onboarding"
-                  element={
-                    <OnboardingRoute>
-                      <OnboardingFlow />
-                    </OnboardingRoute>
-                  }
-                />
+
+                {/* Waiting Verification Route */}
+                <Route path="/waiting-verification" element={<WaitingVerification />} />
 
                 {/* Public Routes */}
                 <Route path="/login" element={<Login />} />

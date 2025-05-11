@@ -135,7 +135,7 @@ const ComparisonCommentsInshort = ({ aspectSetId, items, aspectSet }) => {
         {hasMore && (
           <div className="text-start ml-4 mb-4" style={{ backgroundColor: 'white', borderRadius: '4px' }}>
             <Button onClick={loadMore} disabled={loading}>
-              {loading ? 'Loading...' : 'Load More'}
+              {loading ? 'Loading comments...' : 'Load More'}
             </Button>
           </div>
         )}

@@ -9,10 +9,10 @@ const UserDashboard = () => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
-  const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { isHeaderVisible } = useHeader();
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {

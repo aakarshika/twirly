@@ -3,19 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { userService } from '../../services/userService';
-
-const categories = [
-  { id: 'tech', name: 'Technology', icon: '💻' },
-  { id: 'fashion', name: 'Fashion', icon: '👗' },
-  { id: 'home', name: 'Home & Living', icon: '🏠' },
-  { id: 'beauty', name: 'Beauty', icon: '💄' },
-  { id: 'food', name: 'Food & Beverages', icon: '🍽️' },
-  { id: 'sports', name: 'Sports', icon: '⚽' },
-  { id: 'books', name: 'Books', icon: '📚' },
-  { id: 'gaming', name: 'Gaming', icon: '🎮' },
+import { useEffect } from 'react';
+const categoriesAll = [
+  { id: '1', name: 'Technology', icon: '💻' },
+  { id: '2', name: 'Fashion', icon: '👗' },
+  { id: '3', name: 'Home & Living', icon: '🏠' },
+  { id: '4', name: 'Beauty', icon: '💄' },
+  { id: '5', name: 'Food & Beverages', icon: '🍽️' },
+  { id: '6', name: 'Sports', icon: '⚽' },
+  { id: '7', name: 'Books', icon: '📚' },
+  { id: '8', name: 'Gaming', icon: '🎮' },
 ];
 
-const notificationPreferences = [
+const notificationsAll = [
   { id: 'new-comparisons', name: 'New comparisons in my categories' },
   { id: 'votes', name: 'When someone votes on my comparisons' },
   { id: 'comments', name: 'When someone comments on my comparisons' },
@@ -25,16 +25,63 @@ const notificationPreferences = [
 
 const OnboardingFlow = () => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedNotifications, setSelectedNotifications] = useState([]);
-  const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { currentTheme } = useTheme();
   const { user } = useAuth();
-
   const totalSteps = 4;
+  const [preferences, setPreferences] = useState(null);
+  const [categoryPreferences, setCategoryPreferences] = useState(null);
+  const [notificationPreferences, setNotificationPreferences] = useState(null);
+  const [notif, setNotif] = useState(null);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedNotifications, setSelectedNotifications] = useState([]);
+  const [username, setUsername] = useState('');
+  const [onboardingComplete, setOnboardingComplete] = useState(false);
+  const [allCategories, setAllCategories] = useState([]);
+
+  const fetchPreferences = async () => {
+    const prefs = await userService.getUserPreferences(user.id);
+    const notif = await userService.getUserNotificationSettings(user.id);
+    const cats = await userService.getUserCategoryPreferences(user.id);
+      setPreferences(prefs);
+      setNotificationPreferences(notif);
+      setCategoryPreferences(cats);
+      setSelectedCategories(cats.map(cat => cat.category_id+''));
+      setSelectedNotifications(notif.notifications);
+      setNotif(notif);
+      
+      if (prefs.display_name && cats && cats.length > 0 && notif && notif.created_at !== notif.updated_at) {
+        setOnboardingComplete(true);
+      }
+      else if (prefs.display_name && cats && cats.length > 0) {
+        setCurrentStep(4);
+      } else if (prefs.display_name) {
+        setUsername(prefs.display_name);
+        setCurrentStep(3);
+      }
+    console.log(prefs);
+  };
+  useEffect(() => {
+    fetchPreferences();
+  }, [user]);
+
+  useEffect(() => {
+    if (onboardingComplete) {
+      console.log('onboardingComplete');
+      navigate('/dashboard');
+    }
+  }, [onboardingComplete]);
+
+  const fetchAllCategories = async () => {
+    const cats = await userService.getAllCategories();
+    setAllCategories(cats);
+  };
+
+  useEffect(() => {
+    fetchAllCategories();
+  }, [user]);
 
   const handleCategoryToggle = (categoryId) => {
     setSelectedCategories((prev) =>
@@ -103,11 +150,14 @@ const OnboardingFlow = () => {
     setLoading(true);
     try {
       await userService.saveUserPreferences(user.id, {
-        username,
+        display_name: username,
+        id: preferences?.id || null,
         categories: selectedCategories,
         notifications: selectedNotifications,
+        notifId: notif?.id || null,
       });
-      navigate('/dashboard');
+      setOnboardingComplete(true);
+      window.location.href = '/dashboard';
     } catch (error) {
       setError('Error saving preferences. Please try again.');
       console.error('Error saving preferences:', error);
@@ -146,6 +196,11 @@ const OnboardingFlow = () => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your username"
+                style={{
+                  backgroundColor: currentTheme.colors.background,
+                  borderColor: currentTheme.colors.border,
+                  color: currentTheme.colors.text,
+                }}
                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               />
               <p className="mt-2 text-sm text-gray-500">
@@ -163,7 +218,7 @@ const OnboardingFlow = () => {
               Select categories you're interested in to see relevant comparisons
             </p>
             <div className="grid grid-cols-2 gap-4">
-              {categories.map((category) => (
+              {categoriesAll.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => handleCategoryToggle(category.id)}
@@ -189,7 +244,7 @@ const OnboardingFlow = () => {
               Choose what you'd like to be notified about
             </p>
             <div className="space-y-4">
-              {notificationPreferences.map((pref) => (
+              {notificationsAll.map((pref) => (
                 <label
                   key={pref.id}
                   className="flex items-center space-x-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50"
@@ -273,7 +328,7 @@ const OnboardingFlow = () => {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                {currentStep === totalSteps ? 'Saving...' : 'Loading...'}
+                {currentStep === totalSteps ? 'Saving...' : 'yoLoading...'}
               </span>
             ) : (
               currentStep === totalSteps ? 'Complete Setup' : 'Next'

@@ -218,7 +218,7 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
             disabled={loading}
             className="mt-4"
           >
-            {loading ? 'Loading...' : 'Load More'}
+            {loading ? 'Loading stuff...' : 'Load More'}
           </Button>
         </div>
       )}

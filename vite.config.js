@@ -28,13 +28,27 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          'react-vendor': ['react', 'react-dom'],
-          'ui-vendor': ['clsx', 'tailwind-merge'],
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          ui: ['@heroicons/react', 'lucide-react'],
+          utils: ['clsx', 'tailwind-merge'],
         },
       },
     },
+    ...(process.env.NODE_ENV === 'production' && {
+      base: 'https://cdn.yourdomain.com/',
+      assetsDir: 'assets',
+      sourcemap: true,
+    }),
   },
   optimizeDeps: {
-    include: ['react', 'react-dom', 'clsx', 'tailwind-merge'],
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      '@heroicons/react',
+      'lucide-react',
+      'clsx',
+      'tailwind-merge',
+    ],
   },
 });
