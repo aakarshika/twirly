@@ -38,7 +38,10 @@ const Header = () => {
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
-      if (!user) return;
+      if (!user) {
+        setLoading(false);
+        return;
+      }
 
       try {
         setLoading(true);
@@ -141,12 +144,12 @@ const Header = () => {
   ];
 
 
-  const pageName = 'TWIRLY pushing on main';
+  const pageName = 'TWIRLY';
 
   const handleLogout = async () => {
     try {
       await signOut();
-      navigate('/login');
+      navigate('/landing');
       setIsDrawerOpen(false);
     } catch (error) {
       console.error('Error logging out:', error);
@@ -155,7 +158,7 @@ const Header = () => {
 
   if (loading) {
     return (
-      <></>
+      <div>hello</div>
     );
   }
 
@@ -194,11 +197,12 @@ const Header = () => {
           </div>
 
           {/* Search Bar - Hidden on mobile */}
-          <div className="hidden md:block flex-1 max-w-xl mx-8 mr-4">
-            <SearchBar setMenuOpen={() => setIsDrawerOpen(false)} />
-          </div>
+          {user && (<div className="hidden md:block flex-1 max-w-xl mx-8 mr-4">
+            <SearchBar searchComplete={() => setIsDrawerOpen(false)} />
+          </div>)}
 
 
+          {user && (<div >
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {mainNavItems.map((item) => (
@@ -213,6 +217,7 @@ const Header = () => {
               </Link>
             ))}
           </nav>
+          </div>)}
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-4">
@@ -250,7 +255,7 @@ const Header = () => {
                 </button>
               </div>
             ) : (
-              <div className="hidden md:flex items-center space-x-4">
+              <div className="items-center space-x-4">
                 <Link
                   to="/login"
                   className="text-sm font-medium"
@@ -275,7 +280,7 @@ const Header = () => {
       </div>
 
       {/* Settings Drawer */}
-      {isDrawerOpen && (
+      {isDrawerOpen && user && (
         <div
           className="fixed inset-0 z-50 settings-drawer"
           style={{ backgroundColor: currentTheme.colors.background }}
