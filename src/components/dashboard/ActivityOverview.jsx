@@ -101,7 +101,7 @@ const ActivityOverview = ({
 
   return (
     <div className="space-y-6">
-      <div>
+      <div className='rounded-lg p-4' style={{ backgroundColor: currentTheme.colors.card }}>
         {!isPublic && (<h2 
           className="text-xl font-semibold mb-4"
           style={{ color: currentTheme.colors.text }}
@@ -118,7 +118,7 @@ const ActivityOverview = ({
       </div>
 { !isPublic && (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
+        <div  className='rounded-lg p-4' style={{ backgroundColor: currentTheme.colors.card }}>
           <h3 
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
@@ -132,7 +132,7 @@ const ActivityOverview = ({
           </div>
         </div>
 
-        <div>
+        <div  className='rounded-lg p-4' style={{ backgroundColor: currentTheme.colors.card }}>
           <h3 
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
@@ -155,10 +155,13 @@ const ActivityOverview = ({
       </div>
 )}
 { !isPublic && (
+      <div className='rounded-lg p-4' style={{ backgroundColor: currentTheme.colors.card }}>
       <ActivityVisualizations 
         activityData={activityData}
         categoryData={categoryData}
-      />)}
+      />
+      </div>
+      )}
     </div>
   );
 };
