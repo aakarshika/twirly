@@ -188,6 +188,7 @@ const MainRoutingPage = () => {
             </SwipeBackWrapper>
             {/* <Footer /> */}
             <FloatingFeedbackButton />
+            <FeedbackModal />
           </div>
         </FeedbackProvider>
       </ComparisonDraftProvider>

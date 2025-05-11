@@ -14,6 +14,7 @@ const FeedbackManagement = () => {
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [feedbackToDelete, setFeedbackToDelete] = useState(null);
+  const [expandedMessages, setExpandedMessages] = useState({});
 
   // Check if user is admin
   const isAdmin = user && ADMIN_EMAILS.includes(user.email);
@@ -46,6 +47,13 @@ const FeedbackManagement = () => {
     } catch (error) {
       console.error('Error updating feedback status:', error);
     }
+  };
+
+  const toggleMessage = (id) => {
+    setExpandedMessages(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
   };
 
   const openDeleteModal = (feedback) => {
@@ -98,7 +106,7 @@ const FeedbackManagement = () => {
               <th className="px-4 py-2 text-left">Name</th>
               <th className="px-4 py-2 text-left">Type</th>
               <th className="px-4 py-2 text-left">Priority</th>
-              <th className="px-4 py-2 text-left">Message</th>
+              <th className="px-4 py-2 text-left w-1/3">Message</th>
               <th className="px-4 py-2 text-left">Image</th>
               <th className="px-4 py-2 text-left">Status</th>
               <th className="px-4 py-2 text-left">Date</th>
@@ -111,7 +119,21 @@ const FeedbackManagement = () => {
                 <td className="px-4 py-2">{feedback.name}</td>
                 <td className="px-4 py-2 capitalize">{feedback.type}</td>
                 <td className="px-4 py-2 capitalize">{feedback.priority}</td>
-                <td className="px-4 py-2 max-w-xs truncate" title={feedback.message}>{feedback.message}</td>
+                <td className="px-4 py-2">
+                  <div className="max-w-md">
+                    <p className={!expandedMessages[feedback.id] ? "line-clamp-2" : ""}>
+                      {feedback.message}
+                    </p>
+                    {feedback.message.length > 100 && (
+                      <button
+                        onClick={() => toggleMessage(feedback.id)}
+                        className="text-blue-600 hover:text-blue-800 text-sm mt-1"
+                      >
+                        {expandedMessages[feedback.id] ? "Show less" : "Show more"}
+                      </button>
+                    )}
+                  </div>
+                </td>
                 <td className="px-4 py-2">
                   {feedback.image_url ? (
                     <a
