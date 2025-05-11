@@ -22,12 +22,39 @@ export default function Landing() {
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
          style={{ backgroundColor: currentTheme.colors.background }}>
-      <div className="max-w-md w-full">
+      <div className="max-w-md w-full h-full">
         <div className="bg-white rounded-2xl shadow-xl p-8"
              style={{ 
                backgroundColor: currentTheme.colors.card,
                borderColor: currentTheme.colors.border,
-             }}>hey 
+             }}>
+              <div className="flex flex-col items-center justify-center"> 
+                <img src={'/public_logo_transparent.png'} alt="Twirly Logo" className="w-100 h-100" />
+                <h1 className="text-2xl font-bold">Welcome to Twirly</h1>
+                <p className="text-gray-500">Where your opinions matter</p>
+              </div>
+              <div className="flex flex-col items-center justify-center"> 
+                
+              <div className="items-center space-x-4 mt-10">
+                <Link
+                  to="/login"
+                  className="text-sm font-medium"
+                  style={{ color: currentTheme.colors.text }}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="text-sm font-medium px-4 py-2 rounded-lg"
+                  style={{
+                    backgroundColor: currentTheme.colors.primary,
+                    color: currentTheme.colors.buttonText
+                  }}
+                >
+                  Sign Up
+                </Link>
+              </div>
+              </div>
         </div>
       </div>
     </div>

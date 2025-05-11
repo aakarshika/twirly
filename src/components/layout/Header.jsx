@@ -255,7 +255,7 @@ const Header = () => {
                 </button>
               </div>
             ) : (
-              <div className="items-center space-x-4">
+              <div className="hidden md:flex items-center space-x-4">
                 <Link
                   to="/login"
                   className="text-sm font-medium"
