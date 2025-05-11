@@ -65,7 +65,8 @@ export const authService = {
   async deleteUser() {
     try {
       const { error } = await supabase.auth.admin.deleteUser(
-        (await supabase.auth.getUser()).data.user.id
+        (await supabase.auth.getUser()).data.user.id,
+        false
       );
       if (error) throw error;
     } catch (error) {

@@ -52,12 +52,15 @@ export const userService = {
 
       // Finally, save notification settings
       if (preferences.notifications && preferences.notifications.length > 0) {
+        
+        if(preferences.notifId) {
         const { error: deleteError } = await supabase
           .from('user_notification_settings')
           .delete()
           .eq('id', preferences.notifId);
 
-        if (deleteError) throw deleteError;
+          if (deleteError) throw deleteError;
+        }
 
         const { data: notifSuccess, error: notificationsError } = await supabase
           .from('user_notification_settings')

@@ -8,7 +8,6 @@ import Button from '../components/common/Button';
 import { ArrowRight, MessageSquare, Star, ChevronRight } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import ComparisonGridSkeleton from '../components/skeletons/ComparisonGridSkeleton';
 import ComparisonItemCardAspect from '../components/comparison/ComparisonItemCard/ComparisonItemCardAspect';
 import { splitAndJoin } from '../lib/utils';
 import { useComparisonAspectDetails } from '../hooks/useComparisonAspectDetails';
@@ -21,7 +20,7 @@ const PollScreenAspect = () => {
   const { user } = useAuth();
   const { currentTheme } = useTheme();
   const { isHeaderVisible } = useHeader();
-  const [showStartAnimation, setShowStartAnimation] = useState(false);
+  const [showStartAnimation, setShowStartAnimation] = useState(true);
   const [showEndAnimation, setShowEndAnimation] = useState(false);
   const {
     items,
@@ -41,11 +40,7 @@ const PollScreenAspect = () => {
 
   const handlers = useSwipeable({
     onSwipedLeft: () => {
-      setShowEndAnimation(true);
-      setTimeout(() => {
-        setShowEndAnimation(false);
-        navigate('/comparison-aspect/' + (parseInt(id) + 1).toString());
-      }, 500);
+      handleNextNavigation()
     },
     preventDefaultTouchmoveEvent: true,
     trackMouse: true,
@@ -58,10 +53,10 @@ const PollScreenAspect = () => {
 
   useEffect(() => {
     console.log('id', id);
+    setShowStartAnimation(true);
     if (id) {
       fetchComparisonDetails();
     }
-    setShowStartAnimation(true);
     const timer = setTimeout(() => {
       setShowStartAnimation(false);
     }, 500); // Match this with the animation duration
@@ -75,10 +70,11 @@ const PollScreenAspect = () => {
 
   const handleNextNavigation = () => {
     setShowEndAnimation(true);
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       setShowEndAnimation(false);
       navigate('/comparison-aspect/' + (parseInt(id) + 1).toString());
-    }, 500);
+      return () => clearTimeout(timer);
+  }, 350);
   };
 
   if (loading) {
@@ -113,7 +109,7 @@ const PollScreenAspect = () => {
     <div className="min-h-screen h-full flex flex-col max-w-4xl mx-auto"
       style={{
         backgroundColor: currentTheme.colors.background,
-        top: isHeaderVisible ? '64px' : '0px',
+        paddingTop: isHeaderVisible ? '44px' : '0px',
         paddingBottom: '80px',
         transform: 'translateZ(0)',
         WebkitTransform: 'translateZ(0)',
@@ -136,10 +132,12 @@ const PollScreenAspect = () => {
       </div>
       <div className="h-full flex flex-col max-w-4xl mx-auto" {...handlers}>
         <div className="">
-          <div className="space-y-4 m-4 " style={{ color: currentTheme.colors.primary }}>
+          <div className="space-y-4 " style={{ color: currentTheme.colors.primary }}>
 
 
-            <div className={`shadow-md rounded-md p-4 mobile-friendly-margin-bottom ${showStartAnimation ? 'vote-animation' : showEndAnimation ? 'vote-animation-reverse' : ''}`} style={{ backgroundColor: currentTheme.colors.card }}>
+            <div className={`shadow-md rounded-md p-4 mobile-friendly-margin-bottom 
+              ${showStartAnimation ? 'vote-animation' : showEndAnimation ? 'vote-animation-reverse' : ''}`} 
+              style={{ backgroundColor: currentTheme.colors.card }}>
 
               <div style={{ color: currentTheme.colors.text }}>
                 <div className="flex items-center justify-center m-4">

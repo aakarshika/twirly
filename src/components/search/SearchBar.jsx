@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { searchService } from '../../services/searchService';
 
-const SearchBar = ({ setMenuOpen }) => {
+const SearchBar = ({ searchComplete }) => {
   const [query, setQuery] = useState('');
   const [showResults, setShowResults] = useState(false);
   const [results, setResults] = useState({ sets: [], items: [], users: [] });
@@ -48,7 +48,7 @@ const SearchBar = ({ setMenuOpen }) => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (query.trim()) {
-      setMenuOpen(false);
+      searchComplete(false);
       navigate(`/search?q=${encodeURIComponent(query.trim())}`);
       setShowResults(false);
     }
@@ -56,7 +56,7 @@ const SearchBar = ({ setMenuOpen }) => {
 
   const handleResultClick = (result) => {
     setShowResults(false);
-    setMenuOpen(false);
+    searchComplete(false);
     // Navigate based on result type
     switch (result.type) {
       case 'item':
@@ -89,7 +89,8 @@ const SearchBar = ({ setMenuOpen }) => {
     }
 
     return (
-      <div>
+      <div 
+      style={{ transition: 'all 0.3s ease-in-out' }}>
         {allResults.map((result, index) => (
           <button
             key={index}
@@ -101,7 +102,7 @@ const SearchBar = ({ setMenuOpen }) => {
             }}
           >
             <div className="flex items-center">
-              <span className="font-medium">{result.name || result.username}</span>
+              <span className="font-medium">{result.name || result.display_name}</span>
               <span className="ml-2 text-sm text-gray-500">
                 {result.type.charAt(0).toUpperCase() + result.type.slice(1)}
               </span>
@@ -122,9 +123,9 @@ const SearchBar = ({ setMenuOpen }) => {
   };
 
   return (
-    <div className="relative" ref={searchRef}>
+    <div className="relative search-bar" ref={searchRef}>
       <form onSubmit={handleSearch} className="relative">
-        <input
+        {(<input
           type="text"
           value={query}
           onChange={(e) => {
@@ -139,7 +140,7 @@ const SearchBar = ({ setMenuOpen }) => {
             color: currentTheme.colors.text
           }}
           placeholder="Search..."
-        />
+        />)}
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2" size={18} />
         {query && (
           <button

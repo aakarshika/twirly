@@ -33,7 +33,7 @@ export const UserProfile = () => {
     <div className="user-profile">
       <h2>User Profile</h2>
       <div className="profile-info">
-        <p><strong>Username:</strong> {profile.username}</p>
+        <p><strong>Username:</strong> {profile.display_name}</p>
         <p><strong>Email:</strong> {user.email}</p>
         <p><strong>Member since:</strong> {new Date(profile.created_at).toLocaleDateString()}</p>
       </div>

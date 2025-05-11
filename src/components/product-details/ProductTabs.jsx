@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useNavigate, useParams } from 'react-router-dom';
-import ReviewsTab from './tabs/ReviewsTab';
 import AppearancesTab from './tabs/AppearancesTab';
 import CommentAppearancesTab from './tabs/CommentAppearancesTab';
 

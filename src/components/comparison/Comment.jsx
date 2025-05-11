@@ -34,7 +34,7 @@ const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPre
           setIsReplySectionExpanded(!isReplySectionExpanded);
         }}
         profile_image_url={comment.user?.profile_image_url}
-        display_name={comment.user?.username}
+        display_name={comment.user?.display_name}
         created_at={comment.created_at}
         text={comment.text}
         setIsReplying={setIsReplying}

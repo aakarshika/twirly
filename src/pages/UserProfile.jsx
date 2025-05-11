@@ -24,7 +24,7 @@ const UserProfile = () => {
         const { data: userPrefs, error: userError } = await supabase
           .from('user_preferences')
           .select('user_id, username, display_name, bio, profile_image_url, created_at')
-          .eq('username', username)
+          .eq('display_name', username)
           .single();
 
         if (userError) throw userError;
@@ -127,7 +127,7 @@ const UserProfile = () => {
             activeTab={activeTab} 
             setActiveTab={setActiveTab}
             userId={userData.profile.user_id}
-            username={userData.profile.username}
+            username={userData.profile.display_name}
             isPublic={true}
           />
         </div>

@@ -73,8 +73,8 @@ const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, as
       if (!error && data) {
         setUsers(data.map(user => ({
           id: user.user_id,
-          display:  user.username,
-          username: user.username
+          display:  user.display_name,
+          email: user.username
         })));
       }
     };
@@ -122,7 +122,7 @@ const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, as
                 replyClicked={() => {
                 }}
                 profile_image_url={aspectSet?.comparison_sets?.user?.profile_image_url}
-                display_name={aspectSet?.comparison_sets?.user?.username}
+                display_name={aspectSet?.comparison_sets?.user?.display_name}
                 created_at={aspectSet?.comparison_sets?.created_at}
                 text={aspectSet?.description}
                 userReaction={aspectSet?.userReaction}
@@ -135,9 +135,9 @@ const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, as
                 <div
                   onClick={() => navigate('/comparison/' + aspectSet?.comparison_sets?.id)}
                   className=" flex justify-between  rounded-md p-2"
-                  style={{ border: '1px solid ' + currentTheme.colors.primary, color: currentTheme.colors.primary }}
+                  style={{ backgroundColor: currentTheme.colors.backgroundColor, color: currentTheme.colors.primary }}
                 >
-                  <span className="text-sm" style={{ color: currentTheme.colors.primary }}>See Comparison
+                  <span className="text-sm text-bold" style={{ color: currentTheme.colors.primary }}>See Comparison
                     </span>
                     <ChartArea size={20} style={{ color: currentTheme.colors.primary }} />
                 </div>

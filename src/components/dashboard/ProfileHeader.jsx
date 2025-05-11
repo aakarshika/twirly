@@ -36,7 +36,7 @@ const ProfileHeader = ({ userData, isPublic = false }) => {
             className="text-2xl font-bold"
             style={{ color: currentTheme.colors.text }}
           >
-            {userData?.profile?.username}
+            {userData?.profile?.display_name}
           </h1>
           <p
             className="text-sm"

@@ -22,7 +22,7 @@ const Reply = ({ reply, onLike, onReply, appendText, items }) => {
             console.log('replyClicked');
           }}
           profile_image_url={reply.user?.profile_image_url}
-          display_name={reply.user?.username}
+          display_name={reply.user?.display_name}
           created_at={reply.created_at}
           text={reply.text}
           userReaction={reply.userReaction}

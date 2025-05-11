@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { useTheme } from '../../contexts/ThemeContext';
-import { User, Mail, Phone, MapPin, Globe, Camera, Save } from 'lucide-react';
+import { User, Mail, Phone, MapPin, Globe, Camera, Save, Twitter, Instagram, Facebook } from 'lucide-react';
 import Button from '../common/Button';
 
 const ProfileSettings = () => {
@@ -10,7 +10,7 @@ const ProfileSettings = () => {
   const { currentTheme } = useTheme();
   const [profileData, setProfileData] = useState({
     username: '',
-    displayName: '',
+    display_name: '',
     bio: '',
     email: '',
     profileImageUrl: '',
@@ -27,7 +27,7 @@ const ProfileSettings = () => {
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState('');
-
+  const [usernameError, setUsernameError] = useState(null);
   useEffect(() => {
     const fetchProfileData = async () => {
       if (!user) return;
@@ -165,18 +165,23 @@ const ProfileSettings = () => {
       const { error } = await supabase
         .from('user_preferences')
         .upsert({
+          id: profileData?.id,
           user_id: user.id,
           username: profileData.username,
-          display_name: profileData.displayName,
+          display_name: profileData.display_name,
           bio: profileData.bio,
-          profile_image_url: getPublicUrl(profileData.profile_image_url) // Store the file path instead of public URL
+          profile_image_url: profileData.profileImageUrl // Store just the file path
         });
 
       if (error) throw error;
       setIsEditing(false);
     } catch (err) {
-      console.error('Error saving profile:', err);
-      setError(err.message);
+      if(err.code === '23505') {
+        setUsernameError('Username already taken');
+      } else {
+        console.error('Error saving profile:', err);
+        setError(err.message);
+      }
     }
   };
   const getPublicUrl = (filePath) => {
@@ -251,7 +256,7 @@ const ProfileSettings = () => {
                 ) : (
                   <div className="w-full h-full flex items-center justify-center rounded-full" style={{ backgroundColor: currentTheme.colors.primary }}>
                     <span className="text-white text-2xl">
-                      {profileData.displayName?.[0] || profileData.username?.[0] || '?'}
+                      {profileData.display_name?.[0] || profileData.username?.[0] || '?'}
                     </span>
                   </div>
                 )}
@@ -303,17 +308,17 @@ const ProfileSettings = () => {
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
           >
-            Basic Information
+            Who are you?
           </h3>
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
               <User size={20} style={{ color: currentTheme.colors.text }} />
               <input
                 type="text"
-                name="username"
-                value={profileData.username}
+                name="display_name"
+                value={profileData.display_name}
                 onChange={handleInputChange}
-                placeholder="Username"
+                placeholder="Username.. What others will see"
                 readOnly={!isEditing}
                 className="flex-1 p-2 rounded-lg"
                 style={{ 
@@ -323,36 +328,20 @@ const ProfileSettings = () => {
                 }}
               />
             </div>
+            {usernameError && <p className="text-red-500 text-sm">{usernameError}</p>}
             <div className="flex items-center space-x-3">
               <Mail size={20} style={{ color: currentTheme.colors.text }} />
               <input
                 type="email"
                 name="email"
-                value={profileData.email}
+                value={user.email}
                 readOnly
                 placeholder="Email"
                 className="flex-1 p-2 rounded-lg"
                 style={{ 
                   backgroundColor: currentTheme.colors.background,
                   color: currentTheme.colors.text,
-                  border: `1px solid ${currentTheme.colors.border}`
-                }}
-              />
-            </div>
-            <div className="flex items-center space-x-3">
-              <User size={20} style={{ color: currentTheme.colors.text }} />
-              <input
-                type="text"
-                name="displayName"
-                value={profileData.displayName}
-                onChange={handleInputChange}
-                placeholder="Display Name"
-                readOnly={!isEditing}
-                className="flex-1 p-2 rounded-lg"
-                style={{ 
-                  backgroundColor: currentTheme.colors.background,
-                  color: currentTheme.colors.text,
-                  border: `1px solid ${currentTheme.colors.border}`
+                  border: `1px solid transparent`
                 }}
               />
             </div>
@@ -364,46 +353,12 @@ const ProfileSettings = () => {
                 value={profileData.phone}
                 onChange={handleInputChange}
                 placeholder="Phone Number"
-                readOnly={!isEditing}
+                readOnly
                 className="flex-1 p-2 rounded-lg"
                 style={{ 
                   backgroundColor: currentTheme.colors.background,
                   color: currentTheme.colors.text,
-                  border: `1px solid ${currentTheme.colors.border}`
-                }}
-              />
-            </div>
-            <div className="flex items-center space-x-3">
-              <MapPin size={20} style={{ color: currentTheme.colors.text }} />
-              <input
-                type="text"
-                name="location"
-                value={profileData.location}
-                onChange={handleInputChange}
-                placeholder="Location"
-                readOnly={!isEditing}
-                className="flex-1 p-2 rounded-lg"
-                style={{ 
-                  backgroundColor: currentTheme.colors.background,
-                  color: currentTheme.colors.text,
-                  border: `1px solid ${currentTheme.colors.border}`
-                }}
-              />
-            </div>
-            <div className="flex items-center space-x-3">
-              <Globe size={20} style={{ color: currentTheme.colors.text }} />
-              <input
-                type="url"
-                name="website"
-                value={profileData.website}
-                onChange={handleInputChange}
-                placeholder="Website"
-                readOnly={!isEditing}
-                className="flex-1 p-2 rounded-lg"
-                style={{ 
-                  backgroundColor: currentTheme.colors.background,
-                  color: currentTheme.colors.text,
-                  border: `1px solid ${currentTheme.colors.border}`
+                  border: `1px solid transparent`
                 }}
               />
             </div>
@@ -422,13 +377,14 @@ const ProfileSettings = () => {
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
           >
-            Bio
+            What are you?
           </h3>
           <textarea
             name="bio"
             onChange={handleInputChange}
             placeholder="Tell us about yourself..."
             readOnly={!isEditing}
+            value={profileData.bio}
             rows="4"
             className="w-full p-2 rounded-lg"
             style={{ 
@@ -453,7 +409,14 @@ const ProfileSettings = () => {
           >
             Social Links
           </h3>
-
+          
+          <div className="space-y-4 ml-4">
+            <div className="flex items-center space-x-3">
+              <Twitter size={30} style={{ color: currentTheme.colors.text }} />
+              <Instagram size={30} style={{ color: currentTheme.colors.text }} />
+              <Facebook size={30} style={{ color: currentTheme.colors.text }} />
+            </div>
+          </div>
         </div>
       </div>
     </div>

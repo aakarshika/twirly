@@ -26,7 +26,7 @@ const notificationsAll = [
 const OnboardingFlow = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { currentTheme } = useTheme();
   const { user } = useAuth();
@@ -42,6 +42,7 @@ const OnboardingFlow = () => {
   const [allCategories, setAllCategories] = useState([]);
 
   const fetchPreferences = async () => {
+    setLoading(true);
     const prefs = await userService.getUserPreferences(user.id);
     const notif = await userService.getUserNotificationSettings(user.id);
     const cats = await userService.getUserCategoryPreferences(user.id);
@@ -62,6 +63,7 @@ const OnboardingFlow = () => {
         setCurrentStep(3);
       }
     console.log(prefs);
+    setLoading(false);
   };
   useEffect(() => {
     fetchPreferences();
@@ -70,7 +72,7 @@ const OnboardingFlow = () => {
   useEffect(() => {
     if (onboardingComplete) {
       console.log('onboardingComplete');
-      navigate('/dashboard');
+      window.location.href = '/dashboard';
     }
   }, [onboardingComplete]);
 
@@ -157,7 +159,7 @@ const OnboardingFlow = () => {
         notifId: notif?.id || null,
       });
       setOnboardingComplete(true);
-      window.location.href = '/dashboard';
+      navigate('/dashboard', { replace: true });
     } catch (error) {
       setError('Error saving preferences. Please try again.');
       console.error('Error saving preferences:', error);
@@ -218,7 +220,9 @@ const OnboardingFlow = () => {
               Select categories you're interested in to see relevant comparisons
             </p>
             <div className="grid grid-cols-2 gap-4">
-              {categoriesAll.map((category) => (
+              {categoriesAll.map((category) => {
+                console.log(category, selectedCategories);
+                return (
                 <button
                   key={category.id}
                   onClick={() => handleCategoryToggle(category.id)}
@@ -229,9 +233,9 @@ const OnboardingFlow = () => {
                   }`}
                 >
                   <span className="text-2xl">{category.icon}</span>
-                  <p className="mt-2 font-medium">{category.name}</p>
+                  <p className="mt-2 font-medium" style={{ color: currentTheme.colors.primary }}>{category.name}</p>
                 </button>
-              ))}
+              )})}
             </div>
           </div>
         );
@@ -255,7 +259,7 @@ const OnboardingFlow = () => {
                     onChange={() => handleNotificationToggle(pref.id)}
                     className="h-5 w-5 text-indigo-600 rounded"
                   />
-                  <span>{pref.name}</span>
+                  <span style={{ color: currentTheme.colors.primary }}>{pref.name}</span>
                 </label>
               ))}
             </div>
@@ -266,7 +270,15 @@ const OnboardingFlow = () => {
         return null;
     }
   };
-
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: currentTheme.colors.background }}>
+        <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-8">
+          <img src="/public_logo_transparent.png" alt="logo" className="h-40 w-40 mx-auto rotate-45" />
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: currentTheme.colors.background }}>
       <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-8">

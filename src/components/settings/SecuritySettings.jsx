@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 
 const SecuritySettings = () => {
   const { currentTheme } = useTheme();
-  const { user, logout } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [securitySettings, setSecuritySettings] = useState({
     twoFactorAuth: false,
@@ -89,7 +89,7 @@ const SecuritySettings = () => {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await signOut();
       navigate('/login');
     } catch (error) {
       console.error('Error logging out:', error);

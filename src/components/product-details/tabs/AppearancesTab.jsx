@@ -52,10 +52,10 @@ const AppearancesTab = ({ item, comparisonSets }) => {
           key={set.id} 
           className="flex flex-col p-6 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors"
           style={{ backgroundColor: currentTheme.colors.card }}
-          // onClick={() => navigate(`/comparison/${set.id}`)}
+          onClick={() => navigate(`/comparison/${set.id}`)}
         >
           <div className="flex flex-col items-start mb-4"
-          onClick={() => navigate(`/comparison/${set.id}`)}
+          // onClick={() => navigate(`/comparison/${set.id}`)}
           >
             <h3 className="font-semibold text-lg hover:text-blue-400 transition-colors"
               style={{ color: currentTheme.colors.text }}
@@ -104,7 +104,7 @@ const AppearancesTab = ({ item, comparisonSets }) => {
                   />
                 </div>)}
                 {!userVoted && (<div className="m-2 rounded-lg p-4"
-          style={{ backgroundColor: 'white' }}>
+          style={{ backgroundColor: 'white', color: currentTheme.colors.primary }}>
                   <p>Play all to unlock metrics</p>
                 </div>)}
         </div>

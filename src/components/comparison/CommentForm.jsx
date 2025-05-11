@@ -27,7 +27,7 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
     },
     input: {
       fontSize: 16,
-      margin: 0,
+      margin: '5px',
       backgroundColor: 'white',
       color: '#1a202c',
       '&:focus': {
@@ -65,7 +65,7 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
   const renderSuggestionUsers = (suggestion, search, highlightedDisplay) => (
     <div className="flex flex-col items-start">
       <span className="font-medium">{highlightedDisplay}</span>
-      <span className="text-gray-500 text-sm">@{suggestion.username}</span>
+      <span className="text-gray-500 text-sm">@{suggestion.display_name}</span>
     </div>
   );
 
@@ -77,12 +77,12 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
           <div className="flex">
             <img
               src={getPublicUrl(userPreferences?.profile_image_url)}
-              alt={userPreferences?.username || 'User'}
+              alt={userPreferences?.display_name || 'User'}
               className="w-6 h-6 rounded-full mr-2"
             />
 
             <div className="flex flex-col w-full">
-              <span className="font-bold text-start text-md">{userPreferences?.username || 'Anonymous'}</span>
+              <span className="font-bold text-start text-md">{userPreferences?.display_name || 'Anonymous'}</span>
               <div className="w-full" style={{border: '1px solid #e2e8f0'}}>
                 <div className="flex flex-col w-full">
                   <MentionsInput

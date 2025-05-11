@@ -155,12 +155,12 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
             <div className="flex items-center space-x-2">
               <img
                 src={getPublicUrl(comment.user?.profile_image_url || '/default-avatar.png')}
-                alt={comment.user?.username || 'User'}
+                alt={comment.user?.display_name || 'User'}
                 className="w-8 h-8 rounded-full"
               />
               <div>
                 <p className="font-medium text-gray-900 dark:text-gray-100">
-                  {comment.user?.username || 'Anonymous'}
+                  {comment.user?.display_name || 'Anonymous'}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   @ '{comment.set.comparison_sets.name}'
@@ -195,11 +195,11 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
                   <div className="flex items-center space-x-2">
                     <img
                       src={getPublicUrl( reply.user?.profile_image_url || '/default-avatar.png')}
-                      alt={reply.user?.username || 'User'}
+                      alt={reply.user?.display_name || 'User'}
                       className="w-6 h-6 rounded-full"
                     />
                     <p className="font-medium text-gray-900 dark:text-gray-100">
-                      {reply.user?.username || 'Anonymous'}
+                      {reply.user?.display_name || 'Anonymous'}
                     </p>
                   </div>
                   <p className="mt-1 text-gray-700 dark:text-gray-300" style={{ textAlign: 'start' }}>

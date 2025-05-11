@@ -1,7 +1,7 @@
 // File: src/components/layout/Header.jsx
 
 import React, { useState, useEffect } from 'react';
-import { Sparkles, RefreshCw, PlusCircle, Menu, X, Sun, Moon, Home, BarChart2, Settings, User, Building2, ArrowLeft, ChevronDown, ChevronUp, ChevronRight, Settings2, Plus, File } from 'lucide-react';
+import { Sparkles, RefreshCw, PlusCircle, Menu, X, Sun, Moon, Home, BarChart2, Settings, User, Building2, ArrowLeft, ChevronDown, ChevronUp, ChevronRight, Settings2, Plus, File, Search } from 'lucide-react';
 import { useComparison } from '../../contexts/ComparisonContext';
 import { useHeader } from '../../contexts/HeaderContext';
 import Button from '../common/Button';
@@ -35,6 +35,7 @@ const Header = () => {
   const [addSectionExpanded, setAddSectionExpanded] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       if (!user) return;
@@ -83,7 +84,7 @@ const Header = () => {
       const scrollThreshold = 10;
 
       if (currentScrollY > lastScrollY && currentScrollY > scrollThreshold) {
-        setIsHeaderVisible(true);
+        setIsHeaderVisible(false);
       } else {
         setIsHeaderVisible(true);
       }
@@ -107,6 +108,9 @@ const Header = () => {
   const handleClickOutside = (e) => {
     if (isDrawerOpen && !e.target.closest('.settings-drawer') && !e.target.closest('.drawer-button')) {
       setIsDrawerOpen(false);
+    }
+    if (isSearchExpanded && !e.target.closest('.search-bar')) {
+      setIsSearchExpanded(false);
     }
   };
 
@@ -143,6 +147,7 @@ const Header = () => {
     try {
       await signOut();
       navigate('/login');
+      setIsDrawerOpen(false);
     } catch (error) {
       console.error('Error logging out:', error);
     }
@@ -150,19 +155,7 @@ const Header = () => {
 
   if (loading) {
     return (
-      <div
-        className="min-h-screen p-4 p-y-8 md:p-8 flex items-center justify-center"
-        style={{
-          backgroundColor: currentTheme.colors.background,
-          position: 'relative',
-          top: isHeaderVisible ? '64px' : '0px',
-        }}
-      >
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4" style={{ color: currentTheme.colors.text }}>Loading dashboard...</p>
-        </div>
-      </div>
+      <></>
     );
   }
 
@@ -194,16 +187,17 @@ const Header = () => {
           <div className="flex flex-row items-center">
             <Link to="/" className="flex items-center">
               <div className="flex flex-col items-center">
-                <img src="/public_logo.png" alt="Twirly Logo" className="w-10 h-10 mr-2" />
+                <img src="/public_logo_transparent.png" alt="Twirly Logo" className="w-10 h-10 mr-2" />
               </div>
-              <h1 className="ml-2 text-lg font-bold" style={{ color: currentTheme.colors.text }}>{pageName}</h1>
+              {!isSearchExpanded && (<h1 className="ml-2 text-lg font-bold" style={{ color: currentTheme.colors.text }}>{pageName}</h1>) }
             </Link>
           </div>
 
           {/* Search Bar - Hidden on mobile */}
-          <div className="hidden md:block flex-1 max-w-xl mx-8">
+          <div className="hidden md:block flex-1 max-w-xl mx-8 mr-4">
             <SearchBar setMenuOpen={() => setIsDrawerOpen(false)} />
           </div>
+
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
@@ -223,7 +217,29 @@ const Header = () => {
           {/* Action Buttons */}
           <div className="flex items-center space-x-4">
             {user ? (
-              <div className="flex items-center space-x-4">
+              <div className="flex flex-row items-center space-x-4">
+
+                {location.pathname !== '/search' && (
+                  <div className="" >
+                    {/* animate the search bar expanding and collapsing */}
+                  <div className="flex flex-row items-center md:hidden" 
+                  style={{ transition: 'all 0.3s ease-in-out' }}
+                  >
+                    {isSearchExpanded && (
+                      <SearchBar 
+                        searchComplete={() => {
+                          setIsDrawerOpen(false);
+                          setIsSearchExpanded(false);
+                        }} />
+                    )}
+                    {!isSearchExpanded ? (
+                      <Search size={24} onClick={() => setIsSearchExpanded(true)} />
+                    ) : (
+                      <X size={24} onClick={() => setIsSearchExpanded(false)} />
+                    )}
+                  </div>
+                  </div>
+                )}
                 <button
                   onClick={handleDrawerClick}
                   className="p-2 rounded-md drawer-button"
@@ -262,6 +278,7 @@ const Header = () => {
       {isDrawerOpen && (
         <div
           className="fixed inset-0 z-50 settings-drawer"
+          style={{ backgroundColor: currentTheme.colors.background }}
         >
           <div
             className="fixed right-0 top-0 h-full w-80 transform transition-transform duration-300 ease-in-out"
@@ -271,7 +288,7 @@ const Header = () => {
               <div className="flex flex-col">
               <div className="flex items-center justify-between">
                 <div className="flex flex-row justify-center">
-                  <img src="/public_logo.png" alt="Twirly Logo" className="w-10 h-10 mr-2" />
+                  <img src="/public_logo_transparent.png" alt="Twirly Logo" className="w-10 h-10 mr-2" />
                   <h2 className="text-xl mt-2 font-semibold" style={{ color: currentTheme.colors.text }}>Welcome to Twirly</h2>
                 </div>
                 <button
@@ -296,7 +313,10 @@ const Header = () => {
 
                   <div
                     className="flex items-start space-x-4 mb-6 cursor-pointer mt-4"
-                    onClick={() => navigate('/dashboard')}
+                    onClick={() => {
+                      navigate('/dashboard')
+                      setIsDrawerOpen(false)
+                    }}
                   >
                     <div
                       className="w-16 h-16 rounded-full bg-cover bg-center flex-shrink-0 border-2"
@@ -320,7 +340,7 @@ const Header = () => {
                         className="font-semibold text-lg mb-1"
                         style={{ color: currentTheme.colors.text }}
                       >
-                        @{userData?.profile?.display_name || 'username'}
+                        @{userData?.profile?.display_name || 'Some Person'}
                       </h3>
                       <div
                         className="text-sm mb-1"

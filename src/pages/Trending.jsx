@@ -100,7 +100,7 @@ const Trending = () => {
           {trendingSets.map((set) => {
             return (
             <div key={set.aspect_set_id}>
-              <TrendingCard set={set} />
+              <TrendingCard set={set} from={'trending'} />
             </div>
             )
           })}

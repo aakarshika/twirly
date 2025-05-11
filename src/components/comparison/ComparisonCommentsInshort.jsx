@@ -72,8 +72,8 @@ const ComparisonCommentsInshort = ({ aspectSetId, items, aspectSet }) => {
       if (!error && data) {
         setUsers(data.map(user => ({
           id: user.user_id,
-          display: user.username,
-          username: user.username
+          display: user.display_name,
+          email: user.username
         })));
       }
     };

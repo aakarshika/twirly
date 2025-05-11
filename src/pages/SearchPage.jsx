@@ -67,7 +67,7 @@ const SearchPage = () => {
     
     return (
       <div key={comparison.aspect_set_id}>
-        <TrendingCard set={comparison} />
+        <TrendingCard set={comparison} from={'search'} />
       </div>
       )
   };

@@ -102,6 +102,14 @@ const ComparisonItemCardAspect = ({
           isActive={isVotedItem}
         />
 
+{userVoted ? (
+            <span></span>
+          ) : (
+            <VotingAnimation
+              onStartVoting={startVoting}
+              onCancelVoting={() => { }}
+            />
+          )}
         <div className="image-container">
           {isVotedItem && (
             <button
@@ -115,14 +123,6 @@ const ComparisonItemCardAspect = ({
             </button>
           )}
 
-          {userVoted ? (
-            <span></span>
-          ) : (
-            <VotingAnimation
-              onStartVoting={startVoting}
-              onCancelVoting={() => { }}
-            />
-          )}
           {!imageError ? (
             <img
               src={item.image_url}

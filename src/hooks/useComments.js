@@ -43,7 +43,7 @@ export const useComments = (setId, userId) => {
         ...comment,
         user: { 
           profile_image_url: userPreferences?.profile_image_url,
-          username: userPreferences?.username || 'Someone'
+          display_name: userPreferences?.display_name || 'Someone'
         }
       };
 
@@ -108,7 +108,7 @@ export const useComments = (setId, userId) => {
         ...reply,
         user: { 
           profile_image_url: userPreferences?.profile_image_url,
-          username: userPreferences?.username || 'Someone'
+          display_name: userPreferences?.display_name || 'Someone'
         }
       };
       console.log('enrichedReply', enrichedReply);

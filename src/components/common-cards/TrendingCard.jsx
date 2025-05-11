@@ -6,7 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { splitAndJoin } from '../../lib/utils';
 
-const TrendingCard = ({set}) => {
+const TrendingCard = ({set, from}) => {
     const {user} = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -43,8 +43,9 @@ const TrendingCard = ({set}) => {
         setLoading(false);
       }
     };
-
-    getUserVoted();
+    if (from === 'search') {
+      getUserVoted();
+    }
   }, [user]);
 
 
@@ -88,7 +89,7 @@ const TrendingCard = ({set}) => {
                 {(!item.image_url || set.imageError )&& (
                   <div
                     className="absolute inset-0 flex items-center justify-center text-lg font-bold"
-                    style={{ backgroundColor: voted_item_id ?  item.item_color_string : 'white' }}
+                    style={{ color: 'black', backgroundColor: voted_item_id ?  item.item_color_string : 'white' }}
                   >
                     {item.name}
                   </div>

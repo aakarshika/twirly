@@ -42,16 +42,9 @@ const UserDashboard = () => {
 
   if (loading) {
     return (
-      <div 
-        className="min-h-screen p-4 p-y-8 md:p-8 flex items-center justify-center"
-        style={{ backgroundColor: currentTheme.colors.background,
-          position: 'relative',
-          top: isHeaderVisible ? '64px' : '0px',
-        }}
-      >
+      <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4" style={{ color: currentTheme.colors.text }}>Loading dashboard...</p>
+          <img src="/public_logo_transparent.png" alt="logo" className="h-100 w-100 mx-auto" />
         </div>
       </div>
     );

@@ -28,54 +28,61 @@ import WaitingVerification from '../components/auth/WaitingVerification';
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
   const [isOnboardingComplete, setIsOnboardingComplete] = useState(false);
-  const [isChecking, setIsChecking] = useState(false);
+  const [checkingOnboarding, setCheckingOnboarding] = useState(true);
+  const location = useLocation();
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
       if (!user) return;
-      setIsChecking(true);
       try {
         const prefs = await userService.getUserPreferences(user.id);
         const cats = await userService.getUserCategoryPreferences(user.id);
         const notif = await userService.getUserNotificationSettings(user.id);
-        setIsOnboardingComplete(prefs && prefs.display_name && cats.length > 0 && notif.created_at !== notif.updated_at);
+        const isComplete = prefs && prefs.display_name && cats.length > 0 && notif.created_at !== notif.updated_at;
+        setIsOnboardingComplete(isComplete);
       } catch (error) {
         console.error('Error checking onboarding status:', error);
         setIsOnboardingComplete(false);
       } finally {
-        setIsChecking(false);
+        setCheckingOnboarding(false);
       }
     };
 
-    checkOnboardingStatus();
+    if (user) {
+      checkOnboardingStatus();
+    } else {
+      setCheckingOnboarding(false);
+    }
   }, [user]);
 
-  if (loading ) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading User...</p>
+          <img src="/public_logo_transparent.png" alt="logo" className="h-100 w-100 mx-auto rotate-45" />
         </div>
       </div>
     );
   }
-  if (isChecking) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Click on the link sent to your email to verify your account</p>
-        </div>
-      </div>
-    );
-  }  
+
   if (!user) {
     return <Navigate to="/login" />;
   }
-  if (user && !isOnboardingComplete) {
-    return <OnboardingFlow />;
+
+  if (checkingOnboarding) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <img src="/public_logo_transparent.png" alt="logo" className="h-100 w-100 mx-auto rotate-45" />
+        </div>
+      </div>
+    );
   }
+
+  if (!isOnboardingComplete && location.pathname !== '/onboarding') {
+    return <Navigate to="/onboarding" replace />;
+  }
+
   return children;
 };
 
@@ -145,6 +152,7 @@ const MainRoutingPage = () => {
               <Routes>
                 
                 {/* Protected Routes */}
+                <Route path="/onboarding" element={<ProtectedRoute><OnboardingFlow /></ProtectedRoute>}/>
                 <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>}/>
                 <Route path="/" element={<ProtectedRoute><Trending /></ProtectedRoute>}/>
                 <Route path="/comparison-aspect/:id" element={<ProtectedRoute><PollScreenAspect /></ProtectedRoute>}/>
