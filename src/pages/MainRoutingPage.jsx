@@ -178,17 +178,18 @@ const MainRoutingPage = () => {
                   {/* Waiting Verification Route */}
                   <Route path="/waiting-verification" element={<WaitingVerification />} />
 
-                {/* Public Routes */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/landing" element={<Landing />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-
-              </Routes>
-            </main>
-          </SwipeBackWrapper>
-          {/* <Footer /> */}
-        </div>
+                  {/* Public Routes */}
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/landing" element={<Landing />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                </Routes>
+              </main>
+            </SwipeBackWrapper>
+            {/* <Footer /> */}
+            <FloatingFeedbackButton />
+          </div>
+        </FeedbackProvider>
       </ComparisonDraftProvider>
     </ComparisonProvider>
   );
