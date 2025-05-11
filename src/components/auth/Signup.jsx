@@ -3,6 +3,8 @@ import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { authService } from '../../services/authService';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { User, Lock } from 'lucide-react';
+
 export default function Signup() {
   const { user } = useAuth();
   const [formData, setFormData] = useState({
@@ -78,120 +80,133 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
          style={{ backgroundColor: currentTheme.colors.background }}>
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Join our community and start exploring
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm space-y-4">
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email address
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="you@example.com"
-                style={{
-                  backgroundColor: currentTheme.colors.background,
-                  borderColor: currentTheme.colors.border,
-                  color: currentTheme.colors.text,
-                }}
-                value={formData.email}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="new-password"
-                required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="••••••••"
-                style={{
-                  backgroundColor: currentTheme.colors.background,
-                  borderColor: currentTheme.colors.border,
-                  color: currentTheme.colors.text,
-                }}
-                value={formData.password}
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirm Password
-              </label>
-              <input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                autoComplete="new-password"
-                required
-                className="mt-1 appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="••••••••"
-                style={{
-                  backgroundColor: currentTheme.colors.background,
-                  borderColor: currentTheme.colors.border,
-                  color: currentTheme.colors.text,
-                }}
-                value={formData.confirmPassword}
-                onChange={handleChange}
-              />
-            </div>
+      <div className="max-w-md w-full">
+        <div className="bg-white rounded-2xl shadow-xl p-8"
+             style={{ 
+               backgroundColor: currentTheme.colors.card,
+               borderColor: currentTheme.colors.border,
+             }}>
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-center mb-2"
+                style={{ color: currentTheme.colors.text }}>
+              SIGN UP
+            </h2>
           </div>
 
-          {error && (
-            <div className="text-red-500 text-sm text-center bg-red-50 p-2 rounded-md">
-              {error}
-            </div>
-          )}
+          <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium mb-2"
+                       style={{ color: currentTheme.colors.text }}>
+                  Email
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <User size={20} className="text-gray-400" />
+                  </div>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="pl-10 w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-offset-2 transition-colors"
+                    style={{
+                      backgroundColor: currentTheme.colors.background,
+                      borderColor: currentTheme.colors.border,
+                      color: currentTheme.colors.text,
+                    }}
+                    placeholder="Enter your email"
+                  />
+                </div>
+              </div>
 
-          <div>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium mb-2"
+                       style={{ color: currentTheme.colors.text }}>
+                  Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock size={20} className="text-gray-400" />
+                  </div>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="pl-10 w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-offset-2 transition-colors"
+                    style={{
+                      backgroundColor: currentTheme.colors.background,
+                      borderColor: currentTheme.colors.border,
+                      color: currentTheme.colors.text,
+                    }}
+                    placeholder="Enter your password"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="confirmPassword" className="block text-sm font-medium mb-2"
+                       style={{ color: currentTheme.colors.text }}>
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock size={20} className="text-gray-400" />
+                  </div>
+                  <input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type="password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className="pl-10 w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-offset-2 transition-colors"
+                    style={{
+                      backgroundColor: currentTheme.colors.background,
+                      borderColor: currentTheme.colors.border,
+                      color: currentTheme.colors.text,
+                    }}
+                    placeholder="Confirm your password"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {error && (
+              <div className="text-red-500 text-sm text-center">
+                {error}
+              </div>
+            )}
+
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-2 px-4 rounded-lg font-medium transition-colors"
+              style={{
+                backgroundColor: currentTheme.colors.primary,
+                color: currentTheme.colors.buttonText,
+                opacity: loading ? 0.7 : 1
+              }}
             >
-              {loading ? (
-                <span className="flex items-center">
-                  <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                  </svg>
-                  Creating account...
-                </span>
-              ) : (
-                'Create account'
-              )}
+              {loading ? 'Creating account...' : 'SIGN UP'}
             </button>
-          </div>
+          </form>
 
-          <div className="text-sm text-center">
-            <span className="text-gray-600">Already have an account? </span>
+          <p className="mt-8 text-center text-sm" style={{ color: currentTheme.colors.textSecondary }}>
+            Already have an account?{' '}
             <Link
               to="/login"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
+              className="font-medium hover:underline"
+              style={{ color: currentTheme.colors.primary }}
             >
-              Sign in
+              LOGIN
             </Link>
-          </div>
-        </form>
+          </p>
+        </div>
       </div>
     </div>
   );
