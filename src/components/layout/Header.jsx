@@ -141,7 +141,7 @@ const Header = () => {
   ];
 
 
-  const pageName = 'TWIRLY';
+  const pageName = 'TWIRLY pushing on main';
 
   const handleLogout = async () => {
     try {
