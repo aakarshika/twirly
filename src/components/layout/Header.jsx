@@ -177,14 +177,14 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-40 w-full border-b transition-transform duration-300 ${isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
+      className={`fixed container mx-auto top-0 left-0 right-0 z-40 w-full border-b transition-transform duration-300 ${isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
         }`}
       style={{
         backgroundColor: currentTheme.colors.background,
         borderColor: currentTheme.colors.card,
       }}
     >
-      <div className="container mx-auto px-4 header-content">
+      <div className="px-4 header-content">
         <div className="flex items-center justify-between h-full">
           {/* Logo and Title */}
           <div className="flex flex-row items-center">
@@ -202,7 +202,8 @@ const Header = () => {
           </div>)}
 
 
-          {user && (<div >
+          {user && (
+            <div >
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {mainNavItems.map((item) => (
@@ -222,6 +223,7 @@ const Header = () => {
           {/* Action Buttons */}
           <div className="flex items-center space-x-4">
             {user ? (
+              <>
               <div className="flex flex-row items-center space-x-4">
 
                 {location.pathname !== '/search' && (
@@ -254,39 +256,15 @@ const Header = () => {
                   <Menu size={24} />
                 </button>
               </div>
-            ) : (
-              <div className="hidden md:flex items-center space-x-4">
-                <Link
-                  to="/login"
-                  className="text-sm font-medium"
-                  style={{ color: currentTheme.colors.text }}
-                >
-                  Login
-                </Link>
-                <Link
-                  to="/signup"
-                  className="text-sm font-medium px-4 py-2 rounded-lg"
-                  style={{
-                    backgroundColor: currentTheme.colors.primary,
-                    color: currentTheme.colors.buttonText
-                  }}
-                >
-                  Sign Up
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
 
       {/* Settings Drawer */}
-      {isDrawerOpen && user && (
+      {isDrawerOpen && (
         <div
-          className="fixed inset-0 z-50 settings-drawer"
+          className="fixed z-50 settings-drawer "
           style={{ backgroundColor: currentTheme.colors.background }}
         >
           <div
-            className="fixed right-0 top-0 h-full w-80 transform transition-transform duration-300 ease-in-out"
+            className="fixed right-0 top-0 h-full w-80 transform transition-transform duration-300 ease-in-out "
             
           >
             <div className="" style={{ borderColor: currentTheme.colors.border, backgroundColor: currentTheme.colors.background, padding: '10px' }}>
@@ -477,6 +455,32 @@ const Header = () => {
           </div>
         </div>
       )}
+              </>
+            ) : (
+              <div className="hidden md:flex items-center space-x-4">
+                <Link
+                  to="/login"
+                  className="text-sm font-medium"
+                  style={{ color: currentTheme.colors.text }}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/signup"
+                  className="text-sm font-medium px-4 py-2 rounded-lg"
+                  style={{
+                    backgroundColor: currentTheme.colors.primary,
+                    color: currentTheme.colors.buttonText
+                  }}
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
     </header>
   );
 };
