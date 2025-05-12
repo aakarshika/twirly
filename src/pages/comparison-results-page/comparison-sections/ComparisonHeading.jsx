@@ -2,13 +2,13 @@
 
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
-import { useComparison } from '../../contexts/ComparisonContext';
+import { useComparison } from '../../../contexts/ComparisonContext';
 import { useState } from 'react';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useTheme } from '../../contexts/ThemeContext';
-import ComparisonGridSkeleton from '../skeletons/ComparisonGridSkeleton';
-import { splitAndJoin } from '../../lib/utils';
+import { useTheme } from '../../../contexts/ThemeContext';
+import ComparisonGridSkeleton from '../../../components/skeletons/ComparisonGridSkeleton';
+import { splitAndJoin } from '../../../lib/utils';
 
 /**
  * Grid component to display comparison items

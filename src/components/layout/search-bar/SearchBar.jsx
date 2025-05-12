@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useTheme } from '../../contexts/ThemeContext';
-import { searchService } from '../../services/searchService';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { searchService } from '../../../services/searchService';
 
 const SearchBar = ({ searchComplete }) => {
   const [query, setQuery] = useState('');

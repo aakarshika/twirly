@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Search, Filter } from 'lucide-react';
-import { searchService } from '../services/searchService';
+import { searchService } from '../../../services/searchService';
 import { Link } from 'react-router-dom';
-import TrendingCard from '../components/common-cards/TrendingCard';
-import ItemCard from '../components/common-cards/ItemCard';
-import { useTheme } from '../contexts/ThemeContext';
-import { getPublicUrl } from '../lib/utils';
-import { useHeader } from '../contexts/HeaderContext';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { getPublicUrl } from '../../../lib/utils';
+import { useHeader } from '../../../contexts/HeaderContext';
+import ItemCard from '../../../components/common/common-cards/ItemCard';
+import TrendingCard from '../../../components/common/common-cards/TrendingCard';
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('q') || '';

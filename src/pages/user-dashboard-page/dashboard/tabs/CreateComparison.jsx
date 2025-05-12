@@ -7,7 +7,7 @@ import { createComparison, getUnpublishedComparison, updateComparison, getCompar
 import { X, Check, Search, User, Trash2, Plus, PlusIcon, PlusCircle } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useHeader } from '../../../../contexts/HeaderContext';
-import ItemCard from '../../../../components/common-cards/ItemCard';
+import ItemCard from '../../../../components/common/common-cards/ItemCard';
 
 const CreateComparison = () => {
   const { currentTheme } = useTheme();

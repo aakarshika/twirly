@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Edit2, Trash2, Save, X } from 'lucide-react';
 import { updateProduct, deleteProduct } from '../../../services/products';
 import { useNavigate } from 'react-router-dom';
-import ItemCard from '../../../components/common-cards/ItemCard';
+import ItemCard from '../../../components/common/common-cards/ItemCard';
 import { useTheme } from '../../../contexts/ThemeContext';
 const ProductCard = ({ product, onUpdate, onDelete, isPublic }) => {
   const { currentTheme } = useTheme();

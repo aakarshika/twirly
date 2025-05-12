@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { Heart, MessageSquare } from 'lucide-react';
-import { getPublicUrl } from '../../lib/utils';
-import { renderTextWithMentions } from '../../lib/commentUtils';
+import { getPublicUrl } from '../../../lib/utils';
+import { renderTextWithMentions } from '../../../lib/commentUtils';
 import { useNavigate } from 'react-router-dom';
-import Avatar from '../common/Avatar';
+import Avatar from '../Avatar';
 
 const CommentHeader = ({ onLike, isReplySectionExpanded, replyClicked,
   items,

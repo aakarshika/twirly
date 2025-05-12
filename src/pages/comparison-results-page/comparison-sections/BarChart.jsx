@@ -1,8 +1,8 @@
 import React from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { COMPARISON_COLOR_SET } from '../../../lib/constants';
-import ComparisonCommentsInshort from '../../comparison/ComparisonCommentsInshort';
-import Button from '../../common/Button';
+import ComparisonCommentsInshort from './ComparisonCommentsInshort';
+import Button from '../../../components/common/Button';
 import { Info, MessageSquareShare, Play, Share, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';

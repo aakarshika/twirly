@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTheme } from '../contexts/ThemeContext';
-import { useComparison } from '../contexts/ComparisonContext';
-import { useHeader } from '../contexts/HeaderContext';
-import PollGrid from '../components/comparison/PollGrid';
-import BarChart from '../components/results/visualizations/BarChart';
-import { useComparisonDetails } from '../hooks/useComparisonDetails';
-import Button from '../components/common/Button';
+import { useTheme } from '../../contexts/ThemeContext';
+import { useComparison } from '../../contexts/ComparisonContext';
+import { useHeader } from '../../contexts/HeaderContext';
+import PollGrid from './comparison-sections/PollGrid';
+import BarChart from './comparison-sections/BarChart';
+import { useComparisonDetails } from '../../hooks/useComparisonDetails';
+import Button from '../../components/common/Button';
 import { MessageSquare, Star } from 'lucide-react';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../contexts/AuthContext';
-import ComparisonGridSkeleton from '../components/skeletons/ComparisonGridSkeleton';
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
+import ComparisonGridSkeleton from '../../components/skeletons/ComparisonGridSkeleton';
 
 const PollScreen = () => {
   const { id } = useParams();
@@ -124,6 +124,7 @@ const PollScreen = () => {
   }
 
   return (
+    
     <div className="min-h-screen h-full flex flex-col max-w-4xl mx-auto"
     
     style={{ 

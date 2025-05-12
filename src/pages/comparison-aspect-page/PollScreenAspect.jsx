@@ -3,16 +3,13 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useHeader } from '../../contexts/HeaderContext';
 import { useSwipeable } from 'react-swipeable';
-import PollGrid from '../../components/comparison/PollGrid';
-import Button from '../../components/common/Button';
-import { ArrowRight, MessageSquare, Star, ChevronRight } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { ChevronRight } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import ComparisonItemCardAspect from './ComparisonItemCard/ComparisonItemCardAspect';
 import { splitAndJoin } from '../../lib/utils';
 import { useComparisonAspectDetails } from '../../hooks/useComparisonAspectDetails';
 import './PollScreenAspect.css';
-import ComparisonSetAspectsCommentsSection from '../../components/comparison/ComparisonSetAspectsCommentsSection';
+import ComparisonSetAspectsCommentsSection from './ComparisonSetAspectsCommentsSection';
 
 const PollScreenAspect = () => {
   const { id } = useParams();

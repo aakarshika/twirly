@@ -2,9 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare } from 'lucide-react';
 // eslint-disable-next-line react/default-props-match-prop-types
 import { MentionsInput, Mention } from 'react-mentions';
-import { supabase } from '../../lib/supabase';
-import { getPublicUrl } from '../../lib/utils';
-import Avatar from '../common/Avatar';
+import Avatar from '../Avatar';
 
 const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, items, userPreferences, type }) => {
   const inputRef = useRef(null);

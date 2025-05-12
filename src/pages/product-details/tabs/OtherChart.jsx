@@ -266,4 +266,5 @@ const OtherChart = ({ data, selectedChart }) => {
   );
 };
 
+export { OtherChart };
 export default OtherChart; 

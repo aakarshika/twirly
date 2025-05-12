@@ -1,10 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Heart, MessageSquare } from 'lucide-react';
 import './Reply.css';
-import { getPublicUrl } from '../../lib/utils';
-import useMentionInput from '../../hooks/useMentionInput';
-import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
 import CommentHeader from './CommentHeader';
 const Reply = ({ reply, onLike, onReply, appendText, items }) => {
 

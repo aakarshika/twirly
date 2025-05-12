@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTheme } from '../contexts/ThemeContext';
-import { supabase } from '../lib/supabase';
-import { useAuth } from '../contexts/AuthContext';
-import { useHeader } from '../contexts/HeaderContext';
+import { useTheme } from '../../contexts/ThemeContext';
+import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../contexts/AuthContext';
+import { useHeader } from '../../contexts/HeaderContext';
 import { MessageSquare, TrendingUp, Users } from 'lucide-react';
-import { COMPARISON_COLOR_SET } from '../lib/constants';
-import { randomPastelColor, splitAndJoin } from '../lib/utils';
-import TrendingCard from '../components/common-cards/TrendingCard';
+import { COMPARISON_COLOR_SET } from '../../lib/constants';
+import { randomPastelColor, splitAndJoin } from '../../lib/utils';
+import TrendingCard from '../../components/common/common-cards/TrendingCard';
 
 const Trending = () => {
   const [trendingSets, setTrendingSets] = useState([]);

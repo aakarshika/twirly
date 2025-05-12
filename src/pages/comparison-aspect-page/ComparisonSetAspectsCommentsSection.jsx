@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useComments } from '../../hooks/useComments';
-import CommentForm from './CommentForm';
+import CommentForm from '../../components/common/comments/CommentForm';
 import { useTheme } from '../../contexts/ThemeContext';
 import { ArrowRight, ChartArea, Heart, MessageSquare } from 'lucide-react';
-import Button from '../common/Button';
+import Button from '../../components/common/Button';
 import { getPublicUrl } from '../../lib/utils';
-import Comment from './Comment';
+import Comment from '../../components/common/comments/Comment';
 import { supabase } from '../../lib/supabase';
 import { useEffect } from 'react';
-import LoadingOrError from '../common/LoadingOrError';
-import CommentHeader from './CommentHeader';
+import LoadingOrError from '../../components/common/LoadingOrError';
+import CommentHeader from '../../components/common/comments/CommentHeader';
 import { useNavigate } from 'react-router-dom';
 const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, aspectSet, handleLikeComparisonAspectSet }) => {
   const { user } = useAuth();

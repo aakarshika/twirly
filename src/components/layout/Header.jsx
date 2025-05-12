@@ -3,12 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, RefreshCw, PlusCircle, Menu, X, Sun, Moon, Home, BarChart2, Settings, User, Building2, ArrowLeft, ChevronDown, ChevronUp, ChevronRight, Settings2, Plus, File, Search } from 'lucide-react';
 import { useHeader } from '../../contexts/HeaderContext';
-import Button from '../common/Button';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import ThemeSwitcher from '../ThemeSwitcher';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
-import SearchBar from '../../pages/search/SearchBar';
+import SearchBar from './search-bar/SearchBar';
 import './Header.css';
 import { formatDate, getPublicUrl } from '../../lib/utils';
 import { getUserProfile } from '../../services/users';

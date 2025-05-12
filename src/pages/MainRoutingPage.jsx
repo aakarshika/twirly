@@ -7,8 +7,8 @@ import { ComparisonDraftProvider } from '../contexts/ComparisonDraftContext';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
-import Trending from './Trending';
-import PollScreen from './PollScreen';
+import Trending from './trending-page/Trending';
+import PollScreen from './comparison-results-page/PollScreen';
 import ProductDetails from './product-details/ProductDetails';
 import UserDashboard from './user-dashboard-page/UserDashboard';
 import { useTheme } from '../contexts/ThemeContext';
@@ -20,7 +20,7 @@ import ForgotPassword from '../components/auth/ForgotPassword';
 import OnboardingFlow from './onboarding/OnboardingFlow';
 import { userService } from '../services/userService';
 import PollScreenAspect from './comparison-aspect-page/PollScreenAspect';
-import SearchPage from './SearchPage';
+import SearchPage from './search/search-page/SearchPage';
 import { useSwipeable } from 'react-swipeable';
 import UserProfile from './user-dashboard-page/UserProfile';
 import WaitingVerification from '../components/auth/WaitingVerification';
@@ -142,58 +142,75 @@ const MainRoutingPage = () => {
   }
 
   return (
-    <ComparisonProvider>
-      <ComparisonDraftProvider>
-        <FeedbackProvider>
-          <ScrollToTop />
-          <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background, color: currentTheme.colors.text }}>
-            <Header />
-            <SwipeBackWrapper>
-              <main 
-                className="flex-grow"
-                style={{ 
-                  backgroundColor: currentTheme.colors.background,
-                  paddingTop: 'calc( var(--safe-area-inset-top))'
-                }}
-              >
-                <Routes>
-                  {/* Protected Routes */}
-                  <Route path="/onboarding" element={<ProtectedRoute><OnboardingFlow /></ProtectedRoute>}/>
-                  <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>}/>
-                  <Route path="/" element={<ProtectedRoute><Trending /></ProtectedRoute>}/>
-                  <Route path="/comparison-aspect/:id" element={<ProtectedRoute><PollScreenAspect /></ProtectedRoute>}/>
-                  <Route path="/comparison/:id" element={<ProtectedRoute><PollScreen /></ProtectedRoute>}/>
-                  <Route path="/new-comparison" element={<ProtectedRoute><CreateComparison /></ProtectedRoute>}/>
-                  <Route path="/edit-comparison/:id" element={<ProtectedRoute><CreateComparison /></ProtectedRoute>}/>
-                  <Route path="/item/:itemId" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>}/>
-                  <Route path="/item/:itemId/:tab" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>}/>
-                  <Route path="/dashboard/products/add" element={<ProtectedRoute><AddProductModal /></ProtectedRoute>}/>
-                  <Route path="/dashboard/products/edit/:id" element={<ProtectedRoute><AddProductModal /></ProtectedRoute>}/>
-                  <Route path="/settings/*" element={<ProtectedRoute><Settings /></ProtectedRoute>}/>
-                  <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>}/>
-                  <Route path="/dashboard/:tab" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>}/>
-                  <Route path="/user/:username" element={<UserProfile />} />
-                  <Route path="/user/:username/:tab" element={<UserProfile />} />
-                  <Route path="/feedback" element={<ProtectedRoute><FeedbackManagement /></ProtectedRoute>} />
+      <FeedbackProvider>
+        <ScrollToTop />
+        <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background, color: currentTheme.colors.text }}>
+          <Header />
+          <SwipeBackWrapper>
+            <main 
+              className="flex-grow"
+              style={{ 
+                backgroundColor: currentTheme.colors.background,
+                paddingTop: 'calc( var(--safe-area-inset-top))'
+              }}
+            >
+              <Routes>
+                {/* Protected Routes */}
+                <Route path="/onboarding" element={<ProtectedRoute><OnboardingFlow /></ProtectedRoute>}/>
+                <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>}/>
+                <Route path="/" element={<ProtectedRoute><Trending /></ProtectedRoute>}/>
+                
+                {/* Comparison routes wrapped in ComparisonProvider */}
+                <Route path="/comparison-aspect/:id" element={
+                  <ProtectedRoute>
+                    <ComparisonProvider>
+                      <PollScreenAspect />
+                    </ComparisonProvider>
+                  </ProtectedRoute>
+                }/>
+                <Route path="/comparison/:id" element={
+                  <ProtectedRoute>
+                    <ComparisonProvider>
+                      <PollScreen />
+                    </ComparisonProvider>
+                  </ProtectedRoute>
+                }/>
+                
+                {/* Other routes */}
+                <Route path="/new-comparison" element={
+                  <ProtectedRoute>
+                    <ComparisonDraftProvider>
+                      <CreateComparison />
+                    </ComparisonDraftProvider>
+                  </ProtectedRoute>
+                }/>
+                <Route path="/edit-comparison/:id" element={<ProtectedRoute><CreateComparison /></ProtectedRoute>}/>
+                <Route path="/item/:itemId" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>}/>
+                <Route path="/item/:itemId/:tab" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>}/>
+                <Route path="/dashboard/products/add" element={<ProtectedRoute><AddProductModal /></ProtectedRoute>}/>
+                <Route path="/dashboard/products/edit/:id" element={<ProtectedRoute><AddProductModal /></ProtectedRoute>}/>
+                <Route path="/settings/*" element={<ProtectedRoute><Settings /></ProtectedRoute>}/>
+                <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>}/>
+                <Route path="/dashboard/:tab" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>}/>
+                <Route path="/user/:username" element={<UserProfile />} />
+                <Route path="/user/:username/:tab" element={<UserProfile />} />
+                <Route path="/feedback" element={<ProtectedRoute><FeedbackManagement /></ProtectedRoute>} />
 
-                  {/* Waiting Verification Route */}
-                  <Route path="/waiting-verification" element={<WaitingVerification />} />
+                {/* Waiting Verification Route */}
+                <Route path="/waiting-verification" element={<WaitingVerification />} />
 
-                  {/* Public Routes */}
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/landing" element={<Landing />} />
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                </Routes>
-              </main>
-            </SwipeBackWrapper>
-            {/* <Footer /> */}
-            <FloatingFeedbackButton />
-            <FeedbackModal />
-          </div>
-        </FeedbackProvider>
-      </ComparisonDraftProvider>
-    </ComparisonProvider>
+                {/* Public Routes */}
+                <Route path="/login" element={<Login />} />
+                <Route path="/landing" element={<Landing />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+              </Routes>
+            </main>
+          </SwipeBackWrapper>
+          <FloatingFeedbackButton />
+          <FeedbackModal />
+        </div>
+      </FeedbackProvider>
   );
 };
 

@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useComments } from '../../hooks/useComments';
-import CommentForm from './CommentForm';
-import { useTheme } from '../../contexts/ThemeContext';
-import { Heart, MessageSquare } from 'lucide-react';
-import Button from '../common/Button';
-import { getPublicUrl } from '../../lib/utils';
-import Comment from './Comment';
-import { supabase } from '../../lib/supabase';
+import { useAuth } from '../../../contexts/AuthContext';
+import { useComments } from '../../../hooks/useComments';
+import { useTheme } from '../../../contexts/ThemeContext';
+import Button from '../../../components/common/Button';
+import Comment from '../../../components/common/comments/Comment'
+import { supabase } from '../../../lib/supabase';
 import { useEffect } from 'react';
-import LoadingOrError from '../common/LoadingOrError';
+import LoadingOrError from '../../../components/common/LoadingOrError';
 
 const ComparisonCommentsInshort = ({ aspectSetId, items, aspectSet }) => {
   const { user } = useAuth();

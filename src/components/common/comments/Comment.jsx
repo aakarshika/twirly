@@ -1,13 +1,13 @@
 import React, { useState, useRef } from 'react';
 import Reply from './Reply';
-import {  getPublicUrl } from '../../lib/utils';
-import useMentionInput from '../../hooks/useMentionInput';
-import { useAuth } from '../../contexts/AuthContext';
-import { userService } from '../../services/userService';
+import {  getPublicUrl } from '../../../lib/utils';
+import useMentionInput from '../../../hooks/useMentionInput';
+import { useAuth } from '../../../contexts/AuthContext';
+import { userService } from '../../../services/userService';
 import { useEffect } from 'react';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../../lib/supabase';
 import CommentForm from './CommentForm';
-import { useComments } from '../../hooks/useComments';
+import { useComments } from '../../../hooks/useComments';
 import CommentHeader from './CommentHeader';
 const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPreferences, handleReply }) => {
   const [isReplying, setIsReplying] = useState(false);
