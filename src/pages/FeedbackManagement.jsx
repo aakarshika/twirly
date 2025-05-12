@@ -15,6 +15,7 @@ const FeedbackManagement = () => {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [feedbackToDelete, setFeedbackToDelete] = useState(null);
   const [expandedMessages, setExpandedMessages] = useState({});
+  const [selectedPageRoute, setSelectedPageRoute] = useState('all');
 
   // Check if user is admin
   const isAdmin = user && ADMIN_EMAILS.includes(user.email);
@@ -78,6 +79,18 @@ const FeedbackManagement = () => {
     }
   };
 
+  // Get unique page routes for filtering
+  const pageRoutes = ['all', ...new Set(feedbackList.map(f => f.page_route).filter(Boolean))];
+
+  // Filter feedback based on selected page route
+  const filteredFeedback = selectedPageRoute === 'all' 
+    ? feedbackList 
+    : feedbackList.filter(f => f.page_route === selectedPageRoute);
+
+  // Separate resolved and unresolved feedback
+  const resolvedFeedback = filteredFeedback.filter(f => f.status === 'resolved' || f.status === 'closed');
+  const unresolvedFeedback = filteredFeedback.filter(f => f.status !== 'resolved' && f.status !== 'closed');
+
   // Redirect if not admin
   if (!isAdmin) {
     return <Navigate to="/" replace />;
@@ -94,97 +107,142 @@ const FeedbackManagement = () => {
     );
   }
 
+  const renderFeedbackTable = (feedback) => (
+    <table className="min-w-full bg-white rounded shadow">
+      <thead>
+        <tr>
+          <th className="px-4 py-2 text-left">Name</th>
+          <th className="px-4 py-2 text-left">Type</th>
+          <th className="px-4 py-2 text-left">Priority</th>
+          <th className="px-4 py-2 text-left w-1/3">Message</th>
+          <th className="px-4 py-2 text-left">Image</th>
+          <th className="px-4 py-2 text-left">Status</th>
+          <th className="px-4 py-2 text-left">Page</th>
+          <th className="px-4 py-2 text-left">Date</th>
+          <th className="px-4 py-2 text-left">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {feedback.map((item) => (
+          <tr key={item.id} className="border-b hover:bg-gray-50">
+            <td className="px-4 py-2">{item.name}</td>
+            <td className="px-4 py-2 capitalize">{item.type}</td>
+            <td className="px-4 py-2 capitalize">
+              <div className='flex items-center gap-2 rounded-full px-2 py-1' style={{ backgroundColor: item.priority === 'high' ? '#ef4444' : item.priority === 'medium' ? '#f59e0b' : '#34d399' }}>
+                {item.priority}
+              </div>
+            </td>
+            <td className="px-4 py-2">
+              <div className="max-w-md">
+                <p className={!expandedMessages[item.id] ? "line-clamp-2" : ""}>
+                  {item.message}
+                </p>
+                {item.message.length > 100 && (
+                  <button
+                    onClick={() => toggleMessage(item.id)}
+                    className="text-blue-600 hover:text-blue-800 text-sm mt-1"
+                  >
+                    {expandedMessages[item.id] ? "Show less" : "Show more"}
+                  </button>
+                )}
+              </div>
+            </td>
+            <td className="px-4 py-2">
+              {item.image_url ? (
+                <a
+                  href={item.image_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline flex items-center gap-1"
+                >
+                  <FiImage /> View
+                </a>
+              ) : (
+                <span className="text-gray-400">—</span>
+              )}
+            </td>
+            <td className="px-4 py-2">
+              <select
+                value={item.status}
+                onChange={(e) => handleStatusChange(item.id, e.target.value)}
+                className="p-1 rounded border"
+                style={{
+                  backgroundColor: currentTheme.colors.background,
+                  borderColor: currentTheme.colors.border,
+                  color: currentTheme.colors.text,
+                }}
+              >
+                <option value="pending">Pending</option>
+                <option value="in_progress">In Progress</option>
+                <option value="resolved">Resolved</option>
+                <option value="closed">Closed</option>
+              </select>
+            </td>
+            <td className="px-4 py-2 text-sm text-gray-600">
+              {item.page_route || '—'}
+            </td>
+            <td className="px-4 py-2 text-xs text-gray-500">
+              {new Date(item.created_at).toLocaleString()}
+            </td>
+            <td className="px-4 py-2">
+              <button
+                onClick={() => openDeleteModal(item)}
+                className="p-2 text-red-600 hover:text-red-800 transition-colors"
+                title="Delete feedback"
+              >
+                <FiTrash2 className="w-5 h-5" />
+              </button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+
   return (
     <div className="container mx-auto px-4 py-8" style={{ backgroundColor: currentTheme.colors.background }}>
-      <h1 className="text-2xl font-bold mb-6" style={{ color: currentTheme.colors.text }}>
-        Feedback Management
-      </h1>
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-white rounded shadow">
-          <thead>
-            <tr>
-              <th className="px-4 py-2 text-left">Name</th>
-              <th className="px-4 py-2 text-left">Type</th>
-              <th className="px-4 py-2 text-left">Priority</th>
-              <th className="px-4 py-2 text-left w-1/3">Message</th>
-              <th className="px-4 py-2 text-left">Image</th>
-              <th className="px-4 py-2 text-left">Status</th>
-              <th className="px-4 py-2 text-left">Date</th>
-              <th className="px-4 py-2 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {feedbackList.map((feedback) => (
-              <tr key={feedback.id} className="border-b hover:bg-gray-50">
-                <td className="px-4 py-2">{feedback.name}</td>
-                <td className="px-4 py-2 capitalize">{feedback.type}</td>
-                <td className="px-4 py-2 capitalize">
-                  <div className='flex items-center gap-2 rounded-full px-2 py-1' style={{ backgroundColor: feedback.priority === 'high' ? '#ef4444' : feedback.priority === 'medium' ? '#f59e0b' : '#34d399' }}>
-                    {feedback.priority}
-                  </div>
-                </td>
-                <td className="px-4 py-2">
-                  <div className="max-w-md">
-                    <p className={!expandedMessages[feedback.id] ? "line-clamp-2" : ""}>
-                      {feedback.message}
-                    </p>
-                    {feedback.message.length > 100 && (
-                      <button
-                        onClick={() => toggleMessage(feedback.id)}
-                        className="text-blue-600 hover:text-blue-800 text-sm mt-1"
-                      >
-                        {expandedMessages[feedback.id] ? "Show less" : "Show more"}
-                      </button>
-                    )}
-                  </div>
-                </td>
-                <td className="px-4 py-2">
-                  {feedback.image_url ? (
-                    <a
-                      href={feedback.image_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline flex items-center gap-1"
-                    >
-                      <FiImage /> View
-                    </a>
-                  ) : (
-                    <span className="text-gray-400">—</span>
-                  )}
-                </td>
-                <td className="px-4 py-2">
-                  <select
-                    value={feedback.status}
-                    onChange={(e) => handleStatusChange(feedback.id, e.target.value)}
-                    className="p-1 rounded border"
-                    style={{
-                      backgroundColor: currentTheme.colors.background,
-                      borderColor: currentTheme.colors.border,
-                      color: currentTheme.colors.text,
-                    }}
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="in_progress">In Progress</option>
-                    <option value="resolved">Resolved</option>
-                    <option value="closed">Closed</option>
-                  </select>
-                </td>
-                <td className="px-4 py-2 text-xs text-gray-500">
-                  {new Date(feedback.created_at).toLocaleString()}
-                </td>
-                <td className="px-4 py-2">
-                  <button
-                    onClick={() => openDeleteModal(feedback)}
-                    className="p-2 text-red-600 hover:text-red-800 transition-colors"
-                    title="Delete feedback"
-                  >
-                    <FiTrash2 className="w-5 h-5" />
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
+          Feedback Management
+        </h1>
+        <select
+          value={selectedPageRoute}
+          onChange={(e) => setSelectedPageRoute(e.target.value)}
+          className="p-2 rounded border"
+          style={{
+            backgroundColor: currentTheme.colors.background,
+            borderColor: currentTheme.colors.border,
+            color: currentTheme.colors.text,
+          }}
+        >
+          {pageRoutes.map(route => (
+            <option key={route} value={route}>
+              {route === 'all' ? 'All Pages' : route}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="space-y-8">
+        {/* Unresolved Feedback Section */}
+        <div>
+          <h2 className="text-xl font-semibold mb-4" style={{ color: currentTheme.colors.text }}>
+            Unresolved Feedback ({unresolvedFeedback.length})
+          </h2>
+          <div className="overflow-x-auto">
+            {renderFeedbackTable(unresolvedFeedback)}
+          </div>
+        </div>
+
+        {/* Resolved Feedback Section */}
+        <div>
+          <h2 className="text-xl font-semibold mb-4" style={{ color: currentTheme.colors.text }}>
+            Resolved Feedback ({resolvedFeedback.length})
+          </h2>
+          <div className="overflow-x-auto">
+            {renderFeedbackTable(resolvedFeedback)}
+          </div>
+        </div>
       </div>
 
       {/* Delete Confirmation Modal */}
