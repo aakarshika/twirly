@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useTheme } from '../../../contexts/ThemeContext';
-import { useAuth } from '../../../contexts/AuthContext';
-import { useComparisonDraft } from '../../../contexts/ComparisonDraftContext';
-import { searchProducts, searchCategories } from '../../../services/products';
-import { createComparison, getUnpublishedComparison, updateComparison, getComparison } from '../../../services/comparisons';
+import { useTheme } from '../../../../contexts/ThemeContext';
+import { useAuth } from '../../../../contexts/AuthContext';
+import { useComparisonDraft } from '../../../../contexts/ComparisonDraftContext';
+import { searchProducts, searchCategories } from '../../../../services/products';
+import { createComparison, getUnpublishedComparison, updateComparison, getComparison } from '../../../../services/comparisons';
 import { X, Check, Search, User, Trash2, Plus, PlusIcon, PlusCircle } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useHeader } from '../../../contexts/HeaderContext';
-import ItemCard from '../../common-cards/ItemCard';
+import { useHeader } from '../../../../contexts/HeaderContext';
+import ItemCard from '../../../../components/common-cards/ItemCard';
 
 const CreateComparison = () => {
   const { currentTheme } = useTheme();

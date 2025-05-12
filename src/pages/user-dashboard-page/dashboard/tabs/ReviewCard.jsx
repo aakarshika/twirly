@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from '../../../contexts/ThemeContext';
-import { getUserReviews } from '../../../services/reviews';
+import { useTheme } from '../../../../contexts/ThemeContext';
+import { getUserReviews } from '../../../../services/reviews';
 
 const ReviewCard = ({ review }) => {
   const { currentTheme } = useTheme();

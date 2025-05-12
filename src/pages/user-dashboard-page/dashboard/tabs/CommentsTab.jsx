@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from '../../../contexts/ThemeContext';
-import { getUserComments } from '../../../services/comments';
-import { useAuth } from '../../../contexts/AuthContext';
-import { splitAndJoin } from '../../../lib/utils';
-import { renderTextWithMentions } from '../../../lib/commentUtils';
+import { useTheme } from '../../../../contexts/ThemeContext';
+import { getUserComments } from '../../../../services/comments';
+import { useAuth } from '../../../../contexts/AuthContext';
+import { splitAndJoin } from '../../../../lib/utils';
+import { renderTextWithMentions } from '../../../../lib/commentUtils';
 
 const CommentCard = ({ comment }) => {
   const { currentTheme } = useTheme();

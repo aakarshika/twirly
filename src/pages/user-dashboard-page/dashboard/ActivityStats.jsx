@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme } from '../../../contexts/ThemeContext';
 import { BarChart2, MessageSquare, ThumbsUp, Vote, Package } from 'lucide-react';
 
 const StatCard = ({ title, value, icon }) => {

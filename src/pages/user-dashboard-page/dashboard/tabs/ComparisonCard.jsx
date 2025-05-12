@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useTheme } from '../../../contexts/ThemeContext';
+import { useTheme } from '../../../../contexts/ThemeContext';
 import { Plus, Trash2, ExternalLink, MessageSquare, ThumbsUp, Settings } from 'lucide-react';
-import { useAuth } from '../../../contexts/AuthContext';
+import { useAuth } from '../../../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const ComparisonItem = ({ item, user, getVoteCount, getCommentCount }) => {

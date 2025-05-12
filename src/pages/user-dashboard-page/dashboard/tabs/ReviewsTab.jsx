@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from '../../../contexts/ThemeContext';
-import { getUserReviews } from '../../../services/reviews';
-import { useAuth } from '../../../contexts/AuthContext';
+import { useTheme } from '../../../../contexts/ThemeContext';
+import { getUserReviews } from '../../../../services/reviews';
+import { useAuth } from '../../../../contexts/AuthContext';
 import ReviewCard from './ReviewCard';
 
 const ReviewsTab = () => {

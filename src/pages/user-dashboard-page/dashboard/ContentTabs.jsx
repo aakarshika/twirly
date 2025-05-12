@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme } from '../../../contexts/ThemeContext';
 import { useNavigate, useParams } from 'react-router-dom';
 import ProductsTab from './tabs/ProductsTab';
 import ComparisonsTab from './tabs/ComparisonsTab';

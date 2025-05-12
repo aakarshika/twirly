@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
-import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { useAuth } from '../../../contexts/AuthContext';
 import ProductCard from './ProductCard';
-import { getUserProducts } from '../../services/products';
+import { getUserProducts } from '../../../services/products';
 
 const ProductList = ({ products, setProducts, userId, isPublic }) => {
   const { currentTheme } = useTheme();

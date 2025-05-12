@@ -1,9 +1,9 @@
 import React from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme } from '../../../contexts/ThemeContext';
 import { Pencil, User, Coins } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { getPublicUrl } from '../../lib/utils';
-import Avatar from '../common/Avatar';
+import { getPublicUrl } from '../../../lib/utils';
+import Avatar from '../../../components/common/Avatar';
 
 const ProfileHeader = ({ userData, isPublic = false }) => {
   const { currentTheme } = useTheme();

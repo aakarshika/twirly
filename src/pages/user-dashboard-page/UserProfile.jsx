@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useTheme } from '../contexts/ThemeContext';
-import { supabase } from '../lib/supabase';
-import ProfileHeader from '../components/dashboard/ProfileHeader';
-import ContentTabs from '../components/dashboard/ContentTabs';
-import { useHeader } from '../contexts/HeaderContext';
+import { supabase } from '../../lib/supabase';
+import ProfileHeader from './dashboard/ProfileHeader';
+import ContentTabs from './dashboard/ContentTabs';
+import { useHeader } from '../../contexts/HeaderContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const UserProfile = () => {
   const { username } = useParams();

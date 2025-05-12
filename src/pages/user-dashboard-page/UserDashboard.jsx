@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from '../contexts/ThemeContext';
-import ProfileHeader from '../components/dashboard/ProfileHeader';
-import ContentTabs from '../components/dashboard/ContentTabs';
-import { getUserProfile } from '../services/users';
-import { useAuth } from '../contexts/AuthContext';
-import { useHeader } from '../contexts/HeaderContext';
-import FirstTimeDashboard from '../components/dashboard/FirstTimeDashboard';
+import { useTheme } from '../../contexts/ThemeContext';
+import ProfileHeader from './dashboard/ProfileHeader';
+import ContentTabs from './dashboard/ContentTabs';
+import { getUserProfile } from '../../services/users';
+import { useAuth } from '../../contexts/AuthContext';
+import { useHeader } from '../../contexts/HeaderContext';
+import FirstTimeDashboard from './dashboard/FirstTimeDashboard';
 
 const UserDashboard = () => {
   const { currentTheme } = useTheme();

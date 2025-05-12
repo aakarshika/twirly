@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme } from '../../../contexts/ThemeContext';
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, X, TrendingUp, MessageSquare, Plus, ThumbsUp } from 'lucide-react';
 

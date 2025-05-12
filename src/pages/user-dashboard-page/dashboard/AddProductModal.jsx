@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
-import { useAuth } from '../../contexts/AuthContext';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { useAuth } from '../../../contexts/AuthContext';
 import { X, Plus, Pencil } from 'lucide-react';
-import { createProduct } from '../../services/products';
-import { randomPastelColor, randomPastelColorHex } from '../../lib/utils';
+import { createProduct } from '../../../services/products';
+import { randomPastelColor, randomPastelColorHex } from '../../../lib/utils';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getProduct, updateProduct } from '../../services/products';
+import { getProduct, updateProduct } from '../../../services/products';
 import { useEffect } from 'react';
-import { useHeader } from '../../contexts/HeaderContext';
+import { useHeader } from '../../../contexts/HeaderContext';
 
 // Validation functions
 const validateName = (name) => {

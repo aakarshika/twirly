@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from '../../../contexts/ThemeContext';
-import { getUserVotes } from '../../../services/votes';
-import { useAuth } from '../../../contexts/AuthContext';
-import { splitAndJoin } from '../../../lib/utils';
+import { useTheme } from '../../../../contexts/ThemeContext';
+import { getUserVotes } from '../../../../services/votes';
+import { useAuth } from '../../../../contexts/AuthContext';
+import { splitAndJoin } from '../../../../lib/utils';
 import { useNavigate } from 'react-router-dom';
 const VoteCard = ({ vote }) => {
   const { currentTheme } = useTheme();

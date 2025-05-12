@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme } from '../../../contexts/ThemeContext';
 import { BarChart2, MessageSquare, ThumbsUp, Vote, Package, Clock, TrendingUp } from 'lucide-react';
 import ActivityStats from './ActivityStats';
 import ActivityVisualizations from './ActivityVisualizations';

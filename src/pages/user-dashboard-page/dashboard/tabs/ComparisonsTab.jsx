@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from '../../../contexts/ThemeContext';
+import { useTheme } from '../../../../contexts/ThemeContext';
 import { Plus, Trash2, ExternalLink, MessageSquare, ThumbsUp, Settings, X } from 'lucide-react';
-import { getUserComparisons, deleteComparisonSet } from '../../../services/comparisons';
-import { useAuth } from '../../../contexts/AuthContext';
+import { getUserComparisons, deleteComparisonSet } from '../../../../services/comparisons';
+import { useAuth } from '../../../../contexts/AuthContext';
 import ComparisonCard from './ComparisonCard';
 import { useNavigate } from 'react-router-dom';
 
