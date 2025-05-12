@@ -2,20 +2,24 @@ import React, { useEffect, useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { feedbackService } from '../services/feedbackService';
 import { useAuth } from '../contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
-import { FiImage, FiTrash2 } from 'react-icons/fi';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { FiImage, FiTrash2, FiExternalLink } from 'react-icons/fi';
 
 const ADMIN_EMAILS = ['aakarshika93@gmail.com', 'great.shivam19@gmail.com'];
 
 const FeedbackManagement = () => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [feedbackList, setFeedbackList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [feedbackToDelete, setFeedbackToDelete] = useState(null);
   const [expandedMessages, setExpandedMessages] = useState({});
   const [selectedPageRoute, setSelectedPageRoute] = useState('all');
+
+  // Get base URL from current window location
+  const baseUrl = window.location.origin;
 
   // Check if user is admin
   const isAdmin = user && ADMIN_EMAILS.includes(user.email);
@@ -95,6 +99,11 @@ const FeedbackManagement = () => {
   if (!isAdmin) {
     return <Navigate to="/" replace />;
   }
+
+  const handlePageRouteClick = (route) => {
+    // Open in new tab
+    window.open(route, '_blank', 'noopener,noreferrer');
+  };
 
   if (loading) {
     return (
@@ -179,7 +188,18 @@ const FeedbackManagement = () => {
               </select>
             </td>
             <td className="px-4 py-2 text-sm text-gray-600">
-              {item.page_route || '—'}
+              {item.page_route ? (
+                <button
+                  onClick={() => handlePageRouteClick(item.page_route)}
+                  className="text-blue-600 hover:underline flex items-center gap-1"
+                  title={`Open ${item.page_route} in new tab`}
+                >
+                  {item.page_route}
+                  <FiExternalLink className="w-3 h-3" />
+                </button>
+              ) : (
+                <span className="text-gray-400">—</span>
+              )}
             </td>
             <td className="px-4 py-2 text-xs text-gray-500">
               {new Date(item.created_at).toLocaleString()}
