@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabase';
 import { getVoteCount, hasUserVoted } from '../services/voting';
 import { getItemReviews, getItemAverageMetrics } from '../services/reviews';
 import { useAuth } from '../contexts/AuthContext';
+import { userActivityService, ACTIVITY_TYPES, ENTITY_TYPES } from '../services/userActivityService';
 
 export const useComparisonAspectDetails = (id) => {
   
@@ -94,11 +95,25 @@ export const useComparisonAspectDetails = (id) => {
         })
         .select();
       if (error) throw error;
+
+      // Log the vote activity
+      await userActivityService.logActivity({
+        userId: user.id,
+        activityType: ACTIVITY_TYPES.VOTE,
+        entityType: ENTITY_TYPES.VOTE,
+        entityId: data[0].id,
+        pageName: `/comparison-aspect/${id}`,
+        metadata: { 
+          itemId,
+          aspectSetId: id,
+          itemName: items.find(item => item.items.id === itemId)?.items.name
+        }
+      });
+
       console.log('Vote inserted:', data);  
     } catch (error) {
       console.error('Error voting:', error);
     } finally {
-      //update userVoted and votedItemId
       setUserVoted(true);
       setVotedItemId(itemId);
       setItems(items.map(item => item.items.id === itemId ? {...item, items: {...item.items, votes: [...item.items.votes, {user_id: user.id, item_id: itemId, set_id: id}]}} : item));
@@ -106,23 +121,63 @@ export const useComparisonAspectDetails = (id) => {
     }
   };
   const handleLikeComparisonAspectSet = async (id, type) => {
-    console.log('handleLikeComparisonAspectSet', id, type);
-    const hasLiked = currentAspectSet.reactions?.find(r => r.user_id === user.id)?.reaction_type === 'like';
-    if (hasLiked) {
-      await supabase
-        .from('comparison_set_comment_reactions')
-        .delete()
-        .eq('aspect_set_id', id)
-        .eq('user_id', user.id);
-    } else {
-      await supabase
-        .from('comparison_set_comment_reactions')
-        .insert([{ aspect_set_id: id, user_id: user.id, reaction_type: 'like' }]);
+    try {
+      const hasLiked = currentAspectSet.reactions?.find(r => r.user_id === user.id)?.reaction_type === 'like';
+      
+      if (hasLiked) {
+        await supabase
+          .from('comparison_set_comment_reactions')
+          .delete()
+          .eq('aspect_set_id', id)
+          .eq('user_id', user.id);
+
+        // Log the unlike activity
+        await userActivityService.logActivity({
+          userId: user.id,
+          activityType: ACTIVITY_TYPES.UNLIKE_ASPECT_SET,
+          entityType: ENTITY_TYPES.ASPECT_SET,
+          entityId: id,
+          pageName: `/comparison-aspect/${id}`,
+          metadata: { 
+            aspectSetId: id,
+            aspectSetTitle: currentAspectSet.title
+          }
+        });
+      } else {
+        await supabase
+          .from('comparison_set_comment_reactions')
+          .insert([{ aspect_set_id: id, user_id: user.id, reaction_type: 'like' }]);
+
+        // Log the like activity
+        await userActivityService.logActivity({
+          userId: user.id,
+          activityType: ACTIVITY_TYPES.LIKE_ASPECT_SET,
+          entityType: ENTITY_TYPES.ASPECT_SET,
+          entityId: id,
+          pageName: `/comparison-aspect/${id}`,
+          metadata: { 
+            aspectSetId: id,
+            aspectSetTitle: currentAspectSet.title
+          }
+        });
+      }
+
+      setCurrentAspectSet(prev => ({...prev, 
+        userReaction: hasLiked ? null : 'like',
+        reactions: hasLiked ? prev.reactions.filter(r => r.user_id !== user.id) : [...prev.reactions, {user_id: user.id, reaction_type: 'like'}]
+      }));
+    } catch (error) {
+      console.error('Error toggling like:', error);
     }
-    setCurrentAspectSet(prev => ({...prev, 
-      userReaction: hasLiked ? null : 'like',
-      reactions: hasLiked ? prev.reactions.filter(r => r.user_id !== user.id) : [...prev.reactions, {user_id: user.id, reaction_type: 'like'}]
-    }));
+  };
+  const handleNext = () => {
+    userActivityService.logActivity({
+      userId: user.id,
+      activityType: ACTIVITY_TYPES.ASPECT_SET_NEXT,
+      entityType: ENTITY_TYPES.ASPECT_SET,
+      entityId: id,
+      pageName: `/comparison-aspect/${id}`
+    });
   };
   const handleRevertVote = async () => {
     try {
@@ -134,6 +189,21 @@ export const useComparisonAspectDetails = (id) => {
         .eq('set_id', id)
         .select();
       if (error) throw error;
+
+      // Log the vote revert activity
+      await userActivityService.logActivity({
+        userId: user.id,
+        activityType: ACTIVITY_TYPES.VOTE_REVERT,
+        entityType: ENTITY_TYPES.VOTE,
+        entityId: data[0].id,
+        pageName: `/comparison-aspect/${id}`,
+        metadata: { 
+          itemId: votedItemId,
+          aspectSetId: id,
+          itemName: items.find(item => item.items.id === votedItemId)?.items.name
+        }
+      });
+
       console.log('Vote reverted:', data);
     } catch (error) {
       console.error('Error reverting vote:', error);
@@ -144,5 +214,5 @@ export const useComparisonAspectDetails = (id) => {
       setTotalVotes(items.reduce((acc, item) => acc + item.items.votes.length, 0));
     }
   };
-  return { loading, error, items, currentSet, currentAspectSet, reviews, averageMetrics, totalVotes, userVoted, votedItemId, handleVote, handleRevertVote, fetchComparisonDetails, handleLikeComparisonAspectSet };
+  return { loading, error, items, currentSet, currentAspectSet, reviews, averageMetrics, totalVotes, userVoted, votedItemId, handleVote, handleRevertVote, fetchComparisonDetails, handleLikeComparisonAspectSet, handleNext };
 }; 

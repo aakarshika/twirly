@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare } from 'lucide-react';
-// eslint-disable-next-line react/default-props-match-prop-types
 import { MentionsInput, Mention } from 'react-mentions';
 import Avatar from '../Avatar';
+import { getPublicUrl } from '../../../lib/utils';
 
 const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, items, userPreferences, type }) => {
   const inputRef = useRef(null);

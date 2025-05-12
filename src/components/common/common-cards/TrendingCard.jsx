@@ -5,6 +5,7 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
 import { splitAndJoin } from '../../../lib/utils';
+import { userActivityService, ACTIVITY_TYPES, ENTITY_TYPES } from '../../../services/userActivityService';
 
 const TrendingCard = ({set, from}) => {
     const {user} = useAuth();
@@ -15,9 +16,28 @@ const TrendingCard = ({set, from}) => {
 
     const { currentTheme } = useTheme();
 
-    const handleSetClick = (set) => {
-        navigate(`/comparison-aspect/${set.aspect_set_id}`);
-      };
+    const handleSetClick = async (set) => {
+        try {
+            // Log the aspect set view activity
+            await userActivityService.logActivity({
+                userId: user.id, // Assuming set has user_id
+                activityType: ACTIVITY_TYPES.ASPECT_SET_VIEW,
+                entityType: ENTITY_TYPES.ASPECT_SET,
+                entityId: set.aspect_set_id,
+                pageName: '/trending',
+                metadata: { 
+                    aspectSetId: set.aspect_set_id,
+                    aspectSetTitle: set.title // Assuming set has title
+                }
+            });
+
+            navigate(`/comparison-aspect/${set.aspect_set_id}`);
+        } catch (error) {
+            console.error('Error logging aspect set view:', error);
+            // Still navigate even if logging fails
+            navigate(`/comparison-aspect/${set.aspect_set_id}`);
+        }
+    };
     
   useEffect(() => {
     const getUserVoted = async () => {

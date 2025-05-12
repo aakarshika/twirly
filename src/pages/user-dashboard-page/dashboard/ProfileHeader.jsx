@@ -1,13 +1,34 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { Pencil, User, Coins } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getPublicUrl } from '../../../lib/utils';
 import Avatar from '../../../components/common/Avatar';
+import { karmaService } from '../../../services/karmaService';
 
 const ProfileHeader = ({ userData, isPublic = false }) => {
   const { currentTheme } = useTheme();
   const navigate = useNavigate();
+  const [karmaPoints, setKarmaPoints] = useState(0);
+  const [isLoadingKarma, setIsLoadingKarma] = useState(true);
+
+  useEffect(() => {
+    const fetchKarmaPoints = async () => {
+      if (userData?.profile?.user_id) {
+        setIsLoadingKarma(true);
+        try {
+          const points = await karmaService.getUserKarmaPoints(userData.profile.user_id);
+          setKarmaPoints(points);
+        } catch (error) {
+          console.error('Error fetching karma points:', error);
+        } finally {
+          setIsLoadingKarma(false);
+        }
+      }
+    };
+    console.log('userData', userData);
+    fetchKarmaPoints();
+  }, [userData?.profile?.user_id]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -76,7 +97,7 @@ const ProfileHeader = ({ userData, isPublic = false }) => {
               >
                 <Coins size={16} />
                 <span className="text-sm font-medium">
-                  {userData?.profile?.coins || 0} KARMA
+                  {isLoadingKarma ? '...' : `${karmaPoints} KARMA`}
                 </span>
               </div>
             </div>

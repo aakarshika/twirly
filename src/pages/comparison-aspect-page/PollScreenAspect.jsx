@@ -32,7 +32,8 @@ const PollScreenAspect = () => {
     loading,
     error,
     fetchComparisonDetails,
-    handleLikeComparisonAspectSet
+    handleLikeComparisonAspectSet,
+    handleNext  
   } = useComparisonAspectDetails(id);
 
   const handlers = useSwipeable({
@@ -66,6 +67,7 @@ const PollScreenAspect = () => {
   const [height, setHeight] = useState('100vh');
 
   const handleNextNavigation = () => {
+    handleNext();
     setShowEndAnimation(true);
     const timer = setTimeout(() => {
       setShowEndAnimation(false);
