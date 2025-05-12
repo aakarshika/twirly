@@ -12,7 +12,7 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, comparison })
         container: `relative ${index % 2 === 0 ? 'ml-0 mr-auto' : 'ml-auto mr-0'} ${index > 0 ? '-mt-24' : ''}`,
         style: { width: '80%', maxWidth: '250px' },
         circle: 'relative w-full pb-[100%]',
-        innerCircle: 'absolute inset-0 rounded-full rounded-t-full bg-white shadow-xl p-5 flex flex-col items-center border-4 border-gray-200 overflow-hidden',
+        innerCircle: 'absolute inset-0 rounded-lg bg-white shadow-xl p-5 flex flex-col items-center border-4 border-gray-200 overflow-hidden',
         imageContainer: 'w-full h-20 relative',
         title: 'text-lg font-bold text-gray-800',
         description: 'text-xs text-gray-600 text-center',
@@ -29,7 +29,7 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, comparison })
     : {
         container: `relative   ${ index == 0 ? '' : index == 1 ? 'mt-24' : index % 2 == 1 ? 'mt-4' : '-mt-20'}`,
         style: {},
-        circle: 'aspect-square rounded-full rounded-t-full  bg-white shadow-xl p-8 flex flex-col items-center border-4 border-gray-200 overflow-hidden',
+        circle: 'aspect-square rounded-lg  bg-white shadow-xl p-8 flex flex-col items-center border-4 border-gray-200 overflow-hidden',
         innerCircle: '',
         imageContainer: 'w-full h-32 mb-4 relative',
         title: 'text-2xl font-bold text-gray-800',
@@ -84,7 +84,7 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, comparison })
           >
             {/* Background Circles */}
             {winner && winner.id !== item.id && (
-              <div className="absolute inset-0 rounded-full overflow-hidden">
+              <div className="absolute inset-0 rounded-lg overflow-hidden">
                 <motion.div 
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -119,17 +119,16 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, comparison })
             )}
             {/* Image or Fallback */}
             <div className={circleClasses.imageContainer}>
-              {item.image ? (
+              {item.image && item.image.length > 0 ? (
                 <img
                   src={item.image}
                   alt={item.name}
                   className="w-full h-full object-cover rounded-t-full"
+                  onError={(e) => {
+                    console.error('Error loading image:', e);
+                  }}
                 />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-b from-blue-50 to-blue-100 rounded-t-full flex items-center">
-                  <Image className={`${isMobile ? 'w-8 h-8' : 'w-12 h-12'} text-blue-300`} />
-                </div>
-              )}
+              ) : null}
             </div>
             <h3 className={circleClasses.title}>{item.name}</h3>
             <p className={circleClasses.description}>{item.description}</p>

@@ -42,7 +42,6 @@ const Avatar = ({
             className="w-full h-full object-cover"
             onError={(e) => {
               console.error('Error loading image:', e);
-              e.target.src = '';
             }}
           />
         ) : (

@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useHeader } from '../../contexts/HeaderContext';
 import { useSwipeable } from 'react-swipeable';
-import { ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import ComparisonItemCardAspect from './ComparisonItemCard/ComparisonItemCardAspect';
 import { splitAndJoin } from '../../lib/utils';
@@ -19,6 +19,9 @@ const PollScreenAspect = () => {
   const { isHeaderVisible } = useHeader();
   const [showStartAnimation, setShowStartAnimation] = useState(true);
   const [showEndAnimation, setShowEndAnimation] = useState(false);
+  const [nextCardData, setNextCardData] = useState(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  
   const {
     items,
     currentSet,
@@ -35,6 +38,15 @@ const PollScreenAspect = () => {
     handleLikeComparisonAspectSet,
     handleNext  
   } = useComparisonAspectDetails(id);
+
+  // Preload next card data
+  useEffect(() => {
+    const nextId = parseInt(id) + 1;
+    fetchComparisonDetails(nextId).then(data => {
+      setNextCardData(data);
+    });
+  }, [id]);
+  
 
   const handlers = useSwipeable({
     onSwipedLeft: () => {
@@ -66,14 +78,62 @@ const PollScreenAspect = () => {
 
   const [height, setHeight] = useState('100vh');
 
-  const handleNextNavigation = () => {
-    handleNext();
+  const handlePreviousNavigation = () => {
+    if (isTransitioning) return;
+    
+    setIsTransitioning(true);
     setShowEndAnimation(true);
-    const timer = setTimeout(() => {
+    
+    // Start the transition
+    setTimeout(() => {
+      // Update the current data with next card data
+      if (nextCardData) {
+        // Update your state with nextCardData
+        // This will depend on your data structure
+      }
+      
+      // Navigate to next page
+      navigate('/comparison-aspect/' + (parseInt(id) - 1).toString());
+      
+      // Reset animation states
       setShowEndAnimation(false);
+      setShowStartAnimation(true);
+      setIsTransitioning(false);
+      
+      // Clear the animation after it's done
+      setTimeout(() => {
+        setShowStartAnimation(false);
+      }, 600);
+    }, 300);
+  };
+
+  const handleNextNavigation = () => {
+    if (isTransitioning) return;
+    
+    setIsTransitioning(true);
+    setShowEndAnimation(true);
+    
+    // Start the transition
+    setTimeout(() => {
+      // Update the current data with next card data
+      if (nextCardData) {
+        // Update your state with nextCardData
+        // This will depend on your data structure
+      }
+      
+      // Navigate to next page
       navigate('/comparison-aspect/' + (parseInt(id) + 1).toString());
-      return () => clearTimeout(timer);
-  }, 350);
+      
+      // Reset animation states
+      setShowEndAnimation(false);
+      setShowStartAnimation(true);
+      setIsTransitioning(false);
+      
+      // Clear the animation after it's done
+      setTimeout(() => {
+        setShowStartAnimation(false);
+      }, 600);
+    }, 300);
   };
 
   if (loading) {
@@ -122,8 +182,15 @@ const PollScreenAspect = () => {
 
       <div className="h-full items-end">
         <button
+          onClick={handlePreviousNavigation}
+          className="absolute left-1 z-10 p-2 rounded-full shadow-lg"
+          style={{ backgroundColor: 'gray', marginTop: '90%' }}
+        >
+          <ChevronLeft size={24} style={{ color: 'white' }} />
+        </button>
+        <button
           onClick={handleNextNavigation}
-          className="absolute right-1 z-10 p-2 rounded-full shadow-lg "
+          className="absolute right-1 z-10 p-2 rounded-full shadow-lg"
           style={{ backgroundColor: currentTheme.colors.primary, marginTop: '90%' }}
         >
           <ChevronRight size={24} style={{ color: 'white' }} />
@@ -131,7 +198,7 @@ const PollScreenAspect = () => {
       </div>
       <div className="h-full flex flex-col max-w-4xl mx-auto" {...handlers}>
         <div className="">
-          <div className="space-y-4 " style={{ color: currentTheme.colors.primary }}>
+          <div className="space-y-4" style={{ color: currentTheme.colors.primary }}>
 
 
             <div className={`shadow-md rounded-md p-4 mobile-friendly-margin-bottom 
