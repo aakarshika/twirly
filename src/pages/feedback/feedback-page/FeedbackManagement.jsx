@@ -2,20 +2,28 @@ import React, { useEffect, useState } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { feedbackService } from '../../../services/feedbackService';
 import { useAuth } from '../../../contexts/AuthContext';
-import { Navigate } from 'react-router-dom';
-import { FiImage, FiTrash2 } from 'react-icons/fi';
+import { Navigate, useNavigate } from 'react-router-dom';
+import { FiImage, FiTrash2, FiExternalLink, FiEdit2, FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { supabase } from '../../../lib/supabase';
 
 const ADMIN_EMAILS = ['aakarshika93@gmail.com', 'great.shivam19@gmail.com'];
 
 const FeedbackManagement = () => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [feedbackList, setFeedbackList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
   const [feedbackToDelete, setFeedbackToDelete] = useState(null);
+  const [feedbackToEdit, setFeedbackToEdit] = useState(null);
   const [expandedMessages, setExpandedMessages] = useState({});
+  const [expandedSections, setExpandedSections] = useState({});
   const [selectedPageRoute, setSelectedPageRoute] = useState('all');
+
+  // Get base URL from current window location
+  const baseUrl = window.location.origin;
 
   // Check if user is admin
   const isAdmin = user && ADMIN_EMAILS.includes(user.email);
@@ -50,6 +58,35 @@ const FeedbackManagement = () => {
     }
   };
 
+  const handleEdit = async (updatedFeedback) => {
+    try {
+      const { data, error } = await supabase
+        .from('feedback')
+        .update({
+          name: updatedFeedback.name,
+          type: updatedFeedback.type,
+          priority: updatedFeedback.priority,
+          message: updatedFeedback.message,
+          status: updatedFeedback.status,
+          page_route: updatedFeedback.page_route,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', updatedFeedback.id);
+
+      if (error) throw error;
+
+      setFeedbackList(prev => 
+        prev.map(item => 
+          item.id === updatedFeedback.id ? { ...item, ...updatedFeedback } : item
+        )
+      );
+      setEditModalOpen(false);
+      setFeedbackToEdit(null);
+    } catch (error) {
+      console.error('Error updating feedback:', error);
+    }
+  };
+
   const toggleMessage = (id) => {
     setExpandedMessages(prev => ({
       ...prev,
@@ -79,6 +116,23 @@ const FeedbackManagement = () => {
     }
   };
 
+  const openEditModal = (feedback) => {
+    setFeedbackToEdit(feedback);
+    setEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setEditModalOpen(false);
+    setFeedbackToEdit(null);
+  };
+
+  const toggleSection = (page) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [page]: !prev[page]
+    }));
+  };
+
   // Get unique page routes for filtering
   const pageRoutes = ['all', ...new Set(feedbackList.map(f => f.page_route).filter(Boolean))];
 
@@ -87,14 +141,36 @@ const FeedbackManagement = () => {
     ? feedbackList 
     : feedbackList.filter(f => f.page_route === selectedPageRoute);
 
-  // Separate resolved and unresolved feedback
-  const resolvedFeedback = filteredFeedback.filter(f => f.status === 'resolved' || f.status === 'closed');
-  const unresolvedFeedback = filteredFeedback.filter(f => f.status !== 'resolved' && f.status !== 'closed');
+  // Group feedback by page route
+  const groupedFeedback = filteredFeedback.reduce((acc, feedback) => {
+    const page = feedback.page_route || 'No Page';
+    if (!acc[page]) {
+      acc[page] = {
+        unresolved: [],
+        resolved: []
+      };
+    }
+    if (feedback.status === 'resolved' || feedback.status === 'closed') {
+      acc[page].resolved.push(feedback);
+    } else {
+      acc[page].unresolved.push(feedback);
+    }
+    return acc;
+  }, {});
+
+  // Sort pages by number of unresolved feedback
+  const sortedPages = Object.entries(groupedFeedback)
+    .sort(([, a], [, b]) => b.unresolved.length - a.unresolved.length);
 
   // Redirect if not admin
   if (!isAdmin) {
     return <Navigate to="/" replace />;
   }
+
+  const handlePageRouteClick = (route) => {
+    // Open in new tab
+    window.open(route, '_blank', 'noopener,noreferrer');
+  };
 
   if (loading) {
     return (
@@ -117,14 +193,20 @@ const FeedbackManagement = () => {
           <th className="px-4 py-2 text-left w-1/3">Message</th>
           <th className="px-4 py-2 text-left">Image</th>
           <th className="px-4 py-2 text-left">Status</th>
-          <th className="px-4 py-2 text-left">Page</th>
           <th className="px-4 py-2 text-left">Date</th>
           <th className="px-4 py-2 text-left">Actions</th>
         </tr>
       </thead>
       <tbody>
         {feedback.map((item) => (
-          <tr key={item.id} className="border-b hover:bg-gray-50">
+          <tr 
+            key={item.id} 
+            className={`border-b hover:bg-gray-50 transition-colors ${
+              item.status === 'resolved' || item.status === 'closed' 
+                ? 'opacity-60 hover:opacity-100' 
+                : ''
+            }`}
+          >
             <td className="px-4 py-2">{item.name}</td>
             <td className="px-4 py-2 capitalize">{item.type}</td>
             <td className="px-4 py-2 capitalize">
@@ -178,20 +260,26 @@ const FeedbackManagement = () => {
                 <option value="closed">Closed</option>
               </select>
             </td>
-            <td className="px-4 py-2 text-sm text-gray-600">
-              {item.page_route || '—'}
-            </td>
             <td className="px-4 py-2 text-xs text-gray-500">
               {new Date(item.created_at).toLocaleString()}
             </td>
             <td className="px-4 py-2">
-              <button
-                onClick={() => openDeleteModal(item)}
-                className="p-2 text-red-600 hover:text-red-800 transition-colors"
-                title="Delete feedback"
-              >
-                <FiTrash2 className="w-5 h-5" />
-              </button>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => openEditModal(item)}
+                  className="p-2 text-blue-600 hover:text-blue-800 transition-colors"
+                  title="Edit feedback"
+                >
+                  <FiEdit2 className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => openDeleteModal(item)}
+                  className="p-2 text-red-600 hover:text-red-800 transition-colors"
+                  title="Delete feedback"
+                >
+                  <FiTrash2 className="w-5 h-5" />
+                </button>
+              </div>
             </td>
           </tr>
         ))}
@@ -224,25 +312,69 @@ const FeedbackManagement = () => {
       </div>
 
       <div className="space-y-8">
-        {/* Unresolved Feedback Section */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4" style={{ color: currentTheme.colors.text }}>
-            Unresolved Feedback ({unresolvedFeedback.length})
-          </h2>
-          <div className="overflow-x-auto">
-            {renderFeedbackTable(unresolvedFeedback)}
-          </div>
-        </div>
+        {sortedPages.map(([page, { unresolved, resolved }]) => (
+          <div key={page} className="bg-white rounded-lg shadow p-6">
+            <div 
+              className="flex items-center justify-between mb-4 cursor-pointer"
+              onClick={() => toggleSection(page)}
+            >
+              <div className="flex items-center gap-2">
+                {expandedSections[page] ? <FiChevronUp /> : <FiChevronDown />}
+                <h2 className="text-xl font-semibold" style={{ color: currentTheme.colors.text }}>
+                  {page === 'No Page' ? 'No Page Specified' : (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePageRouteClick(page);
+                      }}
+                      className="text-blue-600 hover:underline flex items-center gap-1"
+                      title={`Open ${page} in new tab`}
+                    >
+                      {page}
+                      <FiExternalLink className="w-4 h-4" />
+                    </button>
+                  )}
+                </h2>
+              </div>
+              <div className="flex gap-4">
+                <span className="text-sm text-gray-600">
+                  {unresolved.length} unresolved
+                </span>
+                <span className="text-sm text-gray-600">
+                  {resolved.length} resolved
+                </span>
+              </div>
+            </div>
 
-        {/* Resolved Feedback Section */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4" style={{ color: currentTheme.colors.text }}>
-            Resolved Feedback ({resolvedFeedback.length})
-          </h2>
-          <div className="overflow-x-auto">
-            {renderFeedbackTable(resolvedFeedback)}
+            {expandedSections[page] && (
+              <>
+                {/* Unresolved Feedback Section */}
+                {unresolved.length > 0 && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-medium mb-2" style={{ color: currentTheme.colors.text }}>
+                      Unresolved Feedback
+                    </h3>
+                    <div className="overflow-x-auto">
+                      {renderFeedbackTable(unresolved)}
+                    </div>
+                  </div>
+                )}
+
+                {/* Resolved Feedback Section */}
+                {resolved.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-medium mb-2" style={{ color: currentTheme.colors.text }}>
+                      Resolved Feedback
+                    </h3>
+                    <div className="overflow-x-auto">
+                      {renderFeedbackTable(resolved)}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
           </div>
-        </div>
+        ))}
       </div>
 
       {/* Delete Confirmation Modal */}
@@ -277,6 +409,148 @@ const FeedbackManagement = () => {
                 Delete
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editModalOpen && feedbackToEdit && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div 
+            className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4"
+            style={{ backgroundColor: currentTheme.colors.background }}
+          >
+            <h3 className="text-xl font-bold mb-4" style={{ color: currentTheme.colors.text }}>
+              Edit Feedback
+            </h3>
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              handleEdit(feedbackToEdit);
+            }} className="space-y-4">
+              <div>
+                <label className="block mb-1" style={{ color: currentTheme.colors.text }}>Name</label>
+                <input
+                  type="text"
+                  value={feedbackToEdit.name}
+                  onChange={(e) => setFeedbackToEdit(prev => ({ ...prev, name: e.target.value }))}
+                  className="w-full p-2 rounded border"
+                  style={{ 
+                    backgroundColor: currentTheme.colors.background,
+                    borderColor: currentTheme.colors.border,
+                    color: currentTheme.colors.text
+                  }}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block mb-1" style={{ color: currentTheme.colors.text }}>Type</label>
+                <select
+                  value={feedbackToEdit.type}
+                  onChange={(e) => setFeedbackToEdit(prev => ({ ...prev, type: e.target.value }))}
+                  className="w-full p-2 rounded border"
+                  style={{ 
+                    backgroundColor: currentTheme.colors.background,
+                    borderColor: currentTheme.colors.border,
+                    color: currentTheme.colors.text
+                  }}
+                >
+                  <option value="suggestion">Suggestion</option>
+                  <option value="bug">Bug</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block mb-1" style={{ color: currentTheme.colors.text }}>Priority</label>
+                <select
+                  value={feedbackToEdit.priority}
+                  onChange={(e) => setFeedbackToEdit(prev => ({ ...prev, priority: e.target.value }))}
+                  className="w-full p-2 rounded border"
+                  style={{ 
+                    backgroundColor: currentTheme.colors.background,
+                    borderColor: currentTheme.colors.border,
+                    color: currentTheme.colors.text
+                  }}
+                >
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block mb-1" style={{ color: currentTheme.colors.text }}>Message</label>
+                <textarea
+                  value={feedbackToEdit.message}
+                  onChange={(e) => setFeedbackToEdit(prev => ({ ...prev, message: e.target.value }))}
+                  className="w-full p-2 rounded border"
+                  style={{ 
+                    backgroundColor: currentTheme.colors.background,
+                    borderColor: currentTheme.colors.border,
+                    color: currentTheme.colors.text
+                  }}
+                  rows="4"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block mb-1" style={{ color: currentTheme.colors.text }}>Page Route</label>
+                <input
+                  type="text"
+                  value={feedbackToEdit.page_route || ''}
+                  onChange={(e) => setFeedbackToEdit(prev => ({ ...prev, page_route: e.target.value }))}
+                  className="w-full p-2 rounded border"
+                  style={{ 
+                    backgroundColor: currentTheme.colors.background,
+                    borderColor: currentTheme.colors.border,
+                    color: currentTheme.colors.text
+                  }}
+                  placeholder="Enter page route"
+                />
+              </div>
+
+              <div>
+                <label className="block mb-1" style={{ color: currentTheme.colors.text }}>Status</label>
+                <select
+                  value={feedbackToEdit.status}
+                  onChange={(e) => setFeedbackToEdit(prev => ({ ...prev, status: e.target.value }))}
+                  className="w-full p-2 rounded border"
+                  style={{ 
+                    backgroundColor: currentTheme.colors.background,
+                    borderColor: currentTheme.colors.border,
+                    color: currentTheme.colors.text
+                  }}
+                >
+                  <option value="pending">Pending</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="resolved">Resolved</option>
+                  <option value="closed">Closed</option>
+                </select>
+              </div>
+
+              <div className="flex justify-end space-x-4 mt-6">
+                <button
+                  type="button"
+                  onClick={closeEditModal}
+                  className="px-4 py-2 rounded"
+                  style={{ 
+                    backgroundColor: currentTheme.colors.secondary,
+                    color: currentTheme.colors.text
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded text-white"
+                  style={{ backgroundColor: currentTheme.colors.primary }}
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
