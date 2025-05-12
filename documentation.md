@@ -27,6 +27,18 @@ Twirly is a web application built with React and Node.js that allows users to co
    - Handles login/logout functionality
    - Provides user session information
 
+### Additional Contexts
+
+5. **ComparisonDraftContext**
+   - Manages draft state for new comparisons
+   - Handles temporary storage of comparison data
+   - Coordinates with comparison creation flow
+
+6. **FeedbackContext**
+   - Manages user feedback system
+   - Handles feedback submission and display
+   - Coordinates with feedback modal and floating button
+
 ## Scroll Behavior
 
 ### PollGrid Component
@@ -504,4 +516,95 @@ App
    - Row Level Security (RLS) enabled on storage.objects
    - Folder-based access control using user IDs
    - Authenticated-only operations for upload/update/delete
-   - Public read access for profile pictures 
+   - Public read access for profile pictures
+
+## Routing Structure
+
+### Protected Routes
+- `/onboarding` - User onboarding flow
+- `/search` - Search functionality
+- `/` - Trending comparisons
+- `/comparison-aspect/:id` - Aspect-based comparison view
+- `/comparison/:id` - Standard comparison view
+- `/new-comparison` - Create new comparison
+- `/edit-comparison/:id` - Edit existing comparison
+- `/item/:itemId` - Product details
+- `/dashboard/*` - User dashboard and related pages
+- `/settings/*` - User settings
+- `/feedback` - Feedback management
+
+### Public Routes
+- `/login` - User login
+- `/landing` - Landing page
+- `/signup` - User registration
+- `/forgot-password` - Password recovery
+- `/waiting-verification` - Email verification waiting page
+
+## Header Component
+- Implements responsive design with mobile/desktop layouts
+- Features:
+  - Dynamic visibility based on scroll position
+  - Search functionality (expandable on mobile)
+  - User menu with settings drawer
+  - Theme switching
+  - Navigation items:
+    - Trending Comparisons
+    - Dashboard
+    - Add New (Products/Comparisons)
+    - Account Settings
+  - Authentication state handling
+  - Profile display with user information
+
+## Navigation Features
+
+### Swipe Navigation
+- Implements swipe gestures for navigation
+- Uses `react-swipeable` for touch/mouse interactions
+- Supports:
+  - Swipe right to go back
+  - Smooth transitions between pages
+
+### Scroll Behavior
+- Header visibility toggles based on scroll direction
+- Implements scroll threshold for header visibility
+- Smooth transitions for header show/hide
+
+## User Flow
+
+### Authentication Flow
+1. Landing Page
+2. Sign Up/Login
+3. Email Verification
+4. Onboarding Process
+   - User preferences
+   - Category preferences
+   - Notification settings
+
+### Comparison Flow
+1. View Trending Comparisons
+2. Create New Comparison
+3. Add Items to Comparison
+4. Set Comparison Aspects
+5. Share/View Results
+
+### Dashboard Flow
+1. User Profile Overview
+2. Activity Tracking
+3. Content Management
+4. Settings Configuration
+
+## Component Dependencies
+
+### Core Dependencies
+- `react-router-dom` - Routing and navigation
+- `lucide-react` - Icon system
+- `react-swipeable` - Touch/mouse gesture handling
+- `supabase` - Backend integration
+
+### Context Dependencies
+- `ThemeContext` - Theme management
+- `HeaderContext` - Header state
+- `ComparisonContext` - Comparison state
+- `ComparisonDraftContext` - Draft management
+- `AuthContext` - Authentication state
+- `FeedbackContext` - Feedback system 

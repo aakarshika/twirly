@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { comparisonSetService } from '../services/comparisonSetService';
+import { userActivityService, ACTIVITY_TYPES, ENTITY_TYPES } from '../services/userActivityService';
+import { useLocation } from 'react-router-dom';
 
 export const useComments = (setId, userId) => {
   const [comments, setComments] = useState([]);
@@ -8,6 +10,7 @@ export const useComments = (setId, userId) => {
   const [commentVisibility, setCommentVisibility] = useState({});
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const location = useLocation();
 
   const fetchComments = async () => {
     try {
@@ -47,6 +50,16 @@ export const useComments = (setId, userId) => {
         }
       };
 
+      // Log the comment activity
+      await userActivityService.logActivity({
+        userId,
+        activityType: ACTIVITY_TYPES.COMMENT,
+        entityType: ENTITY_TYPES.COMMENT,
+        entityId: comment.id,
+        pageName: location.pathname,
+        metadata: { comparisonSetId: setId }
+      });
+
       setComments(prev => [enrichedComment, ...prev]);
     } catch (err) {
       setError(err.message);
@@ -56,39 +69,66 @@ export const useComments = (setId, userId) => {
   const handleLikeComment = async (commentId, type) => {
     if (!userId) return;
     try {
-
-      if (type == 'Reply') {
+      if (type === 'Reply') {
         const comment = comments.find(c => c.id === commentId);
         const hasLiked = comment.reactions?.find(r => r.user_id === userId)?.reaction_type === 'like';
+        
         await comparisonSetService.toggleCommentLike(commentId, userId, hasLiked);
+        
+        // Log the activity
+        await userActivityService.logActivity({
+          userId,
+          activityType: hasLiked ? ACTIVITY_TYPES.UNLIKE_COMMENT : ACTIVITY_TYPES.LIKE_COMMENT,
+          entityType: ENTITY_TYPES.COMMENT,
+          entityId: commentId,
+          pageName: location.pathname,
+          metadata: { comparisonSetId: setId }
+        });
+
         setComments(prev => prev.map(c => {
           if (c.id === commentId) {
             return {
-                ...c,
-                userReaction: hasLiked ? null : 'like',
-                reactions: hasLiked ? c.reactions.filter(r => r.user_id !== userId) : [...c.reactions, { user_id: userId, reaction_type: 'like' }]
+              ...c,
+              userReaction: hasLiked ? null : 'like',
+              reactions: hasLiked ? c.reactions.filter(r => r.user_id !== userId) : [...c.reactions, { user_id: userId, reaction_type: 'like' }]
             };
           }
           return c;
         }));
-      } else if (type == 'LastReply') {
+      } else if (type === 'LastReply') {
         const comment = comments.find(c => c.replies?.some(r => r.id === commentId));
-        const hasLiked = comment.replies?.find(r => r.id === commentId)?.reactions?.find(r => r.user_id === userId)?.reaction_type === 'like';
+        const reply = comment?.replies?.find(r => r.id === commentId);
+        const hasLiked = reply?.reactions?.find(r => r.user_id === userId)?.reaction_type === 'like';
+        
         await comparisonSetService.toggleReplyLike(commentId, userId, hasLiked);
+        
+        // Log the activity
+        await userActivityService.logActivity({
+          userId,
+          activityType: hasLiked ? ACTIVITY_TYPES.UNLIKE_REPLY : ACTIVITY_TYPES.LIKE_REPLY,
+          entityType: ENTITY_TYPES.REPLY,
+          entityId: commentId,
+          pageName: location.pathname,
+          metadata: { 
+            commentId: comment.id,
+            comparisonSetId: setId 
+          }
+        });
+
         setComments(prev => prev.map(c => {
-            return {
-              ...c,
-              replies: c.replies.map(r => {
-                if (r.id === commentId) {
-                  return {
-                    ...r,
-                    userReaction: hasLiked ? null : 'like',
-                    reactions: hasLiked ? r.reactions.filter(r => r.user_id !== userId) : [...r.reactions, { user_id: userId, reaction_type: 'like' }]
-                  };
-                }
-                return r;
-              })
-            };
+          return {
+            ...c,
+            replies: c.replies.map(r => {
+              if (r.id === commentId) {
+                return {
+                  ...r,
+                  userReaction: hasLiked ? null : 'like',
+                  reactions: hasLiked ? r.reactions.filter(r => r.user_id !== userId) : [...r.reactions, { user_id: userId, reaction_type: 'like' }]
+                };
+              }
+              return r;
+            })
+          };
         }));
       }
     } catch (err) {
@@ -97,7 +137,6 @@ export const useComments = (setId, userId) => {
   };
 
   const handleReply = async (commentId, text) => {
-    console.log('handleReply', commentId, text);
     if (!text.trim() || !userId) return;
 
     try {
@@ -111,27 +150,27 @@ export const useComments = (setId, userId) => {
           display_name: userPreferences?.display_name || 'Someone'
         }
       };
-      console.log('enrichedReply', enrichedReply);
 
-      setComments(prev => {
-        console.log('prev', prev);
-        return prev.map(c => {
-          console.log('c', c);
-          if (c.id === commentId) {
-            return {
+      // Log the reply activity
+      await userActivityService.logActivity({
+        userId,
+        activityType: ACTIVITY_TYPES.COMMENT_REPLY,
+        entityType: ENTITY_TYPES.REPLY,
+        entityId: reply.id,
+        pageName: location.pathname,
+        metadata: { commentId, comparisonSetId: setId }
+      });
+
+      setComments(prev => prev.map(c => {
+        if (c.id === commentId) {
+          return {
             ...c,
             replies: [enrichedReply, ...(c.replies || [])]
           };
         }
         return c;
-      });
-    });
-      //timeout
-      setTimeout(() => {
-        console.log('comments', comments);
-      }, 1000);
+      }));
     } catch (err) {
-      console.log('error', err);
       setError(err.message);
     }
   };
