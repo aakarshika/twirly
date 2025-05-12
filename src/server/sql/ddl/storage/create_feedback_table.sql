@@ -10,6 +10,7 @@ CREATE TABLE feedback (
     message TEXT NOT NULL,
     image_url TEXT,
     status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'resolved', 'closed')),
+    page_route TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -19,6 +20,9 @@ CREATE INDEX idx_feedback_status ON feedback(status);
 
 -- Create index on created_at for faster sorting
 CREATE INDEX idx_feedback_created_at ON feedback(created_at);
+
+-- Create index on page_route for faster filtering
+CREATE INDEX idx_feedback_page_route ON feedback(page_route);
 
 -- Enable RLS
 ALTER TABLE feedback ENABLE ROW LEVEL SECURITY;

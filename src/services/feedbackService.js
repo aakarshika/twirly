@@ -36,6 +36,7 @@ export const feedbackService = {
         message: feedback.message,
         image_url,
         status: 'pending',
+        page_route: feedback.page_route || window.location.pathname,
         created_at: new Date().toISOString()
       }]);
 
