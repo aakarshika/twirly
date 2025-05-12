@@ -46,6 +46,7 @@ export const useComparisonDetails = (id) => {
             category_id,
             created_at,
             categories(name),
+            user:user_preferences(*),
             comparison_set_items(
               id, 
               item_id,

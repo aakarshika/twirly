@@ -3,14 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useComparison } from '../../contexts/ComparisonContext';
 import { useHeader } from '../../contexts/HeaderContext';
-import PollGrid from './comparison-sections/PollGrid';
 import BarChart from './comparison-sections/BarChart';
 import { useComparisonDetails } from '../../hooks/useComparisonDetails';
-import Button from '../../components/common/Button';
-import { MessageSquare, Star } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import ComparisonGridSkeleton from '../../components/skeletons/ComparisonGridSkeleton';
+import ComparisonCirclesView from './ComparisonCirclesView';
 
 const PollScreen = () => {
   const { id } = useParams();
@@ -98,9 +96,10 @@ const PollScreen = () => {
 
   if (loading) {
     return (
-      
-      <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background }}>
-          <ComparisonGridSkeleton />
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <img src="/public_logo_transparent.png" alt="logo" className="h-100 w-100 mx-auto" />
+        </div>
       </div>
     );
   }
@@ -132,19 +131,12 @@ const PollScreen = () => {
         position: 'relative',
         top: isHeaderVisible ? '64px' : '0px',
     }}>
+          <ComparisonCirclesView 
+            items={items} 
+            comparisonMetrics={comparisonMetrics}
+            comparison={currentSet}
+          />
       
-        <PollGrid 
-          id={id}
-          title={currentComparisonName}
-          items={items}
-          votedItemId={votedItemId}
-          currentId={id}
-          itemReviews={itemReviews}
-          setId={currentSetId}
-          set={currentSet}
-          metrics={metrics} 
-          comparisonMetrics={comparisonMetrics}
-        />
       <div 
         className="relative z-0 w-full transition-all duration-150 ease-in-out"
         style={{ 
