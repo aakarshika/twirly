@@ -55,14 +55,12 @@ const ComparisonItemCardAspect = ({
     navigate(`/item/${item.id}`);
   };
 
-  const startVoting = (e) => {
-    e.stopPropagation();
+  const onVoteCasted = (e) => {
     if (userVoted) return;
     handleVote(item.id);
   };
 
   const handleRevertClick = (e) => {
-    e.stopPropagation();
     handleRevertVote();
   };
 
@@ -106,8 +104,7 @@ const ComparisonItemCardAspect = ({
             <span></span>
           ) : (
             <VotingAnimation
-              onStartVoting={startVoting}
-              onCancelVoting={() => { }}
+            onVote={onVoteCasted}
             />
           )}
         <div className="image-container">

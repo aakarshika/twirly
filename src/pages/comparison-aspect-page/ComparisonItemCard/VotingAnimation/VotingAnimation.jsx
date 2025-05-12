@@ -1,10 +1,7 @@
 import React, { useRef, useState } from 'react';
 import './VotingAnimation.css';
 
-const VotingAnimation = ({ 
-  onStartVoting, 
-  onCancelVoting 
-}) => {
+const VotingAnimation = ({ onVote }) => {
   const tapCountRef = useRef(0);
   const tapTimerRef = useRef(null);
   const [showSingleHeart, setShowSingleHeart] = useState(false);
@@ -27,12 +24,14 @@ const VotingAnimation = ({
       tapCountRef.current = 0;
       
       // Cast vote immediately
-      onStartVoting(e);
+      onVote(e);
       
       // Create multiple balloon hearts
       const newBalloonHearts = Array.from({ length: 10 }, (_, i) => ({
         id: i,
+        size: `${Math.random() * 100}%`,
         left: `${Math.random() * 100}%`,
+        top: `${Math.random() * 100}%`,
         delay: i * 100
       }));
       setBalloonHearts(newBalloonHearts);
@@ -47,24 +46,26 @@ const VotingAnimation = ({
   return (
     <div 
       className="voting-animation-container"
-      onTouchStart={handleTap}
-      onTouchEnd={(e) => e.preventDefault()}
-      onMouseDown={handleTap}
-      onMouseUp={(e) => e.preventDefault()}
-      onMouseLeave={(e) => e.preventDefault()}
+      onClick={handleTap}
     >
-      {/* <div className="voting-instruction">
-        Double tap to vote
-      </div> */}
-      
       <div className="heart-container">
-        {showSingleHeart && <div className="heart" style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%) rotate(45deg)' }} />}
+        {showSingleHeart && 
+          <div className="heart-container">
+            <div className="heart" 
+              style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%) rotate(45deg)' }} >
+            </div>
+            {tapCountRef.current === 1 && (<div className="voting-instruction">
+              Double tap to vote
+            </div>)}
+          </div>
+        }
         {balloonHearts.map(heart => (
           <div
             key={heart.id}
             className="heart-balloon"
             style={{
               left: heart.left,
+              top: heart.top,
               animationDelay: `${heart.delay}ms`
             }}
           />

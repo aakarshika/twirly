@@ -342,7 +342,10 @@ const AddProductModal = () => {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="w-full px-4 py-2 rounded-lg flex items-center justify-center space-x-2 bg-green-600 hover:bg-green-700 text-white font-semibold shadow"
+              className="w-full px-4 py-2 rounded-lg flex items-center justify-center space-x-2 text-white font-semibold shadow"
+              style={{
+                backgroundColor: currentTheme.colors.primary
+              }}
             >
               <Upload size={16} />
               <span>Upload</span>
@@ -543,7 +546,10 @@ const AddProductModal = () => {
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-2 rounded-lg font-bold flex items-center space-x-2 bg-green-600 hover:bg-green-700 text-white shadow text-lg"
+            className="px-6 py-2 rounded-lg font-bold flex items-center space-x-2 text-white shadow text-lg"
+            style={{
+              backgroundColor: currentTheme.colors.primary
+            }}
           >
             {loading ? (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>

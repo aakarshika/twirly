@@ -1,7 +1,7 @@
 // File: src/components/layout/Header.jsx
 
 import React, { useState, useEffect } from 'react';
-import { Sparkles, RefreshCw, PlusCircle, Menu, X, Sun, Moon, Home, BarChart2, Settings, User, Building2, ArrowLeft, ChevronDown, ChevronUp, ChevronRight, Settings2, Plus, File, Search } from 'lucide-react';
+import { Sparkles, RefreshCw, PlusCircle, Menu, X, Sun, Moon, Home, BarChart2, Settings, User, Building2, ArrowLeft, ChevronDown, ChevronUp, ChevronRight, Settings2, Plus, File, Search, ChevronLeft } from 'lucide-react';
 import { useHeader } from '../../contexts/HeaderContext';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -15,8 +15,6 @@ import { getUserProfile } from '../../services/users';
  */
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const { isHeaderVisible, setIsHeaderVisible } = useHeader();
   const { currentTheme } = useTheme();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
@@ -27,6 +25,7 @@ const Header = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+
   useEffect(() => {
     const fetchData = async () => {
       if (!user) {
@@ -69,30 +68,6 @@ const Header = () => {
       setAddSectionExpanded(false);
     }
   }, [location.pathname]);
-
-  useEffect(() => {
-    const controlHeader = () => {
-      const currentScrollY = window.scrollY;
-
-      // Add a threshold to prevent header from hiding on small scrolls
-      const scrollThreshold = 10;
-
-      if (currentScrollY > lastScrollY && currentScrollY > scrollThreshold) {
-        setIsHeaderVisible(false);
-      } else {
-        setIsHeaderVisible(true);
-      }
-
-      setLastScrollY(currentScrollY);
-    };
-
-    // Use passive event listener for better performance
-    window.addEventListener('scroll', controlHeader, { passive: true });
-
-    return () => {
-      window.removeEventListener('scroll', controlHeader);
-    };
-  }, [lastScrollY, setIsHeaderVisible]);
 
   const handleDrawerClick = (e) => {
     e.stopPropagation();
@@ -168,8 +143,7 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed container mx-auto top-0 left-0 right-0 z-40 w-full border-b transition-transform duration-300 ${isHeaderVisible ? 'translate-y-0' : '-translate-y-full'
-        }`}
+      className="fixed container mx-auto top-0 left-0 right-0 z-40 w-full border-b"
       style={{
         backgroundColor: currentTheme.colors.background,
         borderColor: currentTheme.colors.card,
@@ -179,6 +153,12 @@ const Header = () => {
         <div className="flex items-center justify-between h-full">
           {/* Logo and Title */}
           <div className="flex flex-row items-center">
+
+            {location.pathname !== '/' && (<Link to="/" className="flex items-center">
+                <div className="flex flex-col items-center" onClick={() => navigate(-1)}>
+                  <ChevronLeft size={24} />
+                </div>
+            </Link>)}
             <Link to="/" className="flex items-center">
               <div className="flex flex-col items-center">
                 <img src="/public_logo_transparent.png" alt="Twirly Logo" className="w-10 h-10 mr-2" />

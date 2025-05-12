@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { feedbackService } from '../../../services/feedbackService';
 import { useAuth } from '../../../contexts/AuthContext';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { FiImage, FiTrash2, FiExternalLink, FiEdit2, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { supabase } from '../../../lib/supabase';
 
@@ -11,7 +11,6 @@ const ADMIN_EMAILS = ['aakarshika93@gmail.com', 'great.shivam19@gmail.com'];
 const FeedbackManagement = () => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [feedbackList, setFeedbackList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -19,11 +18,19 @@ const FeedbackManagement = () => {
   const [feedbackToDelete, setFeedbackToDelete] = useState(null);
   const [feedbackToEdit, setFeedbackToEdit] = useState(null);
   const [expandedMessages, setExpandedMessages] = useState({});
-  const [expandedSections, setExpandedSections] = useState({});
-  const [selectedPageRoute, setSelectedPageRoute] = useState('all');
-
-  // Get base URL from current window location
-  const baseUrl = window.location.origin;
+  
+  // New state for filters and sorting
+  const [filters, setFilters] = useState({
+    status: 'all',
+    type: 'all',
+    priority: 'all',
+    pageRoute: 'all'
+  });
+  const [sortConfig, setSortConfig] = useState({
+    key: 'created_at',
+    direction: 'desc'
+  });
+  const [showResolved, setShowResolved] = useState(false);
 
   // Check if user is admin
   const isAdmin = user && ADMIN_EMAILS.includes(user.email);
@@ -126,41 +133,56 @@ const FeedbackManagement = () => {
     setFeedbackToEdit(null);
   };
 
-  const toggleSection = (page) => {
-    setExpandedSections(prev => ({
-      ...prev,
-      [page]: !prev[page]
+  // Get unique values for filters
+  const uniquePageRoutes = ['all', ...new Set(feedbackList.map(f => f.page_route).filter(Boolean))];
+  const uniqueTypes = ['all', ...new Set(feedbackList.map(f => f.type))];
+  const uniquePriorities = ['all', ...new Set(feedbackList.map(f => f.priority))];
+  const uniqueStatuses = ['all', 'pending', 'in_progress', 'resolved', 'closed'];
+
+  // Filter and sort feedback
+  const filteredAndSortedFeedback = feedbackList
+    .filter(feedback => {
+      const matchesFilters = (
+        (filters.status === 'all' || feedback.status === filters.status) &&
+        (filters.type === 'all' || feedback.type === filters.type) &&
+        (filters.priority === 'all' || feedback.priority === filters.priority) &&
+        (filters.pageRoute === 'all' || feedback.page_route === filters.pageRoute)
+      );
+      
+      // Separate resolved and unresolved
+      const isResolved = feedback.status === 'resolved' || feedback.status === 'closed';
+      return matchesFilters && (showResolved ? isResolved : !isResolved);
+    })
+    .sort((a, b) => {
+      if (sortConfig.key === 'created_at') {
+        return sortConfig.direction === 'asc' 
+          ? new Date(a.created_at) - new Date(b.created_at)
+          : new Date(b.created_at) - new Date(a.created_at);
+      }
+      if (sortConfig.key === 'priority') {
+        const priorityOrder = { high: 3, medium: 2, low: 1 };
+        return sortConfig.direction === 'asc'
+          ? priorityOrder[a.priority] - priorityOrder[b.priority]
+          : priorityOrder[b.priority] - priorityOrder[a.priority];
+      }
+      return sortConfig.direction === 'asc'
+        ? a[sortConfig.key]?.localeCompare(b[sortConfig.key])
+        : b[sortConfig.key]?.localeCompare(a[sortConfig.key]);
+    });
+
+  const handleSort = (key) => {
+    setSortConfig(prev => ({
+      key,
+      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
     }));
   };
 
-  // Get unique page routes for filtering
-  const pageRoutes = ['all', ...new Set(feedbackList.map(f => f.page_route).filter(Boolean))];
-
-  // Filter feedback based on selected page route
-  const filteredFeedback = selectedPageRoute === 'all' 
-    ? feedbackList 
-    : feedbackList.filter(f => f.page_route === selectedPageRoute);
-
-  // Group feedback by page route
-  const groupedFeedback = filteredFeedback.reduce((acc, feedback) => {
-    const page = feedback.page_route || 'No Page';
-    if (!acc[page]) {
-      acc[page] = {
-        unresolved: [],
-        resolved: []
-      };
-    }
-    if (feedback.status === 'resolved' || feedback.status === 'closed') {
-      acc[page].resolved.push(feedback);
-    } else {
-      acc[page].unresolved.push(feedback);
-    }
-    return acc;
-  }, {});
-
-  // Sort pages by number of unresolved feedback
-  const sortedPages = Object.entries(groupedFeedback)
-    .sort(([, a], [, b]) => b.unresolved.length - a.unresolved.length);
+  const handleFilterChange = (filterType, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }));
+  };
 
   // Redirect if not admin
   if (!isAdmin) {
@@ -168,7 +190,6 @@ const FeedbackManagement = () => {
   }
 
   const handlePageRouteClick = (route) => {
-    // Open in new tab
     window.open(route, '_blank', 'noopener,noreferrer');
   };
 
@@ -183,119 +204,32 @@ const FeedbackManagement = () => {
     );
   }
 
-  const renderFeedbackTable = (feedback) => (
-    <table className="min-w-full bg-white rounded shadow">
-      <thead>
-        <tr>
-          <th className="px-4 py-2 text-left">Name</th>
-          <th className="px-4 py-2 text-left">Type</th>
-          <th className="px-4 py-2 text-left">Priority</th>
-          <th className="px-4 py-2 text-left w-1/3">Message</th>
-          <th className="px-4 py-2 text-left">Image</th>
-          <th className="px-4 py-2 text-left">Status</th>
-          <th className="px-4 py-2 text-left">Date</th>
-          <th className="px-4 py-2 text-left">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {feedback.map((item) => (
-          <tr 
-            key={item.id} 
-            className={`border-b hover:bg-gray-50 transition-colors ${
-              item.status === 'resolved' || item.status === 'closed' 
-                ? 'opacity-60 hover:opacity-100' 
-                : ''
-            }`}
-          >
-            <td className="px-4 py-2">{item.name}</td>
-            <td className="px-4 py-2 capitalize">{item.type}</td>
-            <td className="px-4 py-2 capitalize">
-              <div className='flex items-center gap-2 rounded-full px-2 py-1' style={{ backgroundColor: item.priority === 'high' ? '#ef4444' : item.priority === 'medium' ? '#f59e0b' : '#34d399' }}>
-                {item.priority}
-              </div>
-            </td>
-            <td className="px-4 py-2">
-              <div className="max-w-md">
-                <p className={!expandedMessages[item.id] ? "line-clamp-2" : ""}>
-                  {item.message}
-                </p>
-                {item.message.length > 100 && (
-                  <button
-                    onClick={() => toggleMessage(item.id)}
-                    className="text-blue-600 hover:text-blue-800 text-sm mt-1"
-                  >
-                    {expandedMessages[item.id] ? "Show less" : "Show more"}
-                  </button>
-                )}
-              </div>
-            </td>
-            <td className="px-4 py-2">
-              {item.image_url ? (
-                <a
-                  href={item.image_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline flex items-center gap-1"
-                >
-                  <FiImage /> View
-                </a>
-              ) : (
-                <span className="text-gray-400">—</span>
-              )}
-            </td>
-            <td className="px-4 py-2">
-              <select
-                value={item.status}
-                onChange={(e) => handleStatusChange(item.id, e.target.value)}
-                className="p-1 rounded border"
-                style={{
-                  backgroundColor: currentTheme.colors.background,
-                  borderColor: currentTheme.colors.border,
-                  color: currentTheme.colors.text,
-                }}
-              >
-                <option value="pending">Pending</option>
-                <option value="in_progress">In Progress</option>
-                <option value="resolved">Resolved</option>
-                <option value="closed">Closed</option>
-              </select>
-            </td>
-            <td className="px-4 py-2 text-xs text-gray-500">
-              {new Date(item.created_at).toLocaleString()}
-            </td>
-            <td className="px-4 py-2">
-              <div className="flex gap-2">
-                <button
-                  onClick={() => openEditModal(item)}
-                  className="p-2 text-blue-600 hover:text-blue-800 transition-colors"
-                  title="Edit feedback"
-                >
-                  <FiEdit2 className="w-5 h-5" />
-                </button>
-                <button
-                  onClick={() => openDeleteModal(item)}
-                  className="p-2 text-red-600 hover:text-red-800 transition-colors"
-                  title="Delete feedback"
-                >
-                  <FiTrash2 className="w-5 h-5" />
-                </button>
-              </div>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-
   return (
     <div className="container mx-auto px-4 py-8" style={{ backgroundColor: currentTheme.colors.background }}>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
           Feedback Management
         </h1>
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => setShowResolved(!showResolved)}
+            className="px-4 py-2 rounded border"
+            style={{
+              backgroundColor: showResolved ? currentTheme.colors.primary : currentTheme.colors.background,
+              borderColor: currentTheme.colors.border,
+              color: showResolved ? 'white' : currentTheme.colors.text,
+            }}
+          >
+            {showResolved ? 'Show Unresolved' : 'Show Resolved'}
+          </button>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <select
-          value={selectedPageRoute}
-          onChange={(e) => setSelectedPageRoute(e.target.value)}
+          value={filters.status}
+          onChange={(e) => handleFilterChange('status', e.target.value)}
           className="p-2 rounded border"
           style={{
             backgroundColor: currentTheme.colors.background,
@@ -303,7 +237,58 @@ const FeedbackManagement = () => {
             color: currentTheme.colors.text,
           }}
         >
-          {pageRoutes.map(route => (
+          {uniqueStatuses.map(status => (
+            <option key={status} value={status}>
+              {status === 'all' ? 'All Statuses' : status.charAt(0).toUpperCase() + status.slice(1)}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={filters.type}
+          onChange={(e) => handleFilterChange('type', e.target.value)}
+          className="p-2 rounded border"
+          style={{
+            backgroundColor: currentTheme.colors.background,
+            borderColor: currentTheme.colors.border,
+            color: currentTheme.colors.text,
+          }}
+        >
+          {uniqueTypes.map(type => (
+            <option key={type} value={type}>
+              {type === 'all' ? 'All Types' : type.charAt(0).toUpperCase() + type.slice(1)}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={filters.priority}
+          onChange={(e) => handleFilterChange('priority', e.target.value)}
+          className="p-2 rounded border"
+          style={{
+            backgroundColor: currentTheme.colors.background,
+            borderColor: currentTheme.colors.border,
+            color: currentTheme.colors.text,
+          }}
+        >
+          {uniquePriorities.map(priority => (
+            <option key={priority} value={priority}>
+              {priority === 'all' ? 'All Priorities' : priority.charAt(0).toUpperCase() + priority.slice(1)}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={filters.pageRoute}
+          onChange={(e) => handleFilterChange('pageRoute', e.target.value)}
+          className="p-2 rounded border"
+          style={{
+            backgroundColor: currentTheme.colors.background,
+            borderColor: currentTheme.colors.border,
+            color: currentTheme.colors.text,
+          }}
+        >
+          {uniquePageRoutes.map(route => (
             <option key={route} value={route}>
               {route === 'all' ? 'All Pages' : route}
             </option>
@@ -311,70 +296,146 @@ const FeedbackManagement = () => {
         </select>
       </div>
 
-      <div className="space-y-8">
-        {sortedPages.map(([page, { unresolved, resolved }]) => (
-          <div key={page} className="bg-white rounded-lg shadow p-6">
-            <div 
-              className="flex items-center justify-between mb-4 cursor-pointer"
-              onClick={() => toggleSection(page)}
-            >
-              <div className="flex items-center gap-2">
-                {expandedSections[page] ? <FiChevronUp /> : <FiChevronDown />}
-                <h2 className="text-xl font-semibold" style={{ color: currentTheme.colors.text }}>
-                  {page === 'No Page' ? 'No Page Specified' : (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handlePageRouteClick(page);
-                      }}
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full bg-white rounded shadow">
+          <thead>
+            <tr>
+              <th className="px-4 py-2 text-left cursor-pointer"
+                onClick={() => handleSort('priority')}>
+                   {sortConfig.key === 'priority' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+                </th>
+              <th 
+                className="px-2 py-2 text-left"
+              >
+                Message
+              </th>
+              <th 
+                className="px-4 py-2 text-left cursor-pointer"
+                onClick={() => handleSort('status')}
+              >
+                Status {sortConfig.key === 'status' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+              </th>
+              <th 
+                className="px-4 py-2 text-left cursor-pointer"
+                onClick={() => handleSort('created_at')}
+              >
+                Date {sortConfig.key === 'created_at' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+              </th>
+              <th 
+                className="px-4 py-2 text-left cursor-pointer"
+                onClick={() => handleSort('name')}
+              >
+                Source {sortConfig.key === 'name' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
+              </th>
+              <th className="px-4 py-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredAndSortedFeedback.map((item) => (
+              <tr 
+                key={item.id} 
+                className={`border-b hover:bg-gray-50 transition-colors ${
+                  item.status === 'resolved' || item.status === 'closed' 
+                    ? 'opacity-60 hover:opacity-100' 
+                    : ''
+                }`}
+              >
+                <td className='px-4 py-2'>
+                  <div className='flex items-center gap-2 rounded-full h-4 w-4' style={{ backgroundColor: item.priority === 'high' ? '#ef4444' : item.priority === 'medium' ? '#f59e0b' : '#34d399' }}>
+                  </div>
+                </td>
+                <td className="px-2 py-2 capitalize">
+                  <div className="max-w-md">
+                    <p className={!expandedMessages[item.id] ? "line-clamp-2" : ""}>
+                      {item.message}
+                    </p>
+                    {item.message.length > 100 && (
+                      <button
+                        onClick={() => toggleMessage(item.id)}
+                        className="text-blue-600 hover:text-blue-800 text-sm mt-1"
+                      >
+                        {expandedMessages[item.id] ? "Show less" : "Show more"}
+                      </button>
+                    )}
+                  </div>
+                  {item.image_url ? (
+                    <a
+                      href={item.image_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="text-blue-600 hover:underline flex items-center gap-1"
-                      title={`Open ${page} in new tab`}
                     >
-                      {page}
+                      <FiImage /> View
+                    </a>
+                  ) : (
+                    <span className="text-gray-400">—</span>
+                  )}
+                </td>
+                <td className="px-4 py-2">
+                  <select
+                    value={item.status}
+                    onChange={(e) => {
+                      const newStatus = e.target.value;
+                      handleStatusChange(item.id, newStatus);
+                      // If status is changed to resolved or closed, switch to resolved view
+                      if ((newStatus === 'resolved' || newStatus === 'closed') && !showResolved) {
+                        setShowResolved(true);
+                      }
+                    }}
+                    className="p-1 rounded border"
+                    style={{
+                      backgroundColor: currentTheme.colors.background,
+                      borderColor: currentTheme.colors.border,
+                      color: currentTheme.colors.text,
+                    }}
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="in_progress">In Progress</option>
+                    <option value="resolved">Resolved</option>
+                    <option value="closed">Closed</option>
+                  </select>
+                </td>
+                <td className="px-4 py-2 text-xs text-gray-500">
+                  {new Date(item.created_at).toLocaleString()}
+                </td>
+                <td className="px-4 py-2">{item.name}
+                  {item.page_route ? (
+                    <button
+                      onClick={() => handlePageRouteClick(item.page_route)}
+                      className="text-blue-600 hover:underline flex items-center gap-1"
+                      title={`Open ${item.page_route} in new tab`}
+                    >
+                      {item.page_route}
                       <FiExternalLink className="w-4 h-4" />
                     </button>
+                  ) : (
+                    <span className="text-gray-400">—</span>
                   )}
-                </h2>
-              </div>
-              <div className="flex gap-4">
-                <span className="text-sm text-gray-600">
-                  {unresolved.length} unresolved
-                </span>
-                <span className="text-sm text-gray-600">
-                  {resolved.length} resolved
-                </span>
-              </div>
-            </div>
+                </td>
 
-            {expandedSections[page] && (
-              <>
-                {/* Unresolved Feedback Section */}
-                {unresolved.length > 0 && (
-                  <div className="mb-6">
-                    <h3 className="text-lg font-medium mb-2" style={{ color: currentTheme.colors.text }}>
-                      Unresolved Feedback
-                    </h3>
-                    <div className="overflow-x-auto">
-                      {renderFeedbackTable(unresolved)}
-                    </div>
+                <td className="px-4 py-2">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => openEditModal(item)}
+                      className="p-2 text-blue-600 hover:text-blue-800 transition-colors"
+                      title="Edit feedback"
+                    >
+                      <FiEdit2 className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => openDeleteModal(item)}
+                      className="p-2 text-red-600 hover:text-red-800 transition-colors"
+                      title="Delete feedback"
+                    >
+                      <FiTrash2 className="w-5 h-5" />
+                    </button>
                   </div>
-                )}
-
-                {/* Resolved Feedback Section */}
-                {resolved.length > 0 && (
-                  <div>
-                    <h3 className="text-lg font-medium mb-2" style={{ color: currentTheme.colors.text }}>
-                      Resolved Feedback
-                    </h3>
-                    <div className="overflow-x-auto">
-                      {renderFeedbackTable(resolved)}
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        ))}
+                </td>
+                </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
 
       {/* Delete Confirmation Modal */}

@@ -103,25 +103,25 @@ const ScrollToTop = () => {
   return null;
 };
 
-// Add this component before MainRoutingPage
-const SwipeBackWrapper = ({ children }) => {
-  const navigate = useNavigate();
+// // Add this component before MainRoutingPage
+// const SwipeBackWrapper = ({ children }) => {
+//   const navigate = useNavigate();
   
-  const handlers = useSwipeable({
-    onSwipedRight: () => {
-      navigate(-1);
-    },
-    preventDefaultTouchmoveEvent: true,
-    trackMouse: true
-  });
-  const { currentTheme } = useTheme();
+//   const handlers = useSwipeable({
+//     onSwipedRight: () => {
+//       navigate(-1);
+//     },
+//     preventDefaultTouchmoveEvent: true,
+//     trackMouse: true
+//   });
+//   const { currentTheme } = useTheme();
 
-  return (
-    <div {...handlers} className="h-full w-full" style={{ backgroundColor: currentTheme.colors.background }}>
-      {children}
-    </div>
-  );
-};
+//   return (
+//     <div {...handlers} className="h-full w-full" style={{ backgroundColor: currentTheme.colors.background }}>
+//       {children}
+//     </div>
+//   );
+// };
 
 /**
  * Main App component that wraps the application with necessary providers and routing
@@ -146,12 +146,12 @@ const MainRoutingPage = () => {
         <ScrollToTop />
         <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background, color: currentTheme.colors.text }}>
           <Header />
-          <SwipeBackWrapper>
             <main 
               className="flex-grow"
               style={{ 
                 backgroundColor: currentTheme.colors.background,
-                paddingTop: 'calc( var(--safe-area-inset-top))'
+                paddingTop: 'calc( var(--safe-area-inset-top))',
+                paddingBottom: '100px'
               }}
             >
               <Routes>
@@ -206,7 +206,6 @@ const MainRoutingPage = () => {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
               </Routes>
             </main>
-          </SwipeBackWrapper>
           <FloatingFeedbackButton />
           <FeedbackModal />
         </div>
