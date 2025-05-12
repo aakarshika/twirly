@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme } from '../../../contexts/ThemeContext';
 import { Palette, Sun, Moon, Monitor,  Layout, Save, Pencil } from 'lucide-react';
-import Button from '../common/Button';
+import Button from '../../../components/common/Button';
 
 const AppearanceSettings = () => {
   const { currentTheme, changeTheme, themes } = useTheme();

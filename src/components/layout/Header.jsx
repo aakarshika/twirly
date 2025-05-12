@@ -9,7 +9,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import ThemeSwitcher from '../ThemeSwitcher';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
-import SearchBar from '../search/SearchBar';
+import SearchBar from '../../pages/search/SearchBar';
 import './Header.css';
 import { formatDate, getPublicUrl } from '../../lib/utils';
 import { getUserProfile } from '../../services/users';

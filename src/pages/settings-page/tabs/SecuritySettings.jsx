@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme } from '../../../contexts/ThemeContext';
 import { Shield, Lock, Key, Smartphone, Save, Check, X, LogOut, Trash2 } from 'lucide-react';
-import Button from '../common/Button';
-import { useAuth } from '../../contexts/AuthContext';
-import { authService } from '../../services/authService';
-import { userService } from '../../services/userService';
+import Button from '../../../components/common/Button';
+import { useAuth } from '../../../contexts/AuthContext';
+import { authService } from '../../../services/authService';
+import { userService } from '../../../services/userService';
 import { useNavigate } from 'react-router-dom';
 
 const SecuritySettings = () => {

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { useTheme } from '../contexts/ThemeContext';
-import { feedbackService } from '../services/feedbackService';
-import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { feedbackService } from '../../../services/feedbackService';
+import { useAuth } from '../../../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { FiImage, FiTrash2 } from 'react-icons/fi';
 

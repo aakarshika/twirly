@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme } from '../../../contexts/ThemeContext';
 import { CreditCard, DollarSign, Receipt, Save, Plus, Trash2 } from 'lucide-react';
-import Button from '../common/Button';
+import Button from '../../../components/common/Button';
 
 const BillingSettings = () => {
   const { currentTheme } = useTheme();

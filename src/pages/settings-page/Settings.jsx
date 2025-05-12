@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import { ChevronLeft, Menu, X, Home } from 'lucide-react';
 import { useNavigate, useLocation, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import ProfileSettings from '../components/settings/ProfileSettings';
-import AppearanceSettings from '../components/settings/AppearanceSettings';
-import BillingSettings from '../components/settings/BillingSettings';
-import SecuritySettings from '../components/settings/SecuritySettings';
-import LanguageSettings from '../components/settings/LanguageSettings';
-import HelpSettings from '../components/settings/HelpSettings';
-import { useHeader } from '../contexts/HeaderContext';
+import { useAuth } from '../../contexts/AuthContext';
+import ProfileSettings from './tabs/ProfileSettings';
+import AppearanceSettings from './tabs/AppearanceSettings';
+import BillingSettings from './tabs/BillingSettings';
+import SecuritySettings from './tabs/SecuritySettings';
+import LanguageSettings from './tabs/LanguageSettings';
+import HelpSettings from './tabs/HelpSettings';
+import { useHeader } from '../../contexts/HeaderContext';
 
 const Settings = () => {
   const { currentTheme } = useTheme();

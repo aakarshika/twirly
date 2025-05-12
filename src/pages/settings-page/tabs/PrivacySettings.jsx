@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme } from '../../../../contexts/ThemeContext';
 import { Eye, EyeOff, Lock, Globe, User, Shield, MessageSquare, Mail } from 'lucide-react';
-import Button from '../common/Button';
+import Button from '../../../../components/common/Button';
 
 const PrivacySettings = () => {
   const { currentTheme } = useTheme();

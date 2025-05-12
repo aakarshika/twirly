@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useAuth } from '../../../contexts/AuthContext';
+import { supabase } from '../../../lib/supabase';
+import { useTheme } from '../../../contexts/ThemeContext';
 import { User, Mail, Phone, MapPin, Globe, Camera, Save, Twitter, Instagram, Facebook } from 'lucide-react';
-import Button from '../common/Button';
-import Avatar from '../common/Avatar';
+import Button from '../../../components/common/Button';
+import Avatar from '../../../components/common/Avatar';
 
 const ProfileSettings = () => {
   const { user } = useAuth();

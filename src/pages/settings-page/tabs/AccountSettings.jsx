@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme } from '../../../contexts/ThemeContext';
 import { User, Mail, Camera, Save } from 'lucide-react';
-import Button from '../common/Button';
+import Button from '../../../components/common/Button';
 
 const AccountSettings = () => {
   const { currentTheme } = useTheme();

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { useTheme } from '../../../contexts/ThemeContext';
 import { HelpCircle, Mail, MessageSquare, BookOpen, Save, Search } from 'lucide-react';
-import Button from '../common/Button';
+import Button from '../../../components/common/Button';
 
 const HelpSettings = () => {
   const { currentTheme } = useTheme();
