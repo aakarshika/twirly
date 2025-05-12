@@ -3,7 +3,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { supabase } from '../../../lib/supabase';
 import { Heart, MessageSquare } from 'lucide-react';
-import Button from '../../common/Button';
+import Button from '../../../components/common/Button';
 import { getPublicUrl } from '../../../lib/utils';
 import { renderTextWithMentions } from '../../../lib/commentUtils';
 

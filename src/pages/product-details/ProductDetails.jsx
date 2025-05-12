@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '../lib/supabase';
-import { useTheme } from '../contexts/ThemeContext';
-import ProductHeader from '../components/product-details/ProductHeader';
-import QuickStats from '../components/product-details/QuickStats';
-import ProductTabs from '../components/product-details/ProductTabs';
-import { useAuth } from '../contexts/AuthContext';
-import { useHeader } from '../contexts/HeaderContext';
+import { supabase } from '../../lib/supabase';
+import { useTheme } from '../../contexts/ThemeContext';
+import ProductHeader from './ProductHeader';
+import QuickStats from './QuickStats';
+import ProductTabs from './ProductTabs';
+import { useAuth } from '../../contexts/AuthContext';
+import { useHeader } from '../../contexts/HeaderContext';
 const ProductDetails = () => {
   const { itemId } = useParams();
   const { currentTheme } = useTheme();

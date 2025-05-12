@@ -3,7 +3,7 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { UserGroupIcon, ChatBubbleOvalLeftIcon } from '@heroicons/react/24/solid';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
-import { OtherChart } from '../../results/visualizations';
+import { OtherChart } from '../../../components/results/visualizations';
 import { useAuth } from '../../../contexts/AuthContext';
 
 const AppearancesTab = ({ item, comparisonSets }) => {

@@ -9,7 +9,7 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Trending from './Trending';
 import PollScreen from './PollScreen';
-import ProductDetails from './ProductDetails';
+import ProductDetails from './product-details/ProductDetails';
 import UserDashboard from './user-dashboard-page/UserDashboard';
 import { useTheme } from '../contexts/ThemeContext';
 import Settings from './settings-page/Settings';

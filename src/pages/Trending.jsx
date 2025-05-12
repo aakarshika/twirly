@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { useComparison } from '../contexts/ComparisonContext';
 import { useHeader } from '../contexts/HeaderContext';
 import { MessageSquare, TrendingUp, Users } from 'lucide-react';
 import { COMPARISON_COLOR_SET } from '../lib/constants';
@@ -18,7 +17,6 @@ const Trending = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { isHeaderVisible } = useHeader();
-  const { setCurrentSet } = useComparison();
 
   useEffect(() => {
     const fetchTrendingSets = async () => {

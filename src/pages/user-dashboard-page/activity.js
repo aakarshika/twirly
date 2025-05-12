@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { supabase } from '../../lib/supabase';
 
 /**
  * Get weekly activity data for a user

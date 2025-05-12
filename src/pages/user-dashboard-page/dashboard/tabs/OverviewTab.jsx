@@ -3,7 +3,7 @@ import ActivityOverview from '../ActivityOverview';
 import { useEffect } from 'react';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { getUserProfile } from '../../../../services/users';
-import { getWeeklyActivity, getCategoryDistribution, getRecentActivities, getActivityTrends } from '../../../../services/activity';
+import { getWeeklyActivity, getCategoryDistribution, getRecentActivities, getActivityTrends } from '../../activity';
 
 const OverviewTab = ({ userId, isPublic }) => {
   const [loading, setLoading] = useState(true);

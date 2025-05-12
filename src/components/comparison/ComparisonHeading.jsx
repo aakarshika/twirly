@@ -16,14 +16,7 @@ import { splitAndJoin } from '../../lib/utils';
 const ComparisonHeading = ({ isHeaderVisible, title, height, currentId, itemReviews, metrics, comparisonMetrics }) => {
   
   const { 
-    items, 
-    userVoted, 
-    loadNextSet,
-    completedSets,
-    currentSetIndex,
-    handleVote,
-    handleRevertVote,
-    votedItemId
+    items
   } = useComparison();
   // console.log("height in grid",height);
 
