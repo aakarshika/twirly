@@ -108,7 +108,7 @@ const TrendingCard = ({set, from}) => {
         </div>
         {set.description && (
           <p className="text-sm mt-2" style={{ color: currentTheme.colors.textSecondary }}>
-            {set.description}
+            {set.description} 
           </p>
         )}
         <div className="flex items-center justify-between mt-4">

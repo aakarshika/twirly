@@ -44,7 +44,7 @@ const OverviewTab = ({ userId, isPublic }) => {
         setTrends(activityTrends);
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
-        setError('Failed to fetch dashboard data');
+        setError('Failed to fetch dashboard data in overview tab');
       } finally {
         setLoading(false);
       }

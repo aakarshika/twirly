@@ -1,8 +1,9 @@
 import React from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { User } from 'lucide-react';
+import { Pencil, User, Coins } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getPublicUrl } from '../../lib/utils';
+import Avatar from '../common/Avatar';
 
 const ProfileHeader = ({ userData, isPublic = false }) => {
   const { currentTheme } = useTheme();
@@ -16,57 +17,97 @@ const ProfileHeader = ({ userData, isPublic = false }) => {
     });
   };
 
+  const isNewUser = () => {
+    if (!userData?.profile?.created_at) return false;
+    const createdDate = new Date(userData.profile.created_at);
+    const today = new Date();
+    return createdDate.toDateString() === today.toDateString();
+  };
+
   return (
     <div
-      className="flex flex-col md:flex-row items-center justify-between p-6 rounded-lg"
+      className="p-6 rounded-lg"
       style={{ backgroundColor: currentTheme.colors.cardBackground }}
     >
-      <div className="flex items-center space-x-4">
-        <div className="w-24 h-24 bg-gray-800 rounded-full flex items-center justify-center">
-          {userData?.profile?.profile_image_url && (
-            <img 
-              src={getPublicUrl(userData.profile.profile_image_url)} 
-              alt="Profile" 
-              className="w-full h-full object-cover rounded-full"
-            />
-          )}
-        </div>
-        <div>
-          <h1
-            className="text-2xl font-bold"
-            style={{ color: currentTheme.colors.text }}
-          >
-            {userData?.profile?.display_name}
-          </h1>
-          <p
-            className="text-sm"
-            style={{ color: currentTheme.colors.textSecondary }}
-          >
-            Member since {userData?.profile?.created_at ? formatDate(userData.profile.created_at) : 'Unknown'}
-          </p>
-          {userData?.profile?.bio && (
-            <p
-              className="mt-2 text-sm"
-              style={{ color: currentTheme.colors.textSecondary }}
-            >
-              {userData.profile.bio}
-            </p>
-          )}
-        </div>
-      </div>
+      <div className="flex flex-col md:flex-row justify-between">
+        {/* Main Content Area */}
+        <div className="flex items-start space-x-4">
+          <Avatar
+            profileImageUrl={userData?.profile?.profile_image_url ? getPublicUrl(userData.profile.profile_image_url) : null}
+            displayName={userData?.profile?.display_name}
+            username={userData?.profile?.username}
+            size="md"
+          />
+          <div className="flex-1">
+            <div className="flex items-center space-x-3">
+              <h1
+                className="text-2xl font-bold"
+                style={{ color: currentTheme.colors.text }}
+              >
+                {userData?.profile?.display_name}
+              </h1>
+              {!isPublic && (
+                <button
+                  onClick={() => navigate('/settings')}
+                  className="flex items-center space-x-1 px-2 py-1 rounded-lg text-sm"
+                  style={{
+                    backgroundColor: currentTheme.colors.primary + '20',
+                    color: currentTheme.colors.primary
+                  }}
+                >
+                  <Pencil size={14} />
+                  <span>Edit</span>
+                </button>
+              )}
+            </div>
+            
+            {/* User Stats Row */}
+            <div className="flex items-center space-x-4 mt-2">
+              <p
+                className="text-sm"
+                style={{ color: currentTheme.colors.textSecondary }}
+              >
+                Member since {userData?.profile?.created_at ? formatDate(userData.profile.created_at) : 'Unknown'}
+              </p>
+              <div className="w-px h-4" style={{ backgroundColor: currentTheme.colors.border }}></div>
+              <div 
+                className="flex items-center space-x-1.5 rounded-lg px-2 py-1"
+                style={{ color: currentTheme.colors.primary, backgroundColor: currentTheme.colors.primary + '20', border: `1px solid ${currentTheme.colors.primary}` }}
+              >
+                <Coins size={16} />
+                <span className="text-sm font-medium">
+                  {userData?.profile?.coins || 0} KARMA
+                </span>
+              </div>
+            </div>
 
-      {!isPublic && (
-        <button
-          onClick={() => navigate('/settings')}
-          className="mt-4 md:mt-0 px-4 py-2 rounded-lg font-medium"
-          style={{
-            backgroundColor: currentTheme.colors.primary,
-            color: currentTheme.colors.buttonText
-          }}
-        >
-          Edit Profile
-        </button>
-      )}
+            {userData?.profile?.bio && (
+              <p
+                className="mt-3 text-sm"
+                style={{ color: currentTheme.colors.textSecondary }}
+              >
+                {userData.profile.bio}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Right Side Area - Only for Congratulations Message */}
+        {!isPublic && isNewUser() && (
+          <div className="flex flex-col items-end mt-4 md:mt-0">
+            <div 
+              className="px-4 py-2 rounded-lg text-sm"
+              style={{ 
+                backgroundColor: currentTheme.colors.success + '20',
+                border: `1px solid ${currentTheme.colors.success}`,
+                color: currentTheme.colors.success
+              }}
+            >
+              🎉 Congratulations! You earned 100 karma for signing up!
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
