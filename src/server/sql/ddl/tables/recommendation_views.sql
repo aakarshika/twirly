@@ -3,7 +3,7 @@ CREATE OR REPLACE VIEW popular_comparison_sets AS
 SELECT 
     cs.id as set_id,
     cs.name,
-    cs.description,
+    csa.description,
     cs.category_id,
     cs.created_at,
     csa.metric_name,

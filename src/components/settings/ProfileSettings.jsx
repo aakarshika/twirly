@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase';
 import { useTheme } from '../../contexts/ThemeContext';
 import { User, Mail, Phone, MapPin, Globe, Camera, Save, Twitter, Instagram, Facebook } from 'lucide-react';
 import Button from '../common/Button';
+import Avatar from '../common/Avatar';
 
 const ProfileSettings = () => {
   const { user } = useAuth();
@@ -25,7 +26,7 @@ const ProfileSettings = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(true);
   const [avatarPreview, setAvatarPreview] = useState('');
   const [usernameError, setUsernameError] = useState(null);
   useEffect(() => {
@@ -236,49 +237,13 @@ const ProfileSettings = () => {
           }}
         >
           <div className="flex items-center space-x-6">
-            <div className="relative">
-              <div 
-                className="w-24 h-24 rounded-full bg-cover bg-center overflow-hidden"
-                style={{ 
-                  backgroundColor: currentTheme.colors.border,
-                }}
-              >
-                {avatarPreview ? (
-                  <img
-                    src={avatarPreview}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      console.error('Error loading image:', e);
-                      setAvatarPreview('');
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center rounded-full" style={{ backgroundColor: currentTheme.colors.primary }}>
-                    <span className="text-white text-2xl">
-                      {profileData.display_name?.[0] || profileData.username?.[0] || '?'}
-                    </span>
-                  </div>
-                )}
-              </div>
-              {isEditing && (
-                <label 
-                  className="absolute bottom-0 right-0 p-2 rounded-full cursor-pointer"
-                  style={{ 
-                    backgroundColor: currentTheme.colors.primary,
-                    color: currentTheme.colors.background
-                  }}
-                >
-                  <Camera size={16} />
-                  <input
-                    type="file"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleAvatarChange}
-                  />
-                </label>
-              )}
-            </div>
+            <Avatar
+              profileImageUrl={avatarPreview}
+              displayName={profileData.display_name}
+              username={profileData.username}
+              isEditable={isEditing}
+              onAvatarChange={handleAvatarChange}
+            />
             <div>
               <h3 
                 className="text-lg font-medium"

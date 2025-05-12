@@ -5,6 +5,8 @@ import ContentTabs from '../components/dashboard/ContentTabs';
 import { getUserProfile } from '../services/users';
 import { useAuth } from '../contexts/AuthContext';
 import { useHeader } from '../contexts/HeaderContext';
+import FirstTimeDashboard from '../components/dashboard/FirstTimeDashboard';
+
 const UserDashboard = () => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
@@ -13,6 +15,7 @@ const UserDashboard = () => {
   const [error, setError] = useState(null);
   const { isHeaderVisible } = useHeader();
   const [userData, setUserData] = useState(null);
+  const [showFirstTimeDashboard, setShowFirstTimeDashboard] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,9 +32,13 @@ const UserDashboard = () => {
         ]);
 
         setUserData(userProfile);
+        
+        // Check if this is the user's first time
+        const isFirstTime = !localStorage.getItem('dashboard_tour_completed');
+        setShowFirstTimeDashboard(isFirstTime);
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
-        setError('Failed to fetch dashboard data');
+        setError('Failed to fetch dashboard data in dashboard');
       } finally {
         setLoading(false);
       }
@@ -39,6 +46,11 @@ const UserDashboard = () => {
 
     fetchData();
   }, [user]);
+
+  const handleTourComplete = () => {
+    localStorage.setItem('dashboard_tour_completed', 'true');
+    setShowFirstTimeDashboard(false);
+  };
 
   if (loading) {
     return (
@@ -75,6 +87,7 @@ const UserDashboard = () => {
       </div>
     );
   }
+
   return (
     <div 
       className="min-h-screen p-4 md:p-8"
@@ -83,10 +96,12 @@ const UserDashboard = () => {
         top: isHeaderVisible ? '64px' : '0px',
       }}
     >
+      {showFirstTimeDashboard && (
+        <FirstTimeDashboard onComplete={handleTourComplete} />
+      )}
       <div className="max-w-7xl mx-auto">
         <ProfileHeader userData={userData} isPublic={false} />
         
-
         <div className="mt-8">
           <ContentTabs 
             activeTab={activeTab} 
@@ -96,7 +111,6 @@ const UserDashboard = () => {
             isPublic={false}
           />
         </div>
-
       </div>
     </div>
   );

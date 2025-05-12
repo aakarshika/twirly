@@ -56,7 +56,7 @@ const Header = () => {
         setUserData(userProfile);
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
-        setError('Failed to fetch dashboard data');
+        setError('Failed to fetch dashboard data in header');
       } finally {
         setLoading(false);
       }
@@ -376,7 +376,7 @@ const Header = () => {
                   </div>
                 </div>
                 {addSectionExpanded && (
-                  <div>
+                  <div className="ml-8">
                     {addTabs.map((tab) => (
                       <button
                         key={tab.id}
@@ -418,7 +418,8 @@ const Header = () => {
                 </div>
 
               {/* Settings Tabs */}
-              {settingsSectionExpanded && (<div>
+              {settingsSectionExpanded && (
+                <div className="ml-8">
                 {settingsTabs.map((tab) => (
                   <button
                     key={tab.id}

@@ -4,6 +4,7 @@ import { MessageSquare } from 'lucide-react';
 import { MentionsInput, Mention } from 'react-mentions';
 import { supabase } from '../../lib/supabase';
 import { getPublicUrl } from '../../lib/utils';
+import Avatar from '../common/Avatar';
 
 const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, items, userPreferences, type }) => {
   const inputRef = useRef(null);
@@ -75,12 +76,12 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
       <div className="w-full p-2 bg-white">
         <>
           <div className="flex">
-            <img
-              src={getPublicUrl(userPreferences?.profile_image_url)}
-              alt={userPreferences?.display_name || 'User'}
-              className="w-6 h-6 rounded-full mr-2"
+            <Avatar
+              profileImageUrl={getPublicUrl(userPreferences?.profile_image_url)}
+              displayName={userPreferences?.display_name}
+              size="sm"
+              className="mr-2"
             />
-
             <div className="flex flex-col w-full">
               <span className="font-bold text-start text-md">{userPreferences?.display_name || 'Anonymous'}</span>
               <div className="w-full" style={{border: '1px solid #e2e8f0'}}>

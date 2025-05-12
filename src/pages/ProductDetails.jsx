@@ -35,7 +35,7 @@ const ProductDetails = () => {
           .from('items')
           .select(`
             *,
-            categories (*),
+            categories!item_categories (*),
             item_metric_averages (*)
           `)
           .eq('id', itemId)

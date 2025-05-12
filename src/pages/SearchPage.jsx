@@ -102,11 +102,8 @@ const SearchPage = () => {
           </div>
           <div>
             <h3 className="font-medium" style={{ color: currentTheme.colors.text }}>
-              { user.username}
+              { user.display_name}
             </h3>
-            <p className="text-sm" style={{ color: currentTheme.colors.textSecondary }}>
-              @{user.username}
-            </p>
           </div>
         </div>
       </Link>

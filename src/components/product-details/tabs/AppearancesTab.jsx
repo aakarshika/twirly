@@ -24,7 +24,8 @@ const AppearancesTab = ({ item, comparisonSets }) => {
           <button
             key={item}
             onClick={() => setSelectedChart(item)}
-            className={`px-4 py-2 rounded-md ${selectedChart === item ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'}`}
+            style={{backgroundColor: selectedChart === item ? currentTheme.colors.primary : 'lightgray', color: selectedChart === item ? 'white' : 'black'}}
+            className={`px-4 py-2 rounded-md`}
           >
             {item}
           </button>
