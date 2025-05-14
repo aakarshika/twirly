@@ -7,6 +7,7 @@ import {
   } from '../../services/comparisonService';
 import ComparisonMetadata from './ComparisonMetadata';
 import Avatar from '../../components/common/Avatar';
+import { getPublicUrl } from '../../lib/utils';
 
 const List = ({displayItems, isMobile, winner, comparison}) => {
     return <>
@@ -35,7 +36,7 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison }) => {
     const winner = findWinner(displayItems);
 
     return (
-        <div className="min-h-screen">
+        <div className="">
             <div className="max-w-7xl mx-auto">
                 {/* Metadata Section */}
                 <ComparisonMetadata comparison={comparison} isMobile={false} />
@@ -46,15 +47,15 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison }) => {
                 </div>
 
                 {/* Desktop Layout */}
-                <div className="hidden sm:grid sm:grid-cols-2 sm:gap-4 relative">
+                <div className="hidden sm:grid sm:grid-cols-2 sm:gap-4 relative p-4">
                     <List displayItems={displayItems} isMobile={false} winner={winner} comparison={comparison} />
                 </div>
 
           {/* Creator Info */}
           <div className="flex justify-start m-4 mb-0 space-x-2">
             <Avatar 
-            profileImageUrl = {comparison.user?.profile_image_url}
-            displayName = {comparison.user?.display_name}
+          profileImageUrl={comparison.user?.profile_image_url ? getPublicUrl(comparison.user?.profile_image_url) : null}
+          displayName = {comparison.user?.display_name}
             username = {comparison.user?.username}
             size = 'sm'
             isEditable = {false}

@@ -95,7 +95,10 @@ const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
 
   return (
     <div className="w-full p-4">
-      <div className="space-y-4">
+      <div  className={`grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2`}
+                  style={{
+                    gap: '1vh'
+                  }}>
         {comparisonMetrics.map((metric, index) => {
 
           const [userVoted, setUserVoted] = useState(false);

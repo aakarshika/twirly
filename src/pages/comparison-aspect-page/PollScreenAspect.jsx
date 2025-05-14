@@ -169,34 +169,10 @@ const PollScreenAspect = () => {
       style={{
         backgroundColor: currentTheme.colors.background,
         paddingTop: isHeaderVisible ? '44px' : '0px',
-        paddingBottom: '80px',
-        transform: 'translateZ(0)',
-        WebkitTransform: 'translateZ(0)',
-        backfaceVisibility: 'hidden',
-        WebkitBackfaceVisibility: 'hidden',
-        perspective: '1000',
-        WebkitPerspective: '1000',
-        transformStyle: 'preserve-3d',
-        WebkitTransformStyle: 'preserve-3d'
+        paddingBottom: '80px'
       }}>
 
-      <div className="h-full items-end">
-        <button
-          onClick={handlePreviousNavigation}
-          className="absolute left-1 z-10 p-2 rounded-full shadow-lg"
-          style={{ backgroundColor: 'gray', marginTop: '90%' }}
-        >
-          <ChevronLeft size={24} style={{ color: 'white' }} />
-        </button>
-        <button
-          onClick={handleNextNavigation}
-          className="absolute right-1 z-10 p-2 rounded-full shadow-lg"
-          style={{ backgroundColor: currentTheme.colors.primary, marginTop: '90%' }}
-        >
-          <ChevronRight size={24} style={{ color: 'white' }} />
-        </button>
-      </div>
-      <div className="h-full flex flex-col max-w-4xl mx-auto" {...handlers}>
+      <div className="h-full flex flex-col " {...handlers}>
         <div className="">
           <div className="space-y-4" style={{ color: currentTheme.colors.primary }}>
 
@@ -224,8 +200,8 @@ const PollScreenAspect = () => {
               <div>
                 <div className={`grid ${items.length === 1 ? 'grid-cols-1' :
                   items.length === 2 ? 'grid-cols-2' :
-                    items.length === 3 ? 'grid-cols-3' :
-                      'grid-cols-2 md:grid-cols-3 lg:grid-cols-4'
+                    items.length%3 === 0 ? 'grid-cols-3' :
+                      'grid-cols-2'
                   }`}
                   style={{
                     gap: '1vh'
@@ -266,6 +242,23 @@ const PollScreenAspect = () => {
             </div>
           )}
         </div>
+      </div>
+
+      <div className="fixed top-0 left-0 right-0 z-10">
+        <button
+          onClick={handlePreviousNavigation}
+          className="absolute left-1 z-20 p-2 rounded-full shadow-lg"
+          style={{ backgroundColor: 'gray', marginTop: '90%' }}
+        >
+          <ChevronLeft size={24} style={{ color: 'white' }} />
+        </button>
+        <button
+          onClick={handleNextNavigation}
+          className="absolute right-1 z-20 p-2 rounded-full shadow-lg"
+          style={{ backgroundColor: currentTheme.colors.primary, marginTop: '90%' }}
+        >
+          <ChevronRight size={24} style={{ color: 'white' }} />
+        </button>
       </div>
     </div>
   );

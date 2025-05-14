@@ -34,9 +34,9 @@ const validateDescription = (description) => {
   if (!trimmedDesc) {
     return 'Product description is required';
   }
-  if (trimmedDesc.length < 10) {
-    return 'Description must be at least 10 characters long';
-  }
+  // if (trimmedDesc.length < 10) {
+  //   return 'Description must be at least 10 characters long';
+  // }
   if (trimmedDesc.length > 1000) {
     return 'Description must be less than 1000 characters';
   }

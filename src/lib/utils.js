@@ -140,3 +140,14 @@ export function randomPastelColorHex() {
   const b = Math.floor(128 + Math.random() * 127);
   return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 }
+
+
+export function getRGB(color) {
+  
+  //detect and convert hex to rgb:
+  const isHexColor = /^(#|0x)[0-9A-Fa-f]+$/.test(color);
+  //convert hex to rgb(r,g,b) where r,g,b are numbers between 0 and 255
+  const rgbc = isHexColor ? `rgb(${parseInt(color.slice(1, 3), 16)}, ${parseInt(color.slice(3, 5), 16)}, ${parseInt(color.slice(5, 7), 16)})` : color;
+
+  return rgbc;
+}

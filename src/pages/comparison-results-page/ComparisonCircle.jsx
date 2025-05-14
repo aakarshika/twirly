@@ -1,18 +1,20 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Image, ThumbsUp, Target, User, Clock, MessageCircle, ThumbsUp as ThumbsUpIcon } from 'lucide-react';
-import { splitAndJoin } from '../../lib/utils';
+import { splitAndJoin, getRGB } from '../../lib/utils';
 import { hasAnyClearLeader } from '../../services/comparisonService';
 import { formatDistanceToNow } from 'date-fns';
 
 
 const ComparisonCircle = ({ item, index, isMobile = false, winner, comparison }) => {
+    const itemColor = getRGB(item.item_color_string);
+
   const circleClasses = isMobile
     ? {
         container: `relative ${index % 2 === 0 ? 'ml-0 mr-auto' : 'ml-auto mr-0'} ${index > 0 ? '-mt-24' : ''}`,
         style: { width: '80%', maxWidth: '250px' },
         circle: 'relative w-full pb-[100%]',
-        innerCircle: 'absolute inset-0 rounded-lg bg-white shadow-xl p-5 flex flex-col items-center border-4 border-gray-200 overflow-hidden',
+        innerCircle: 'absolute inset-0  rounded-lg rounded-t-full bg-white shadow-xl p-5 flex flex-col items-center border-4 border-gray-200 overflow-hidden',
         imageContainer: 'w-full h-20 relative',
         title: 'text-lg font-bold text-gray-800',
         description: 'text-xs text-gray-600 text-center',
@@ -29,7 +31,7 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, comparison })
     : {
         container: `relative   ${ index == 0 ? '' : index == 1 ? 'mt-24' : index % 2 == 1 ? 'mt-4' : '-mt-20'}`,
         style: {},
-        circle: 'aspect-square rounded-lg  bg-white shadow-xl p-8 flex flex-col items-center border-4 border-gray-200 overflow-hidden',
+        circle: 'aspect-square  rounded-lg rounded-t-full  bg-white shadow-xl p-8 flex flex-col items-center border-4 border-gray-200 overflow-hidden',
         innerCircle: '',
         imageContainer: 'w-full h-32 mb-4 relative',
         title: 'text-2xl font-bold text-gray-800',
@@ -58,9 +60,10 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, comparison })
       <div className="relative">
         {/* Trophy Icon */}
         {winner && winner.id === item.id && (<div className={`absolute ${circleClasses.trophy.container} left-1/2 transform -translate-x-1/2 z-10`}>
-          <div className={`bg-yellow-400 rounded-full ${circleClasses.trophy.padding} shadow-lg`}>
+          <div className={`flex flex-row items-center gap-2 bg-yellow-400 rounded-full ${circleClasses.trophy.padding} shadow-lg`}>
             <Trophy className={`${circleClasses.trophy.size} text-white`} />
-          </div>
+            <span className="text-sm text-gray-600">Winning by {item.votesPercentage}%</span>
+            </div>
         </div>)}
         {/* Trophy Icon */}
         {/* {item.leadingMetrics && item.leadingMetrics.length > 0 && (<div className={`absolute ${circleClasses.trophy.container} left-1/5 transform -translate-x-1/4 z-10`}>
@@ -75,23 +78,23 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, comparison })
             className={isMobile ? circleClasses.innerCircle : circleClasses.circle}
             style={{
               backgroundColor: winner && winner.id !== item.id ? 
-                item.item_color_string.substring(0, item.item_color_string.length - 1) + ', 0.2)' : 
-                item.item_color_string.substring(0, item.item_color_string.length - 1) + ', 0.5)',
+                itemColor.substring(0, itemColor.length - 1) + ', 0.2)' : 
+                itemColor.substring(0, itemColor.length - 1) + ', 0.5)',
               borderColor: winner && winner.id !== item.id ? 
-                item.item_color_string.substring(0, item.item_color_string.length - 1) + ', 0.3)' : 
-                item.item_color_string
+                itemColor.substring(0, itemColor.length - 1) + ', 0.3)' : 
+                itemColor
             }}
           >
             {/* Background Circles */}
             {winner && winner.id !== item.id && (
-              <div className="absolute inset-0 rounded-lg overflow-hidden">
+              <div className="absolute inset-0  rounded-lg rounded-t-full overflow-hidden">
                 <motion.div 
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.2 }}
                   className="absolute rounded-full" 
                   style={{ 
-                    backgroundColor: item.item_color_string.substring(0, item.item_color_string.length - 1) + ', 0.15)',
+                    backgroundColor: itemColor.substring(0, itemColor.length - 1) + ', 0.15)',
                     width: `${Math.min(400, 80 + item.votesPercentage * 5)}px`,
                     height: `${Math.min(400, 80 + item.votesPercentage * 5)}px`,
                     zIndex: 0,
@@ -106,7 +109,7 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, comparison })
                   transition={{ duration: 0.5, delay: 0.3 }}
                   className="absolute rounded-full" 
                   style={{ 
-                    backgroundColor: item.item_color_string.substring(0, item.item_color_string.length - 1) + ', 0.3)',
+                    backgroundColor: itemColor.substring(0, itemColor.length - 1) + ', 0.3)',
                     width: `${Math.min(300, 60 + item.votesPercentage * 3)}px`,
                     height: `${Math.min(300, 60 + item.votesPercentage * 3)}px`,
                     zIndex: 1,
@@ -136,7 +139,7 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, comparison })
               <div className='flex flex-row items-center'>
                 
           {item.leadingMetrics && item.leadingMetrics.length > 0 && (
-            <div className="flex items-center px-3 rounded-lg rounded-b-full" >
+            <div className="flex items-center px-3  rounded-lg rounded-t-full rounded-b-full" >
             {index % 2 === 0 && (<Target className={`w-4 h-4 text-purple-600 mr-1`} />)}
             <span className="text-sm font-medium text-purple-600 dark:text-purple-300">
                 
