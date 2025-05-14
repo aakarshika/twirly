@@ -9,6 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getProduct, updateProduct } from '../../../services/products';
 import { useHeader } from '../../../contexts/HeaderContext';
 import { supabase } from '../../../lib/supabase';
+import VotedCard from '../../comparison-aspect-page/ComparisonItemCard/VotedCard';
 
 // Validation functions
 const validateName = (name) => {
@@ -45,8 +46,8 @@ const validateDescription = (description) => {
 const sanitizeInput = (input) => {
   return input
     .trim()
-    .replace(/[<>]/g, '')
-    .replace(/\s+/g, ' ');
+    .replace(/[<>]/g, '') // Only remove < and > characters
+    .replace(/\s{2,}/g, ' '); // Replace multiple spaces with single space
 };
 
 // Add a default image URL (use the same as ProductCard/ItemCard)
@@ -191,24 +192,28 @@ const AddProductModal = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const sanitizedValue = sanitizeInput(value);
     
     setFormData(prev => ({
       ...prev,
-      [name]: sanitizedValue
+      [name]: value
     }));
 
     if (name === 'name') {
       setErrors(prev => ({
         ...prev,
-        name: validateName(sanitizedValue)
+        name: validateName(value)
       }));
     } else if (name === 'description') {
       setErrors(prev => ({
         ...prev,
-        description: validateDescription(sanitizedValue)
+        description: validateDescription(value)
       }));
     }
+  };
+
+  const colorInRgb = (color) => {
+    const isHexColor = /^(#|0x)[0-9A-Fa-f]+$/.test(color);
+    return isHexColor ? `rgb(${parseInt(color.slice(1, 3), 16)}, ${parseInt(color.slice(3, 5), 16)}, ${parseInt(color.slice(5, 7), 16)})` : color;
   };
 
   const handleSubmit = async (e) => {
@@ -217,7 +222,7 @@ const AddProductModal = () => {
 
     const nameError = validateName(formData.name);
     const descriptionError = validateDescription(formData.description);
-
+    
     setErrors({
       name: nameError,
       description: descriptionError
@@ -231,6 +236,7 @@ const AddProductModal = () => {
     try {
       const productData = {
         ...formData,
+        item_color_string: colorInRgb(formData.item_color_string),
         category_ids: formData.categories.map(c => c.id)
       };
 
@@ -302,7 +308,7 @@ const AddProductModal = () => {
           background: currentTheme.colors.cardBackground || (currentTheme.isDark ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)'),
         }}
       >
-        <h2 className="text-3xl font-bold mb-2 text-center" style={{ color: currentTheme.colors.primary }}>Add a New Product</h2>
+        <h2 className="text-3xl font-bold mb-2 text-center" style={{ color: currentTheme.colors.primary }}>Add a New pppProduct</h2>
       </div>
 
       <form onSubmit={handleSubmit} className="px-8 py-8 space-y-8 w-full">
@@ -316,21 +322,17 @@ const AddProductModal = () => {
               }}
               onClick={() => fileInputRef.current?.click()}
             >
-              {imagePreview ? (
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="w-full h-full object-cover rounded-xl"
+              
+              <VotedCard
+                  item={{
+                    image_url: imagePreview,
+                    name: formData.name,
+                    description: formData.description,
+                    item_color_string: formData.item_color_string,
+                    votes: [1,2,2,4,5],
+                    totalVotes: 20,
+                  }}
                 />
-              ) : (
-                <img
-                  src={DEFAULT_IMAGE_URL}
-                  alt="Default Product"
-                  className="w-1/2 h-1/2 object-contain opacity-80"
-                  style={{ minHeight: '80px', minWidth: '80px' }}
-                  onError={e => { e.target.onerror = null; e.target.src = 'https://fakeimg.pl/600x400?text=img'; }}
-                />
-              )}
             </div>
             <input
               type="file"

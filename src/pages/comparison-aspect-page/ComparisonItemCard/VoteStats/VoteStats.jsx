@@ -18,7 +18,7 @@ const VoteStats = ({ votes, totalVotes, color, isVotedItem, reviewCount, itemRev
           className="progress-bar"
           style={{
             width: `${percentage}%`,
-            backgroundColor: color,
+            backgroundColor: 'white',
             minWidth: '3px'
           }}
         />

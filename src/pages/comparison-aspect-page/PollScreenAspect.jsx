@@ -253,7 +253,7 @@ const PollScreenAspect = () => {
           </div>
           {(
             <div className="text-center m-1" style={{ color: currentTheme.colors.text, backgroundColor: 'white', borderRadius: '4px' }}>
-              <div className="w-full p-4">
+              <div className="w-full p-4" style={{ marginBottom: '300px' }}>
                 <ComparisonSetAspectsCommentsSection 
                 userVoted={userVoted} 
                 aspectSetId={id} 
@@ -262,7 +262,7 @@ const PollScreenAspect = () => {
                 handleLikeComparisonAspectSet={handleLikeComparisonAspectSet}
                 />
               </div>
-              <span className="text-2xl">. . .</span>
+              <span className="text-2xl" >. . .</span>
             </div>
           )}
         </div>

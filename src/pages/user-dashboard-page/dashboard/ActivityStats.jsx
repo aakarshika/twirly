@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { BarChart2, MessageSquare, ThumbsUp, Vote, Package } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const StatCard = ({ title, value, icon }) => {
   const { currentTheme } = useTheme();
@@ -42,39 +43,45 @@ const ActivityStats = ({ votesCount, reviewsCount, productsCount, comparisonsCou
     { 
       title: 'Products', 
       value: productsCount || 0, 
-      icon: <Package size={20} style={{ color: currentTheme.colors.primary }} /> 
+      icon: <Package size={20} style={{ color: currentTheme.colors.primary }} />,
+      link: '/dashboard/products'
     },
     { 
       title: 'Comparisons', 
       value: comparisonsCount || 0, 
-      icon: <BarChart2 size={20} style={{ color: currentTheme.colors.primary }} /> 
+      icon: <BarChart2 size={20} style={{ color: currentTheme.colors.primary }} />,
+      link: '/dashboard/comparisons'
     },
     { 
       title: 'Reviews', 
       value: reviewsCount || 0, 
-      icon: <MessageSquare size={20} style={{ color: currentTheme.colors.primary }} /> 
+      icon: <MessageSquare size={20} style={{ color: currentTheme.colors.primary }} />,
+      link: '/dashboard/comments'
     },
     { 
       title: 'Votes', 
       value: votesCount || 0, 
-      icon: <Vote size={20} style={{ color: currentTheme.colors.primary }} /> 
+      icon: <Vote size={20} style={{ color: currentTheme.colors.primary }} />,
+      link: '/dashboard/votes'
     },
     { 
       title: 'Likes', 
       value: likesCount || 0, 
-      icon: <ThumbsUp size={20} style={{ color: currentTheme.colors.primary }} /> 
+      icon: <ThumbsUp size={20} style={{ color: currentTheme.colors.primary }} />
     }
   ];
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-1">
       {stats.map((stat, index) => (
+        <Link to={stat.link} key={index}>
         <StatCard
           key={index}
           title={stat.title}
           value={stat.value}
           icon={stat.icon}
         />
+        </Link>
       ))}
     </div>
   );

@@ -1,9 +1,10 @@
 import React, { useState, useRef } from 'react';
-import { Heart, MessageSquare } from 'lucide-react';
+import { Dot, Heart, MessageSquare } from 'lucide-react';
 import { getPublicUrl } from '../../../lib/utils';
 import { renderTextWithMentions } from '../../../lib/commentUtils';
 import { useNavigate } from 'react-router-dom';
 import Avatar from '../Avatar';
+import { formatDistanceToNow } from 'date-fns';
 
 const CommentHeader = ({ onLike, isReplySectionExpanded, replyClicked,
   items,
@@ -44,10 +45,14 @@ const CommentHeader = ({ onLike, isReplySectionExpanded, replyClicked,
               }}
               >{display_name || 'Anonymous'}
             </span>
-            <span><div className="w-auto h-auto bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{ marginTop: '8px', background: 'lightgray' }}></div></span>
-            <span className="font-normal text-xs text-gray-400 dark:text-gray-300" style={{ marginTop: '2px' }}>
-              {new Date(created_at).toLocaleDateString()}
+            <div className="flex justify-end items-center">
+            <span className="flex items-center" >
+              <Dot size={20} style={{ color: 'gray' }} />
             </span>
+            <span className="flex font-normal text-xs text-gray-400 dark:text-gray-300 items-center" >
+              {formatDistanceToNow(new Date(created_at), { addSuffix: true })}
+            </span>
+            </div>
           </div>
 
           <p className="text-sm text-gray-700 dark:text-gray-300" style={{ textAlign: 'start' }}>

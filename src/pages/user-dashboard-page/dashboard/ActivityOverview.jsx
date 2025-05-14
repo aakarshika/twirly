@@ -117,6 +117,15 @@ const ActivityOverview = ({
         />
       </div>
 { !isPublic && (
+      <div >
+      <ActivityVisualizations 
+        activityData={activityData}
+        categoryData={categoryData}
+      />
+      </div>
+      )}
+
+{ !isPublic && (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div  className='rounded-lg p-4' style={{ backgroundColor: currentTheme.colors.card }}>
           <h3 
@@ -126,7 +135,7 @@ const ActivityOverview = ({
             Recent Activity
           </h3>
           <div className="space-y-2">
-            {recentActivities.map((activity, index) => (
+            {recentActivities.slice(0, 5).map((activity, index) => (
               <RecentActivityCard key={index} activity={activity} />
             ))}
           </div>
@@ -154,14 +163,6 @@ const ActivityOverview = ({
         </div>
       </div>
 )}
-{ !isPublic && (
-      <div >
-      <ActivityVisualizations 
-        activityData={activityData}
-        categoryData={categoryData}
-      />
-      </div>
-      )}
     </div>
   );
 };

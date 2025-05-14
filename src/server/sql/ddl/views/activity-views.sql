@@ -29,9 +29,9 @@ user_activities AS (
     user_id,
     created_at::date AS activity_date,
     'review' AS activity_type,
-    item_id,
+    set_id as item_id,
     text AS description
-  FROM reviews
+  FROM comparison_set_comments
   UNION ALL
   SELECT 
     user_id,
@@ -72,10 +72,10 @@ WITH user_activities AS (
     user_id,
     created_at,
     'review' AS activity_type,
-    item_id,
+    set_id as item_id,
     text AS description,
     NULL AS title
-  FROM reviews
+  FROM comparison_set_comments
   UNION ALL
   SELECT 
     user_id,
@@ -110,7 +110,7 @@ WITH weekly_stats AS (
   FROM (
     SELECT user_id, created_at FROM votes
     UNION ALL
-    SELECT user_id, created_at FROM reviews
+    SELECT user_id, created_at FROM comparison_set_comments
     UNION ALL
     SELECT user_id, created_at FROM comparison_sets
   ) all_activities
@@ -150,12 +150,12 @@ product_activities AS (
   JOIN comparison_set_items csi ON v.set_id = csi.set_id AND v.item_id = csi.item_id
   UNION ALL
   SELECT 
-    item_id,
+    set_id as item_id,
     created_at::date AS activity_date,
     'review' AS activity_type,
     user_id,
     text AS description
-  FROM reviews
+  FROM comparison_set_comments
   UNION ALL
   SELECT 
     csi.item_id,
@@ -195,13 +195,13 @@ WITH product_activities AS (
   JOIN comparison_set_items csi ON v.set_id = csi.set_id AND v.item_id = csi.item_id
   UNION ALL
   SELECT 
-    item_id,
+    set_id as item_id,
     created_at,
     'review' AS activity_type,
     user_id,
     text AS description,
     NULL AS title
-  FROM reviews
+  FROM comparison_set_comments
   UNION ALL
   SELECT 
     csi.item_id,
@@ -241,7 +241,7 @@ WITH weekly_stats AS (
     FROM votes v
     JOIN comparison_set_items csi ON v.set_id = csi.set_id AND v.item_id = csi.item_id
     UNION ALL
-    SELECT item_id, created_at FROM reviews
+    SELECT set_id as item_id, created_at FROM comparison_set_comments
     UNION ALL
     SELECT csi.item_id, cs.created_at
     FROM comparison_sets cs
@@ -262,41 +262,6 @@ SELECT
   END AS weekly_change_percentage
 FROM items i
 LEFT JOIN weekly_stats ws ON i.id = ws.item_id;
-CREATE OR REPLACE VIEW comparison_set_metrics AS
-WITH comparison_items AS (
-    SELECT cs.id AS set_id,
-           cs.name AS set_name,
-           csi.item_id,
-           i.name AS item_name
-    FROM comparison_sets cs
-    JOIN comparison_set_items csi ON cs.id = csi.set_id
-    JOIN items i ON csi.item_id = i.id
-), aggregated_metrics AS (
-    SELECT ci.set_id,
-           ci.set_name,
-           ci.item_id,
-           ci.item_name,
-           ca.metric_name,
-           round(avg(rm.value), 2) AS avg_rating,
-           count(DISTINCT r.id) AS total_reviews
-    FROM comparison_items ci
-    LEFT JOIN reviews r ON ci.item_id = r.item_id
-    LEFT JOIN review_metrics rm ON r.id = rm.review_id
-    LEFT JOIN comparison_set_aspects ca ON ci.set_id = ca.set_id
-    GROUP BY ci.set_id, ci.set_name, ci.item_id, ci.item_name, ca.metric_name
-), final_aggregation AS (
-    SELECT aggregated_metrics.set_id,
-           aggregated_metrics.set_name,
-           jsonb_agg(jsonb_build_object('id', aggregated_metrics.item_id, 'name', aggregated_metrics.item_name, 'metric_name', aggregated_metrics.metric_name, 'avg_rating', aggregated_metrics.avg_rating, 'total_reviews', aggregated_metrics.total_reviews)) AS items,
-           array_agg(aggregated_metrics.item_id) AS item_ids
-    FROM aggregated_metrics
-    GROUP BY aggregated_metrics.set_id, aggregated_metrics.set_name
-)
-SELECT final_aggregation.set_id,
-       final_aggregation.set_name,
-       final_aggregation.items,
-       final_aggregation.item_ids
-FROM final_aggregation;
 
 -- -- Create index on the view for better performance
 -- CREATE INDEX IF NOT EXISTS idx_user_weekly_activity_user_id ON user_weekly_activity(user_id);

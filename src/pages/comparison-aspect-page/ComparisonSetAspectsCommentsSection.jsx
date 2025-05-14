@@ -134,11 +134,11 @@ const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, as
               {userVoted && (<div className="flex-1 text-md">
                 <div
                   onClick={() => navigate('/comparison/' + aspectSet?.comparison_sets?.id)}
-                  className=" flex justify-between  rounded-md p-2"
+                  className=" flex justify-end  rounded-md p-2"
                   style={{ backgroundColor: currentTheme.colors.backgroundColor, color: currentTheme.colors.primary }}
                 >
-                  <span className="text-sm text-bold" style={{ color: currentTheme.colors.primary }}>See Comparison
-                    </span>
+                  <span className="text-sm text-bold mr-2" style={{ color: currentTheme.colors.primary }}>See Comparison   
+                    </span>   
                     <ChartArea size={20} style={{ color: currentTheme.colors.primary }} />
                 </div>
               </div>)}

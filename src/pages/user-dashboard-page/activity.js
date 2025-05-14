@@ -94,7 +94,7 @@ export const getCategoryDistribution = async (userId) => {
       .from('items')
       .select(`
         category_id,
-        categories (
+        categories!item_categories (
           name
         )
       `)
@@ -102,10 +102,11 @@ export const getCategoryDistribution = async (userId) => {
 
     if (error) throw error;
 
-    // Count items per category
+    // Count items per category -- categories is a list of categories
     const categoryCounts = data.reduce((acc, item) => {
-      const categoryName = item.categories?.name || 'Uncategorized';
-      acc[categoryName] = (acc[categoryName] || 0) + 1;
+      item.categories.forEach(category => {
+        acc[category.name] = (acc[category.name] || 0) + 1;
+      });
       return acc;
     }, {});
 

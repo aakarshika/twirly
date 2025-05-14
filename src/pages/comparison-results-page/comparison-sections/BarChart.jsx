@@ -24,12 +24,20 @@ const MetricCard = ({ metric, items, getMetricAverageVotes, currentTheme, userVo
             word.charAt(0).toUpperCase() + word.slice(1)
           ).join(' ')}</h3>
         </div>
-        <div className="flex items-center space-x-4">
+        {userVoted && (<div className="flex items-center space-x-4">
           <div className="flex items-center space-x-1">
             <ThumbsUp className="w-4 h-4 text-gray-500" />
             <span className="text-sm text-gray-600">{totalVotes} votes</span>
           </div>
-        </div>
+        </div>)}
+
+        {(!userVoted && <div className='flex flex-row justify-end items-center'>
+          <button className='bg-blue-500 text-white px-4 py-2 rounded-md'
+          
+          >
+            <span className='flex items-center'>Play <Play className='w-4 h-4 ml-2' /></span>
+          </button>
+        </div>)}
       </div>
       
       <div className="space-y-3">
@@ -57,14 +65,6 @@ const MetricCard = ({ metric, items, getMetricAverageVotes, currentTheme, userVo
             </div>
           ) : null;
         })}
-        {(!userVoted && <div className='flex flex-row justify-between items-center'>
-          <span className='text-sm text-gray-500'>Play to view</span>
-          <button className='bg-blue-500 text-white px-4 py-2 rounded-md'
-          
-          >
-            <Play className='w-4 h-4' />
-          </button>
-        </div>)}
       </div>
     </div>
   );
