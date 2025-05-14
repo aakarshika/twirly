@@ -4,23 +4,14 @@ import { updateProduct, deleteProduct } from '../../../services/products';
 import { useNavigate } from 'react-router-dom';
 import ItemCard from '../../../components/common/common-cards/ItemCard';
 import { useTheme } from '../../../contexts/ThemeContext';
+import ItemCardEditable from '../../comparison-aspect-page/ComparisonItemCard/ItemCardEditable';
 const ProductCard = ({ product, onUpdate, onDelete, isPublic }) => {
   const { currentTheme } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [editedProduct, setEditedProduct] = useState({ ...product });
 
   const handleEdit = () => {
-    navigate(`/dashboard/products/edit/${product.id}`);
-  };
-
-  const handleSave = async () => {
-    try {
-      const updatedProduct = await updateProduct(product.id, editedProduct);
-      onUpdate(updatedProduct);
-      setIsEditing(false);
-    } catch (error) {
-      console.error('Error updating product:', error);
-    }
+    setIsEditing(true);
   };
 
   const handleDelete = async () => {
@@ -44,6 +35,7 @@ const ProductCard = ({ product, onUpdate, onDelete, isPublic }) => {
   };
 
   return (
+    <div>
     <div 
       // onClick={() => handleItemClick()}
       className="rounded-lg overflow-hidden"
@@ -54,8 +46,7 @@ const ProductCard = ({ product, onUpdate, onDelete, isPublic }) => {
         {(!isPublic && <div className="absolute top-2 right-2 flex space-x-2 z-12">
           <button
             onClick={() => {
-              console.log('editing product', product.id);
-              navigate(`/dashboard/products/edit/${product.id}`);
+              handleEdit();
             }}
             className="p-2 rounded-full"
             style={{ backgroundColor: currentTheme.colors.primary }}
@@ -72,6 +63,16 @@ const ProductCard = ({ product, onUpdate, onDelete, isPublic }) => {
         </div>)}
       </div>
       
+    </div>
+    {isEditing && 
+     
+     <div>
+      
+    <ItemCardEditable item={product} onSave={(updatedProduct) => {
+      onUpdate(updatedProduct);
+      setIsEditing(false);
+    }} onCancel={() => setIsEditing(false)} />
+    </div>}
     </div>
   );
 };

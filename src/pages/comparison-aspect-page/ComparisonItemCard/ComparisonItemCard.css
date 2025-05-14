@@ -20,7 +20,6 @@
 }
 
 .card-container {
-  position: relative;
   width: 100%;
   height: 100%;
   border-radius: 8px;
@@ -46,12 +45,9 @@
 }
 
 .image-container {
-  position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
   display: flex;
   flex-direction: column;
 }
@@ -68,7 +64,6 @@
 }
 
 .content-overlay {
-  position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
@@ -103,9 +98,6 @@
 }
 
 .you-voted-badge {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
   z-index: 10;
   display: flex;
   align-items: center;
@@ -131,7 +123,6 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 1rem;
 }
 
 .text-fallback-content {
@@ -139,17 +130,21 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
 }
 
 .text-fallback-title {
   font-size: 1.5rem;
   font-weight: 700;
   line-height: 1.2;
-  margin-bottom: 0.5rem;
+  margin: 1rem;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 8;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+  max-width: 100%;
 }
 
 .text-fallback-description {

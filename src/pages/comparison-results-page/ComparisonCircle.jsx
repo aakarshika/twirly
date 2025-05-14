@@ -1,13 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Trophy, Image, ThumbsUp, Target, User, Clock, MessageCircle, ThumbsUp as ThumbsUpIcon } from 'lucide-react';
-import { splitAndJoin, getRGB } from '../../lib/utils';
+import { splitAndJoin, getRGB, getPublicUrlItems } from '../../lib/utils';
 import { hasAnyClearLeader } from '../../services/comparisonService';
 import { formatDistanceToNow } from 'date-fns';
 
 
 const ComparisonCircle = ({ item, index, isMobile = false, winner, comparison }) => {
     const itemColor = getRGB(item.item_color_string);
+    const itemImage = item.image && item.image.startsWith('http') ? item.image : getPublicUrlItems(item.image);
 
   const circleClasses = isMobile
     ? {
@@ -62,7 +63,7 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, comparison })
         {winner && winner.id === item.id && (<div className={`absolute ${circleClasses.trophy.container} left-1/2 transform -translate-x-1/2 z-10`}>
           <div className={`flex flex-row items-center gap-2 bg-yellow-400 rounded-full ${circleClasses.trophy.padding} shadow-lg`}>
             <Trophy className={`${circleClasses.trophy.size} text-white`} />
-            <span className="text-sm text-gray-600">Winning by {item.votesPercentage}%</span>
+            <span className="text-sm text-gray-600">Winning by {item.votesPercentage.toFixed(0)}%</span>
             </div>
         </div>)}
         {/* Trophy Icon */}
@@ -122,9 +123,9 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, comparison })
             )}
             {/* Image or Fallback */}
             <div className={circleClasses.imageContainer}>
-              {item.image && item.image.length > 0 ? (
+              {itemImage && itemImage.length > 0 ? (
                 <img
-                  src={item.image}
+                  src={itemImage}
                   alt={item.name}
                   className="w-full h-full object-cover rounded-t-full"
                   onError={(e) => {

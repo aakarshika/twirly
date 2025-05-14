@@ -4,7 +4,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import ProductCard from './ProductCard';
 import { getUserProducts } from '../../../services/products';
 
-const ProductList = ({ products, setProducts, userId, isPublic }) => {
+const ProductList = ({ products, setProducts, userId, isPublic, onUpdate, onDelete }) => {
   const { currentTheme } = useTheme();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,16 +24,6 @@ const ProductList = ({ products, setProducts, userId, isPublic }) => {
 
     fetchProducts();
   }, [setProducts, userId]);
-
-  const handleProductUpdate = (updatedProduct) => {
-    setProducts(products.map(product => 
-      product.id === updatedProduct.id ? updatedProduct : product
-    ));
-  };
-
-  const handleProductDelete = (productId) => {
-    setProducts(products.filter(product => product.id !== productId));
-  };
 
   if (loading) {
     return (
@@ -88,8 +78,8 @@ const ProductList = ({ products, setProducts, userId, isPublic }) => {
         <ProductCard
           key={product.id}
           product={product}
-          onUpdate={handleProductUpdate}
-          onDelete={handleProductDelete}
+          onUpdate={onUpdate}
+          onDelete={onDelete}
           isPublic={isPublic}
         />
       ))}

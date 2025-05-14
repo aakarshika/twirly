@@ -115,6 +115,13 @@ export function getTopMetric(metrics) {
   return { name: topName, value: topValue };
 }
 
+export function getPublicUrlItems(filePath) {
+  if (!filePath) return null;
+  const { data: { publicUrl } } = supabase.storage
+    .from('product-pics')
+    .getPublicUrl(filePath);
+  return publicUrl;
+}
 export function getPublicUrl(filePath) {
   if (!filePath) return null;
   const { data: { publicUrl } } = supabase.storage

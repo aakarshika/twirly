@@ -184,7 +184,12 @@ const MainRoutingPage = () => {
                     </ComparisonDraftProvider>
                   </ProtectedRoute>
                 }/>
-                <Route path="/edit-comparison/:id" element={<ProtectedRoute><CreateComparison /></ProtectedRoute>}/>
+                <Route path="/edit-comparison/:id" element={
+                  <ProtectedRoute>
+                    <ComparisonDraftProvider>
+                      <CreateComparison />
+                    </ComparisonDraftProvider>
+                  </ProtectedRoute>}/>
                 <Route path="/item/:itemId" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>}/>
                 <Route path="/item/:itemId/:tab" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>}/>
                 <Route path="/dashboard/products/add" element={<ProtectedRoute><AddProductModal /></ProtectedRoute>}/>

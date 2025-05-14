@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { Link } from 'react-router-dom';
+import { getPublicUrl, getPublicUrlItems } from '../../../lib/utils';
 
 const ItemCard = ({item}) => {
   const { currentTheme } = useTheme();
+  const itemImage = item.image_url && item.image_url.startsWith('http') ? item.image_url : getPublicUrlItems(item.image_url);
+  // if image is our onwaiting, get public url.
+  
     return (
       <Link
         to={`/item/${item.id}`}
@@ -16,15 +20,11 @@ const ItemCard = ({item}) => {
       >
         <div className="flex items-start">
           <div className="w-14 h-14 rounded-lg overflow-hidden mr-2 flex-shrink-0">
-            {item.image_url ? (
+            {itemImage ? (
               <img
-                src={item.image_url}
+                src={itemImage}
                 alt={item.name}
                 className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  e.target.nextSibling.style.display = 'flex';
-                }}
               />
             ) : (
               <div

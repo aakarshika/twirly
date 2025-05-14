@@ -58,6 +58,7 @@ const ComparisonItemCardAspect = ({
   };
 
   const handleRevertClick = (e) => {
+    console.log('revert click');
     handleRevertVote();
   };
 

@@ -4,39 +4,46 @@ import { useAuth } from '../../../../contexts/AuthContext';
 import { useComparisonDraft } from '../../../../contexts/ComparisonDraftContext';
 import { searchProducts, searchCategories } from '../../../../services/products';
 import { createComparison, getUnpublishedComparison, updateComparison, getComparison } from '../../../../services/comparisons';
-import { X, Check, Search, User, Trash2, Plus, PlusIcon, PlusCircle } from 'lucide-react';
+import { X, Check, Search, User, Trash2, Plus, PlusIcon, PlusCircle, Pencil } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useHeader } from '../../../../contexts/HeaderContext';
-import ItemCard from '../../../../components/common/common-cards/ItemCard';
+import VotedCard from '../../../../pages/comparison-aspect-page/ComparisonItemCard/VotedCard';
+import AspectForm from './AspectForm';
+import ItemCardEditable from '../../../comparison-aspect-page/ComparisonItemCard/ItemCardEditable';
 
 const CreateComparison = () => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { id } = useParams();
-  const { 
-    draft, 
-    addItem, 
+  const {
+    draft,
+    addItem,
     addCategory,
-    removeItem, 
-    addAspect, 
-    removeAspect, 
-    updateDraft, 
-    clearDraft 
+    removeItem,
+    addAspect,
+    removeAspect,
+    updateAspect,
+    updateDraft,
+    clearDraft
   } = useComparisonDraft();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [searchCategoryQuery, setSearchCategoryQuery] = useState('');
   const [searchCategoryResults, setSearchCategoryResults] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
+  const [editAspectExpanded, setEditAspectExpanded] = useState(null);
+  const [newAspectExpanded, setNewAspectExpanded] = useState(false);
+  const [editingAspect, setEditingAspect] = useState({ metric_name: '', description: '', weight: 1, id: null });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [newAspect, setNewAspect] = useState({ metric_name: '', description: '', weight: 1 });
   const [existingComparisonId, setExistingComparisonId] = useState(null);
   const hasLoadedData = useRef(false);
-  
-  const { isHeaderVisible } = useHeader();
 
+  const { isHeaderVisible } = useHeader();
+  const [isSearchExpanded, setIsSearchExpanded] = useState(true);
+  const [addItemModalOpen, setAddItemModalOpen] = useState(false);
   useEffect(() => {
     const loadComparisonData = async () => {
       if (!user || hasLoadedData.current) return;
@@ -132,6 +139,15 @@ const CreateComparison = () => {
     return () => clearTimeout(debounceTimer);
   }, [searchCategoryQuery]);
 
+  useEffect(() => {
+    // Auto-collapse search when more than 2 items are added
+    if (draft.items.length > 2) {
+      setIsSearchExpanded(false);
+    } else {
+      setIsSearchExpanded(true);
+    }
+  }, [draft.items.length]);
+
   const handleSaveDraft = async () => {
     if (!validateDraft()) return;
 
@@ -158,7 +174,7 @@ const CreateComparison = () => {
         });
       }
       clearDraft();
-      navigate('/dashboard');
+      navigate('/dashboard/comparisons');
     } catch (err) {
       setError('Failed to save draft');
       console.error(err);
@@ -228,23 +244,33 @@ const CreateComparison = () => {
       return;
     }
     addAspect({
-      id: Date.now(),
       ...newAspect
     });
     setNewAspect({ metric_name: '', description: '', weight: 1 });
+    setNewAspectExpanded(false);
+  };
+
+  const handleUpdateAspect = (aspectId) => {
+    if (!editingAspect.metric_name) {
+      setError('Aspect name is required');
+      return;
+    }
+    updateAspect(editingAspect);
+    setEditingAspect({ metric_name: '', description: '', weight: 1, id: null });
+    setEditAspectExpanded(null);
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4" style={{ backgroundColor: currentTheme.colors.card, paddingTop: isHeaderVisible ? '64px' : '0px' }}>
+    <div className="max-w-6xl mx-auto p-4" style={{ backgroundColor: currentTheme.colors.background, paddingTop: isHeaderVisible ? '64px' : '0px' }}>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
-          Describe your set
+          Create Comparison
         </h1>
         <div className="flex flex-row space-x-2">
           <button
             onClick={handleSaveDraft}
-            className="px-4 py-2 font-medium border"
-            style={{ 
+            className="px-4 py-2 font-medium border rounded-lg"
+            style={{
               backgroundColor: currentTheme.colors.background,
               color: currentTheme.colors.text,
               borderColor: currentTheme.colors.border
@@ -254,8 +280,8 @@ const CreateComparison = () => {
           </button>
           <button
             onClick={handlePublish}
-            className="px-4 py-2 font-medium"
-            style={{ 
+            className="px-4 py-2 font-medium rounded-lg"
+            style={{
               backgroundColor: currentTheme.colors.primary,
               color: currentTheme.colors.buttonText
             }}
@@ -266,7 +292,7 @@ const CreateComparison = () => {
       </div>
 
       {error && (
-        <div className="p-3 mb-4 border-l-4" style={{ 
+        <div className="p-3 mb-4 border-l-4 rounded-lg" style={{
           backgroundColor: currentTheme.colors.error + '10',
           borderColor: currentTheme.colors.error,
           color: currentTheme.colors.error
@@ -275,173 +301,84 @@ const CreateComparison = () => {
         </div>
       )}
 
-      <div className="space-y-6">
-        <div>
-          <input
-            type="text"
-            value={draft.title}
-            onChange={(e) => updateDraft({ title: e.target.value })}
-            className="w-full p-3 text-xl"
-            style={{ 
-              backgroundColor: currentTheme.colors.background,
-              color: currentTheme.colors.text,
-              borderBottom: `1px solid ${currentTheme.colors.border}`
-            }}
-            placeholder="Title"
-          />
-        </div>
+      <div className={`shadow-md rounded-md p-4 `}
+        style={{ backgroundColor: currentTheme.colors.card }}>
 
-        {/* <div>
-          <textarea
-            value={draft.description}
-            onChange={(e) => updateDraft({ description: e.target.value })}
-            className="w-full p-3"
-            style={{ 
-              backgroundColor: currentTheme.colors.background,
-              color: currentTheme.colors.text,
-              borderBottom: `1px solid ${currentTheme.colors.border}`
-            }}
-            placeholder="Description"
-            rows={3}
-          />
-        </div> */}
-
-        <div>
-          <div className="relative">
+        <div className="space-y-2">
+          <div>
             <input
               type="text"
-              value={searchCategoryQuery}
-              onChange={(e) => setSearchCategoryQuery(e.target.value)}
-              className="w-full p-3 pl-10"
-              style={{ 
+              value={draft.title}
+              onChange={(e) => updateDraft({ title: e.target.value })}
+              className="w-full p-3 text-md font-bold rounded-lg"
+              style={{
                 backgroundColor: currentTheme.colors.background,
-                color: currentTheme.colors.text,
-                borderBottom: `1px solid ${currentTheme.colors.border}`
+                color: currentTheme.colors.primary
               }}
-              placeholder="Add category tags..."
+              placeholder="Enter comparison title..."
             />
-            <PlusCircle className="absolute left-3 top-3.5" size={20} style={{ color: currentTheme.colors.textSecondary }} />
           </div>
-          {searchCategoryResults.length > 0 && (
-            <div className="border w-auto"
-             style={{ backgroundColor: currentTheme.colors.background }}
-             onClick={() => {
-              addCategory(searchCategoryResults);
-              setSearchCategoryQuery('');
-             }}
-             >
-              {searchCategoryResults.map((category) => (
-                <div key={category.id} className="p-3 hover:bg-opacity-5 cursor-pointer flex-row items-center">
-                  <div className=" items-start">
-                    <p className="text-sm">{category.name}</p>
-                  </div>
-                  <Plus size={20} />
-                </div>
-              ))}
+          {draft.aspects.length > 0 && draft.aspects.map((aspect) => (
+            <div key={aspect.id}>
+              <AspectForm
+                aspect={aspect}
+                isEditing={editAspectExpanded === aspect.id}
+                onUpdate={(aspect) => {
+                  setEditAspectExpanded(aspect.id);
+                  setEditingAspect(aspect);
+                  setNewAspectExpanded(false);
+                }}
+                onDelete={removeAspect}
+                onCancel={() => {
+                  setEditAspectExpanded(null);
+                  setEditingAspect({ metric_name: '', description: '', weight: 1, id: null });
+                }}
+                onSave={handleUpdateAspect}
+                aspectData={editingAspect}
+                setAspectData={setEditingAspect}
+              />
             </div>
-          )}
-        </div>
-
-        <div>
-          <div className="relative">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full p-3 pl-10"
-              style={{ 
-                backgroundColor: currentTheme.colors.background,
-                color: currentTheme.colors.text,
-                borderBottom: `1px solid ${currentTheme.colors.border}`
-              }}
-              placeholder="Search items..."
-            />
-            <Search className="absolute left-3 top-3.5" size={20} style={{ color: currentTheme.colors.textSecondary }} />
-            {searchResults.length > 0 && (
-              <div className="mt-1 border" style={{ backgroundColor: currentTheme.colors.background }}>
-                {searchResults.map((product) => (
-                  <div
-                    key={product.id}
-                    className="p-3 hover:bg-opacity-5 cursor-pointer flex justify-between items-center"
-                    style={{
-                      backgroundColor: currentTheme.colors.primary + '10',
-                      color: currentTheme.colors.text,
-                      borderBottom: `1px solid ${currentTheme.colors.border}`
-                    }}
-                    onClick={() => {
-                      addItem(product);
-                      setSearchQuery('');
-                    }}
-                  >
-                    {product.image_url && product.image_url != '' && (<img src={product.image_url} className="w-10 h-10 rounded" onError={(e) => {
-                      e.target.src = '/images/default-product-image.png';
-                    }} />)}
-                    {!product.image_url && product.image_url != '' && (<img src={'/images/default-product-image.png'}  className="w-10 h-10 rounded" />)}
-                    <div className="flex w-full ml-2 flex-col align-left" style={{ color: currentTheme.colors.text }}>
-                      <p className="text-sm">{product.name}</p>
-                      <p className="text-xs">{product.description}</p></div>
-                    <Plus size={20} />
-                  </div>
-                ))}
-              </div>
-            )}
-            </div>
-          </div>
-
-        <div>
-          <div className={`grid ${
-          draft.items.length === 1 ? 'grid-cols-1' :
-          draft.items.length === 2 ? 'grid-cols-2' :
-          draft.items.length === 3 ? 'grid-cols-3' :
-          'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 rounded-lg gap-2 p-2'
-        }`} 
-        style={{
-          backgroundColor: currentTheme.colors.background,
-          border: `1px solid ${currentTheme.colors.border}`,
-          borderRadius: '10px'
-        }}
-        >
-            {draft.items.map((item) => (
-              <div
-                key={item.id}
-                className="items-center relative w-full h-full"
-              >
-                <ItemCard item={item} />
-                <button
-                  onClick={() => removeItem(item.id)}
-                  className="p-1 rounded-full bg-white-50 absolute top-2 right-2 z-10"
-                  style={{ 
-                    backgroundColor: currentTheme.colors.error + '10',
-                    color: currentTheme.colors.error
-                  }}
-                >
-                  <Trash2 size={16} />
-                </button>
-                </div>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <h2 className="text-lg font-medium mb-2" style={{ color: currentTheme.colors.text }}>
-            Comparison Aspects
-          </h2>
-          <div className="space-y-4">
-            {draft.aspects.map((aspect) => (
-              <div
-                key={aspect.id}
-                className="p-4 border"
-                style={{ 
-                  backgroundColor: currentTheme.colors.background,
-                  borderColor: currentTheme.colors.border
+          ))}
+          {!newAspectExpanded && (
+            <div className="flex flex-row items-center">
+              <button
+                onClick={() => {
+                  setNewAspectExpanded(true);
+                  setEditAspectExpanded(null);
+                  setNewAspect({ metric_name: '', description: '', weight: 1 });
+                }}
+                className="w-full p-2 font-medium rounded-lg"
+                style={{
+                  backgroundColor: currentTheme.colors.primary,
+                  color: 'whitesmoke'
                 }}
               >
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-medium" style={{ color: currentTheme.colors.text }}>{aspect.metric_name}</h3>
+                + Add Aspect
+              </button>
+            </div>
+          )}
+          {newAspectExpanded && (
+            <AspectForm
+              aspect={{ id: null }}
+              isEditing={true}
+              onUpdate={() => {}}
+              onDelete={() => {}}
+              onCancel={() => setNewAspectExpanded(false)}
+              onSave={handleAddAspect}
+              aspectData={newAspect}
+              setAspectData={setNewAspect}
+            />
+          )}
+
+          <div>
+            <div className="grid grid-cols-2 gap-2">
+              {draft.items.map((item) => (
+                <div key={item.id} className="relative">
+                  <VotedCard item={item} newHeight="250px" />
                   <button
-                    onClick={() => removeAspect(aspect.id)}
-                    className="p-1 hover:bg-opacity-5"
-                    style={{ 
+                    onClick={() => removeItem(item.id)}
+                    className="p-2 rounded-full absolute top-2 right-2 z-10"
+                    style={{
                       backgroundColor: currentTheme.colors.error + '10',
                       color: currentTheme.colors.error
                     }}
@@ -449,73 +386,133 @@ const CreateComparison = () => {
                     <Trash2 size={16} />
                   </button>
                 </div>
-                <p className="text-sm mb-2" style={{ color: currentTheme.colors.textSecondary }}>{aspect.description}</p>
-                <span className="text-sm" style={{ color: currentTheme.colors.textSecondary }}>
-                  Weight: {aspect.weight}
-                </span>
-              </div>
-            ))}
-
-            <div className="p-4 border" style={{ 
-              backgroundColor: currentTheme.colors.background,
-              borderColor: currentTheme.colors.border
-            }}>
-              <div className="space-y-4">
-                <input
-                  type="text"
-                  value={newAspect.metric_name}
-                  onChange={(e) => setNewAspect(prev => ({ ...prev, metric_name: e.target.value }))}
-                  className="w-full p-3"
-                  style={{ 
-                    backgroundColor: currentTheme.colors.background,
-                    color: currentTheme.colors.text,
-                    borderBottom: `1px solid ${currentTheme.colors.border}`
-                  }}
-                  placeholder="Aspect name"
-                />
-                <textarea
-                  value={newAspect.description}
-                  onChange={(e) => setNewAspect(prev => ({ ...prev, description: e.target.value }))}
-                  className="w-full p-3"
-                  style={{ 
-                    backgroundColor: currentTheme.colors.background,
-                    color: currentTheme.colors.text,
-                    borderBottom: `1px solid ${currentTheme.colors.border}`
-                  }}
-                  placeholder="Aspect description"
-                  rows={2}
-                />
-                <div className="flex items-center space-x-2">
-                  <span style={{ color: currentTheme.colors.text }}>Weight:</span>
-                  <input
-                    type="number"
-                    value={newAspect.weight}
-                    onChange={(e) => setNewAspect(prev => ({ ...prev, weight: Number(e.target.value) }))}
-                    className="w-20 p-2"
-                    style={{ 
-                      backgroundColor: currentTheme.colors.background,
-                      color: currentTheme.colors.text,
-                      borderBottom: `1px solid ${currentTheme.colors.border}`
-                    }}
-                    min="1"
-                    max="10"
-                  />
-                </div>
+              ))}
+              <div className="flex flex-row rounded-lg items-center justify-center" style={{ backgroundColor: currentTheme.colors.background, height: '250px' }}>
                 <button
-                  onClick={handleAddAspect}
-                  className="w-full p-3 font-medium"
-                  style={{ 
-                    backgroundColor: currentTheme.colors.primary,
-                    color: currentTheme.colors.buttonText
+                  onClick={() => {
+                    //focus on the input
+                    setIsSearchExpanded(true);
+
                   }}
+                  style={{  color: currentTheme.colors.buttonText }}
                 >
-                  Add Aspect
-                </button>
+                  +
+                  </button>
               </div>
             </div>
           </div>
+
+          {isSearchExpanded ? (
+            <div className="relative mb-4">
+              <input
+                id="item-input"
+                type="text"
+                autoFocus
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full p-3 pl-10 rounded-lg"
+                style={{
+                  backgroundColor: currentTheme.colors.background,
+                  color: currentTheme.colors.text,
+                  border: `1px solid ${currentTheme.colors.border}`
+                }}
+                placeholder="Search items to compare..."
+              />
+              <Search className="absolute left-3 top-3.5" size={20} style={{ color: currentTheme.colors.textSecondary }} />
+              <button
+                onClick={() => {
+                  setSearchQuery('');
+                  setIsSearchExpanded(false);
+                }}
+                className="absolute right-3 top-3.5 p-1 rounded-full hover:bg-opacity-10"
+                style={{
+                  backgroundColor: currentTheme.colors.background,
+                  color: currentTheme.colors.textSecondary
+                }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setIsSearchExpanded(true)}
+              className="mb-4 p-3 rounded-lg flex items-center gap-2"
+              style={{
+                backgroundColor: currentTheme.colors.background,
+                color: currentTheme.colors.text,
+                border: `1px solid ${currentTheme.colors.border}`
+              }}
+            >
+              <Search size={20} />
+              <span>Add more items...</span>
+            </button>
+          )}
+
+          <div>
+
+            {searchResults.length > 0 && (
+              <div className="mt-1 border rounded-lg" style={{ backgroundColor: currentTheme.colors.background }}>
+                {searchResults.map((product) =>{
+                  console.log("result product", product);
+                  return (
+                  <div
+                    key={product.id}
+                    className="p-3 hover:bg-opacity-5 cursor-pointer flex justify-between items-center"
+                    style={{
+                      backgroundColor: product.item_color_string,
+                      color: currentTheme.colors.text,
+                      borderBottom: `1px solid ${currentTheme.colors.border}`
+                    }}
+                    onClick={() => {
+                      console.log("added product", product);
+                      addItem(product);
+                      setSearchQuery('');
+                    }}
+                  >
+                    {product.image_url && product.image_url != '' && (<img src={product.image_url} className="w-10 h-10 rounded" onError={(e) => {
+                      e.target.src = '/images/default-product-image.png';
+                    }} />)}
+                    {!product.image_url && product.image_url != '' && (<img src={'/images/default-product-image.png'} className="w-10 h-10 rounded" />)}
+                    <div className="flex w-full ml-2 flex-col align-left"
+                      style={{ color: currentTheme.colors.text }}>
+                      <p className="text-sm">{product.name}</p>
+                      <p className="text-xs">{product.description}</p></div>
+                    <Plus size={20} />
+                  </div>
+                )})}
+              </div>
+            )}
+            {isSearchExpanded && searchQuery.length > 0 && searchResults.length === 0 && !addItemModalOpen && (
+              <div className="flex flex-row items-center gap-2 mt-1 border rounded-lg p-3" style={{ backgroundColor: currentTheme.colors.background }}>
+                <p className="text-sm">No results found</p>
+                <button
+                  onClick={() => {
+                    //focus on the input
+                    setAddItemModalOpen(true);
+                  }}
+                  className="px-4 py-2 rounded-lg font-medium"
+                  style={{ backgroundColor: currentTheme.colors.primary, color: currentTheme.colors.buttonText }}
+                >
+                  + Create 
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
+      {addItemModalOpen && (
+        <ItemCardEditable
+          item={{
+            name: searchQuery
+          }}
+          onSave={(item) => {
+            console.log("saved item", item);
+            addItem(item);
+            setAddItemModalOpen(false);
+          }}
+          onCancel={() => setAddItemModalOpen(false)}
+        />
+      )}
     </div>
   );
 };

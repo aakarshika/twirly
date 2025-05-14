@@ -183,11 +183,7 @@ export const getUnpublishedComparison = async (userId) => {
       *,
       comparison_set_items (
         item_id,
-        items (
-          id,
-          name,
-          description,
-          image_url
+        items (*
         )
       ),
       comparison_set_aspects (
@@ -279,15 +275,6 @@ export const updateComparison = async (setId, comparisonData) => {
     .filter(existing => !comparisonData.aspects.some(aspect => aspect.id === existing.id))
     .map(aspect => aspect.id);
 
-  if (aspectsToDelete.length > 0) {
-    const { error: deleteAspectsError } = await supabase
-      .from('comparison_set_aspects')
-      .delete()
-      .in('id', aspectsToDelete);
-
-    if (deleteAspectsError) throw deleteAspectsError;
-  }
-
   // Add new aspects
   const aspectsToAdd = comparisonData.aspects
     .filter(aspect => !existingAspects.some(existing => existing.id === aspect.id))
@@ -298,6 +285,31 @@ export const updateComparison = async (setId, comparisonData) => {
       weight: aspect.weight
     }));
 
+    
+  // Update existing aspects
+  const aspectsToUpdate = comparisonData.aspects
+    .filter(aspect => existingAspects.some(existing => existing.id === aspect.id))
+    .map(aspect => ({
+      id: aspect.id,
+      set_id: setId,
+      metric_name: aspect.metric_name,
+      description: aspect.description,
+      weight: aspect.weight
+    }));
+
+
+  console.log(aspectsToDelete, 'aspectsToDelete');
+  console.log(aspectsToAdd, 'aspectsToAdd');
+  console.log(aspectsToUpdate, 'aspectsToUpdate');
+  if (aspectsToDelete.length > 0) {
+    const { error: deleteAspectsError } = await supabase
+      .from('comparison_set_aspects')
+      .delete()
+      .in('id', aspectsToDelete);
+
+    if (deleteAspectsError) throw deleteAspectsError;
+  }
+
   if (aspectsToAdd.length > 0) {
     const { error: addAspectsError } = await supabase
       .from('comparison_set_aspects')
@@ -305,16 +317,6 @@ export const updateComparison = async (setId, comparisonData) => {
 
     if (addAspectsError) throw addAspectsError;
   }
-
-  // Update existing aspects
-  const aspectsToUpdate = comparisonData.aspects
-    .filter(aspect => existingAspects.some(existing => existing.id === aspect.id))
-    .map(aspect => ({
-      id: aspect.id,
-      metric_name: aspect.metric_name,
-      description: aspect.description,
-      weight: aspect.weight
-    }));
 
   if (aspectsToUpdate.length > 0) {
     const { error: updateAspectsError } = await supabase

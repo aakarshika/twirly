@@ -4,7 +4,7 @@ import { MessageSquare, ThumbsUp, Users } from 'lucide-react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
-import { splitAndJoin } from '../../../lib/utils';
+import { getPublicUrlItems, splitAndJoin } from '../../../lib/utils';
 import { userActivityService, ACTIVITY_TYPES, ENTITY_TYPES } from '../../../services/userActivityService';
 
 const TrendingCard = ({set, from}) => {
@@ -89,6 +89,7 @@ const TrendingCard = ({set, from}) => {
           {set.comparison_set_items?.slice(0, 4).map((it, index) => {
             set.imageError = false;
             const item = it.items;
+            const itemImage = item.image_url && item.image_url.startsWith('http') ? item.image_url : getPublicUrlItems(item.image_url);
             return (
               <div
                 key={item.id}
@@ -97,7 +98,7 @@ const TrendingCard = ({set, from}) => {
                 }`}
               >
                 <img
-                  src={item.image_url}
+                  src={itemImage}
                   alt={item.name}
                   className="w-full h-24 object-cover"
                   onError={(e) => {
@@ -106,7 +107,7 @@ const TrendingCard = ({set, from}) => {
                     set.imageError = true;
                   }}
                 />
-                {(!item.image_url || set.imageError )&& (
+                {(!itemImage || set.imageError )&& (
                   <div
                     className="absolute inset-0 flex items-center justify-center text-lg font-bold"
                     style={{ color: 'black', backgroundColor: voted_item_id ?  item.item_color_string : 'white' }}
@@ -114,7 +115,7 @@ const TrendingCard = ({set, from}) => {
                     {item.name}
                   </div>
                 )}
-                {item.image_url && !set.imageError && index < 2 && (
+                {itemImage && !set.imageError && index < 2 && (
                   <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-1">
                     <p className="text-white text-sm truncate">{item.name}</p>
                   </div>

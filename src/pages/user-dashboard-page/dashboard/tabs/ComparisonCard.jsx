@@ -3,10 +3,12 @@ import { useTheme } from '../../../../contexts/ThemeContext';
 import { Plus, Trash2, ExternalLink, MessageSquare, ThumbsUp, Settings } from 'lucide-react';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { getPublicUrlItems } from '../../../../lib/utils';
 
 const ComparisonItem = ({ item, user, getVoteCount, getCommentCount }) => {
+  const itemImage = item.image_url && item.image_url.startsWith('http') ? item.image_url : getPublicUrlItems(item.image_url);
   const { currentTheme } = useTheme();
-  const [imgSrc, setImgSrc] = useState(item?.image_url);
+  const [imgSrc, setImgSrc] = useState(itemImage);
   const [imageError, setImageError] = useState(false);
 
   return (
@@ -18,8 +20,8 @@ const ComparisonItem = ({ item, user, getVoteCount, getCommentCount }) => {
       }}
     >
       <div className="relative">
-        {item.image_url && !imageError && (<img
-          src={item.image_url}
+        {itemImage && !imageError && (<img
+          src={itemImage}
           alt={item.name}
           className="w-24 h-24 object-cover"
           onError={(e) => {
@@ -116,6 +118,17 @@ const ComparisonCard = ({ comparison, onDelete, isPublic }) => {
           >
             {comparison?.name || 'Unnamed Comparison'}
           </h3>
+          <div className="flex items-center space-x-2">
+            {comparison?.is_published ? (
+              <span className="text-xs px-2 py-0.5 rounded" style={{ backgroundColor: currentTheme.colors.primary, color: currentTheme.colors.buttonText }}>
+                Published
+              </span>
+            ) : (
+              <span className="text-xs px-2 py-0.5 rounded bg-amber-500" style={{ color: currentTheme.colors.buttonText }}>
+                Unpublished
+              </span>
+            )}
+          </div>
           {(!isPublic && <div className="flex space-x-2">
             <button
               onClick={(e) => {

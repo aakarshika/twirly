@@ -44,16 +44,59 @@ USING (auth.uid() = user_id);
 -- Enable Row Level Security for comparison_set_aspects table
 ALTER TABLE comparison_set_aspects ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view their own aspects" ON comparison_set_aspects;
+DROP POLICY IF EXISTS "Users can insert aspects" ON comparison_set_aspects;
+DROP POLICY IF EXISTS "Users can update aspects" ON comparison_set_aspects;
+DROP POLICY IF EXISTS "Users can delete aspects" ON comparison_set_aspects;
+
 -- Policy to allow users to view aspects
-CREATE POLICY "Anyone can view comparison set aspects"
+CREATE POLICY "Users can view their own aspects"
 ON comparison_set_aspects
 FOR SELECT
-USING (true);
+USING (
+  EXISTS (
+    SELECT 1 FROM comparison_sets
+    WHERE comparison_sets.id = comparison_set_aspects.set_id
+    AND comparison_sets.user_id = auth.uid()
+  )
+);
 
--- Policy to allow users to manage their own aspects
-CREATE POLICY "Users can manage their own aspects"
+-- Policy to allow users to insert aspects
+CREATE POLICY "Users can insert aspects"
 ON comparison_set_aspects
-FOR ALL
+FOR INSERT
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM comparison_sets
+    WHERE comparison_sets.id = comparison_set_aspects.set_id
+    AND comparison_sets.user_id = auth.uid()
+  )
+);
+
+-- Policy to allow users to update aspects
+CREATE POLICY "Users can update aspects"
+ON comparison_set_aspects
+FOR UPDATE
+USING (
+  EXISTS (
+    SELECT 1 FROM comparison_sets
+    WHERE comparison_sets.id = comparison_set_aspects.set_id
+    AND comparison_sets.user_id = auth.uid()
+  )
+)
+WITH CHECK (
+  EXISTS (
+    SELECT 1 FROM comparison_sets
+    WHERE comparison_sets.id = comparison_set_aspects.set_id
+    AND comparison_sets.user_id = auth.uid()
+  )
+);
+
+-- Policy to allow users to delete aspects
+CREATE POLICY "Users can delete aspects"
+ON comparison_set_aspects
+FOR DELETE
 USING (
   EXISTS (
     SELECT 1 FROM comparison_sets

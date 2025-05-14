@@ -180,6 +180,7 @@ export const useComparisonAspectDetails = (id) => {
     });
   };
   const handleRevertVote = async () => {
+    console.log('revert vote ------??');
     try {
       const { data, error } = await supabase
         .from('votes')

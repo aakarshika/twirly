@@ -10,6 +10,7 @@ import { getProduct, updateProduct } from '../../../services/products';
 import { useHeader } from '../../../contexts/HeaderContext';
 import { supabase } from '../../../lib/supabase';
 import VotedCard from '../../comparison-aspect-page/ComparisonItemCard/VotedCard';
+import ItemCardEditable from '../../comparison-aspect-page/ComparisonItemCard/ItemCardEditable';
 
 // Validation functions
 const validateName = (name) => {
@@ -320,10 +321,10 @@ const AddProductModal = () => {
               style={{
                 borderColor: currentTheme.colors.border
               }}
-              onClick={() => fileInputRef.current?.click()}
+              // onClick={() => fileInputRef.current?.click()}
             >
               
-              <VotedCard
+              <ItemCardEditable
                   item={{
                     image_url: imagePreview,
                     name: formData.name,
