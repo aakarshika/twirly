@@ -21,14 +21,14 @@ const ContentTabs = ({ activeTab, setActiveTab, userId,username, isPublic = true
 
   const tabs = isPublic ? [
     { id: 'overview', label: 'Overview' },
-    { id: 'comments', label: 'Reviews' },
+    { id: 'comparisons', label: 'Comparisons' },
     { id: 'products', label: 'Products' },
-    { id: 'comparisons', label: 'Comparisons' }
+    { id: 'comments', label: 'Reviews' },
   ] : [
     { id: 'overview', label: 'Overview' },
-    { id: 'comments', label: 'Reviews' },
-    { id: 'products', label: 'Products' },
     { id: 'comparisons', label: 'Comparisons' },
+    { id: 'products', label: 'Products' },
+    { id: 'comments', label: 'Reviews' },
     { id: 'votes', label: 'Votes' }
   ];
 

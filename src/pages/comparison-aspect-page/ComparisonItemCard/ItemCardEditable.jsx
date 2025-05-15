@@ -1,11 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Check, Circle, Pencil, ThumbsUp, Upload, X } from 'lucide-react';
+import { Check, Circle, Pencil, ThumbsUp, Upload, X, Plus, Search, Info } from 'lucide-react';
 import VoteStats from './VoteStats/VoteStats';
 import './ComparisonItemCard.css';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
-import { createProduct, updateProduct } from '../../../services/products';
+import { createProduct, updateProduct, searchCategories } from '../../../services/products';
 import { randomPastelColorHex } from '../../../lib/utils';
 
 const ItemCardEditable = ({
@@ -24,8 +24,13 @@ const ItemCardEditable = ({
   const [itemData, setItemData] = useState({
     name: item?.name || '',
     image_url: item?.image_url || '',
-    item_color_string: item?.item_color_string || randomPastelColorHex()
+    item_color_string: item?.item_color_string || randomPastelColorHex(),
+    categories: item?.categories || []
   });
+  const [categorySearch, setCategorySearch] = useState('');
+  const [categoryResults, setCategoryResults] = useState([]);
+  const [showCategorySearch, setShowCategorySearch] = useState(false);
+  const [allCategories, setAllCategories] = useState([]);
 
   // Convert RGB to hex
   const rgbToHex = (rgb) => {
@@ -55,6 +60,75 @@ const ItemCardEditable = ({
       colorInputRef.current.value = rgbToHex(itemData.item_color_string);
     }
   }, [itemData.item_color_string]);
+
+  // Add useEffect for category search
+  useEffect(() => {
+    const searchCategoriesDebounced = async () => {
+      if (categorySearch.length > 2) {
+        try {
+          const results = await searchCategories(categorySearch);
+          setCategoryResults(results);
+        } catch (error) {
+          console.error('Error searching categories:', error);
+        }
+      } else {
+        setCategoryResults([]);
+      }
+    };
+
+    const timeoutId = setTimeout(searchCategoriesDebounced, 300);
+    return () => clearTimeout(timeoutId);
+  }, [categorySearch]);
+
+  // Add category handlers
+  const handleCategorySelect = (category) => {
+    if (!itemData.categories?.find(c => c.id === category.id)) {
+      setItemData(prev => ({
+        ...prev,
+        categories: [...(prev.categories || []), category]
+      }));
+    }
+    setShowCategorySearch(false);
+    setCategorySearch('');
+  };
+
+  const handleCategoryRemove = (categoryId) => {
+    setItemData(prev => ({
+      ...prev,
+      categories: prev.categories?.filter(c => c.id !== categoryId) || []
+    }));
+  };
+
+  // Add category dropdown handler
+  const handleOpenCategoryDropdown = async () => {
+    setShowCategorySearch(true);
+    if (allCategories.length === 0) {
+      try {
+        const results = await searchCategories(''); // fetch all
+        setAllCategories(results);
+        setCategoryResults(results.slice(0, 10));
+      } catch (error) {
+        setAllCategories([]);
+        setCategoryResults([]);
+      }
+    } else {
+      setCategoryResults(allCategories.slice(0, 10));
+    }
+    setCategorySearch('');
+  };
+
+  // Add category filter effect
+  useEffect(() => {
+    if (!showCategorySearch) return;
+    if (categorySearch.length === 0) {
+      setCategoryResults(allCategories.slice(0, 10));
+    } else {
+      const filtered = allCategories.filter(cat =>
+        cat.name.toLowerCase().includes(categorySearch.toLowerCase())
+      );
+      setCategoryResults(filtered);
+    }
+  }, [categorySearch, allCategories, showCategorySearch]);
 
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
@@ -145,7 +219,8 @@ const ItemCardEditable = ({
     try {
       const productData = {
         ...itemData,
-        item_color_string: color
+        item_color_string: color,
+        category_ids: itemData.categories?.map(c => c.id) || []
       };
 
       if (item.id) {
@@ -174,7 +249,7 @@ const ItemCardEditable = ({
 
   return (
 
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50" >
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4" >
     <div className="bg-white rounded-lg p-4">
     <div className="flex flex-col gap-4" >
       <div
@@ -236,34 +311,23 @@ const ItemCardEditable = ({
                   onChange={handleColorChange}
                   className="hidden"
                 />
-                <div className="flex items-center justify-start">
+                <div className="text-fallback-content p-2 items-center">
+                    {/* multiline input */}
+                    {/* multi line placeholder */}
+                    
                   <div 
-                    className="px-4 py-2 rounded-full text-white font-semibold shadow"
+                    className="flex flex-col items-center justify-center px-4 py-2 rounded-sm text-white mb-4"
                     onClick={() => fileInputRef.current?.click()}
                     style={{
-                      backgroundColor: currentTheme.colors.primary
+                        border: '1px dashed ' + color,
                     }}
                   >
                     <Upload size={16} />
+                    <span>Upload Image</span>
                   </div>
-
-                  <div 
-                    ref={colorButtonRef}
-                    className="px-4 py-2 rounded-full text-white font-semibold shadow cursor-pointer"
-                    onClick={handleColorClick}
-                    style={{
-                      backgroundColor: 'white'
-                    }}
-                  >
-                    <Circle size={16} fill={color} />
-                  </div>
-                </div>
-                <div className="text-fallback-content">
-                    {/* multiline input */}
-                    {/* multi line placeholder */}
                   <textarea 
                     type="text" 
-                    className="w-full h-full text-fallback-title" 
+                    className="w-full h-full text-fallback-title items-center text-center" 
                     multiline
                     rows={3}
                     style={{
@@ -289,14 +353,6 @@ const ItemCardEditable = ({
                     backgroundColor: color,
                   }}
                 >
-                  <VoteStats
-                    votes={10}
-                    totalVotes={50}
-                    color={color}
-                    isVotedItem={false}
-                    reviewCount={10}
-                    itemReviewData={[]}
-                  />
                 </div>
               </div>
             )}
@@ -327,14 +383,111 @@ const ItemCardEditable = ({
                 className="flex items-center gap-2" 
                 style={{ cursor: 'pointer' }} 
               >
-                <VoteStats
-                  votes={10}
-                  totalVotes={50}
-                  color={color}
-                  isVotedItem={false}
-                  reviewCount={10}
-                  itemReviewData={[]}
-                />
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="flex items-center justify-start">
+
+<div 
+  ref={colorButtonRef}
+  className="px-2 py-1 rounded-full shadow cursor-pointer flex items-center gap-2"
+  onClick={handleColorClick}
+  style={{
+    backgroundColor: 'white',
+    border: '1px solid ' + color,
+    color: color
+  }}
+>
+  <Circle size={16} fill={color} />
+  Change 
+</div>
+
+</div>
+
+      {/* Categories Section */}
+      <div>
+        <div className="relative">
+          <div
+            className="flex flex-wrap gap-2 p-2 rounded border"
+            style={{
+              backgroundColor: currentTheme.colors.background,
+              border: `1px solid ${currentTheme.colors.border}`
+            }}
+          >
+
+<button
+              type="button"
+              onClick={handleOpenCategoryDropdown}
+              className="flex items-center space-x-1 px-2 py-1 rounded-full text-sm bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200"
+            >
+              <Plus size={14} />
+              <span>Add Tag</span>
+            </button>
+            {itemData.categories?.map(category => (
+              <div
+                key={category.id}
+                className="flex items-center space-x-1 px-2 py-1 rounded-full text-sm bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+              >
+                <span>{category.name}</span>
+                <button
+                  type="button"
+                  onClick={() => handleCategoryRemove(category.id)}
+                  className="hover:bg-opacity-20 rounded-full p-0.5"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {showCategorySearch && (
+            <div
+              className="absolute z-20 w-full mt-1 rounded-lg shadow-2xl border"
+              style={{
+                background: currentTheme.colors.cardBackground || '#fff',
+                border: `2px solid ${currentTheme.colors.primary}`,
+                boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.18)',
+              }}
+            >
+              <div className="p-2">
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={categorySearch}
+                    onChange={(e) => setCategorySearch(e.target.value)}
+                    placeholder="Search categories..."
+                    className="w-full p-2 pl-8 rounded border"
+                    style={{
+                      backgroundColor: currentTheme.colors.background,
+                      color: currentTheme.colors.text,
+                      border: `1px solid ${currentTheme.colors.border}`
+                    }}
+                    autoFocus
+                  />
+                  <Search
+                    size={16}
+                    className="absolute left-2 top-2.5"
+                    style={{ color: currentTheme.colors.textSecondary }}
+                  />
+                </div>
+                <div className="mt-2 max-h-48 overflow-y-auto">
+                  {categoryResults.length === 0 && (
+                    <div className="p-2 text-gray-400 text-sm">No categories found</div>
+                  )}
+                  {categoryResults.map(category => (
+                    <div
+                      key={category.id}
+                      onClick={() => handleCategorySelect(category)}
+                      className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900 cursor-pointer rounded"
+                      style={{ color: currentTheme.colors.text }}
+                    >
+                      {category.name}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}

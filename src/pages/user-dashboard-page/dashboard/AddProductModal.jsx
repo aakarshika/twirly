@@ -324,7 +324,7 @@ const AddProductModal = () => {
               // onClick={() => fileInputRef.current?.click()}
             >
               
-              <ItemCardEditable
+              <VotedCard
                   item={{
                     image_url: imagePreview,
                     name: formData.name,

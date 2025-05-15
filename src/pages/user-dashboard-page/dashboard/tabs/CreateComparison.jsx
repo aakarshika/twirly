@@ -375,16 +375,30 @@ const CreateComparison = () => {
               {draft.items.map((item) => (
                 <div key={item.id} className="relative">
                   <VotedCard item={item} newHeight="250px" />
-                  <button
-                    onClick={() => removeItem(item.id)}
-                    className="p-2 rounded-full absolute top-2 right-2 z-10"
-                    style={{
-                      backgroundColor: currentTheme.colors.error + '10',
-                      color: currentTheme.colors.error
-                    }}
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                  <div className="absolute top-2 right-2 z-100 flex space-x-2">
+                    {user && item.user_id === user.id && (
+                      <button
+                        onClick={() => console.log("edit item", item)}
+                        className="p-2 rounded-full"
+                        style={{
+                          backgroundColor: currentTheme.colors.primary + '10',
+                          color: currentTheme.colors.primary
+                        }}
+                      >
+                        <Pencil size={16} />
+                      </button>
+                    )}
+                    <button
+                      onClick={() => removeItem(item.id)}
+                      className="p-2 rounded-full"
+                      style={{
+                        backgroundColor: currentTheme.colors.error + '10',
+                        color: currentTheme.colors.error
+                      }}
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
                 </div>
               ))}
               <div className="flex flex-row rounded-lg items-center justify-center" style={{ backgroundColor: currentTheme.colors.background, height: '250px' }}>
@@ -513,6 +527,16 @@ const CreateComparison = () => {
           onCancel={() => setAddItemModalOpen(false)}
         />
       )}
+      {/* {editItemModalOpen && (
+        <ItemCardEditable
+          item={editItem}
+          onSave={(item) => {
+            console.log("saved item", item);
+            setEditItemModalOpen(false);
+          }}
+          onCancel={() => setEditItemModalOpen(false)}
+        />
+      )} */}
     </div>
   );
 };

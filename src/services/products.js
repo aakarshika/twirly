@@ -61,7 +61,7 @@ export const getUserProducts = async (userId) => {
       .select(`
         *,
         categories!item_categories (
-          name
+          *
         )
       `)
       .eq('user_id', userId)

@@ -13,9 +13,9 @@ const ItemCard = ({item}) => {
         to={`/item/${item.id}`}
         className="block p-2 rounded-lg hover:bg-gray-50"
         style={{
-          backgroundColor: currentTheme.colors.card,
+          backgroundColor: item.item_color_string,
           borderColor: currentTheme.colors.border,
-          border: '1px solid'
+          border: '1px solid ' + item.item_color_string
         }}
       >
         <div className="flex items-start">
@@ -39,13 +39,13 @@ const ItemCard = ({item}) => {
             <h3 className="font-medium" style={{ color: currentTheme.colors.text }}>
               {item.name}
             </h3>
-            {item.description && (
-              <div>
-                <p className="text-sm mt-1" style={{ color: currentTheme.colors.textSecondary }}>
-                  {item.description}
-                </p>
+            <div className="flex flex-wrap mt-4 gap-1">
+            {item.categories.length > 0 && item.categories.slice(0, 2).map((category) => (
+              <div key={category.id} className="flex items-center space-x-1 px-2 py-1 rounded-full text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                {category.name}
               </div>
-            )}
+            ))} {item.categories.length > 2 && <div className="flex"><span className=" bg-green-100 text-xs text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full px-2 py-1">+{item.categories.length - 2}</span></div>}
+            </div>
           </div>
         </div>
       </Link>
