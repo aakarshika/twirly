@@ -144,7 +144,7 @@ const MainRoutingPage = () => {
   return (
       <FeedbackProvider>
         <ScrollToTop />
-        <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background, color: currentTheme.colors.text }}>
+        <div className="min-h-screen flex flex-col" >
           <Header />
             <main 
               className="flex-grow"

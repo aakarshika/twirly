@@ -167,14 +167,13 @@ const PollScreenAspect = () => {
   return (
     <div className="min-h-screen h-full flex flex-col max-w-4xl mx-auto"
       style={{
-        backgroundColor: currentTheme.colors.background,
         paddingTop: isHeaderVisible ? '44px' : '0px',
         paddingBottom: '80px'
       }}>
 
       <div className="h-full flex flex-col " {...handlers}>
         <div className="">
-          <div className="space-y-4" style={{ color: currentTheme.colors.primary }}>
+          <div className="space-y-4">
 
 
             <div className={`shadow-md rounded-md p-4 mobile-friendly-margin-bottom 
@@ -228,7 +227,7 @@ const PollScreenAspect = () => {
             </div>
           </div>
           {(
-            <div className="text-center m-1" style={{ color: currentTheme.colors.text, backgroundColor: 'white', borderRadius: '4px' }}>
+            <div className="text-center m-1" style={{ backgroundColor: 'white', borderRadius: '4px' }}>
               <div className="w-full p-4" style={{ marginBottom: '300px' }}>
                 <ComparisonSetAspectsCommentsSection 
                 userVoted={userVoted} 

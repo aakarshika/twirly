@@ -25,3 +25,18 @@
     padding: 2px 4px; /* Padding around the mention */
     border-radius: 4px; /* Rounded corners */
 }
+
+.mention {
+    background-color: #fef3c7;
+    color: #b45309;
+    padding: 1px 3px;
+    border-radius: 4px;
+  }
+  
+  .mention-item {
+    background-color: #dbeafe;
+    color: #1d4ed8;
+    padding: 1px 3px;
+    border-radius: 4px;
+  }
+  

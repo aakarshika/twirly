@@ -3,7 +3,8 @@ import { MessageSquare } from 'lucide-react';
 import { MentionsInput, Mention } from 'react-mentions';
 import Avatar from '../Avatar';
 import { getPublicUrl } from '../../../lib/utils';
-
+import './Comment.css';
+import { color } from 'framer-motion';
 const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, items, userPreferences, type }) => {
   const inputRef = useRef(null);
   const [focus, setFocus] = useState(false);
@@ -19,36 +20,38 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
   
 
   const mentionStyles = {
-    control: {
-      backgroundColor: 'white',
-      fontSize: 12,
-      fontWeight: 'normal',
-    },
     input: {
-      fontSize: 16,
-      margin: '5px',
-      backgroundColor: 'white',
-      color: '#1a202c',
-      '&:focus': {
-        borderColor: '#f59e0b',
-        boxShadow: '0 0 0 1px #f59e0b',
-      },
+      color: 'black',
+      minHeight: '35px',
+      outline: 'none',
+      width: '100%',
+      borderRadius: '6px 6px 0 6px',
+      border: `none`
+    },
+    mentionUser: {
+      backgroundColor: 'rgba(255, 217, 0, 0.28)',
+      border: '1px solid rgba(255, 215, 0, 0.85)',
+      borderRadius: '6px'
+    },
+    mentionItem: {
+      backgroundColor: 'rgba(53, 160, 37, 0.78)',
+      border: '1px solid rgba(14, 203, 74, 0.85)',
+      borderRadius: '6px'
     },
     suggestions: {
       list: {
-        backgroundColor: 'white',
-        border: '1px solid #e2e8f0',
-        borderRadius: '0.375rem',
-        textAlign: 'left',
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        backgroundColor: '#555',
+        border: '1px solid rgba(0,0,0,0.15)',
+        fontSize: 14,
       },
       item: {
-        padding: '6px 8px',
+        padding: '5px 15px',
+        borderBottom: '1px solid rgba(0,0,0,0.15)',
         '&focused': {
-          backgroundColor: '#f3f4f6',
+          backgroundColor: '#cee4e5',
         },
       },
-    },
+    }
   };
 
   const renderSuggestionItems = (suggestion, search, highlightedDisplay) => {
@@ -82,8 +85,8 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
             />
             <div className="flex flex-col w-full">
               <span className="font-bold text-start text-md">{userPreferences?.display_name || 'Anonymous'}</span>
-              <div className="w-full" style={{border: '1px solid #e2e8f0'}}>
-                <div className="flex flex-col w-full">
+              <div className="w-full rounded-md" style={{border: '1px solid #e2e8f0'}}>
+                <div className="flex flex-col w-full p-2">
                   <MentionsInput
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
@@ -99,8 +102,8 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
                       trigger="@"
                       data={users}
                       renderSuggestion={renderSuggestionUsers}
-                      className="bg-amber-100 text-amber-800 px-1"
                       appendSpaceOnAdd={true}
+                      style={mentionStyles.mentionUser}
                       markup="@[__display__](__id__)"
                       displayTransform={(id, display) => ` @${display} `}
                     />
@@ -108,14 +111,18 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
                       trigger="#"
                       data={itemsToDisplay}
                       renderSuggestion={renderSuggestionItems}
-                      className="bg-blue-100 text-blue-800 px-1"
                       appendSpaceOnAdd={true}
                       markup="#[__display__](__id__)"
+                      style={{
+                        backgroundColor: 'rgba(0, 49, 104, 0.17)',
+                        border: '1px solid rgba(0, 49, 104, 0.85)',
+                        borderRadius: '6px'
+                      }}
                       displayTransform={(id, display) => ` #${display} `}
                     />
                   </MentionsInput>
                   {newComment.length > 0 && (
-                    <div className="flex justify-start">
+                    <div className=" p-2 flex justify-end gap-2">
                       <button
                         onClick={(e) => {
                           e.preventDefault();
@@ -130,7 +137,7 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
                         onClick={() => {
                           setNewComment('');
                         }}
-                        className="w-auto mt-1 px-3 py-1.5 justify-start bg-white-400 rounded-md text-black font-small hover:bg-amber-300 transition-colors flex items-start gap-1.5 text-sm"
+                        className="w-auto mt-1 px-3 py-1.5 justify-start bg-white-400 rounded-md text-black font-small hover:bg-gray-300 transition-colors flex items-start gap-1.5 text-sm"
                       >
                         Cancel
                       </button>

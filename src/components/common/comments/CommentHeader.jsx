@@ -5,6 +5,7 @@ import { renderTextWithMentions } from '../../../lib/commentUtils';
 import { useNavigate } from 'react-router-dom';
 import Avatar from '../Avatar';
 import { formatDistanceToNow } from 'date-fns';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 const CommentHeader = ({ onLike, isReplySectionExpanded, replyClicked,
   items,
@@ -21,6 +22,7 @@ const CommentHeader = ({ onLike, isReplySectionExpanded, replyClicked,
     numReplies
  }) => {
   const navigate = useNavigate();
+  const { currentTheme } = useTheme();
   const itemColorCoding = items?.map(item => {
     return {
       id: item.items ? item.items.id : item.id,
@@ -29,7 +31,7 @@ const CommentHeader = ({ onLike, isReplySectionExpanded, replyClicked,
   }) || [];
   return (
       <>
-      <div className="flex">
+      <div className="flex" >
         <Avatar
           profileImageUrl={profile_image_url ? getPublicUrl(profile_image_url) : null}
           displayName={display_name}
@@ -39,7 +41,7 @@ const CommentHeader = ({ onLike, isReplySectionExpanded, replyClicked,
         <div className="items-start">
           <div className="flex flex-row justify-start">
             <span className="font-bold text-md "
-              style={{textAlign: 'start'}}
+              style={{textAlign: 'start', color: currentTheme.colors.text}}
               onClick={() => {
                 navigate(`/user/${display_name}`);
               }}
