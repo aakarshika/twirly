@@ -54,21 +54,21 @@ const OverviewTab = ({ userId, isPublic }) => {
   }, [userId]);
 
   return (
-    
     <div className="mt-8">
-    <ActivityOverview
-      votesCount={userData.votes_count}
-      reviewsCount={userData.reviews_count}
-      productsCount={userData.products_count}
-      comparisonsCount={userData.comparisons_count}
-      likesCount={userData.likes_count}
-      recentActivities={recentActivities}
-      trends={trends}
-      activityData={activityData}
-      categoryData={categoryData}
-      isPublic={isPublic}
-    />
-  </div>
+      <ActivityOverview
+        votesCount={userData.votes_count}
+        reviewsCount={userData.reviews_count}
+        productsCount={userData.products_count}
+        comparisonsCount={userData.comparisons_count}
+        likesCount={userData.likes_count}
+        recentActivities={recentActivities}
+        trends={trends}
+        activityData={activityData}
+        categoryData={categoryData}
+        isPublic={isPublic}
+        userData={userData}
+      />
+    </div>
   );
 };
 

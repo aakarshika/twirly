@@ -101,21 +101,6 @@ const ActivityOverview = ({
 
   return (
     <div className="space-y-6">
-      <div className='rounded-lg p-4' style={{ backgroundColor: currentTheme.colors.card }}>
-        {!isPublic && (<h2 
-          className="text-xl font-semibold mb-4"
-          style={{ color: currentTheme.colors.text }}
-        >
-          Your Activity Overview
-        </h2>)}
-        <ActivityStats
-          votesCount={votesCount}
-          reviewsCount={reviewsCount}
-          productsCount={productsCount}
-          comparisonsCount={comparisonsCount}
-          likesCount={likesCount}
-        />
-      </div>
 { !isPublic && (
       <div >
       <ActivityVisualizations 
