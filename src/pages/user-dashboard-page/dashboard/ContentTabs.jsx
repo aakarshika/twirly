@@ -198,7 +198,6 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
           ref={tabsRef}
           className="sticky top-0 z-30 mb-6 md:mb-8"
           style={{ 
-            backgroundColor: currentTheme.colors.background,
             paddingTop: '1rem',
             paddingBottom: '1rem',
             marginTop: '-1rem',

@@ -90,7 +90,7 @@ const UserDashboard = () => {
 
   return (
     <div 
-      className="min-h-screen p-4 md:p-8"
+      className="min-h-screen mx-auto"
       style={{ backgroundColor: currentTheme.colors.background,
         position: 'relative',
         top: isHeaderVisible ? '64px' : '0px',

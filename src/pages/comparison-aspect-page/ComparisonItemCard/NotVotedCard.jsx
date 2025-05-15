@@ -1,27 +1,19 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
+import { useNotVotedCard } from '../../../hooks/useNotVotedCard';
 import './ComparisonItemCard.css';
-import { getPublicUrlItems } from '../../../lib/utils';
 
 const NotVotedCard = ({
-    item,
-    newHeight = '35vh',
-    handleItemClick
+  item,
+  newHeight = '35vh',
+  handleItemClick
 }) => {
-  const titleRef = useRef(null);
-  const itemImage = item.image_url && item.image_url.startsWith('http') ? item.image_url : getPublicUrlItems(item.image_url);
-
-  useEffect(() => {
-    if (titleRef.current) {
-      const titleElement = titleRef.current;
-      const wordCount = item.name.trim().split(/\s+/).length;
-      
-      if (wordCount > 10) {
-        titleElement.style.fontSize = '0.875rem';
-      } else {
-        titleElement.style.fontSize = '1.5rem';
-      }
-    }
-  }, [item.name]);
+  const {
+    titleRef,
+    itemImage
+  } = useNotVotedCard({
+    item,
+    handleItemClick
+  });
 
   return (
     <div
