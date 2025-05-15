@@ -7,6 +7,8 @@ import QuickStats from './QuickStats';
 import ProductTabs from './ProductTabs';
 import { useAuth } from '../../contexts/AuthContext';
 import { useHeader } from '../../contexts/HeaderContext';
+import CommentAppearancesTab from './tabs/CommentAppearancesTab';
+import AppearancesTab from './tabs/AppearancesTab';
 const ProductDetails = () => {
   const { itemId } = useParams();
   const { currentTheme } = useTheme();
@@ -164,16 +166,16 @@ const ProductDetails = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <ProductHeader item={item} />
         <QuickStats comparisonSets={comparisonSets} reviews={reviews} />
-        <ProductTabs
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          reviews={reviews}
-          item={item}
-          comparisonSets={comparisonSets}
-          hasMoreReviews={hasMoreReviews}
-          loadingReviews={loadingMoreReviews}
-          loadMoreReviews={loadMoreReviews}
-        />
+        
+        <AppearancesTab
+            comparisonSets={comparisonSets}
+            item={item}
+          />
+          <h4 className="p-4">Review Mentions </h4>
+        <CommentAppearancesTab 
+            comparisonSets={comparisonSets}
+            item={item}
+          />
       </div>
     </div>
   );

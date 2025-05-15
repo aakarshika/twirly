@@ -8,6 +8,7 @@ import { getPublicUrl } from '../../../lib/utils';
 import { useHeader } from '../../../contexts/HeaderContext';
 import ItemCard from '../../../components/common/common-cards/ItemCard';
 import TrendingCard from '../../../components/common/common-cards/TrendingCard';
+import TrendingCardCommon from '../../../components/common/common-cards/TrendingCardCommon';
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
@@ -67,7 +68,7 @@ const SearchPage = () => {
     
     return (
       <div key={comparison.aspect_set_id}>
-        <TrendingCard set={comparison} from={'search'} />
+        <TrendingCardCommon set={comparison} from={'search'} />
       </div>
       )
   };
@@ -167,12 +168,21 @@ const SearchPage = () => {
   };
 
   return (
-    <div className="container mx-auto px-4" style={{
+
+    <div className="" style={{
+      maxWidth: '1000px',
+      marginLeft: 'auto',
+      marginRight: 'auto'
+    }}>
+    <div className="container mx-auto" style={{
+      backgroundColor: currentTheme.colors.card,
       position: 'relative',
       top: isHeaderVisible ? '64px' : '0px',
     }}>
       {/* Search Header */}
-      <div className="mb-8">
+      <div className="p-4">
+      <div className="p-4"
+      >
         <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto">
           <input
             type="text"
@@ -180,7 +190,7 @@ const SearchPage = () => {
             onChange={(e) => setSearchInput(e.target.value)}
             className="w-full px-4 py-3 pl-12 rounded-lg border"
             style={{
-              backgroundColor: currentTheme.colors.card,
+              backgroundColor: currentTheme.colors.background,
               borderColor: currentTheme.colors.border,
               color: currentTheme.colors.text
             }}
@@ -191,7 +201,7 @@ const SearchPage = () => {
       </div>
 
       {/* Tabs */}
-      <div className="border-b mb-6" style={{ borderColor: currentTheme.colors.border }}>
+      <div className="border-b mb-6 mt-4" style={{ borderColor: currentTheme.colors.border }}>
         <div className="flex space-x-8">
           {tabs.map(tab => (
             <button
@@ -248,9 +258,10 @@ const SearchPage = () => {
           <option value="year">Past Year</option>
         </select>
       </div>
-
+      </div>
       {/* Search Results */}
       {renderResults()}
+      </div>
     </div>
   );
 };

@@ -1,7 +1,11 @@
+drop function fetch_popular_aspect_sets_for_user(v_user_id uuid);
+
+
 drop view popular_comparison_sets;
 CREATE OR REPLACE VIEW popular_comparison_sets AS
 SELECT 
     cs.id as set_id,
+    cs.user_id,
     cs.name,
     csa.description,
     cs.category_id,
@@ -38,3 +42,18 @@ FROM items i
 LEFT JOIN reviews r ON i.id = r.item_id
 GROUP BY i.id
 ORDER BY avg_likes DESC, review_count DESC;
+
+
+
+
+create or replace function fetch_popular_aspect_sets_for_user(v_user_id uuid)
+returns setof popular_comparison_sets as $$
+begin
+  return query
+  select cas.*
+  from popular_comparison_sets cas
+  left join votes v on v.set_id = cas.aspect_set_id
+  where v.id is null
+  order by cas.created_at desc;
+end;
+$$ language plpgsql;

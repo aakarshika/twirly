@@ -40,7 +40,7 @@ const CommentHeader = ({ onLike, isReplySectionExpanded, replyClicked,
         />
         <div className="items-start">
           <div className="flex flex-row justify-start">
-            <span className="font-bold text-md "
+            <span className="text-md "
               style={{textAlign: 'start', color: currentTheme.colors.text}}
               onClick={() => {
                 navigate(`/user/${display_name}`);

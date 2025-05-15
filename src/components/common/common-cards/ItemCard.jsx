@@ -40,11 +40,11 @@ const ItemCard = ({item}) => {
               {item.name}
             </h3>
             <div className="flex flex-wrap mt-4 gap-1">
-            {item.categories.length > 0 && item.categories.slice(0, 2).map((category) => (
+            {item.categories?.length > 0 && item.categories.slice(0, 2).map((category) => (
               <div key={category.id} className="flex items-center space-x-1 px-2 py-1 rounded-full text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
                 {category.name}
               </div>
-            ))} {item.categories.length > 2 && <div className="flex"><span className=" bg-green-100 text-xs text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full px-2 py-1">+{item.categories.length - 2}</span></div>}
+            ))} {item.categories?.length > 2 && <div className="flex"><span className=" bg-green-100 text-xs text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full px-2 py-1">+{item.categories.length - 2}</span></div>}
             </div>
           </div>
         </div>

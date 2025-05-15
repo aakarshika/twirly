@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
 import { OtherChart } from './OtherChart';
 import { useAuth } from '../../../contexts/AuthContext';
+import { Play } from 'lucide-react';
 
 const AppearancesTab = ({ item, comparisonSets }) => {
   const { currentTheme } = useTheme();
@@ -14,9 +15,9 @@ const AppearancesTab = ({ item, comparisonSets }) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-center mb-4">
+      <div className="flex justify-end mb-4">
 
-      <div className="flex flex-row justify-center mb-4">
+      <div className="flex flex-row justify-end mb-4">
         <h2 className="text-lg font-semibold mr-4">Visuals:</h2>
         {['radar', 'line', 'bar'
         // , 'pie', 'bubble', 'polar'
@@ -104,9 +105,10 @@ const AppearancesTab = ({ item, comparisonSets }) => {
                     }]}
                   />
                 </div>)}
-                {!userVoted && (<div className="m-2 rounded-lg p-4"
+                {!userVoted && (<div className="m-2 rounded-lg p-4 flex flex-row items-center"
           style={{ backgroundColor: 'white', color: currentTheme.colors.primary }}>
                   <p>Play all to unlock metrics</p>
+                  <Play size={24} />
                 </div>)}
         </div>
       )})}

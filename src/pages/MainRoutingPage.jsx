@@ -144,14 +144,14 @@ const MainRoutingPage = () => {
   return (
       <FeedbackProvider>
         <ScrollToTop />
-        <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background, color: currentTheme.colors.text }}>
+        <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background, color: currentTheme.colors.text,
+                paddingBottom: 'calc( var(--safe-area-inset-bottom))' }}>
           <Header />
             <main 
               className="flex-grow"
               style={{ 
-                backgroundColor: currentTheme.colors.background,
+                paddingBottom: '100px',
                 paddingTop: 'calc( var(--safe-area-inset-top))',
-                paddingBottom: '100px'
               }}
             >
               <Routes>

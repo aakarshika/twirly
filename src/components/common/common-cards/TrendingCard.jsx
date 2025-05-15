@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MessageSquare, ThumbsUp, Users } from 'lucide-react';
+import { Dot, MessageSquare, ThumbsUp, Users } from 'lucide-react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
-import { getPublicUrlItems, splitAndJoin } from '../../../lib/utils';
+import { getPublicUrl, getPublicUrlItems, splitAndJoin } from '../../../lib/utils';
 import { userActivityService, ACTIVITY_TYPES, ENTITY_TYPES } from '../../../services/userActivityService';
+import { formatDistanceToNow } from 'date-fns';
+import Avatar from '../Avatar';
 
 const TrendingCard = ({set, from}) => {
     const {user} = useAuth();
@@ -73,18 +75,15 @@ const TrendingCard = ({set, from}) => {
     <div
       key={set.id}
       onClick={() => handleSetClick(set)}
-      className="cursor-pointer rounded-lg hover:bg-gray-50 transition-colors"
-      style={{
-        backgroundColor: currentTheme.colors.card,
-        borderColor: currentTheme.colors.border,
-        border: '1px solid'
-      }}
+      style={{ backgroundColor: 'white' }}
     >
-      <div className="p-4">
-        <h3 className="font-medium mb-2" style={{ color: currentTheme.colors.text }}>
+      <div className="p-4"
+      style={{ backgroundColor: currentTheme.colors.background }}>
+        <div className="mb-2">
+        <span className="font-medium" style={{ color: currentTheme.colors.text }}>
           {set.name}
-        </h3>
-        <h4 className="text-sm rounded-full px-2 py-1" style={{ color: 'white', backgroundColor: currentTheme.colors.primary, marginBottom: '10px' }}>{splitAndJoin(set.metric_name)}</h4>
+        </span> <span className="text-sm rounded-full px-2 py-1" style={{ color: 'white', backgroundColor: currentTheme.colors.primary }}>{splitAndJoin(set.metric_name)}</span>
+        </div>
         <div className="grid grid-cols-2 gap-2">
           {set.comparison_set_items?.slice(0, 4).map((it, index) => {
             set.imageError = false;
@@ -127,29 +126,52 @@ const TrendingCard = ({set, from}) => {
             );
           })}
         </div>
-        {set.description && (
+        {/* {set.description && (
           <p className="text-sm mt-2" style={{ color: currentTheme.colors.textSecondary }}>
             {set.description} 
           </p>
-        )}
+        )} */}
         <div className="flex items-center justify-between mt-4">
-          <div className="flex items-center space-x-4">
+      <div className="flex" >
+        <Avatar
+          profileImageUrl={set.user?.profile_image_url ? getPublicUrl(set.user?.profile_image_url) : null}
+          displayName={set.user?.display_name}
+          size="sm"
+          className="mr-2"
+        />
+        <div className="items-start">
+          <div className="flex flex-col">
+            <span className="text-sm"
+              style={{textAlign: 'start', color: currentTheme.colors.text}}
+              onClick={() => {
+                navigate(`/user/${set.user?.display_name}`);
+              }}
+              >{set.user?.display_name || 'Anonymous'}
+            </span>
+            <div className="flex items-center">
+            <span className="text-xs text-gray-400 dark:text-gray-300" >
+              {formatDistanceToNow(new Date(set.created_at), { addSuffix: true })}
+            </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center space-x-4">
             {(set.total_comments || 0) > 0 && (<div className="flex items-center">
               <MessageSquare size={16} className="mr-1" />
-              <span className="text-sm" style={{ color: currentTheme.colors.textSecondary }}>
+              <span className="text-xs" style={{ color: currentTheme.colors.textSecondary }}>
                 {set.total_comments || 0}
               </span>
             </div>)}
             {(set.total_votes || 0) > 0 && (<div className="flex items-center">
               <Users size={16} className="mr-1" />
-              <span className="text-sm" style={{ color: currentTheme.colors.textSecondary }}>
+              <span className="text-xs" style={{ color: currentTheme.colors.textSecondary }}>
                 {set.total_votes || 0}
               </span>
             </div>)}
           </div>
-          <div className="text-sm" style={{ color: currentTheme.colors.textSecondary }}>
-            {new Date(set.created_at).toLocaleDateString()}
-          </div>
+
         </div>
       </div>
     </div>

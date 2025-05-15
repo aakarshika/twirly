@@ -36,14 +36,16 @@ const VotedCard = ({
   const color = isHexColor ? `rgb(${parseInt(item.item_color_string.slice(1, 3), 16)}, ${parseInt(item.item_color_string.slice(3, 5), 16)}, ${parseInt(item.item_color_string.slice(5, 7), 16)})` : item.item_color_string;
 
   return (
-    <div className="flex flex-col bg-gray-500 rounded-lg">
+    <div className="flex flex-col bg-white w-full rounded-lg" >
     <div
       className="comparison-item-card rounded-lg"
       style={{ 
+        aspectRatio: '1/1',
         height: newHeight,
         border: '4px solid ' + color,
         backgroundColor: color?.substring(0, color.length - 1) + ', 0.2)'
       }}
+      
     >
       <div className="card-container">
         <div className="image-container">
@@ -61,17 +63,18 @@ const VotedCard = ({
                 background: color?.substring(0, color.length - 1) + ', 0.2)',
                 color: '#000'
               }}
-            >
+              onClick={handleItemClick}
+              >
               <div className="flex flex-col text-fallback-content">
-                <h3 ref={titleRef} className="text-fallback-title" style={{ color: 'white' }}>{item.name}</h3>
+                <h3 ref={titleRef} className="text-fallback-title" style={{ color: item.item_color_string }}>{item.name}</h3>
               </div>
-              <div 
+              {item.votes?.length > 0 && (<div 
                 className="flex items-center content-overlay"
+
                 style={{
                   cursor: 'pointer',
                   backgroundColor: color,
                 }}
-                onClick={handleItemClick}
               >
                 <span className="" style={{ color: item.item_color_string }}>Y</span>
                 <VoteStats
@@ -82,7 +85,7 @@ const VotedCard = ({
                   reviewCount={reviewCount}
                   itemReviewData={itemReviewData}
                 />
-              </div>
+              </div>)}
             </div>
           )}
         </div>
@@ -90,10 +93,12 @@ const VotedCard = ({
         {itemImage && (
           <div 
             className="bottom-0 left-0 right-0 p-4 content-overlay" 
+
+            onClick={handleItemClick}
             style={{ backgroundColor: color }}
           >
             <h3 className="item-name">{item.name}</h3>
-            <div 
+            {item.votes?.length > 0 && (<div 
               className="flex items-center gap-2" 
               style={{ cursor: 'pointer' }} 
               onClick={handleItemClick}
@@ -106,7 +111,7 @@ const VotedCard = ({
                 reviewCount={reviewCount}
                 itemReviewData={itemReviewData}
               />
-            </div>
+            </div>)}
           </div>
         )}
 

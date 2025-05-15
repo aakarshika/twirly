@@ -8,11 +8,7 @@ const ProductTabs = ({
   activeTab, 
   setActiveTab, 
   item, 
-  reviews, 
-  comparisonSets, 
-  hasMoreReviews,
-  loadingReviews,
-  loadMoreReviews
+  comparisonSets
 }) => {
   const { currentTheme } = useTheme();
   const navigate = useNavigate();

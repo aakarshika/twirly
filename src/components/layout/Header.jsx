@@ -146,6 +146,7 @@ const Header = () => {
       className="fixed container mx-auto top-0 left-0 right-0 z-40 w-full border-b"
       style={{
         backgroundColor: currentTheme.colors.background,
+        paddingTop: 'calc( var(--safe-area-inset-top))',
         borderColor: currentTheme.colors.card,
       }}
     >

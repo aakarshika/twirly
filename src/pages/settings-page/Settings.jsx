@@ -54,7 +54,7 @@ const Settings = () => {
   const currentTab = location.pathname.split('/').pop() || 'profile';
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background,
+    <div className="min-h-screen max-w-screen-lg mx-auto flex flex-col" style={{ backgroundColor: currentTheme.colors.background,
       position: 'relative',
       top: isHeaderVisible ? '64px' : '0px',
     }}>

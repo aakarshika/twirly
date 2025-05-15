@@ -8,6 +8,7 @@ import { MessageSquare, TrendingUp, Users } from 'lucide-react';
 import { COMPARISON_COLOR_SET } from '../../lib/constants';
 import { randomPastelColor, splitAndJoin } from '../../lib/utils';
 import TrendingCard from '../../components/common/common-cards/TrendingCard';
+import TrendingCardCommon from '../../components/common/common-cards/TrendingCardCommon';
 
 const Trending = () => {
   const [trendingSets, setTrendingSets] = useState([]);
@@ -26,7 +27,9 @@ const Trending = () => {
           .rpc('fetch_popular_aspect_sets_for_user', { v_user_id: user.id })
           .select(`
             *,
+            user:user_preferences(*),
             comparison_set_items (
+            
               items (
                 id,
                 name,
@@ -39,6 +42,9 @@ const Trending = () => {
           .limit(20);
 
         if (error) throw error;
+        
+
+
         setTrendingSets(data);
       } catch (err) {
         console.error('Error fetching trending sets:', err);
@@ -80,28 +86,31 @@ const Trending = () => {
 
   return (
     <div 
-      className="min-h-screen py-2"
+      className="min-h-screen mx-auto"
       style={{ 
         position: 'relative',
-        top: isHeaderVisible ? '64px' : '0px',
-        backgroundColor: currentTheme.colors.background
+        top: isHeaderVisible ? '64px' : '0px'
       }}
     >
-      <div className="container mx-auto px-4">
-        <div className="flex items-center mb-8 justify-center">
+      <div className="container mx-auto" style={{
+        backgroundColor: currentTheme.colors.card
+      }}>
+        <div className="flex justify-center p-4">
           <TrendingUp size={24} className="mr-2" style={{ color: currentTheme.colors.primary }} />
           <h1 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
             Trending Comparisons
           </h1>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="border-b" style={{ borderColor: currentTheme.colors.border }}>
+        <div className="space-y-4">
           {trendingSets.map((set) => {
             return (
             <div key={set.aspect_set_id}>
-              <TrendingCard set={set} from={'trending'} />
+              <TrendingCardCommon set={set} from={'trending'} />
             </div>
             )
           })}
+        </div>
         </div>
       </div>
     </div>

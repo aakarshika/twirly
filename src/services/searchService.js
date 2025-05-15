@@ -24,7 +24,7 @@ export const searchService = {
     try {
       const { data, error } = await supabase
         .from('popular_comparison_sets')
-        .select('*, comparison_set_items(items(*))')
+        .select('*,user:user_preferences(*), comparison_set_items(items(*))')
         .ilike('name', `%${query}%`)
         .order('popularity_score', { ascending: false })
         .limit(10);

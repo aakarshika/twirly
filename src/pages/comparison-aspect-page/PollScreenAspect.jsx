@@ -167,7 +167,7 @@ const PollScreenAspect = () => {
   return (
     <div className="min-h-screen h-full flex flex-col max-w-4xl mx-auto"
       style={{
-        paddingTop: isHeaderVisible ? '44px' : '0px',
+        paddingTop: isHeaderVisible ? '64px' : '0px',
         paddingBottom: '80px'
       }}>
 
@@ -186,8 +186,8 @@ const PollScreenAspect = () => {
                     {currentSet?.name || 'Untitled Comparison'}
                   </span>
                 </div>
-                <div className="" >
-                  <div className="rounded-full gap-2 m-2 px-4 py-1 w-full" style={{ backgroundColor: currentTheme.colors.primary }}>
+                <div className="flex justify-center" >
+                  <div className="rounded-full m-2 px-4 py-1" style={{ backgroundColor: currentTheme.colors.primary }}>
                     {/* <span className="text-sm" style={{ color: currentTheme.colors.card }}>Vote for the most </span> */}
                     <span className="text-md " style={{ color: 'white' }} >
                       {splitAndJoin(currentAspectSet?.metric_name)}

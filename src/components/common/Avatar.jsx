@@ -15,8 +15,9 @@ const Avatar = ({
 
   // Size mapping
   const sizeClasses = {
-    sm: 'w-6 h-6',
-    md: 'w-24 h-24',
+    xs: 'w-6 h-6',
+    sm: 'w-8 h-8',
+    md: 'w-16 h-16',
     lg: 'w-32 h-32'
   };
   const fontSize = {
