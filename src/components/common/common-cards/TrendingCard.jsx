@@ -82,8 +82,11 @@ const TrendingCard = ({set, from}) => {
         <div className="mb-2">
         <span className="font-medium" style={{ color: currentTheme.colors.text }}>
           {set.name}
-        </span> <span className="text-sm rounded-full px-2 py-1" style={{ color: 'white', backgroundColor: currentTheme.colors.primary }}>{splitAndJoin(set.metric_name)}</span>
-        </div>
+        </span> 
+        <span className="px-2 text-sm" style={{ color: 'lightgray' }}>based on </span>
+         <span className="text-sm rounded-full px-2 py-1" style={{ color: 'white', backgroundColor: currentTheme.colors.primary }}>{splitAndJoin(set.metric_name)}</span>
+         <span className="px-2 text-sm" style={{ color: 'lightgray' }}>? </span>
+         </div>
         <div className="grid grid-cols-2 gap-2">
           {set.comparison_set_items?.slice(0, 4).map((it, index) => {
             set.imageError = false;
@@ -109,12 +112,12 @@ const TrendingCard = ({set, from}) => {
                 {(!itemImage || set.imageError )&& (
                   <div
                     className="absolute inset-0 flex items-center justify-center text-lg font-bold"
-                    style={{ color: 'black', backgroundColor: voted_item_id ?  item.item_color_string : 'white' }}
+                    style={{ color: 'black', backgroundColor: 'white' }}
                   >
                     {item.name}
                   </div>
                 )}
-                {itemImage && !set.imageError && index < 2 && (
+                {itemImage && !set.imageError && (index < 2 || voted_item_id) && (
                   <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-1">
                     <p className="text-white text-sm truncate">{item.name}</p>
                   </div>

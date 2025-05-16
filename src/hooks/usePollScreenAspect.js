@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useComparisonAspectDetails } from './useComparisonAspectDetails';
-
+import { useAuth } from '@/contexts/AuthContext';
 export const usePollScreenAspect = (id) => {
   const navigate = useNavigate();
   const [showStartAnimation, setShowStartAnimation] = useState(true);
@@ -10,6 +10,7 @@ export const usePollScreenAspect = (id) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [height, setHeight] = useState('100vh');
 
+  const { user } = useAuth();
   const {
     items,
     currentSet,
@@ -23,22 +24,37 @@ export const usePollScreenAspect = (id) => {
     loading,
     error,
     fetchComparisonDetails,
+    fetchRemainingAspects,
     handleLikeComparisonAspectSet,
-    handleNext
+    handleNext,
+    fetchComparison
   } = useComparisonAspectDetails(id);
 
+  const getPreviousId = () => {
+    const previousId = parseInt(id) - 1;
+    return previousId;
+  }
   // Preload next card data
   useEffect(() => {
-    const nextId = parseInt(id) + 1;
-    fetchComparisonDetails(nextId).then(data => {
-      setNextCardData(data);
-    });
+    const loadNextCard = async () => {
+      const remainingAspects = await fetchRemainingAspects(id);
+      console.log('remainingAspects', remainingAspects);
+      if (remainingAspects.length > 0) {
+        const nextId = remainingAspects[Math.floor(Math.random() * remainingAspects.length)].id;
+        const nextCompData = await fetchComparison(nextId);
+        setNextCardData(nextCompData);
+      }
+      else {
+        setNextCardData(null);
+      }
+    };
+    loadNextCard();
   }, [id]);
 
   useEffect(() => {
     setShowStartAnimation(true);
     if (id) {
-      fetchComparisonDetails();
+      fetchComparisonDetails(id);
     }
     const timer = setTimeout(() => {
       setShowStartAnimation(false);
@@ -61,7 +77,7 @@ export const usePollScreenAspect = (id) => {
         // Update state with nextCardData if needed
       }
       
-      navigate('/comparison-aspect/' + (parseInt(id) - 1).toString());
+      navigate('/comparison-aspect/' + getPreviousId());
       
       setShowEndAnimation(false);
       setShowStartAnimation(true);
@@ -73,18 +89,22 @@ export const usePollScreenAspect = (id) => {
     }, 300);
   };
 
-  const handleNextNavigation = () => {
+  const handleNextNavigation = async () => {
     if (isTransitioning) return;
     
     setIsTransitioning(true);
     setShowEndAnimation(true);
     
-    setTimeout(() => {
+    setTimeout(async () => {
+      console.log('nextCardData', nextCardData);
       if (nextCardData) {
         // Update state with nextCardData if needed
+        navigate('/comparison-aspect/' + nextCardData.id);
+        console.log('nextCardData', nextCardData);
       }
-      
-      navigate('/comparison-aspect/' + (parseInt(id) + 1).toString());
+      else {
+        navigate('/comparison/' + currentSet.id);
+      }
       
       setShowEndAnimation(false);
       setShowStartAnimation(true);
@@ -118,5 +138,6 @@ export const usePollScreenAspect = (id) => {
     handleLikeComparisonAspectSet,
     handlePreviousNavigation,
     handleNextNavigation,
+    nextCardData,
   };
 }; 

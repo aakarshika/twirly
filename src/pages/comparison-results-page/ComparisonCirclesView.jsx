@@ -2,53 +2,62 @@ import React from 'react';
 import ComparisonCircle from './ComparisonCircle';
 import {
     findWinner,
-    hasAnyClearLeader,
+    findRunnerUp,
+    countTotalVotes,
     calculateProcessedItems
   } from '../../services/comparisonService';
 import ComparisonMetadata from './ComparisonMetadata';
 import Avatar from '../../components/common/Avatar';
 import { getPublicUrl } from '../../lib/utils';
-
-const List = ({displayItems, isMobile, winner, comparison}) => {
+import { useNavigate } from 'react-router-dom';
+const List = ({displayItems, isMobile, winner, runnerUp, comparison, totalVotes}) => {
     return <>
-    {displayItems.map((item, index) => (
+    {displayItems.map((item, index) => item.id != winner?.id && item.id != runnerUp?.id && (
         <ComparisonCircle
             key={item.id}
             item={item}
             index={index}
             isMobile={isMobile}
-            winner={winner}
             comparison={comparison}
+            totalVotes={totalVotes}
         />
     ))}
     </>
 };
 
-const ComparisonCirclesView = ({ items, comparisonMetrics, comparison }) => {
+const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVotedAll }) => {
     // Ensure we have between 2 and 4 items
     const displayItems = calculateProcessedItems(
         items,
         comparisonMetrics
     );
-    
-    console.log(comparison);
+    const navigate = useNavigate();
+    console.log(comparisonMetrics, "comparisonMetrics");
     // Find the winner from the processed items
-    const winner = findWinner(displayItems);
+    const winner = userVotedAll ? findWinner(displayItems) : null;
+    const runnerUp = userVotedAll ? findRunnerUp(displayItems) : null;
+    const totalVotes = userVotedAll ? countTotalVotes(displayItems) : null;
 
     return (
         <div className="">
-            <div className="max-w-7xl mx-auto">
+            <div className="max-w-7xl mx-auto ml-2 mr-2">
                 {/* Metadata Section */}
-                <ComparisonMetadata comparison={comparison} isMobile={false} />
-                
-                {/* Mobile Layout */}
-                <div className="relative sm:hidden">
-                    <List displayItems={displayItems} isMobile={true} winner={winner} comparison={comparison} />
-                </div>
-
+                <ComparisonMetadata 
+                  comparisonMetrics={comparisonMetrics}
+                  playedAspects={comparisonMetrics.filter((aspect) => aspect.userVoted== true)}
+                  onAspectClick={(clickedAspect) => {
+                    if (clickedAspect.id!= 'results') {
+                      navigate(`/comparison-aspect/${clickedAspect.id}`);
+                    }
+                  }}
+                 comparison={comparison} winner={winner} runnerUp={runnerUp} isMobile={false} userVotedAll={userVotedAll} totalVotes={totalVotes} />
                 {/* Desktop Layout */}
-                <div className="hidden sm:grid sm:grid-cols-2 sm:gap-4 relative p-4">
-                    <List displayItems={displayItems} isMobile={false} winner={winner} comparison={comparison} />
+                <div className="hidden sm:grid sm:grid-cols-2 sm:gap-4 relative">
+                    <List displayItems={displayItems}  winner={winner} runnerUp={runnerUp} isMobile={false} comparison={comparison} totalVotes={totalVotes} />
+                </div>
+                {/* Mobile Layout */}
+                <div className=" sm:hidden grid grid-cols-2 gap-4 relative">
+                    <List displayItems={displayItems}  winner={winner} runnerUp={runnerUp} isMobile={true} comparison={comparison} totalVotes={totalVotes} />
                 </div>
 
           {/* Creator Info */}
@@ -64,9 +73,6 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison }) => {
               Created by {comparison.user?.display_name || 'Anonymous'}
             </span>
           </div>
-          <div className='flex flex-row justify-start items-center z-10' >
-            <h4 className='text-md p-4' style={{color: 'black'}}>{comparison.name}</h4>
-            </div>
           </div>
         </div>
     );

@@ -15,7 +15,8 @@ SELECT
     votes_count.total_votes,
     comments_count.total_comments,
     COALESCE(votes_count.total_votes, 0) * 2 + COALESCE(comments_count.total_comments, 0) AS popularity_score
-FROM comparison_set_aspects csa join comparison_sets cs on cs.id = csa.set_id 
+FROM comparison_set_aspects csa 
+join comparison_sets cs on cs.id = csa.set_id and cs.is_published = true
 LEFT JOIN (
     SELECT 
         v.set_id, 

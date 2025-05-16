@@ -4,11 +4,10 @@ import { MentionsInput, Mention } from 'react-mentions';
 import Avatar from '../Avatar';
 import { getPublicUrl } from '../../../lib/utils';
 import './Comment.css';
-import { color } from 'framer-motion';
+
 const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, items, userPreferences, type }) => {
   const inputRef = useRef(null);
   const [focus, setFocus] = useState(false);
-
   
   const itemsToDisplay = items?.map(item => {
     return {
@@ -17,76 +16,66 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
       description: item.items.description
     };
   }) || [];
-  
 
   const mentionStyles = {
     input: {
+      fontSize: '16px',
       color: 'black',
       minHeight: '35px',
       outline: 'none',
-      width: '100%',
       borderRadius: '6px 6px 0 6px',
-      border: `none`
-    },
-    mentionUser: {
-      backgroundColor: 'rgba(255, 217, 0, 0.28)',
-      border: '1px solid rgba(255, 215, 0, 0.85)',
-      borderRadius: '6px'
-    },
-    mentionItem: {
-      backgroundColor: 'rgba(53, 160, 37, 0.78)',
-      border: '1px solid rgba(14, 203, 74, 0.85)',
-      borderRadius: '6px'
+      border: `none`,
+      zIndex: '1',
     },
     suggestions: {
       list: {
-        backgroundColor: '#555',
+        backgroundColor: '#fff',
         border: '1px solid rgba(0,0,0,0.15)',
         fontSize: 14,
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+        borderRadius: '6px'
       },
       item: {
-        padding: '5px 15px',
-        borderBottom: '1px solid rgba(0,0,0,0.15)',
+        padding: '8px 12px',
+        borderBottom: '1px solid rgba(0,0,0,0.05)',
         '&focused': {
-          backgroundColor: '#cee4e5',
+          backgroundColor: '#f3f4f6',
         },
       },
     }
   };
 
-  const renderSuggestionItems = (suggestion, search, highlightedDisplay) => {
-    console.log('Rendering suggestion:', suggestion);
-    return (
+  const renderSuggestionItems = (suggestion, search, highlightedDisplay) => (
       <div className="flex flex-col items-start">
-        <span className="font-medium">{highlightedDisplay}</span>
-        <span className="text-gray-500 text-sm">#{suggestion.description}</span>
+        <span className="font-medium">#{highlightedDisplay}</span>
       </div>
     );
-  };
 
   const renderSuggestionUsers = (suggestion, search, highlightedDisplay) => (
     <div className="flex flex-col items-start">
-      <span className="font-medium">{highlightedDisplay}</span>
-      <span className="text-gray-500 text-sm">@{suggestion.display_name}</span>
+      <span className="font-medium">@{highlightedDisplay}</span>
     </div>
   );
 
   return (
-    <div className="flex">
-      {type == 'Reply' && (<div className="w-1 h-auto bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{marginTop: '2px', background: 'lightgray'}}></div>)}
-      <div className="w-full p-2 bg-white">
-        <>
-          <div className="flex">
+    <div className="flex w-full">
+      {type === 'Reply' && (
+        <div className="w-1 h-auto bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{marginTop: '2px'}} />
+      )}
+      <div className="flex-1 p-3 bg-white rounded-lg">
+        <div className="flex items-start gap-3">
             <Avatar
               profileImageUrl={getPublicUrl(userPreferences?.profile_image_url)}
               displayName={userPreferences?.display_name}
               size="sm"
-              className="mr-2"
-            />
-            <div className="flex flex-col w-full">
-              <span className="font-bold text-start text-md">{userPreferences?.display_name || 'Anonymous'}</span>
-              <div className="w-full rounded-md" style={{border: '1px solid #e2e8f0'}}>
-                <div className="flex flex-col w-full p-2">
+          />
+          <div className="flex-1">
+            <div className="flex flex-col items-start">
+              <span className="font-medium text-md text-left">
+                {userPreferences?.display_name || 'Anonymous'}
+              </span>
+            </div>
+            <div className="w-full rounded-md border border-gray-200 focus-within:border-amber-400 transition-colors" style={{color: 'black'}}>
                   <MentionsInput
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
@@ -94,16 +83,14 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
                     placeholder={focus ? `${type} @user #product` : `Add ${type}...`}
                     className="w-full min-h-8 h-auto"
                     inputRef={inputRef}
-                    onFocus={(e) => {
-                      setFocus(true);
-                    }}
+                onFocus={() => setFocus(true)}
                   >
                     <Mention
                       trigger="@"
                       data={users}
                       renderSuggestion={renderSuggestionUsers}
                       appendSpaceOnAdd={true}
-                      style={mentionStyles.mentionUser}
+                      className="mention-user"
                       markup="@[__display__](__id__)"
                       displayTransform={(id, display) => ` @${display} `}
                     />
@@ -113,31 +100,27 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
                       renderSuggestion={renderSuggestionItems}
                       appendSpaceOnAdd={true}
                       markup="#[__display__](__id__)"
-                      style={{
-                        backgroundColor: 'rgba(0, 49, 104, 0.17)',
-                        border: '1px solid rgba(0, 49, 104, 0.85)',
-                        borderRadius: '6px'
-                      }}
+                      className="mention"
+                      style={{backgroundColor: 'lightgray'}}
                       displayTransform={(id, display) => ` #${display} `}
                     />
                   </MentionsInput>
+            </div>
                   {newComment.length > 0 && (
-                    <div className=" p-2 flex justify-end gap-2">
+              <div className="flex justify-end gap-2 mt-2">
                       <button
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           handleSubmitComment();
                         }}
-                        className="w-auto mt-1 px-3 py-1.5 justify-start bg-amber-400 rounded-md text-black font-small hover:bg-amber-300 transition-colors flex items-start gap-1.5 text-sm"
+                  className="px-4 py-1.5 bg-amber-400 rounded-md text-black font-medium hover:bg-amber-300 transition-colors text-sm"
                       >
                         {type}
                       </button>
                       <button
-                        onClick={() => {
-                          setNewComment('');
-                        }}
-                        className="w-auto mt-1 px-3 py-1.5 justify-start bg-white-400 rounded-md text-black font-small hover:bg-gray-300 transition-colors flex items-start gap-1.5 text-sm"
+                  onClick={() => setNewComment('')}
+                  className="px-4 py-1.5 bg-gray-100 rounded-md text-gray-700 font-medium hover:bg-gray-200 transition-colors text-sm"
                       >
                         Cancel
                       </button>
@@ -145,9 +128,6 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
                   )}
                 </div>
               </div>
-            </div>
-          </div>
-        </>
       </div>
     </div>
   );

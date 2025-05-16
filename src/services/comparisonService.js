@@ -61,6 +61,25 @@ export const findWinner = (items) => {
 };
 
 /**
+ * Find the runner-up of the comparison - the next highest vote count
+ * @param {Array} items - Array of comparison items
+ * @returns {Object} - The runner-up item
+ */
+export const findRunnerUp = (items) => {
+  const sortedItems = items.sort((a, b) => b.votes - a.votes);
+  return sortedItems[1];
+};
+
+/** 
+ * Count total votes for all items
+ * @param {Array} items - Array of comparison items
+ * @returns {number} - Total votes
+ */
+export const countTotalVotes = (items) => {
+  return items.reduce((sum, item) => sum + (item.votes || 0), 0);
+};
+
+/**
  * Calculate metric votes for each item
  * @param {Array} items - Array of comparison items
  * @param {Array} comparisonMetrics - Array of comparison metrics

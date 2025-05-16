@@ -16,7 +16,6 @@ export const useComments = (setId, userId) => {
     try {
       setLoading(true);
       const data = await comparisonSetService.fetchComments(setId, userId, page);
-      console.log('data', data);
       setComments(prev => page === 1 ? data.comments : [...prev, ...data.comments]);
       setHasMore(data.hasMore);
     } catch (err) {

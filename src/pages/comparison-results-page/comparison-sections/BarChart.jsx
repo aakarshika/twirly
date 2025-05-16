@@ -70,16 +70,11 @@ const MetricCard = ({ metric, items, getMetricAverageVotes, currentTheme, userVo
   );
 };
 
-const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
+const BarChart = ({ items,  comparisonMetrics }) => {
   const { user } = useAuth();
   const { currentTheme } = useTheme();
   const navigate = useNavigate();
 
-  // Get the average value for a metric for a specific item
-  const getMetricAverage = (itemId, metricName) => {
-    if (!itemReviews?.[itemId]?.metrics?.[metricName]) return 0;
-    return itemReviews[itemId].metrics[metricName].average;
-  };
 
   const getMetricAverageVotes = (itemId, metricName) => {
     var itemVotes = 0;
@@ -101,20 +96,6 @@ const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
                   }}>
         {comparisonMetrics.map((metric, index) => {
 
-          const [userVoted, setUserVoted] = useState(false);
-          const fetchUserVoted = async () => {
-            const { data: userVoted, error: userVotedError } = await supabase
-              .from('votes')
-              .select('*')
-              .eq('user_id', user.id)
-              .eq('set_id', metric.id)
-              .select();
-            return userVoted;
-          };
-          fetchUserVoted().then(data => {
-            setUserVoted(data.length > 0);
-          });
-
           return (
           <div key={metric.metric_name}>
           <MetricCard
@@ -123,7 +104,7 @@ const BarChart = ({ items, itemReviews, comparisonMetrics }) => {
             items={items}
             getMetricAverageVotes={getMetricAverageVotes}
             currentTheme={currentTheme}
-            userVoted={userVoted}
+            userVoted={metric.userVoted}
           />
           </div>
         )})}

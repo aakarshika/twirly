@@ -1,42 +1,18 @@
-.suggestions-list {
-    background-color: white; /* or dark:bg-gray-800 for dark mode */
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    max-height: 150px; /* Limit height */
-    overflow-y: auto; /* Scroll if too many suggestions */
-    z-index: 1000; /* Ensure it appears above other elements */
-    list-style-type: none; /* Remove default list styling */
-    padding: 0; /* Remove padding */
-    margin: 0; /* Remove margin */
-}
-
-.suggestions-list li {
-    padding: 8px; /* Add some padding */
-    cursor: pointer; /* Change cursor on hover */
-}
-
-.suggestions-list li:hover {
-    background-color: #f0f0f0; /* Highlight on hover */
-}
 
 .mention {
-    background-color: #e0f7fa; /* Light blue background */
-    color: #00796b; /* Dark teal text */
-    padding: 2px 4px; /* Padding around the mention */
-    border-radius: 4px; /* Rounded corners */
-}
+    z-index: 2000;
+    color: rgb(255, 255, 255);
+    border-radius: 4px;
+    border: none;
+    position: relative;
+  }
 
-.mention {
-    background-color: #fef3c7;
-    color: #b45309;
-    padding: 1px 3px;
+
+.mention-user {
+    z-index: 2000;
+    background-color: transparent;
+    color: rgb(171, 88, 4);
     border-radius: 4px;
+    border: none;
+    position: relative;
   }
-  
-  .mention-item {
-    background-color: #dbeafe;
-    color: #1d4ed8;
-    padding: 1px 3px;
-    border-radius: 4px;
-  }
-  

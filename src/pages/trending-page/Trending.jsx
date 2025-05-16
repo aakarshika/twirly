@@ -88,19 +88,12 @@ const Trending = () => {
     <div 
       className="min-h-screen mx-auto"
       style={{ 
-        position: 'relative',
-        top: isHeaderVisible ? '64px' : '0px'
+        position: 'relative'
       }}
     >
       <div className="container mx-auto" style={{
         backgroundColor: currentTheme.colors.card
       }}>
-        <div className="flex justify-center p-4">
-          <TrendingUp size={24} className="mr-2" style={{ color: currentTheme.colors.primary }} />
-          <h1 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
-            Trending Comparisons
-          </h1>
-        </div>
       <div className="border-b" style={{ borderColor: currentTheme.colors.border }}>
         <div className="space-y-4">
           {trendingSets.map((set) => {

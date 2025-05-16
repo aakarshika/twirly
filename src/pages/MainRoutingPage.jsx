@@ -30,6 +30,7 @@ import FeedbackModal from './feedback/FeedbackModal';
 import FeedbackManagement from './feedback/feedback-page/FeedbackManagement';
 import CreateComparison from './user-dashboard-page/dashboard/tabs/CreateComparison';
 import AddProductModal from './user-dashboard-page/dashboard/AddProductModal';
+import { TrendingUp } from 'lucide-react';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -158,7 +159,15 @@ const MainRoutingPage = () => {
                 {/* Protected Routes */}
                 <Route path="/onboarding" element={<ProtectedRoute><OnboardingFlow /></ProtectedRoute>}/>
                 <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>}/>
-                <Route path="/" element={<ProtectedRoute><Trending /></ProtectedRoute>}/>
+                <Route path="/" element={<ProtectedRoute>
+                  
+        <div className="flex justify-center p-4" style={{ marginTop: true ? '64px' : '0px' }}>
+          <TrendingUp size={24} className="mr-2" style={{ color: currentTheme.colors.primary }} />
+          <h1 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
+            Trending Comparisons
+          </h1>
+        </div>
+        <Trending /></ProtectedRoute>}/>
                 
                 {/* Comparison routes wrapped in ComparisonProvider */}
                 <Route path="/comparison-aspect/:id" element={

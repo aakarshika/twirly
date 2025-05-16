@@ -9,39 +9,25 @@ import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import ComparisonGridSkeleton from '../../components/skeletons/ComparisonGridSkeleton';
 import ComparisonCirclesView from './ComparisonCirclesView';
+import Trending from '../trending-page/Trending';
+import { Globe2, TrendingUp } from 'lucide-react';
 
 const PollScreen = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { 
     items, 
-    userVoted, 
-    votedItemId, 
     currentSetId,
-    currentComparisonName,
-    currentComparisonDescription,
     currentSet,
-    handleVote,
     setActiveReviewItem,
-    activeReviewItem,
-    setShowCombinedReviewModal,
   } = useComparison();
   const { user } = useAuth();
   const { currentTheme } = useTheme();
   const { isHeaderVisible } = useHeader();
   const { loading, error } = useComparisonDetails(id);
   
-  const [showPopup, setShowPopup] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [popupPosition, setPopupPosition] = useState(null);
-  const [itemReviews, setItemReviews] = useState({});
-  const [loadingReviews, setLoadingReviews] = useState(true);
-  const [hasReviewed, setHasReviewed] = useState(false);
-
-  const [metrics, setMetrics] = useState({});
   const [comparisonMetrics, setComparisonMetrics] = useState([]);
-  const [existingReviewIds, setExistingReviewIds] = useState({});
-
+  const [userVotedAll, setUserVotedAll] = useState(false);
   const fetchSetMetrics = async () => {
     if (!currentSetId || !user) return;
     
@@ -54,25 +40,16 @@ const PollScreen = () => {
 
       if (error) throw error;
 
-      // Initialize metrics with default values for each item and metric
-      const defaultMetrics = {};
-      const reviewIds = {};
-
-      items.forEach(item => {
-        defaultMetrics[item.id] = {};
-        comparisonSetAspects.forEach(aspect => {
-          defaultMetrics[item.id][aspect.metric_name] = 0;
-        });
-
+      comparisonSetAspects.forEach(aspect => {
+        // calculate userVoted from votes
+        const userVoted = aspect.votes.filter(vote => vote.user_id === user.id).length > 0;
+        aspect.userVoted = userVoted;
       });
-
-      setMetrics(defaultMetrics);
+      setUserVotedAll(comparisonSetAspects.every(aspect => aspect.userVoted));
       setComparisonMetrics(comparisonSetAspects);
-      setExistingReviewIds(reviewIds);
     } catch (err) {
       setError(err.message);
     } finally {
-      setLoadingReviews(false);
     }
   };
 
@@ -135,9 +112,10 @@ const PollScreen = () => {
             items={items} 
             comparisonMetrics={comparisonMetrics}
             comparison={currentSet}
+            userVotedAll={userVotedAll}
           />
       
-      <div 
+      {userVotedAll && (<div 
         className="relative z-0 w-full transition-all duration-150 ease-in-out"
         style={{ 
           backgroundColor: currentTheme.colors.background,
@@ -145,32 +123,35 @@ const PollScreen = () => {
       >
         <div className="w-full max-w-4xl mx-auto">
 
-          {/* Review Section */}
-          {/* <div className="w-full p-4">
-            <div className="bg-gray-800 rounded-lg" style={{ backgroundColor: currentTheme.colors.background }}>
-              <div className="flex justify-between items-center">
-                <Button
-                  onClick={() => setShowCombinedReviewModal(true)}
-                  className="flex items-center gap-2"
-                >
-                  <Star size={16} />
-                  {hasReviewed ? 'Edit Combined Review' : 'Add Combined Review'}
-                </Button>
-              </div>
-            </div>
-          </div> */}
           <div className="w-full p-1" style={{ backgroundColor: 'white', marginBottom: '100px' }}>
             <div className="">
               <BarChart items={items} 
-                      itemReviews={itemReviews} 
-                      metrics={metrics} 
                       comparisonMetrics={comparisonMetrics}
                       />
             </div>
           </div>
 
         </div>
-      </div>
+      </div>)}
+      {userVotedAll && (
+        <div 
+        className="relative z-0 w-full transition-all duration-150 ease-in-out"
+        style={{ 
+          backgroundColor: currentTheme.colors.background,
+        }}
+      >
+        <div className="w-full max-w-4xl mx-auto">
+  
+        <div className="flex justify-start p-4" style={{ marginTop: true ? '64px' : '0px' }}>
+          <Globe2 size={24} className="mr-2" style={{ color: currentTheme.colors.primary }} />
+          <h1 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
+            Explore Similar
+          </h1>
+        </div>
+          <Trending />
+        </div>
+      </div>)}
+      
     </div>
   );
 };

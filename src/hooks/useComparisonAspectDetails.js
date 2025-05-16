@@ -83,6 +83,31 @@ export const useComparisonAspectDetails = (id) => {
       setLoading(false);
     }
   };
+  const fetchComparison = async (compId) => {
+    const { data, error } = await supabase
+      .from('comparison_set_aspects')
+      .select('*')
+      .eq('id', compId)
+      .single();
+    return data;
+  } 
+  const fetchRemainingAspects = async (id) => {
+    const { data, error } = await supabase
+      .from('comparison_set_aspects')
+      .select(`set:comparison_sets(
+        *,
+        allAspects:comparison_set_aspects(
+          *,
+          votes(*)
+        )
+      )`)
+      .eq('id', id)
+      .single();
+    if (error) throw error;
+    const remainingAspects = data.set.allAspects.filter(aspect => aspect.id != id && (!aspect.votes.some(vote => vote.user_id === user.id)));
+    return remainingAspects;
+  };
+  
   //handle vote - update votes table using user id, item id and set id = comparisonId
   const handleVote = async (itemId) => {
     try {
@@ -215,5 +240,5 @@ export const useComparisonAspectDetails = (id) => {
       setTotalVotes(items.reduce((acc, item) => acc + item.items.votes.length, 0));
     }
   };
-  return { loading, error, items, currentSet, currentAspectSet, reviews, averageMetrics, totalVotes, userVoted, votedItemId, handleVote, handleRevertVote, fetchComparisonDetails, handleLikeComparisonAspectSet, handleNext };
+  return { loading, error, items, currentSet, currentAspectSet, reviews, averageMetrics, totalVotes, userVoted, votedItemId, handleVote, handleRevertVote, fetchComparisonDetails, handleLikeComparisonAspectSet, handleNext, fetchRemainingAspects, fetchComparison };
 }; 
