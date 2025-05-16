@@ -25,6 +25,7 @@ const Trending = () => {
         setLoading(true);
         const { data, error } = await supabase
           .rpc('fetch_popular_aspect_sets_for_user', { v_user_id: user.id })
+          // .from('popular_comparison_sets')
           .select(`
             *,
             user:user_preferences(*),

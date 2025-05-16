@@ -4,7 +4,7 @@ import './ComparisonItemCard.css';
 
 const NotVotedCard = ({
   item,
-  newHeight = '35vh',
+  newHeight = '25vh',
   handleItemClick
 }) => {
   const {

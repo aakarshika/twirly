@@ -6,7 +6,7 @@ import './ComparisonItemCard.css';
 
 const VotedCard = ({
   item,
-  newHeight = '35vh',
+  newHeight = '25vh',
   handleRevertClick,
   handleItemClick,
   totalVotes = 0,
@@ -68,7 +68,6 @@ const VotedCard = ({
                       backgroundColor: color,
                     }}
                   >
-                    <span className="" style={{ color: item.item_color_string }}>Y</span>
                     <VoteStats
                       votes={item.votes?.length || 0}
                       totalVotes={totalVotes}

@@ -158,3 +158,21 @@ export function getRGB(color) {
 
   return rgbc;
 }
+
+
+export function changeColorAlpha(c, amount) {
+  const color = getRGB(c);
+  return color.substring(0, color.length - 1) + ', '+ amount + ')';
+}
+
+//how to darken an rgb color by some percentage? it should add more black to the color. 
+export function darkenColor(c, amount) {
+  const color = getRGB(c).substring(4, getRGB(c).length - 1);
+  const [r, g, b] = color.split(',').map(Number);
+  const newR = Math.max(0, Math.min(255, r - amount));
+  const newG = Math.max(0, Math.min(255, g - amount));
+  const newB = Math.max(0, Math.min(255, b - amount));
+  console.log("old", r, g, b);
+  console.log("new", newR, newG, newB);
+  return `rgb(${newR}, ${newG}, ${newB})`;
+}

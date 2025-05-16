@@ -77,7 +77,7 @@ export const usePollScreenAspect = (id) => {
         // Update state with nextCardData if needed
       }
       
-      navigate('/comparison-aspect/' + getPreviousId());
+      navigate(-1);
       
       setShowEndAnimation(false);
       setShowStartAnimation(true);

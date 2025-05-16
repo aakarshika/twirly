@@ -104,7 +104,7 @@ const PollScreenAspect = () => {
                 }}>
                 <div style={{ color: currentTheme.colors.text }}>
                   <div className="flex items-center justify-center">
-                    <span style={{ color: currentTheme.colors.primary }} className="text-md font-bold text-center font-space-grotesk tracking-wide">
+                    <span style={{ color: currentTheme.colors.primary }} className="text-sm font-bold text-center font-space-grotesk tracking-wide">
                       {currentSet?.name || 'Untitled Comparison'}
                     </span>
                   </div>
@@ -122,7 +122,7 @@ const PollScreenAspect = () => {
                     </button>
 
                     <div className="" >
-                      <span className="text-sm font-medium tracking-wide" style={{ color: 'lightgray' }} >
+                      <span className="text-sm font-medium text-white tracking-wide" style={{ color: currentTheme.colors.disabled }} >
                         Base your vote on
                       </span>
                       <div className="rounded-full m-2 px-4 py-1 animate-pulse" style={{ backgroundColor: currentTheme.colors.primary }}>

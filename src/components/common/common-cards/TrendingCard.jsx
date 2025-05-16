@@ -65,9 +65,9 @@ const TrendingCard = ({set, from}) => {
         setLoading(false);
       }
     };
-    if (from === 'search') {
+    // if (from === 'search') {
       getUserVoted();
-    }
+    // }
   }, [user]);
 
 
@@ -83,9 +83,9 @@ const TrendingCard = ({set, from}) => {
         <span className="font-medium" style={{ color: currentTheme.colors.text }}>
           {set.name}
         </span> 
-        <span className="px-2 text-sm" style={{ color: 'lightgray' }}>based on </span>
+        <span className="px-2 text-sm" style={{ color: currentTheme.colors.disabled }}>based on </span>
          <span className="text-sm rounded-full px-2 py-1" style={{ color: 'white', backgroundColor: currentTheme.colors.primary }}>{splitAndJoin(set.metric_name)}</span>
-         <span className="px-2 text-sm" style={{ color: 'lightgray' }}>? </span>
+         <span className="px-2 text-sm" style={{ color: currentTheme.colors.disabled }}>? </span>
          </div>
         <div className="grid grid-cols-2 gap-2">
           {set.comparison_set_items?.slice(0, 4).map((it, index) => {

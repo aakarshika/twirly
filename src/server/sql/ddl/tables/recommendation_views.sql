@@ -53,8 +53,7 @@ begin
   return query
   select cas.*
   from popular_comparison_sets cas
-  left join votes v on v.set_id = cas.aspect_set_id
-  where v.id is null
-  order by cas.created_at desc;
+  where v_user_id is null or v_user_id not in (select vv.user_id from votes vv where vv.set_id = cas.aspect_set_id)
+  order by cas.popularity_score desc;
 end;
 $$ language plpgsql;
