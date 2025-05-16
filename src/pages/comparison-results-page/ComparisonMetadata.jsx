@@ -30,46 +30,9 @@ const ComparisonMetadata = ({ comparison, isMobile, userVotedAll, winner, runner
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.3, delay: 0.2 }}
-            className="rounded-xl bg-gradient-to-b from-amber-300 to-white-600 m-2 text-white gap-4"
+            className=" bg-gradient-to-b from-white-600 to-amber-300 m-2 text-white gap-4"
           >
-            {userVotedAll && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="flex items-center justify-center space-x-3 m-2 p-4"
-              >
-                <PartyPopper className="w-6 h-6 text-amber-500" />
-                <h2 className="text-2xl font-bold text-center">The Results Are In!</h2>
-                <PartyPopper className="w-6 h-6 text-amber-500" />
-              </motion.div>
-            )}
-            {!userVotedAll && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="flex items-center justify-center space-x-3 m-2 p-4"
-              >
-                <h2 className="text-lg font-bold text-center">Keep voting to reveal results</h2>
-              </motion.div>
-            )}
 
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.8 }}
-              className="flex flex-col items-center justify-center text-amber-500 space-x-2 bg-amber-100 rounded-lg m-2 p-2"
-            >
-              <div className='flex flex-row items-center'>
-                <h4 className='text-sm'>{comparison.name}</h4>
-              </div>
-            </motion.div>
-            {!userVotedAll && (<AspectsProgressBar
-              comparisonMetrics={comparisonMetrics}
-              playedAspects={playedAspects}
-              onAspectClick={onAspectClick}
-            />)}
             <div className="flex flex-col space-y-4">
               <motion.div
                 initial={{ opacity: 0, x: 20 }}

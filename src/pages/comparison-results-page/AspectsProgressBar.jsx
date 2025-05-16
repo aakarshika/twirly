@@ -10,12 +10,14 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick }) => {
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
       className={`
-        flex-shrink-0 w-32 h-32 mx-2 rounded-xl shadow-md cursor-pointer
+        flex-shrink-0 w-32 h-20 mx-2 rounded-xl shadow-md cursor-pointer
         ${isResults 
           ? 'bg-gradient-to-br from-amber-400 to-amber-600' 
+          : location.pathname.includes('aspect/'+aspect.id) 
+          ? 'bg-gradient-to-br from-cyan-200 to-green-400' 
           : isPlayed 
-            ? 'bg-gradient-to-br from-green-400 to-green-600' 
-            : 'bg-gradient-to-br from-gray-200 to-gray-400'
+          ? 'bg-gradient-to-br from-green-400 to-green-600' 
+          : 'bg-gradient-to-br from-gray-200 to-gray-400'
         }
         flex flex-col items-center justify-center p-4 relative
       `}
@@ -46,7 +48,7 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick }) => {
   );
 };
 
-const AspectsProgressBar = ({ comparisonMetrics, playedAspects, onAspectClick }) => {
+const AspectsProgressBar = ({ comparisonMetrics, onAspectClick }) => {
   const scrollContainerRef = useRef(null);
 
   // Sort metrics: unplayed first, then played, results last
@@ -57,7 +59,13 @@ const AspectsProgressBar = ({ comparisonMetrics, playedAspects, onAspectClick })
   useEffect(() => {
     // Find the first unvoted aspect and scroll to it
     if (scrollContainerRef.current) {
-      const firstUnvotedIndex = sortedMetrics.findIndex(metric => !metric.userVoted);
+      let firstUnvotedIndex = -1;
+      if(location.pathname.includes('aspect/')){
+        firstUnvotedIndex = sortedMetrics.findIndex(metric =>  metric.id === parseInt(location.pathname.split('/').pop()) )
+      }
+      else {
+        firstUnvotedIndex = sortedMetrics.findIndex(metric =>  !metric.userVoted );
+      }
       if (firstUnvotedIndex !== -1) {
         const aspectWidth = 144; // 32 (width) + 16 (mx-2) = 48 * 3 (to center it)
         scrollContainerRef.current.scrollLeft = firstUnvotedIndex * aspectWidth;
@@ -80,6 +88,8 @@ const AspectsProgressBar = ({ comparisonMetrics, playedAspects, onAspectClick })
         }}
       >
         {sortedMetrics.map((aspect) => (
+          <div key={aspect.id} className='flex flex-col items-center justify-center'>
+            {location.pathname.includes('aspect/'+aspect.id) && (<span className='text-sm text-gray-500'>Base your vote on</span>)}
           <AspectBox
             key={aspect.id}
             aspect={aspect}
@@ -87,6 +97,7 @@ const AspectsProgressBar = ({ comparisonMetrics, playedAspects, onAspectClick })
             isResults={false}
             onClick={() => onAspectClick(aspect)}
           />
+          </div>
         ))}
         <AspectBox
           aspect={{ metric_name: 'Results' }}

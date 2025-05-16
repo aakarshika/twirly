@@ -3,13 +3,18 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useHeader } from '../../contexts/HeaderContext';
 import { useSwipeable } from 'react-swipeable';
-import { ChevronLeft, ChevronRight, Trophy } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Globe2, Trophy } from 'lucide-react';
 import ComparisonItemCardAspect from './ComparisonItemCard/ComparisonItemCardAspect';
 import { splitAndJoin } from '../../lib/utils';
 import { usePollScreenAspect } from '../../hooks/usePollScreenAspect';
 import './PollScreenAspect.css';
 import ComparisonSetAspectsCommentsSection from './ComparisonSetAspectsCommentsSection';
-
+import Trending from '../trending-page/Trending';
+import AspectsProgressBar from '../comparison-results-page/AspectsProgressBar';
+import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../lib/supabase';
 // Add Google Fonts
 const fontStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap');
@@ -41,6 +46,40 @@ const PollScreenAspect = () => {
     handleNextNavigation,
     nextCardData,
   } = usePollScreenAspect(id);
+  const { user } = useAuth();
+  const [comparisonMetrics, setComparisonMetrics] = useState([]);
+  const [userVotedAll, setUserVotedAll] = useState(false);
+  const fetchSetMetrics = async () => {
+    console.log(currentSet, "currentSet");
+    console.log(id, "id fetchSetMetrics");
+    if ( !currentSet || !currentSet.id || !user) return;
+    
+    try {
+      // Fetch comparison aspects
+      const { data: comparisonSetAspects, error } = await supabase
+        .from('comparison_set_aspects')
+        .select('*, votes(*)')
+        .eq('set_id', currentSet.id);
+
+      if (error) throw error;
+
+      comparisonSetAspects.forEach(aspect => {
+        // calculate userVoted from votes
+        const userVoted = aspect.votes.filter(vote => vote.user_id === user.id).length > 0;
+        aspect.userVoted = userVoted;
+      });
+      setUserVotedAll(comparisonSetAspects.every(aspect => aspect.userVoted));
+      setComparisonMetrics(comparisonSetAspects);
+    } catch (err) {
+      console.log(err, "err");
+    } finally {
+    }
+  };
+
+  useEffect(() => {
+    fetchSetMetrics();
+  }, [id, currentSet, items, user]);
+
 
   const handlers = useSwipeable({
     onSwipedLeft: handleNextNavigation,
@@ -53,12 +92,12 @@ const PollScreenAspect = () => {
     rotationAngle: 0,
   });
 
-  if (loading) {
-    return (
-      <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background }}>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background }}>
+  //     </div>
+  //   );
+  // }
 
   if (error) {
     return (
@@ -92,6 +131,23 @@ const PollScreenAspect = () => {
         <div className="h-full flex flex-col animate-fadeIn" {...handlers}>
           <div className="">
             <div className="space-y-4">
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+              className="flex flex-col items-center justify-center text-amber-500 space-x-2 bg-amber-100 rounded-lg m-2 p-2"
+            >
+              <div className='flex flex-row items-center'>
+                <h4 className='text-sm'>{currentSet?.name}</h4>
+              </div>
+            </motion.div>
+            { (<AspectsProgressBar
+              comparisonMetrics={comparisonMetrics}
+              onAspectClick={(aspect) => {
+                navigate(`/comparison-aspect/${aspect.id}`);
+              }}
+            />)}
               <div className={`shadow-md rounded-md p-4 mobile-friendly-margin-bottom 
                 ${showStartAnimation ? 'vote-animation' : showEndAnimation ? 'vote-animation-reverse' : ''}`}
                 style={{
@@ -102,71 +158,6 @@ const PollScreenAspect = () => {
                     transform: 'translateY(-4px)'
                   }
                 }}>
-                <div style={{ color: currentTheme.colors.text }}>
-                  <div className="flex items-center justify-center">
-                    <span style={{ color: currentTheme.colors.primary }} className="text-sm font-bold text-center font-space-grotesk tracking-wide">
-                      {currentSet?.name || 'Untitled Comparison'}
-                    </span>
-                  </div>
-
-
-                  <div className="flex justify-between">
-                    <button
-                      onClick={handlePreviousNavigation}
-                      className=" z-20 w-10 h-10 justify-center  rounded-full shadow-lg transition-transform duration-300 hover:scale-110"
-                      style={{ backgroundColor: 'gray' }}
-                    >
-                      <div className="flex items-center justify-center">  
-                        <ChevronLeft size={20} style={{ color: 'white' }} />
-                      </div>
-                    </button>
-
-                    <div className="" >
-                      <span className="text-sm font-medium text-white tracking-wide" style={{ color: currentTheme.colors.disabled }} >
-                        Base your vote on
-                      </span>
-                      <div className="rounded-full m-2 px-4 py-1 animate-pulse" style={{ backgroundColor: currentTheme.colors.primary }}>
-                        <span className="text-md font-medium tracking-wide" style={{ color: 'white' }} >
-                          {splitAndJoin(currentAspectSet?.metric_name)}
-                        </span>
-                      </div>
-                    </div>
-                    {nextCardData && (
-                      <button
-                        onClick={handleNextNavigation}
-                        className="right-1 z-20 w-10 h-10 justify-center  rounded-full shadow-lg transition-transform duration-300 hover:scale-110"
-                        style={{ backgroundColor: currentTheme.colors.primary }}
-                      >
-                        <div className="flex items-center justify-center">
-                          <ChevronRight size={20} style={{ color: 'white' }} />
-                        </div>
-                      </button>
-                    )}
-                    {!nextCardData && userVoted && (
-                      <button
-                        onClick={handleNextNavigation}
-                        className="flex-row right-1 z-20 w-auto h-10 px-4 justify-center  rounded-full shadow-lg transition-transform duration-300 hover:scale-110"
-                        style={{ backgroundColor: 'rgba(212, 167, 32, 0.82)' }}
-                      >
-                        <div className="flex flex-row items-center justify-center">
-                          <Trophy size={20} style={{ color: 'white' }} />  
-                        </div>
-                      </button>
-                    )}
-                    {!nextCardData && !userVoted && (
-                      <button
-                        onClick={handleNextNavigation}
-                        className="flex-row right-1 z-20 w-auto h-10 px-4 justify-center  rounded-full shadow-lg transition-transform duration-300 hover:scale-110"
-                        style={{ backgroundColor: 'rgba(209, 208, 206, 0.82)' }}
-                      >
-                        <div className="flex flex-row items-center justify-center">
-                          <Trophy size={20} style={{ color: 'white' }} />  
-                        </div>
-                      </button>
-                    )}
-                  </div>
-                </div>
-
                 <div>
                   <div className={`grid ${items.length === 1 ? 'grid-cols-1' :
                     items.length === 2 ? 'grid-cols-2' :
@@ -211,6 +202,7 @@ const PollScreenAspect = () => {
                 <span className="text-2xl animate-bounce" >. . .</span>
               </div>
             )}
+
           </div>
         </div>
 

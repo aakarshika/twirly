@@ -40,7 +40,7 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
 
     return (
         <div className="">
-            <div className="max-w-7xl mx-auto ml-2 mr-2">
+            <div className="max-w-7xl mx-auto">
                 {/* Metadata Section */}
                 <ComparisonMetadata 
                   comparisonMetrics={comparisonMetrics}

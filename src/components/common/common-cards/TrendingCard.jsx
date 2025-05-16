@@ -33,11 +33,11 @@ const TrendingCard = ({set, from}) => {
                 }
             });
 
-            navigate(`/comparison-aspect/${set.aspect_set_id}`);
+            navigate(`/compare/${set.set_id}/aspect/${set.aspect_set_id}`);
         } catch (error) {
             console.error('Error logging aspect set view:', error);
             // Still navigate even if logging fails
-            navigate(`/comparison-aspect/${set.aspect_set_id}`);
+            navigate(`/compare/${set.set_id}/aspect/${set.aspect_set_id}`);
         }
     };
     

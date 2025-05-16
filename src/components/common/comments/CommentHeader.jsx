@@ -48,7 +48,7 @@ const CommentHeader = ({ onLike, isReplySectionExpanded, replyClicked,
               {display_name || 'Anonymous'}
             </span>
             <span className="text-xs text-gray-400 mt-0.5 text-left">
-              {formatDistanceToNow(new Date(created_at), { addSuffix: true })}
+              {formatDistanceToNow(new Date(created_at ? created_at : new Date()), { addSuffix: true })}
             </span>
           </div>
 
