@@ -3,29 +3,45 @@ import { useParams } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import ComparisonItemCardAspect from '../comparison-aspect-page/ComparisonItemCard/ComparisonItemCardAspect';
 import ComparisonSetAspectsCommentsSection from '../comparison-aspect-page/ComparisonSetAspectsCommentsSection';
-import { usePollScreenAspect } from '../../hooks/usePollScreenAspect';
+import { useComparisonAspectData } from '../../hooks/useComparisonAspectData';
 
-const CompareAspectView = () => {
-  const { id, aspectId } = useParams();
+const CompareAspectView = ({ onVoteChange }) => {
+  const { aspectId } = useParams();
   const { currentTheme } = useTheme();
   
   const {
-    showStartAnimation,
-    showEndAnimation,
-    height,
-    items,
+    loading,
+    error,
     currentSet,
     currentAspectSet,
+    items,
     totalVotes,
     userVoted,
     votedItemId,
-    itemReviews,
-    loading,
-    error,
     handleVote,
     handleRevertVote,
-    handleLikeComparisonAspectSet,
-  } = usePollScreenAspect(aspectId);
+  } = useComparisonAspectData(aspectId);
+
+  // Wrap the vote handlers to notify parent
+  const handleVoteWithUpdate = async (itemId) => {
+    console.log('CompareAspectView: handleVoteWithUpdate called with itemId:', itemId);
+    const success = await handleVote(itemId);
+    console.log('CompareAspectView: handleVote success:', success);
+    if (success) {
+      console.log('CompareAspectView: calling onVoteChange with aspectId:', aspectId);
+      onVoteChange(aspectId, true);
+    }
+  };
+
+  const handleRevertVoteWithUpdate = async () => {
+    console.log('CompareAspectView: handleRevertVoteWithUpdate called');
+    const success = await handleRevertVote();
+    console.log('CompareAspectView: handleRevertVote success:', success);
+    if (success) {
+      console.log('CompareAspectView: calling onVoteChange with aspectId:', aspectId);
+      onVoteChange(aspectId, false);
+    }
+  };
 
   if (loading) {
     return (
@@ -48,12 +64,9 @@ const CompareAspectView = () => {
     );
   }
 
-  const processedItemReviews = itemReviews || {};
-
   return (
     <div className="flex flex-col">
-      <div className="shadow-md rounded-md p-4 mobile-friendly-margin-bottom 
-        ${showStartAnimation ? 'vote-animation' : showEndAnimation ? 'vote-animation-reverse' : ''}"
+      <div className="shadow-md rounded-md p-4 mobile-friendly-margin-bottom"
         style={{
           backgroundColor: currentTheme.colors.card,
           transform: 'translateY(0)',
@@ -73,15 +86,14 @@ const CompareAspectView = () => {
               <div key={item.id} className="transform transition-all duration-300 hover:scale-105">
                 <ComparisonItemCardAspect
                   key={item.id}
-                  item={item.items}
+                  item={item}
                   index={i}
-                  height={height}
+                  height="100"
                   totalVotes={totalVotes}
-                  itemReviews={processedItemReviews}
                   userVoted={userVoted}
                   votedItemId={votedItemId}
-                  handleVote={handleVote}
-                  handleRevertVote={handleRevertVote}
+                  handleVote={handleVoteWithUpdate}
+                  handleRevertVote={handleRevertVoteWithUpdate}
                 />
               </div>
             ))}
@@ -96,7 +108,6 @@ const CompareAspectView = () => {
             aspectSetId={aspectId}
             items={items}
             aspectSet={currentAspectSet}
-            handleLikeComparisonAspectSet={handleLikeComparisonAspectSet}
           />
         </div>
         <span className="text-2xl animate-bounce">. . .</span>

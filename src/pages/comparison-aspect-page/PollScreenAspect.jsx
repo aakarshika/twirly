@@ -15,6 +15,7 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
+import { useComparisonAspectData } from '../../hooks/useComparisonAspectData';
 // Add Google Fonts
 const fontStyles = `
   @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Space+Grotesk:wght@500;700&display=swap');
@@ -27,62 +28,28 @@ const PollScreenAspect = () => {
   const { isHeaderVisible } = useHeader();
 
   const {
-    showStartAnimation,
-    showEndAnimation,
-    height,
-    items,
+    loading,
+    error,
     currentSet,
     currentAspectSet,
+    items,
     totalVotes,
     userVoted,
     votedItemId,
-    itemReviews,
-    loading,
-    error,
+    comparisonMetrics,
     handleVote,
     handleRevertVote,
-    handleLikeComparisonAspectSet,
-    handlePreviousNavigation,
-    handleNextNavigation,
-    nextCardData,
-  } = usePollScreenAspect(id);
-  const { user } = useAuth();
-  const [comparisonMetrics, setComparisonMetrics] = useState([]);
-  const [userVotedAll, setUserVotedAll] = useState(false);
-  const fetchSetMetrics = async () => {
-    console.log(currentSet, "currentSet");
-    console.log(id, "id fetchSetMetrics");
-    if ( !currentSet || !currentSet.id || !user) return;
-    
-    try {
-      // Fetch comparison aspects
-      const { data: comparisonSetAspects, error } = await supabase
-        .from('comparison_set_aspects')
-        .select('*, votes(*)')
-        .eq('set_id', currentSet.id);
-
-      if (error) throw error;
-
-      comparisonSetAspects.forEach(aspect => {
-        // calculate userVoted from votes
-        const userVoted = aspect.votes.filter(vote => vote.user_id === user.id).length > 0;
-        aspect.userVoted = userVoted;
-      });
-      setUserVotedAll(comparisonSetAspects.every(aspect => aspect.userVoted));
-      setComparisonMetrics(comparisonSetAspects);
-    } catch (err) {
-      console.log(err, "err");
-    } finally {
-    }
-  };
-
-  useEffect(() => {
-    fetchSetMetrics();
-  }, [id, currentSet, items, user]);
-
+  } = useComparisonAspectData(id);
 
   const handlers = useSwipeable({
-    onSwipedLeft: handleNextNavigation,
+    onSwipedLeft: () => {
+      const nextAspect = comparisonMetrics.find(metric => !metric.userVoted);
+      if (nextAspect) {
+        navigate(`/comparison-aspect/${nextAspect.id}`);
+      } else {
+        navigate(`/comparison/${currentSet.id}`);
+      }
+    },
     preventDefaultTouchmoveEvent: true,
     trackMouse: true,
     delta: 10,
@@ -91,13 +58,6 @@ const PollScreenAspect = () => {
     trackTouch: true,
     rotationAngle: 0,
   });
-
-  // if (loading) {
-  //   return (
-  //     <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background }}>
-  //     </div>
-  //   );
-  // }
 
   if (error) {
     return (
@@ -117,8 +77,6 @@ const PollScreenAspect = () => {
     );
   }
 
-  const processedItemReviews = itemReviews || {};
-
   return (
     <>
       <style>{fontStyles}</style>
@@ -129,9 +87,7 @@ const PollScreenAspect = () => {
         }}>
 
         <div className="h-full flex flex-col animate-fadeIn" {...handlers}>
-          <div className="">
-            <div className="space-y-4">
-
+          <div className="space-y-4">
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -142,67 +98,60 @@ const PollScreenAspect = () => {
                 <h4 className='text-sm'>{currentSet?.name}</h4>
               </div>
             </motion.div>
-            { (<AspectsProgressBar
+
+            <AspectsProgressBar
               comparisonMetrics={comparisonMetrics}
               onAspectClick={(aspect) => {
                 navigate(`/comparison-aspect/${aspect.id}`);
               }}
-            />)}
-              <div className={`shadow-md rounded-md p-4 mobile-friendly-margin-bottom 
-                ${showStartAnimation ? 'vote-animation' : showEndAnimation ? 'vote-animation-reverse' : ''}`}
-                style={{
-                  backgroundColor: currentTheme.colors.card,
-                  transform: 'translateY(0)',
-                  transition: 'transform 0.3s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-4px)'
-                  }
-                }}>
-                <div>
-                  <div className={`grid ${items.length === 1 ? 'grid-cols-1' :
-                    items.length === 2 ? 'grid-cols-2' :
-                      items.length % 3 === 0 ? 'grid-cols-3' :
-                        'grid-cols-2'
-                    }`}
-                    style={{
-                      gap: '1vh'
-                    }}
-                  >
-                    {items.map((item, i) => (
-                      <div key={item.id} className="transform transition-all duration-300 hover:scale-105">
-                        <ComparisonItemCardAspect
-                          key={item.id}
-                          item={item.items}
-                          index={i}
-                          height={height}
-                          totalVotes={totalVotes}
-                          itemReviews={processedItemReviews}
-                          userVoted={userVoted}
-                          votedItemId={votedItemId}
-                          handleVote={handleVote}
-                          handleRevertVote={handleRevertVote}
-                        />
-                      </div>
-                    ))}
-                  </div>
+            />
+
+            <div className="shadow-md rounded-md p-4 mobile-friendly-margin-bottom"
+              style={{
+                backgroundColor: currentTheme.colors.card,
+                transform: 'translateY(0)',
+                transition: 'transform 0.3s ease-in-out',
+              }}>
+              <div>
+                <div className={`grid ${items.length === 1 ? 'grid-cols-1' :
+                  items.length === 2 ? 'grid-cols-2' :
+                    items.length % 3 === 0 ? 'grid-cols-3' :
+                      'grid-cols-2'
+                  }`}
+                  style={{
+                    gap: '1vh'
+                  }}
+                >
+                  {items.map((item, i) => (
+                    <div key={item.id} className="transform transition-all duration-300 hover:scale-105">
+                      <ComparisonItemCardAspect
+                        key={item.id}
+                        item={item}
+                        index={i}
+                        height="100"
+                        totalVotes={totalVotes}
+                        userVoted={userVoted}
+                        votedItemId={votedItemId}
+                        handleVote={handleVote}
+                        handleRevertVote={handleRevertVote}
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
-            {(
-              <div className="text-center animate-fadeIn" style={{ backgroundColor: 'white' }}>
-                <div className="w-full" style={{ marginBottom: '300px' }}>
-                  <ComparisonSetAspectsCommentsSection
-                    userVoted={userVoted}
-                    aspectSetId={id}
-                    items={items}
-                    aspectSet={currentAspectSet}
-                    handleLikeComparisonAspectSet={handleLikeComparisonAspectSet}
-                  />
-                </div>
-                <span className="text-2xl animate-bounce" >. . .</span>
-              </div>
-            )}
+          </div>
 
+          <div className="text-center animate-fadeIn" style={{ backgroundColor: 'white' }}>
+            <div className="w-full" style={{ marginBottom: '300px' }}>
+              <ComparisonSetAspectsCommentsSection
+                userVoted={userVoted}
+                aspectSetId={id}
+                items={items}
+                aspectSet={currentAspectSet}
+              />
+            </div>
+            <span className="text-2xl animate-bounce">. . .</span>
           </div>
         </div>
 

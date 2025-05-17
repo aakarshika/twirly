@@ -40,7 +40,7 @@ export const usePollScreenAspect = (id) => {
       const remainingAspects = await fetchRemainingAspects(id);
       console.log('remainingAspects', remainingAspects);
       if (remainingAspects.length > 0) {
-        const nextId = remainingAspects[Math.floor(Math.random() * remainingAspects.length)].id;
+        const nextId = remainingAspects[0].id;
         const nextCompData = await fetchComparison(nextId);
         setNextCardData(nextCompData);
       }

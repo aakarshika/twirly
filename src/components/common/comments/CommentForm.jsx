@@ -10,10 +10,12 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
   const [focus, setFocus] = useState(false);
   
   const itemsToDisplay = items?.map(item => {
+    // Handle both nested and flat item structures
+    const itemData = item.items || item;
     return {
-      id: item.items.id,
-      display: item.items.name,
-      description: item.items.description
+      id: itemData.id,
+      display: itemData.name,
+      description: itemData.description
     };
   }) || [];
 
@@ -46,10 +48,10 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
   };
 
   const renderSuggestionItems = (suggestion, search, highlightedDisplay) => (
-      <div className="flex flex-col items-start">
-        <span className="font-medium">#{highlightedDisplay}</span>
-      </div>
-    );
+    <div className="flex flex-col items-start">
+      <span className="font-medium">#{highlightedDisplay}</span>
+    </div>
+  );
 
   const renderSuggestionUsers = (suggestion, search, highlightedDisplay) => (
     <div className="flex flex-col items-start">
@@ -64,10 +66,10 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
       )}
       <div className="flex-1 p-3 bg-white rounded-lg">
         <div className="flex items-start gap-3">
-            <Avatar
-              profileImageUrl={getPublicUrl(userPreferences?.profile_image_url)}
-              displayName={userPreferences?.display_name}
-              size="sm"
+          <Avatar
+            profileImageUrl={getPublicUrl(userPreferences?.profile_image_url)}
+            displayName={userPreferences?.display_name}
+            size="sm"
           />
           <div className="flex-1">
             <div className="flex flex-col items-start">
@@ -76,58 +78,58 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
               </span>
             </div>
             <div className="w-full rounded-md border border-gray-200 focus-within:border-amber-400 transition-colors" style={{color: 'black'}}>
-                  <MentionsInput
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    style={mentionStyles}
-                    placeholder={focus ? `${type} @user #product` : `Add ${type}...`}
-                    className="w-full min-h-8 h-auto"
-                    inputRef={inputRef}
+              <MentionsInput
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                style={mentionStyles}
+                placeholder={focus ? `${type} @user #product` : `Add ${type}...`}
+                className="w-full min-h-8 h-auto"
+                inputRef={inputRef}
                 onFocus={() => setFocus(true)}
-                  >
-                    <Mention
-                      trigger="@"
-                      data={users}
-                      renderSuggestion={renderSuggestionUsers}
-                      appendSpaceOnAdd={true}
-                      className="mention-user"
-                      markup="@[__display__](__id__)"
-                      displayTransform={(id, display) => ` @${display} `}
-                    />
-                    <Mention
-                      trigger="#"
-                      data={itemsToDisplay}
-                      renderSuggestion={renderSuggestionItems}
-                      appendSpaceOnAdd={true}
-                      markup="#[__display__](__id__)"
-                      className="mention"
-                      style={{backgroundColor: 'lightgray'}}
-                      displayTransform={(id, display) => ` #${display} `}
-                    />
-                  </MentionsInput>
+              >
+                <Mention
+                  trigger="@"
+                  data={users}
+                  renderSuggestion={renderSuggestionUsers}
+                  appendSpaceOnAdd={true}
+                  className="mention-user"
+                  markup="@[__display__](__id__)"
+                  displayTransform={(id, display) => ` @${display} `}
+                />
+                <Mention
+                  trigger="#"
+                  data={itemsToDisplay}
+                  renderSuggestion={renderSuggestionItems}
+                  appendSpaceOnAdd={true}
+                  markup="#[__display__](__id__)"
+                  className="mention"
+                  style={{backgroundColor: 'lightgray'}}
+                  displayTransform={(id, display) => ` #${display} `}
+                />
+              </MentionsInput>
             </div>
-                  {newComment.length > 0 && (
+            {newComment.length > 0 && (
               <div className="flex justify-end gap-2 mt-2">
-                      <button
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          handleSubmitComment();
-                        }}
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleSubmitComment();
+                  }}
                   className="px-4 py-1.5 bg-amber-400 rounded-md text-black font-medium hover:bg-amber-300 transition-colors text-sm"
-                      >
-                        {type}
-                      </button>
-                      <button
+                >
+                  {type}
+                </button>
+                <button
                   onClick={() => setNewComment('')}
                   className="px-4 py-1.5 bg-gray-100 rounded-md text-gray-700 font-medium hover:bg-gray-200 transition-colors text-sm"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  )}
-                </div>
+                >
+                  Cancel
+                </button>
               </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

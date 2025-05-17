@@ -12,6 +12,7 @@ import { Globe2, PartyPopper } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Trending from '../trending-page/Trending';
 import { useComparisonDetails } from '../../hooks/useComparisonDetails';
+
 const ComparePage = () => {
   const { id } = useParams();
   const currentSetId = parseInt(id);
@@ -24,7 +25,6 @@ const ComparePage = () => {
   const [error, setError] = useState(null);
   const [userVotedAll, setUserVotedAll] = useState(false);
 
-  
   const { items, currentSet } = useComparisonDetails(currentSetId);
 
   const fetchSetMetrics = async () => {
@@ -39,20 +39,43 @@ const ComparePage = () => {
 
       if (error) throw error;
 
-      comparisonSetAspects.forEach(aspect => {
-        const userVoted = aspect.votes.filter(vote => vote.user_id === user.id).length > 0;
-        aspect.userVoted = userVoted;
-      });
-      setUserVotedAll(comparisonSetAspects.every(aspect => aspect.userVoted));
-      setComparisonMetrics(comparisonSetAspects);
+      // Process aspects to include user vote status
+      const processedAspects = comparisonSetAspects.map(aspect => ({
+        ...aspect,
+        userVoted: aspect.votes.some(vote => vote.user_id === user.id)
+      })).sort((a, b) => a.userVoted ? -1 : b.userVoted ? 1 : 0);
+
+      setUserVotedAll(processedAspects.every(aspect => aspect.userVoted));
+      setComparisonMetrics(processedAspects);
       setLoading(false);
     } catch (err) {
       setError(err.message);
-    } finally {
       setLoading(false);
     }
   };
 
+  // Handle vote changes from CompareAspectView
+  const handleVoteChange = (aspectId, hasVoted) => {
+    console.log('ComparePage: handleVoteChange called with:', { aspectId, hasVoted });
+    console.log('ComparePage: current comparisonMetrics:', comparisonMetrics);
+    
+    setComparisonMetrics(prevMetrics => {
+      const updatedMetrics = prevMetrics.map(metric => 
+        metric.id === parseInt(aspectId)
+          ? { ...metric, userVoted: hasVoted }
+          : metric
+      );
+      
+      console.log('ComparePage: updated metrics:', updatedMetrics);
+      
+      // Update userVotedAll based on the updated metrics
+      const allVoted = updatedMetrics.every(metric => metric.userVoted);
+      console.log('ComparePage: allVoted:', allVoted);
+      setUserVotedAll(allVoted);
+      
+      return updatedMetrics;
+    });
+  };
 
   useEffect(() => {
     fetchSetMetrics();
@@ -87,14 +110,13 @@ const ComparePage = () => {
     );
   }
 
-
   const containerClasses = true
     ? 'w-full '
     : 'w-full mb-8 mt-4';
 
   return (
     <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background, paddingTop : isHeaderVisible ? '64px' : '0px' }}>
-      <div className="sticky top-0 z-50" style={{ backgroundColor: currentTheme.colors.background }}>
+      <div className="sticky top-0 z-10" style={{ backgroundColor: currentTheme.colors.background }}>
         <div className="">
           
         <div className={containerClasses}>
@@ -102,7 +124,8 @@ const ComparePage = () => {
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.3, delay: 0.2 }}
-            className="bg-gradient-to-b from-amber-300 to-white-600 text-white gap-4"
+            className="text-white gap-4"
+            style={{ backgroundImage: `linear-gradient(to bottom, ${currentTheme.colors.primary}, ${currentTheme.colors.background})` }}
           >
 
         {userVotedAll && (
@@ -131,7 +154,7 @@ const ComparePage = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.8 }}
-              className="flex flex-col items-center justify-center text-amber-500 space-x-2 bg-amber-100 rounded-lg m-2 p-2"
+              className="flex flex-col items-center justify-center  space-x-2 rounded-lg m-2 p-2"
             >
               <div className='flex flex-row items-center'>
                 <h4 className='text-sm'>{currentSet?.name}</h4>
@@ -142,6 +165,12 @@ const ComparePage = () => {
             onAspectClick={(aspect) => {
               if (aspect.id === 'results') {
                 navigate(`/compare/${id}/results`);
+              } else if (aspect.id === 'explore') {
+                // scroll to Trending
+                const trendingElement = document.getElementById('trending');
+                if (trendingElement) {
+                  trendingElement.scrollIntoView({ behavior: 'smooth' });
+                }
               } else {
                 navigate(`/compare/${id}/aspect/${aspect.id}`);
               }
@@ -154,9 +183,34 @@ const ComparePage = () => {
       
       {currentSet && (<div className="flex-grow">
         <Routes>
-          <Route path="aspect/:aspectId" element={<CompareAspectView items={items} currentSetId={currentSetId} currentSet={currentSet} />} />
-          <Route path="results" element={<CompareResultsView items={items} currentSetId={currentSetId} currentSet={currentSet} />} />
-          <Route path="/" element={<CompareResultsView items={items} currentSetId={currentSetId} currentSet={currentSet} />} />
+          <Route 
+            path="aspect/:aspectId" 
+            element={
+              <CompareAspectView 
+                onVoteChange={handleVoteChange}
+              />
+            } 
+          />
+          <Route 
+            path="results" 
+            element={
+              <CompareResultsView 
+                items={items} 
+                currentSetId={currentSetId} 
+                currentSet={currentSet} 
+              />
+            } 
+          />
+          <Route 
+            path="/" 
+            element={
+              <CompareResultsView 
+                items={items} 
+                currentSetId={currentSetId} 
+                currentSet={currentSet} 
+              />
+            } 
+          />
         </Routes>
       </div>)}
 
@@ -167,9 +221,11 @@ const ComparePage = () => {
           backgroundColor: currentTheme.colors.background,
         }}
       >
-        <div className="w-full max-w-4xl mx-auto">
+        <div className="w-full max-w-4xl mx-auto" >
+          <div id="trending" className="flex h-100 justify-start p-4" style={{ marginBottom: true ? '250px' : '0px' }}>
+          </div>
   
-        <div className="flex justify-start p-4" style={{ marginTop: true ? '64px' : '0px' }}>
+        <div  className="flex justify-start p-4" style={{ marginTop: true ? '64px' : '0px' }}>
           <Globe2 size={24} className="mr-2" style={{ color: currentTheme.colors.primary }} />
           <h1 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
             Explore Similar

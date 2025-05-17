@@ -16,17 +16,15 @@ const PollScreen = ({items, currentSetId, currentSet}) => {
   const { user } = useAuth();
   const { currentTheme } = useTheme();
   const { isHeaderVisible } = useHeader();
-  console.log('items', items);
-  console.log('currentSetId idddddddddddd', currentSetId);
-  console.log('currentSet', currentSet);
   
   const [comparisonMetrics, setComparisonMetrics] = useState([]);
   const [userVotedAll, setUserVotedAll] = useState(false);
+
   const fetchSetMetrics = async () => {
     if (!currentSetId || !user) return;
     
     try {
-      // Fetch comparison aspects
+      // Fetch comparison aspects with their votes
       const { data: comparisonSetAspects, error } = await supabase
         .from('comparison_set_aspects')
         .select('*, votes(*)')
@@ -34,57 +32,57 @@ const PollScreen = ({items, currentSetId, currentSet}) => {
 
       if (error) throw error;
 
-      comparisonSetAspects.forEach(aspect => {
-        // calculate userVoted from votes
-        const userVoted = aspect.votes.filter(vote => vote.user_id === user.id).length > 0;
-        aspect.userVoted = userVoted;
-      });
-      setUserVotedAll(comparisonSetAspects.every(aspect => aspect.userVoted));
-      setComparisonMetrics(comparisonSetAspects);
+      // Process aspects to include user vote status
+      const processedAspects = comparisonSetAspects.map(aspect => ({
+        ...aspect,
+        userVoted: aspect.votes.some(vote => vote.user_id === user.id)
+      }));
+
+      setUserVotedAll(processedAspects.every(aspect => aspect.userVoted));
+      setComparisonMetrics(processedAspects);
     } catch (err) {
       console.error('Error fetching comparison metrics:', err);
-    } finally {
     }
   };
 
+  // Fetch metrics when component mounts or when set ID changes
   useEffect(() => {
     fetchSetMetrics();
-  }, [currentSetId, items, user]);
-
+  }, [currentSetId, user]);
 
   return (
-    
     <div className="min-h-screen h-full flex flex-col max-w-4xl mx-auto"
-    
-    style={{ 
-      backgroundColor: currentTheme.colors.background
-    }}>
-          {items && items.length > 0 && (<ComparisonCirclesView 
-            items={items} 
-            comparisonMetrics={comparisonMetrics}
-            comparison={currentSet}
-            userVotedAll={userVotedAll}
-          />)}
+      style={{ 
+        backgroundColor: currentTheme.colors.background
+      }}>
+      {items && items.length > 0 && (
+        <ComparisonCirclesView 
+          items={items} 
+          comparisonMetrics={comparisonMetrics}
+          comparison={currentSet}
+          userVotedAll={userVotedAll}
+        />
+      )}
       
-      {userVotedAll && items && items.length > 0 && (<div 
-        className="relative z-0 w-full transition-all duration-150 ease-in-out"
-        style={{ 
-          backgroundColor: currentTheme.colors.background,
-        }}
-      >
-        <div className="w-full max-w-4xl mx-auto">
-
-          <div className="w-full p-1" style={{ backgroundColor: 'white', marginBottom: '100px' }}>
-            <div className="">
-              <BarChart items={items} 
-                      comparisonMetrics={comparisonMetrics}
-                      />
+      {userVotedAll && items && items.length > 0 && (
+        <div 
+          className="relative z-0 w-full transition-all duration-150 ease-in-out"
+          style={{ 
+            backgroundColor: currentTheme.colors.background,
+          }}
+        >
+          <div className="w-full max-w-4xl mx-auto">
+            <div className="w-full p-1" style={{ backgroundColor: 'white', marginBottom: '100px' }}>
+              <div className="">
+                <BarChart 
+                  items={items} 
+                  comparisonMetrics={comparisonMetrics}
+                />
+              </div>
             </div>
           </div>
-
         </div>
-      </div>)}
-      
+      )}
     </div>
   );
 };
