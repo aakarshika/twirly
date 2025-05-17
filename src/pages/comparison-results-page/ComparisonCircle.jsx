@@ -182,7 +182,7 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, runnerUp, tot
                                 className="w-full h-full flex flex-col items-center justify-center"
                             >
                                 <div className="flex flex-col items-center justify-center">
-                                    <h3 className="text-xl font-bold mb-2 text-center" style={{ color: darkenColor(item.item_color_string, 40) }}>
+                                    <h3 className="text-xl font-bold text-center" style={{ color: darkenColor(item.item_color_string, 40) }}>
                                         {item.name}
                                     </h3>
                                 </div>
@@ -199,21 +199,24 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, runnerUp, tot
 
                     {/* Leading Metrics */}
                     {item.leadingMetrics && item.leadingMetrics.length > 0 && (
+                      item.leadingMetrics.map((metric) => (
                         <motion.div 
+                            key={metric.metric_name}
                             className="mt-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-purple-200 rounded-full"
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.5 }}
                         >
-                            <div className="flex items-center gap-2 justify-center">
-                                <Target className="w-4 h-4 text-purple-600" />
-                                <span className="text-sm font-medium text-purple-700">
-                                    {item.leadingMetrics?.slice(0, 1).map((metric) => 
-                                        splitAndJoin(metric.metric_name)
-                                    ).join(', ')} {item.leadingMetrics?.length > 1 && `+${item.leadingMetrics?.length - 1}`}
-                                </span>
+                            <div className="flex flex-col flex-wrap items-center gap-2 justify-center">
+                                <div className="flex flex-row items-center gap-2">
+                                    <Target className="w-4 h-4 text-purple-600" />
+                                    <span className="text-sm font-medium text-purple-700">
+                                        {splitAndJoin(metric.metric_name)}
+                                    </span>
+                                </div>
                             </div>
                         </motion.div>
+                      ))
                     )}
                 </div>
             </motion.div>

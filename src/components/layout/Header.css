@@ -30,6 +30,16 @@
 .header-container {
     padding-top: var(--safe-area-inset-top);
     height: calc(64px + var(--safe-area-inset-top));
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Add transform styles for header visibility */
+header {
+    transition: transform 0.3s ease-in-out;
+}
+
+header.hidden {
+    transform: translateY(-100%);
 }
 
 .mobile-menu {

@@ -1,7 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, CheckCircle2, Sparkles, BarChart, CheckCircle } from 'lucide-react';
+import { ChevronRight, CheckCircle2, Sparkles, BarChart, CheckCircle, PartyPopper } from 'lucide-react';
 import { splitAndJoin } from '../../lib/utils';
+import { useHeader } from '../../contexts/HeaderContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const VoteCelebration = ({ onComplete }) => {
   useEffect(() => {
@@ -71,13 +73,12 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, onCe
             <CheckCircle2 className="absolute top-2 right-2 w-5 h-5 text-white" />
           </motion.div>
         )}
-
-
       </AnimatePresence>
 
       <AnimatePresence>
-          {showCelebration && <VoteCelebration onComplete={onCelebrationComplete} />}
-        </AnimatePresence>
+        {showCelebration && <VoteCelebration onComplete={onCelebrationComplete} />}
+      </AnimatePresence>
+      
       <motion.span
         className="text-white font-medium text-center"
         animate={{ scale: isPlayed ? [1, 1.1, 1] : 1 }}
@@ -85,6 +86,7 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, onCe
       >
         {isResults ? 'Results' : splitAndJoin(aspect.metric_name)}
       </motion.span>
+      
       {isResults && (
         <motion.div
           animate={{
@@ -105,12 +107,40 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, onCe
   );
 };
 
-const AspectsProgressBar = ({ comparisonMetrics, onAspectClick }) => {
+const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, currentSet }) => {
   const scrollContainerRef = useRef(null);
   const [sortedMetrics, setSortedMetrics] = useState([]);
   const [celebratingAspectId, setCelebratingAspectId] = useState(null);
-
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+  const [scale, setScale] = useState(1);
+  const { isHeaderVisible } = useHeader();
   console.log('AspectsProgressBar: received comparisonMetrics:', comparisonMetrics);
+  const { currentTheme } = useTheme();
+  // Add scroll event listener for visibility and scaling
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      
+      // Calculate scale based on scroll position
+      const newScale = Math.max(0.8, 1 - (currentScrollY * 0.001)); // Scale between 0.8 and 1
+      setScale(newScale);
+      
+      // Show progress bar when scrolling up or at the top of the page
+      if (currentScrollY < lastScrollY || currentScrollY < 10) {
+        setIsVisible(true);
+      } 
+      // Hide progress bar when scrolling down and not at the top
+      else if (currentScrollY > lastScrollY && currentScrollY > 10) {
+        setIsVisible(false);
+      }
+      
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
 
   // Update sorted metrics whenever comparisonMetrics changes
   useEffect(() => {
@@ -180,19 +210,75 @@ const AspectsProgressBar = ({ comparisonMetrics, onAspectClick }) => {
 
   return (
     <motion.div
-      className="w-full overflow-hidden py-4"
+      className="w-full overflow-hidden"
       initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      animate={{ 
+        opacity: 1
+      }}
+      transition={{ 
+        duration: 0.3,
+        ease: "easeInOut"
+      }}
+      style={{
+        position: 'sticky',
+        top: 0,
+        zIndex: 20,
+        backgroundImage: `linear-gradient(to bottom, ${currentTheme.colors.primary}, transparent)`,
+        paddingTop: '0.5rem',
+        paddingBottom: '0.5rem',
+        marginTop: '-0.5rem'
+      }}
     >
+      <div className="flex flex-col mb-2">
+        <AnimatePresence>
+          {scale > 0.9 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              {userVotedAll && (
+                <motion.div
+                  className="flex items-center justify-center space-x-3 p-2"
+                >
+                  <PartyPopper className="w-6 h-6 text-amber-500" />
+                  <h2 className="text-lg font-bold text-center">The Results Are In!</h2>
+                  <PartyPopper className="w-6 h-6 text-amber-500" />
+                </motion.div>
+              )}
+              {!userVotedAll && (
+                <motion.div
+                  className="flex items-center justify-center space-x-3 p-2"
+                >
+                  <h2 className="text-sm font-bold text-center">Keep voting to reveal results</h2>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <div className='flex flex-row rounded-full m-2 ml-4 mr-4 justify-center items-center' style={{ backgroundColor: 'rgba(255, 255, 255, 0.22)' }}>
+        <div className='rounded-full py-2 px-4'
+        style={{ backgroundImage: `linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(73, 73, 73, 0.19))` }}
+        >
+            <h4 className='text-md font-bold text-center' style={{ color: 'whitesmoke' }}>{currentSet?.name}</h4>
+        </div>
+          </div>
       <div
         ref={scrollContainerRef}
-        className="flex overflow-x-auto pb-4 px-4 scrollbar-hide"
+        className="flex overflow-x-auto px-4 scrollbar-hide"
         style={{
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
+          transform: `scale(${scale})`,
+          transformOrigin: 'top center',
+          transition: 'transform 0.3s ease-in-out',
+          paddingBottom: '0.5rem'
         }}
       >
+        
         {sortedMetrics.map((aspect) => (
           <motion.div
             key={aspect.id}
@@ -203,7 +289,7 @@ const AspectsProgressBar = ({ comparisonMetrics, onAspectClick }) => {
           >
             {location.pathname.includes('aspect/' + aspect.id) && (
               <motion.span
-                className='text-sm text-gray-500'
+                className='text-sm text-white/60'
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
@@ -262,7 +348,6 @@ const AspectsProgressBar = ({ comparisonMetrics, onAspectClick }) => {
             onClick={() => onAspectClick({ id: 'explore' })}
           />
         </motion.div>
-
       </div>
     </motion.div>
   );

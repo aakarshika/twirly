@@ -18,13 +18,13 @@ const ComparePage = () => {
   const currentSetId = parseInt(id);
   const navigate = useNavigate();
   const { currentTheme } = useTheme();
-  const { isHeaderVisible } = useHeader();
+  const { isHeaderVisible, setIsHeaderVisible } = useHeader();
   const { user } = useAuth();
   const [comparisonMetrics, setComparisonMetrics] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userVotedAll, setUserVotedAll] = useState(false);
-
+  
   const { items, currentSet } = useComparisonDetails(currentSetId);
 
   const fetchSetMetrics = async () => {
@@ -115,125 +115,96 @@ const ComparePage = () => {
     : 'w-full mb-8 mt-4';
 
   return (
-    <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background, paddingTop : isHeaderVisible ? '64px' : '0px' }}>
-      <div className="sticky top-0 z-10" style={{ backgroundColor: currentTheme.colors.background }}>
-        <div className="">
-          
-        <div className={containerClasses}>
+    <div className="min-h-screen flex flex-col" style={{  paddingTop: isHeaderVisible ? '64px' : '0px' }}>
+      <div className="fixed top-0 left-0 right-0 z-10 bg-inherit">
+        <div className={containerClasses} style={{ paddingTop: isHeaderVisible ? '100px' : '0px' }}>
           <motion.div
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.3, delay: 0.2 }}
             className="text-white gap-4"
-            style={{ backgroundImage: `linear-gradient(to bottom, ${currentTheme.colors.primary}, ${currentTheme.colors.background})` }}
           >
-
-        {userVotedAll && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="flex items-center justify-center space-x-3 m-2 p-4"
-              >
-                <PartyPopper className="w-6 h-6 text-amber-500" />
-                <h2 className="text-2xl font-bold text-center">The Results Are In!</h2>
-                <PartyPopper className="w-6 h-6 text-amber-500" />
-              </motion.div>
-            )}
-            {!userVotedAll && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4 }}
-                className="flex items-center justify-center space-x-3 m-2 p-4"
-              >
-                <h2 className="text-lg font-bold text-center">Keep voting to reveal results</h2>
-              </motion.div>
-            )}
-        <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.8 }}
-              className="flex flex-col items-center justify-center  space-x-2 rounded-lg m-2 p-2"
-            >
-              <div className='flex flex-row items-center'>
-                <h4 className='text-sm'>{currentSet?.name}</h4>
-              </div>
-            </motion.div>
-          <AspectsProgressBar
-            comparisonMetrics={comparisonMetrics}
-            onAspectClick={(aspect) => {
-              if (aspect.id === 'results') {
-                navigate(`/compare/${id}/results`);
-              } else if (aspect.id === 'explore') {
-                // scroll to Trending
-                const trendingElement = document.getElementById('trending');
-                if (trendingElement) {
-                  trendingElement.scrollIntoView({ behavior: 'smooth' });
+            <AspectsProgressBar
+              comparisonMetrics={comparisonMetrics}
+              onAspectClick={(aspect) => {
+                if (aspect.id === 'results') {
+                  navigate(`/compare/${id}/results`);
+                } else if (aspect.id === 'explore') {
+                  const trendingElement = document.getElementById('trending');
+                  if (trendingElement) {
+                    const trendingPosition = trendingElement.getBoundingClientRect().top + window.pageYOffset;
+                    window.scrollTo({
+                      top: trendingPosition - 200,
+                      behavior: 'smooth'
+                    });
+                  }
+                } else {
+                  navigate(`/compare/${id}/aspect/${aspect.id}`);
                 }
-              } else {
-                navigate(`/compare/${id}/aspect/${aspect.id}`);
-              }
-            }}
-          />
+              }}
+              userVotedAll={userVotedAll}
+              currentSet={currentSet}
+            />
           </motion.div>
-          </div>
         </div>
       </div>
       
-      {currentSet && (<div className="flex-grow">
-        <Routes>
-          <Route 
-            path="aspect/:aspectId" 
-            element={
-              <CompareAspectView 
-                onVoteChange={handleVoteChange}
+      <div className="pt-[250px]">
+        {currentSet && (
+          <div className="flex-grow">
+            <Routes>
+              <Route 
+                path="aspect/:aspectId" 
+                element={
+                  <CompareAspectView 
+                    onVoteChange={handleVoteChange}
+                  />
+                } 
               />
-            } 
-          />
-          <Route 
-            path="results" 
-            element={
-              <CompareResultsView 
-                items={items} 
-                currentSetId={currentSetId} 
-                currentSet={currentSet} 
+              <Route 
+                path="results" 
+                element={
+                  <CompareResultsView 
+                    items={items} 
+                    currentSetId={currentSetId} 
+                    currentSet={currentSet} 
+                  />
+                } 
               />
-            } 
-          />
-          <Route 
-            path="/" 
-            element={
-              <CompareResultsView 
-                items={items} 
-                currentSetId={currentSetId} 
-                currentSet={currentSet} 
+              <Route 
+                path="/" 
+                element={
+                  <CompareResultsView 
+                    items={items} 
+                    currentSetId={currentSetId} 
+                    currentSet={currentSet} 
+                  />
+                } 
               />
-            } 
-          />
-        </Routes>
-      </div>)}
-
-      {(
-        <div 
-        className="relative z-0 w-full transition-all duration-150 ease-in-out"
-        style={{ 
-          backgroundColor: currentTheme.colors.background,
-        }}
-      >
-        <div className="w-full max-w-4xl mx-auto" >
-          <div id="trending" className="flex h-100 justify-start p-4" style={{ marginBottom: true ? '250px' : '0px' }}>
+            </Routes>
           </div>
-  
-        <div  className="flex justify-start p-4" style={{ marginTop: true ? '64px' : '0px' }}>
-          <Globe2 size={24} className="mr-2" style={{ color: currentTheme.colors.primary }} />
-          <h1 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
-            Explore Similar
-          </h1>
+        )}
+
+        <div 
+          className="relative z-0 w-full transition-all duration-150 ease-in-out"
+          style={{ 
+            backgroundColor: currentTheme.colors.background,
+          }}
+        >
+          <div className="w-full max-w-4xl mx-auto">
+            <div id="trending" className="flex h-100 justify-start p-4">
+            </div>
+    
+            <div className="flex justify-start p-4">
+              <Globe2 size={24} className="mr-2" style={{ color: currentTheme.colors.primary }} />
+              <h1 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
+                Explore Similar
+              </h1>
+            </div>
+            <Trending />
+          </div>
         </div>
-          <Trending />
-        </div>
-      </div>)}
+      </div>
     </div>
   );
 };
