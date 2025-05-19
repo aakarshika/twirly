@@ -6,83 +6,57 @@ import { getUserProfile } from '../../services/users';
 import { useAuth } from '../../contexts/AuthContext';
 import { useHeader } from '../../contexts/HeaderContext';
 import FirstTimeDashboard from './dashboard/FirstTimeDashboard';
+import { useDataFetching } from '../../hooks/useDataFetching';
+import LoadingScreen from '../../components/common/LoadingScreen';
+import ErrorScreen from '../../components/common/ErrorScreen';
 
 const UserDashboard = () => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const { isHeaderVisible } = useHeader();
   const [userData, setUserData] = useState(null);
   const [showFirstTimeDashboard, setShowFirstTimeDashboard] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
+  const { isLoading, error } = useDataFetching(
+    'userDashboard',
+    async () => {
       if (!user) return;
-
-      try {
-        setLoading(true);
-        
-        // Fetch all data in parallel
-        const [
-          userProfile
-        ] = await Promise.all([
-          getUserProfile(user.id),
-        ]);
-
-        setUserData(userProfile);
-        
-        // Check if this is the user's first time
-        const isFirstTime = !localStorage.getItem('dashboard_tour_completed');
-        setShowFirstTimeDashboard(isFirstTime);
-      } catch (err) {
-        console.error('Error fetching dashboard data:', err);
-        setError('Failed to fetch dashboard data in dashboard');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [user]);
+      
+      const userProfile = await getUserProfile(user.id);
+      setUserData(userProfile);
+      
+      // Check if this is the user's first time
+      const isFirstTime = !localStorage.getItem('dashboard_tour_completed');
+      setShowFirstTimeDashboard(isFirstTime);
+    },
+    [user]
+  );
 
   const handleTourComplete = () => {
     localStorage.setItem('dashboard_tour_completed', 'true');
     setShowFirstTimeDashboard(false);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <img src="/public_logo_transparent.png" alt="logo" className="h-100 w-100 mx-auto" />
-        </div>
-      </div>
-    );
+  if (isLoading) {
+    return <LoadingScreen showLogo={true} message="Loading your dashboard..." />;
   }
 
   if (error) {
-    return (
-      <div 
-        className="min-h-screen p-4 md:p-8 flex items-center justify-center"
-        style={{ backgroundColor: currentTheme.colors.background }}
-      >
-        <div className="text-center">
-          <p className="text-red-500">{error}</p>
-        </div>
-      </div>
-    );
+    return <ErrorScreen message={error} onRetry={() => window.location.reload()} />;
   }
 
   if (!userData) {
     return (
       <div 
-        className="min-h-screen p-4 md:p-8 flex items-center justify-center"
-        style={{ backgroundColor: currentTheme.colors.background }}
+        className="min-h-screen p-4 md:p-8 lg:p-32 flex flex-col items-center justify-center transition-colors duration-200"
+        style={{ 
+          backgroundColor: 'var(--color-background)',
+          color: 'var(--color-text)'
+        }}
       >
         <div className="text-center">
-          <p style={{ color: currentTheme.colors.text }}>No user data found</p>
+          <p>No user data found</p>
         </div>
       </div>
     );
@@ -90,19 +64,22 @@ const UserDashboard = () => {
 
   return (
     <div 
-      className="min-h-screen mx-auto"
-      style={{ backgroundColor: currentTheme.colors.background,
+      className="min-h-screen flex flex-col mx-auto transition-all duration-200 ease-in-out"
+      style={{ 
+        backgroundColor: 'var(--color-background)',
         position: 'relative',
         top: isHeaderVisible ? '64px' : '0px',
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingBottom: 'env(safe-area-inset-bottom)'
       }}
     >
       {showFirstTimeDashboard && (
         <FirstTimeDashboard onComplete={handleTourComplete} />
       )}
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-8">
         <ProfileHeader userData={userData} isPublic={false} />
         
-        <div className="mt-8">
+        <div className="mt-8 md:mt-12 lg:mt-16">
           <ContentTabs 
             activeTab={activeTab} 
             setActiveTab={setActiveTab}

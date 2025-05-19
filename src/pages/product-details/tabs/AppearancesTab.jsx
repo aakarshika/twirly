@@ -54,10 +54,10 @@ const AppearancesTab = ({ item, comparisonSets }) => {
           key={set.id} 
           className="flex flex-col p-6 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors"
           style={{ backgroundColor: currentTheme.colors.card }}
-          onClick={() => navigate(`/comparison/${set.id}`)}
+          onClick={() => navigate(`/compare/${set.id}`)}
         >
           <div className="flex flex-col items-start mb-4"
-          // onClick={() => navigate(`/comparison/${set.id}`)}
+          // onClick={() => navigate(`/compare/${set.id}`)}
           >
             <h3 className="font-semibold text-lg hover:text-blue-400 transition-colors"
               style={{ color: currentTheme.colors.text }}

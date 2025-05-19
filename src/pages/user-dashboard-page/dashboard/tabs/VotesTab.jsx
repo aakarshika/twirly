@@ -16,7 +16,7 @@ const VoteCard = ({ vote }) => {
         <div className="flex justify-between items-start mb-4">
           <div
             onClick={() => {
-              navigate(`/comparison-aspect/${vote.comparison_set_aspects?.id}`);
+              navigate(`/compare/${vote.comparison_set_aspects?.set_id}/aspect/${vote.comparison_set_aspects?.id}`);
             }}
           >
             <h3 

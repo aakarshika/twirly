@@ -5,6 +5,7 @@ import { splitAndJoin, changeColorAlpha } from '../../lib/utils';
 import { useTheme } from '../../contexts/ThemeContext';
 import VoteCelebration from './VoteCelebration';
 import ProgressBar from './ProgressBar';
+import { SHOW_RESULTS_DURATION } from '../../lib/constants';
 
 const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2line, currentAspect }) => {
   const isCurrentAspect = currentAspect?.id === aspect.id;
@@ -21,13 +22,18 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2l
   }, [aspect.metric_name]);
   
   useEffect(() => {
+    let timer;
     if (showCelebration) {
       setShowProgress(true);
-      const timer = setTimeout(() => {
+      timer = setTimeout(() => {
         setShowProgress(false);
-      }, 3000);
-      return () => clearTimeout(timer);
+      }, SHOW_RESULTS_DURATION * 1000);
     }
+    return () => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+    };
   }, [showCelebration]);
   
   const getBackgroundColor = () => {
@@ -52,7 +58,11 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2l
       whileTap={{ scale: 0.95 }}
       onClick={onClick}
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
+      animate={{ 
+        opacity: 1, 
+        y: 0, 
+        scale: isCurrentAspect ? 1.1 : 1 
+      }}
       transition={{ duration: 0.3 }}
       className="flex mx-2 rounded-lg cursor-pointer relative flex flex-col items-center justify-center p-4"
       style={{
@@ -60,7 +70,7 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2l
         color: 'white'
       }}
     >
-      {showProgress && <ProgressBar />}
+      {showCelebration && showProgress && <ProgressBar duration={SHOW_RESULTS_DURATION} />}
       
       {!showCelebration && isCurrentAspect && !isResults && (
         <motion.div

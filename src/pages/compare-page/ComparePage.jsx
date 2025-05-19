@@ -12,6 +12,7 @@ import { Globe2, PartyPopper } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Trending from '../trending-page/Trending';
 import { useComparisonDetails } from '../../hooks/useComparisonDetails';
+import { SHOW_RESULTS_DURATION } from '../../lib/constants';
 
 const ComparePage = () => {
   const { id } = useParams();
@@ -60,6 +61,7 @@ const ComparePage = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
+        console.log('Intersection observer triggered:', entry.isIntersecting);
         if (entry.isIntersecting) {
           setShowTrending(true);
           observer.disconnect(); // Stop observing once loaded
@@ -67,12 +69,13 @@ const ComparePage = () => {
       },
       {
         root: null,
-        rootMargin: '100px', // Start loading slightly before the element comes into view
+        rootMargin: '200px', // Increased margin to start loading earlier
         threshold: 0.1
       }
     );
 
     if (trendingRef.current) {
+      console.log('Starting to observe trending section');
       observer.observe(trendingRef.current);
     }
 
@@ -81,7 +84,7 @@ const ComparePage = () => {
         observer.disconnect();
       }
     };
-  }, []);
+  }, [trendingRef.current]); // Added dependency to ensure observer is set up when ref is available
 
   // Update currentAspect when URL changes
   useEffect(() => {
@@ -167,7 +170,7 @@ const ComparePage = () => {
             setCurrentAspect(null);
             navigate(`/compare/${currentSetId}/results`);
           }
-        }, 3000);
+        }, SHOW_RESULTS_DURATION*1000);
       }
       
       return updatedMetrics;
@@ -306,17 +309,21 @@ const ComparePage = () => {
             backgroundColor: currentTheme.colors.background
           }}
         >
-          <div className="w-full max-w-4xl mx-auto">
-            <div id="trending" className="flex h-100 justify-start p-4">
+          <div className="w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+            <div id="trending" className="flex h-full justify-start py-4">
             </div>
     
-            <div className="flex justify-start p-4">
+            <div className="flex justify-start py-4">
               <Globe2 size={24} className="mr-2" style={{ color: currentTheme.colors.primary }} />
               <h1 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
                 Explore Similar
               </h1>
             </div>
-            <div ref={trendingRef}>
+            <div 
+              ref={trendingRef} 
+              className="min-h-[200px] w-full"
+              style={{ visibility: showTrending ? 'visible' : 'hidden' }}
+            >
               {showTrending && <Trending />}
             </div>
           </div>

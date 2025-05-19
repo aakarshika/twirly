@@ -60,10 +60,14 @@ const Trending = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: currentTheme.colors.background }}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+      <div 
+        className="min-h-screen flex flex-col items-center justify-center transition-all duration-300 ease-in-out"
+        style={{ backgroundColor: 'var(--color-background)' }}
+      >
+        <div className="text-center animate-fade-in">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto transition-transform duration-300" 
+               style={{ borderColor: 'var(--color-primary)' }}></div>
+          <p className="mt-4" style={{ color: 'var(--color-text)' }}>Loading...</p>
         </div>
       </div>
     );
@@ -71,12 +75,19 @@ const Trending = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: currentTheme.colors.background }}>
-        <div className="text-center">
+      <div 
+        className="min-h-screen flex flex-col items-center justify-center transition-all duration-300 ease-in-out"
+        style={{ backgroundColor: 'var(--color-background)' }}
+      >
+        <div className="text-center animate-fade-in">
           <p className="text-red-500 mb-4">{error}</p>
           <button
             onClick={() => window.location.reload()}
-            className="px-4 py-2 bg-amber-400 text-black rounded-full font-semibold hover:bg-amber-300 transition-colors"
+            className="px-4 py-2 rounded-full font-semibold transition-all duration-200 hover:scale-105"
+            style={{ 
+              backgroundColor: 'var(--color-primary)',
+              color: 'var(--color-text)'
+            }}
           >
             Try Again
           </button>
@@ -87,24 +98,32 @@ const Trending = () => {
 
   return (
     <div 
-      className="min-h-screen mx-auto"
+      className="min-h-screen mx-auto transition-all duration-200 ease-in-out"
       style={{ 
-        position: 'relative'
+        position: 'relative',
+        backgroundColor: 'var(--color-background)'
       }}
     >
-      <div className="container mx-auto" style={{
-        backgroundColor: currentTheme.colors.card
-      }}>
-      <div className="border-b" style={{ borderColor: currentTheme.colors.border }}>
-        <div className="space-y-4">
-          {trendingSets.map((set) => {
-            return (
-            <div key={set.aspect_set_id}>
-              <TrendingCardCommon set={set} from={'trending'} />
-            </div>
-            )
-          })}
-        </div>
+      <div 
+        className="container mx-auto transition-all duration-200 ease-in-out"
+        style={{
+          backgroundColor: 'var(--color-card)'
+        }}
+      >
+        <div 
+          className="border-b transition-colors duration-200" 
+          style={{ borderColor: 'var(--color-border)' }}
+        >
+          <div className="space-y-4 p-4 md:p-6 lg:p-8">
+            {trendingSets.map((set) => (
+              <div 
+                key={set.aspect_set_id}
+                className="transition-transform duration-200 hover:scale-[1.02]"
+              >
+                <TrendingCardCommon set={set} from={'trending'} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

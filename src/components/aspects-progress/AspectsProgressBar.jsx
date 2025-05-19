@@ -5,6 +5,7 @@ import { useHeader } from '../../contexts/HeaderContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import AspectBox from './AspectBox';
 import { changeColorAlpha } from '../../lib/utils';
+import { SHOW_RESULTS_DURATION } from '../../lib/constants';
 
 const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, currentSet, celebratingAspectId, currentAspect, onNextClick }) => {
   const scrollContainerRef = useRef(null);
@@ -95,18 +96,6 @@ const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, cu
                 </motion.div>
               </motion.div>
             )}
-            {!userVotedAll && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <motion.div className="flex items-center justify-center space-x-3 p-2">
-                  <h2 className="text-sm font-bold text-center">Vote all to reveal results</h2>
-                </motion.div>
-              </motion.div>
-            )}
           </AnimatePresence>
         </div>
 
@@ -166,12 +155,12 @@ const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, cu
                                   r="18"
                                   fill="none"
                                   stroke="lightgray"
-                                  strokeWidth="3"
-                                  strokeDasharray="113"
-                                  strokeDashoffset="113"
-                                  initial={{ strokeDashoffset: 113 }}
+                                  strokeWidth="4"
+                                  strokeDasharray="125"
+                                  strokeDashoffset="125"
+                                  initial={{ strokeDashoffset: 125 }}
                                   animate={{ strokeDashoffset: 0 }}
-                                  transition={{ duration: 3, ease: "linear" }}
+                                  transition={{ duration: SHOW_RESULTS_DURATION, ease: "linear" }}
                                 />
                               </motion.svg>
                             )}
@@ -210,74 +199,90 @@ const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, cu
           </div>
         </div>
 
+        {showAspectRoutes && !userVotedAll && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <motion.div className="flex items-center justify-center ">
+                  <h2 className="text-sm font-bold text-center">Vote all to reveal results</h2>
+                </motion.div>
+              </motion.div>
+            )}
         {showAspectRoutes && (
           <div
             ref={scrollContainerRef}
-            className="flex overflow-x-auto px-4 scrollbar-hide"
-            style={{
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-              paddingBottom: '0.5rem'
-            }}
+            className="flex pt-2 "
           >
-            <span className='text-sm text-gray-500'><Target className='w-10 h-10 mt-4' /></span>
-            {sortedMetrics.map((aspect) => (
+            <span className='absolute  text-sm text-gray-500 mt-2 z-10 bg-white justify-center items-center rounded-full p-2 mr-2'
+            style={{ backgroundColor: currentTheme.colors.secondary, color: 'white' }}
+            ><Target className='w-10 h-10' /></span>
+            <div className='flex overflow-x-auto px-4 ml-16 scrollbar-hide items-center'
+              style={{
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+                paddingBottom: '0.5rem'
+              }}>
+              {sortedMetrics.map((aspect) => (
+                <motion.div
+                  key={aspect.id}
+                  className='pt-2'
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <AspectBox
+                    key={aspect.id}
+                    aspect={aspect}
+                    isPlayed={aspect.userVoted}
+                    scale={scale}
+                    isResults={false}
+                    onClick={() => {
+                      onAspectClick(aspect);
+                    }}
+                    showCelebration={celebratingAspectId === aspect.id}
+                    is2line={is2line}
+                    currentAspect={currentAspect}
+                  />
+                </motion.div>
+              ))}
+
               <motion.div
-                key={aspect.id}
-                className='pt-2'
+                key={'results'}
+                className='flex flex-col items-center justify-center'
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
               >
                 <AspectBox
-                  key={aspect.id}
-                  aspect={aspect}
-                  isPlayed={aspect.userVoted}
-                  scale={scale}
-                  isResults={false}
-                  onClick={() => {
-                    onAspectClick(aspect);
-                  }}
-                  showCelebration={celebratingAspectId === aspect.id}
+                  aspect={{ metric_name: 'Results' }}
+                  isPlayed={true}
+                  isResults={true}
+                  onClick={() => onAspectClick({ id: 'results' })}
                   is2line={is2line}
                   currentAspect={currentAspect}
                 />
               </motion.div>
-            ))}
 
-            <motion.div
-              key={'results'}
-              className='flex flex-col items-center justify-center'
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <AspectBox
-                aspect={{ metric_name: 'Results' }}
-                isPlayed={true}
-                isResults={true}
-                onClick={() => onAspectClick({ id: 'results' })}
-                is2line={is2line}
-                currentAspect={currentAspect}
-              />
-            </motion.div>
-
-            <motion.div
-              key={'explore'}
-              className='flex flex-col items-center justify-center'
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <AspectBox
-                aspect={{ metric_name: 'Explore More' }}
-                isPlayed={false}
-                isResults={false}
-                onClick={() => onAspectClick({ id: 'explore' })}
-                is2line={is2line}
-                currentAspect={currentAspect}
-              />
-            </motion.div>
+              <motion.div
+                key={'explore'}
+                className='flex flex-col items-center justify-center'
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <AspectBox
+                  aspect={{ metric_name: 'Explore More' }}
+                  isPlayed={false}
+                  isResults={false}
+                  onClick={() => onAspectClick({ id: 'explore' })}
+                  is2line={is2line}
+                  currentAspect={currentAspect}
+                />
+              </motion.div>
+              </div>
           </div>
         )}
       </div>

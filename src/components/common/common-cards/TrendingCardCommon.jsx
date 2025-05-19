@@ -1,4 +1,3 @@
-
 import { useTheme } from '../../../contexts/ThemeContext';
 import TrendingCard from './TrendingCard';
 
@@ -18,11 +17,10 @@ const TrendingCardCommon = ({set, from}) => {
     </div>
 
     <div className="hidden sm:block" style={{
-      maxWidth: '1000px',
+      maxWidth: '100%',
       marginLeft: 'auto',
       marginRight: 'auto',
-      paddingLeft: '10px',
-      paddingRight: '10px'
+      padding: '0 1rem'
     }}>
     <div
       key={set.id}
@@ -30,7 +28,9 @@ const TrendingCardCommon = ({set, from}) => {
       className="cursor-pointer hover:bg-gray-50 transition-colors"
       style={{
         borderColor: currentTheme.colors.border,
-        border: '2px solid ' + currentTheme.colors.border
+        border: '2px solid ' + currentTheme.colors.border,
+        borderRadius: '0.5rem',
+        overflow: 'hidden'
       }}
     >
       <TrendingCard set={set} from={from} />

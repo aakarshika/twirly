@@ -11,20 +11,13 @@ const VotingAnimation = ({ onVote }) => {
   const handleTap = async (e) => {
     if (isVoting) return; // Prevent multiple votes while processing
 
-    tapCountRef.current += 1;
+    const now = Date.now();
+    const lastTap = tapCountRef.current;
 
-    if (tapCountRef.current === 1) {
-      // First tap - show single heart
-      setShowSingleHeart(true);
-      setTimeout(() => setShowSingleHeart(false), 500);
-      
-      tapTimerRef.current = setTimeout(() => {
-        tapCountRef.current = 0;
-      }, 300); // Reset after 300ms if no second tap
-    } else if (tapCountRef.current === 2) {
-      // Double tap detected - show balloon hearts first, then cast vote
-      clearTimeout(tapTimerRef.current);
+    if (now - lastTap < 500 && now - lastTap > 0) {
+      // Double tap detected
       tapCountRef.current = 0;
+      clearTimeout(tapTimerRef.current);
       
       try {
         setIsVoting(true);
@@ -35,7 +28,7 @@ const VotingAnimation = ({ onVote }) => {
           size: `${Math.random() * 100}%`,
           left: `${Math.random() * 100}%`,
           top: `${Math.random() * 100}%`,
-          delay: i * 50 // Reduced delay between hearts
+          delay: i * 50
         }));
         setBalloonHearts(newBalloonHearts);
         
@@ -55,6 +48,15 @@ const VotingAnimation = ({ onVote }) => {
         setBalloonHearts([]);
         setIsVoting(false);
       }
+    } else {
+      // First tap
+      tapCountRef.current = now;
+      setShowSingleHeart(true);
+      setTimeout(() => setShowSingleHeart(false), 500);
+      
+      tapTimerRef.current = setTimeout(() => {
+        tapCountRef.current = 0;
+      }, 500); // Reset after 500ms if no second tap
     }
   };
 
@@ -62,6 +64,7 @@ const VotingAnimation = ({ onVote }) => {
     <div 
       className="voting-animation-container"
       onClick={handleTap}
+      onTouchStart={handleTap}
     >
       <div className="heart-container">
         {showSingleHeart && 
@@ -69,7 +72,7 @@ const VotingAnimation = ({ onVote }) => {
             <div className="heart" 
               style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%) rotate(45deg)' }} >
             </div>
-            {tapCountRef.current === 1 && (<div className="voting-instruction">
+            {tapCountRef.current > 0 && (<div className="voting-instruction">
               Double tap to vote
             </div>)}
           </div>

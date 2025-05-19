@@ -64,7 +64,7 @@ const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, as
         {userVoted && (
           <div className="mt-4">
             <div
-              onClick={() => navigate('/comparison/' + aspectSet?.comparison_sets?.id)}
+              onClick={() => navigate('/compare/' + aspectSet?.comparison_sets?.id)}
               className="flex items-center justify-end gap-2 p-2 rounded-md cursor-pointer hover:bg-gray-50 transition-colors"
               style={{ color: currentTheme.colors.primary }}
             >

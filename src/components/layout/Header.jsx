@@ -162,17 +162,25 @@ const Header = () => {
 
   if (loading) {
     return (
-      <div>hello</div>
+      <div 
+        className="min-h-screen flex flex-col items-center justify-center transition-all duration-300 ease-in-out"
+        style={{ backgroundColor: 'var(--color-background)' }}
+      >
+        <div className="text-center animate-fade-in">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto transition-transform duration-300" 
+               style={{ borderColor: 'var(--color-primary)' }}></div>
+        </div>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <div
-        className="min-h-screen p-4 md:p-8 flex items-center justify-center"
-        style={{ backgroundColor: currentTheme.colors.background }}
+      <div 
+        className="min-h-screen flex flex-col items-center justify-center transition-all duration-300 ease-in-out"
+        style={{ backgroundColor: 'var(--color-background)' }}
       >
-        <div className="text-center">
+        <div className="text-center animate-fade-in">
           <p className="text-red-500">{error}</p>
         </div>
       </div>
@@ -181,312 +189,327 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed container mx-auto top-0 left-0 right-0 z-50 w-full border-b ${!isHeaderVisible ? 'hidden' : ''}`}
+      className={`fixed container mx-auto top-0 left-0 right-0 z-50 w-full border-b transition-all duration-200 ease-in-out ${!isHeaderVisible ? 'hidden' : ''}`}
       style={{
-        backgroundColor: location.pathname.includes('/compare/') ? currentTheme.colors.primary : currentTheme.colors.background,
+        backgroundColor: location.pathname.includes('/compare/') ? 'var(--color-primary)' : 'var(--color-background)',
         paddingTop: 'calc(var(--safe-area-inset-top))',
-        borderColor: currentTheme.colors.card,
+        borderColor: 'var(--color-border)',
         '--header-height': '64px'
       }}
     >
-      <div className="px-4 header-content">
+      <div className="px-4 md:px-6 lg:px-8 header-content max-w-7xl mx-auto">
         <div className="flex items-center justify-between h-full">
           {/* Logo and Title */}
           <div className="flex flex-row items-center">
-
-            {location.pathname !== '/' && (<Link to="/" className="flex items-center">
-                <div className="flex flex-col items-center" onClick={() => navigate(-1)}>
-                  <ChevronLeft size={24} style={{ color: location.pathname.includes('/compare/') ? 'white' : currentTheme.colors.text }} />
+            {location.pathname !== '/' && (
+              <Link to="/" className="flex items-center transition-transform duration-200 hover:scale-105">
+                <div className="flex flex-col items-center">
+                  <ChevronLeft size={24} style={{ 
+                    color: location.pathname.includes('/compare/') ? 'white' : 'var(--color-text)'
+                  }} />
                 </div>
-            </Link>)}
-            <Link to="/" className="flex items-center">
+              </Link>
+            )}
+            <Link to="/" className="flex items-center transition-transform duration-200 hover:scale-105">
               <div className="flex flex-col items-center">
-                <img src="/public_logo_transparent.png" alt="Twirly Logo" className="w-10 h-10 mr-2" />
+                <img src="/public_logo_transparent.png" alt="Twirly Logo" className="w-10 h-10 mr-2 transition-transform duration-200" />
               </div>
-              {!isSearchExpanded && (<h1 className="ml-2 text-lg font-bold" style={{ 
-                color: location.pathname.includes('/compare/') ? 'white' : currentTheme.colors.text
-                 }}>{pageName}</h1>) }
+              {!isSearchExpanded && (
+                <h1 className="ml-2 text-lg font-bold transition-colors duration-200" style={{ 
+                  color: location.pathname.includes('/compare/') ? 'white' : 'var(--color-text)'
+                }}>{pageName}</h1>
+              )}
             </Link>
           </div>
 
           {/* Search Bar - Hidden on mobile */}
-          {user && (<div className="hidden md:block flex-1 max-w-xl mx-8 mr-4">
-            <SearchBar searchComplete={() => setIsDrawerOpen(false)} />
-          </div>)}
-
+          {user && (
+            <div className="hidden md:block flex-1 max-w-xl mx-8 mr-4">
+              <SearchBar searchComplete={() => setIsDrawerOpen(false)} />
+            </div>
+          )}
 
           {user && (
-            <div >
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
-            {mainNavItems.map((item) => (
-              <Link
-                key={item.name}
-                to={item.path}
-                className="flex items-center space-x-1"
-                style={{ color: currentTheme.colors.text }}
-              >
-                {item.icon}
-                <span>{item.name}</span>
-              </Link>
-            ))}
-          </nav>
-          </div>)}
+            <div>
+              {/* Desktop Navigation */}
+              <nav className="hidden md:flex items-center space-x-8">
+                {mainNavItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    to={item.path}
+                    className="flex items-center space-x-1 transition-all duration-200 hover:scale-105"
+                    style={{ color: 'var(--color-text)' }}
+                  >
+                    {item.icon}
+                    <span>{item.name}</span>
+                  </Link>
+                ))}
+              </nav>
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-4">
             {user ? (
               <>
-              <div className="flex flex-row items-center space-x-4"
-              style={{ color: location.pathname.includes('/compare/') ? 'white' : currentTheme.colors.text }}
-              >
-
-                {location.pathname !== '/search' && (
-                  <div className="" >
-                    {/* animate the search bar expanding and collapsing */}
-                  <div className="flex flex-row items-center md:hidden" 
-                  style={{ transition: 'all 0.3s ease-in-out' }}
+                <div className="flex flex-row items-center space-x-4 transition-colors duration-200"
+                     style={{ color: location.pathname.includes('/compare/') ? 'white' : 'var(--color-text)' }}>
+                  {location.pathname !== '/search' && (
+                    <div>
+                      <div className="flex flex-row items-center md:hidden transition-all duration-300 ease-in-out">
+                        {isSearchExpanded && (
+                          <SearchBar 
+                            searchComplete={() => {
+                              setIsDrawerOpen(false);
+                              setIsSearchExpanded(false);
+                            }} 
+                          />
+                        )}
+                        {!isSearchExpanded ? (
+                          <Search size={24} onClick={() => setIsSearchExpanded(true)} />
+                        ) : (
+                          <X size={24} onClick={() => setIsSearchExpanded(false)} />
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  <button
+                    onClick={handleDrawerClick}
+                    className="p-2 rounded-md drawer-button transition-transform duration-200 hover:scale-105"
+                    style={{ color: location.pathname.includes('/compare/') ? 'white' : 'var(--color-text)' }}
+                    aria-label="Open settings"
                   >
-                    {isSearchExpanded && (
-                      <SearchBar 
-                        searchComplete={() => {
-                          setIsDrawerOpen(false);
-                          setIsSearchExpanded(false);
-                        }} />
-                    )}
-                    {!isSearchExpanded ? (
-                      <Search size={24} onClick={() => setIsSearchExpanded(true)} />
-                    ) : (
-                      <X size={24} onClick={() => setIsSearchExpanded(false)} />
-                    )}
-                  </div>
-                  </div>
-                )}
-                <button
-                  onClick={handleDrawerClick}
-                  className="p-2 rounded-md drawer-button"
-                  style={{ color: location.pathname.includes('/compare/') ? 'white' : currentTheme.colors.text }}
-                  aria-label="Open settings"
-                >
-                  <Menu size={24} />
-                </button>
-              </div>
-
-      {/* Settings Drawer */}
-      {isDrawerOpen && (
-        <div
-          className="fixed z-50 settings-drawer "
-          style={{ backgroundColor: currentTheme.colors.background }}
-        >
-          <div
-            className="fixed right-0 top-0 h-full w-80 transform transition-transform duration-300 ease-in-out "
-            
-          >
-            <div className="" style={{ borderColor: currentTheme.colors.border, backgroundColor: currentTheme.colors.background, padding: '10px' }}>
-              <div className="flex flex-col">
-              <div className="flex items-center justify-between">
-                <div className="flex flex-row justify-center">
-                  <img src="/public_logo_transparent.png" alt="Twirly Logo" className="w-10 h-10 mr-2" />
-                  <h2 className="text-xl mt-2 font-semibold" style={{ color: currentTheme.colors.text }}>Welcome to Twirly</h2>
+                    <Menu size={24} />
+                  </button>
                 </div>
-                <button
-                  onClick={() => setIsDrawerOpen(false)}
-                  className="p-2 rounded-md hover:bg-opacity-10"
-                  style={{ color: currentTheme.colors.text }}
-                >
-                  <X size={24} />
-                </button>
-              </div>
 
-              </div>
-              </div>
-
-            <div className="" style={{  border: `1px solid ${currentTheme.colors.border}` , backgroundColor: currentTheme.colors.background, padding: '10px' }}>
-              <div className="flex flex-col">
-
-              <div className="flex justify-center" >
-              <h4 className="text-sm items-center" style={{ color: currentTheme.colors.textSecondary, borderBottom: `1px solid ${currentTheme.colors.border}` }}>Your opinion matters here!</h4>
-              </div>
-                <div className="flex flex-row">
-
+                {/* Settings Drawer */}
+                {isDrawerOpen && (
                   <div
-                    className="flex items-start space-x-4 mb-6 cursor-pointer mt-4"
-                    onClick={() => {
-                      navigate('/dashboard')
-                      setIsDrawerOpen(false)
+                    className="fixed z-[60] settings-drawer transition-all duration-200 ease-in-out"
+                    style={{ 
+                      backgroundColor: 'var(--color-background)',
+                      top: '0',
+                      right: '0',
+                      height: '100vh',
+                      width: '100%',
+                      maxWidth: '320px'
                     }}
                   >
                     <div
-                      className="w-16 h-16 rounded-full bg-cover bg-center flex-shrink-0 border-2"
-                      style={{
-                        backgroundImage: userData?.profile?.profile_image_url ? `url(${getPublicUrl(userData.profile.profile_image_url)})` : 'none',
+                      className="h-full w-full transform transition-transform duration-300 ease-in-out"
+                      style={{ 
+                        backgroundColor: 'var(--color-background)',
+                        borderLeft: '1px solid var(--color-border)'
                       }}
                     >
-                      {!userData?.profile?.profile_image_url && (
-                        <div
-                          className="w-full h-full flex items-center justify-center rounded-full"
-                          style={{ backgroundColor: currentTheme.colors.primary }}
-                        >
-                          <span className="text-white text-2xl">
-                            {userData?.profile?.display_name?.[0] || userData?.profile?.email?.[0] || '?'}
-                          </span>
+                      <div className="h-full flex flex-col">
+                        <div className="flex items-center justify-between p-4 border-b" style={{ borderColor: 'var(--color-border)' }}>
+                          <div className="flex flex-row justify-center">
+                            <img src="/public_logo_transparent.png" alt="Twirly Logo" className="w-10 h-10 mr-2" />
+                            <h2 className="text-xl mt-2 font-semibold" style={{ color: 'var(--color-text)' }}>Welcome to Twirly</h2>
+                          </div>
+                          <button
+                            onClick={() => setIsDrawerOpen(false)}
+                            className="p-2 rounded-md hover:bg-opacity-10"
+                            style={{ color: 'var(--color-text)' }}
+                          >
+                            <X size={24} />
+                          </button>
                         </div>
-                      )}
-                    </div>
-                    <div className="flex-1 pt-1">
-                      <h3
-                        className="font-semibold text-lg mb-1"
-                        style={{ color: currentTheme.colors.text }}
-                      >
-                        @{userData?.profile?.display_name || 'Some Person'}
-                      </h3>
-                      <div
-                        className="text-sm mb-1"
-                        style={{ color: currentTheme.colors.textSecondary }}
-                      >
-                        Member since {userData?.profile?.created_at ? formatDate(userData.profile.created_at) : 'Unknown'}
+
+                        <div className="flex-1 overflow-y-auto">
+                          <div className="p-4" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-background)' }}>
+                            <div className="flex flex-col">
+                              <div className="flex justify-center">
+                                <h4 className="text-sm items-center" style={{ color: 'var(--color-text-secondary)', borderBottom: `1px solid var(--color-border)` }}>Your opinion matters here!</h4>
+                              </div>
+                              <div className="flex flex-row">
+                                <div
+                                  className="flex items-start space-x-4 mb-6 cursor-pointer mt-4"
+                                  onClick={() => {
+                                    navigate('/dashboard')
+                                    setIsDrawerOpen(false)
+                                  }}
+                                >
+                                  <div
+                                    className="w-16 h-16 rounded-full bg-cover bg-center flex-shrink-0 border-2"
+                                    style={{
+                                      backgroundImage: userData?.profile?.profile_image_url ? `url(${getPublicUrl(userData.profile.profile_image_url)})` : 'none',
+                                    }}
+                                  >
+                                    {!userData?.profile?.profile_image_url && (
+                                      <div
+                                        className="w-full h-full flex items-center justify-center rounded-full"
+                                        style={{ backgroundColor: 'var(--color-primary)' }}
+                                      >
+                                        <span className="text-white text-2xl">
+                                          {userData?.profile?.display_name?.[0] || userData?.profile?.email?.[0] || '?'}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="flex-1 pt-1">
+                                    <h3
+                                      className="font-semibold text-lg mb-1"
+                                      style={{ color: 'var(--color-text)' }}
+                                    >
+                                      @{userData?.profile?.display_name || 'Some Person'}
+                                    </h3>
+                                    <div
+                                      className="text-sm mb-1"
+                                      style={{ color: 'var(--color-text-secondary)' }}
+                                    >
+                                      Member since {userData?.profile?.created_at ? formatDate(userData.profile.created_at) : 'Unknown'}
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="p-4" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-background)' }}>
+                            <div className="flex flex-col">
+                              {/* Main Navigation */}
+                              <div className="mb-6">
+                                {mainNavItems.map((item) => (
+                                  <button
+                                    key={item.name}
+                                    onClick={() => {
+                                      navigate(item.path);
+                                      setIsDrawerOpen(false);
+                                    }}
+                                    className="w-full border-b px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2"
+                                    style={{
+                                      color: location.pathname === item.path ? 'white' : 'var(--color-text)',
+                                      backgroundColor: location.pathname === item.path ? 'var(--color-primary)' : 'transparent'
+                                    }}
+                                  >
+                                    {item.icon}
+                                    <span>{item.name}</span>
+                                  </button>
+                                ))}
+
+                                <div className="flex flex-row">
+                                  <button
+                                    key={'Add-Expand'}
+                                    onClick={() => {
+                                      setIsDrawerOpen(true);
+                                      setAddSectionExpanded(!addSectionExpanded);
+                                    }}
+                                    className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2"
+                                    style={{
+                                      color: 'var(--color-text)',
+                                      backgroundColor: 'transparent'
+                                    }}
+                                  >
+                                    <File size={24} />
+                                    <span>Add New</span>
+                                  </button>
+                                  <div className="flex flex-row items-center">
+                                    {addSectionExpanded ? (<ChevronUp size={24} />) : (<ChevronRight size={24} />)}
+                                  </div>
+                                </div>
+                                {addSectionExpanded && (
+                                  <div className="ml-8">
+                                    {addTabs.map((tab) => (
+                                      <button
+                                        key={tab.id}
+                                        onClick={() => {
+                                          navigate(tab.path);
+                                          setIsDrawerOpen(false);
+                                        }}
+                                        className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2"
+                                        style={{
+                                          color: location.pathname === tab.path ? 'white' : 'var(--color-text)',
+                                          backgroundColor: location.pathname === tab.path ? 'var(--color-primary)' : 'transparent'
+                                        }}
+                                      >
+                                        <span className="text-lg">{tab.icon}</span>
+                                        <span>{tab.label}</span>
+                                      </button>
+                                    ))}
+                                  </div>
+                                )}
+                                <div className="flex flex-row">
+                                  <button
+                                    key={'Account-Expand'}
+                                    onClick={() => {
+                                      setIsDrawerOpen(true);
+                                      setSettingsSectionExpanded(!settingsSectionExpanded);
+                                    }}
+                                    className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2"
+                                    style={{
+                                      color: 'var(--color-text)',
+                                      backgroundColor: 'transparent'
+                                    }}
+                                  >
+                                    <Settings size={24} />
+                                    <span>Account</span>
+                                  </button>
+                                  <div className="flex flex-row items-center">
+                                    {settingsSectionExpanded ? (<ChevronUp size={24} />) : (<ChevronRight size={24} />)}
+                                  </div>
+                                </div>
+
+                                {/* Settings Tabs */}
+                                {settingsSectionExpanded && (
+                                  <div className="ml-8">
+                                    {settingsTabs.map((tab) => (
+                                      <button
+                                        key={tab.id}
+                                        onClick={() => {
+                                          navigate(`/settings/${tab.id}`);
+                                          setIsDrawerOpen(false);
+                                        }}
+                                        className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2"
+                                        style={{
+                                          color: location.pathname === `/settings/${tab.id}` ? 'white' : 'var(--color-text)',
+                                          backgroundColor: location.pathname === `/settings/${tab.id}` ? 'var(--color-primary)' : 'transparent'
+                                        }}
+                                      >
+                                        <span className="text-lg">{tab.icon}</span>
+                                        <span>{tab.label}</span>
+                                      </button>
+                                    ))}
+                                    {/* Logout Button */}
+                                    <button
+                                      onClick={handleLogout}
+                                      className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mt-4"
+                                      style={{
+                                        color: 'var(--color-text)',
+                                        backgroundColor: 'transparent'
+                                      }}
+                                    >
+                                      <span className="text-lg">🚪</span>
+                                      <span>Logout</span>
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              {/* Main Navigation */}
-              <div className="mb-6" >
-                {mainNavItems.map((item) => (
-                  <button
-                    key={item.name}
-                    onClick={() => {
-                      navigate(item.path);
-                      setIsDrawerOpen(false);
-                    }}
-                    className="w-full border-b px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2"
-                    style={{
-                      color: location.pathname === item.path ? 'white' : currentTheme.colors.text,
-                      backgroundColor: location.pathname === item.path ? currentTheme.colors.primary : 'transparent'
-                    }}
-                  >
-                    {item.icon}
-                    <span>{item.name}</span>
-                  </button>
-                ))}
-
-              <div className="flex flex-row">
-                  <button
-                    key={'Add-Expand'}
-                    onClick={() => {
-                      setIsDrawerOpen(true);
-                      setAddSectionExpanded(!addSectionExpanded);
-                    }}
-                    className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2"
-                    style={{
-                      color: currentTheme.colors.text,
-                      backgroundColor: 'transparent'
-                    }}
-                  >
-                    <File size={24} />
-                    <span>Add New</span>
-                  </button>
-                  <div className="flex flex-row items-center">
-                    {addSectionExpanded ? (<ChevronUp size={24} />) : (<ChevronRight size={24} />)}
-                  </div>
-                </div>
-                {addSectionExpanded && (
-                  <div className="ml-8">
-                    {addTabs.map((tab) => (
-                      <button
-                        key={tab.id}
-                        onClick={() => {
-                          navigate(tab.path);
-                          setIsDrawerOpen(false);
-                        }}
-                        className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2"
-                        style={{
-                          color: location.pathname === tab.path ? 'white' : currentTheme.colors.text,
-                          backgroundColor: location.pathname === tab.path ? currentTheme.colors.primary : 'transparent'
-                        }}
-                      >
-                        <span className="text-lg">{tab.icon}</span>
-                        <span>{tab.label}</span>
-                      </button>
-                    ))}
-                  </div>
                 )}
-                <div className="flex flex-row">
-                  <button
-                    key={'Account-Expand'}
-                    onClick={() => {
-                      setIsDrawerOpen(true);
-                      setSettingsSectionExpanded(!settingsSectionExpanded);
-                    }}
-                    className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2"
-                    style={{
-                      color: currentTheme.colors.text,
-                      backgroundColor: 'transparent'
-                    }}
-                  >
-                    <Settings size={24} />
-                    <span>Account</span>
-                  </button>
-                  <div className="flex flex-row items-center">
-                    {settingsSectionExpanded ? (<ChevronUp size={24} />) : (<ChevronRight size={24} />)}
-                  </div>
-                </div>
-
-              {/* Settings Tabs */}
-              {settingsSectionExpanded && (
-                <div className="ml-8">
-                {settingsTabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    onClick={() => {
-                      navigate(`/settings/${tab.id}`);
-                      setIsDrawerOpen(false);
-                    }}
-                    className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2"
-                    style={{
-                      color: location.pathname === `/settings/${tab.id}` ? 'white' : currentTheme.colors.text,
-                      backgroundColor: location.pathname === `/settings/${tab.id}` ? currentTheme.colors.primary : 'transparent'
-                    }}
-                  >
-                    <span className="text-lg">{tab.icon}</span>
-                    <span>{tab.label}</span>
-                  </button>
-                ))}
-                {/* Logout Button */}
-                <button
-                  onClick={handleLogout}
-                  className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mt-4"
-                  style={{
-                    color: currentTheme.colors.text,
-                    backgroundColor: 'transparent'
-                  }}
-                >
-                  <span className="text-lg">🚪</span>
-                  <span>Logout</span>
-                </button>
-              </div>)}
-
-              </div>
-              </div>
-          </div>
-        </div>
-      )}
               </>
             ) : (
               <div className="hidden md:flex items-center space-x-4">
                 <Link
                   to="/login"
-                  className="text-sm font-medium"
-                  style={{ color: currentTheme.colors.text }}
+                  className="text-sm font-medium transition-colors duration-200 hover:opacity-80"
+                  style={{ color: 'var(--color-text)' }}
                 >
                   Login
                 </Link>
                 <Link
                   to="/signup"
-                  className="text-sm font-medium px-4 py-2 rounded-lg"
+                  className="text-sm font-medium px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105"
                   style={{
-                    backgroundColor: currentTheme.colors.primary,
-                    color: currentTheme.colors.buttonText
+                    backgroundColor: 'var(--color-primary)',
+                    color: 'var(--color-text)'
                   }}
                 >
                   Sign Up

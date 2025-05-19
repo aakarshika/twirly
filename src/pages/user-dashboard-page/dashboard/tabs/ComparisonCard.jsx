@@ -94,7 +94,7 @@ const ComparisonCard = ({ comparison, onDelete, isPublic }) => {
   };
 
   const handleComparisonClick = (comparison) => {
-    navigate(`/comparison/${comparison.id}`);
+    navigate(`/compare/${comparison.id}`);
   };
 
   // Define the number of placeholders needed
