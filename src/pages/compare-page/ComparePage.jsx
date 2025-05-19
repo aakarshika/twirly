@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, useNavigate, Routes, Route, useLocation } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useHeader } from '../../contexts/HeaderContext';
 import { useAuth } from '../../contexts/AuthContext';
@@ -17,6 +17,7 @@ const ComparePage = () => {
   const { id } = useParams();
   const currentSetId = parseInt(id);
   const navigate = useNavigate();
+  const location = useLocation();
   const { currentTheme } = useTheme();
   const { isHeaderVisible, setIsHeaderVisible } = useHeader();
   const { user } = useAuth();
@@ -24,8 +25,37 @@ const ComparePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userVotedAll, setUserVotedAll] = useState(false);
+  const [initialNavigationDone, setInitialNavigationDone] = useState(false);
+  const [showTrending, setShowTrending] = useState(false);
+  const trendingRef = useRef(null);
   
   const { items, currentSet } = useComparisonDetails(currentSetId);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShowTrending(true);
+          observer.disconnect(); // Stop observing once loaded
+        }
+      },
+      {
+        root: null,
+        rootMargin: '100px', // Start loading slightly before the element comes into view
+        threshold: 0.1
+      }
+    );
+
+    if (trendingRef.current) {
+      observer.observe(trendingRef.current);
+    }
+
+    return () => {
+      if (trendingRef.current) {
+        observer.disconnect();
+      }
+    };
+  }, []);
 
   const fetchSetMetrics = async () => {
     if (!currentSetId || !user) return;
@@ -48,6 +78,17 @@ const ComparePage = () => {
       setUserVotedAll(processedAspects.every(aspect => aspect.userVoted));
       setComparisonMetrics(processedAspects);
       setLoading(false);
+
+      // Handle initial navigation
+      if (!initialNavigationDone && location.pathname === `/compare/${currentSetId}`) {
+        const firstUnvotedAspect = processedAspects.find(aspect => !aspect.userVoted);
+        if (firstUnvotedAspect) {
+          navigate(`/compare/${currentSetId}/aspect/${firstUnvotedAspect.id}`);
+        } else {
+          navigate(`/compare/${currentSetId}/results`);
+        }
+        setInitialNavigationDone(true);
+      }
     } catch (err) {
       setError(err.message);
       setLoading(false);
@@ -83,7 +124,8 @@ const ComparePage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: currentTheme.colors.background }}>
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: currentTheme.colors.background ,
+       paddingTop: isHeaderVisible ? '64px': '0px' }}>
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading...</p>
@@ -94,7 +136,8 @@ const ComparePage = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background }}>
+      <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background ,
+        paddingTop: isHeaderVisible ? '64px': '0px'}}>
         <div className="h-screen flex items-center justify-center">
           <div className="text-center">
             <p className="text-red-500 mb-4">{error}</p>
@@ -115,9 +158,15 @@ const ComparePage = () => {
     : 'w-full mb-8 mt-4';
 
   return (
-    <div className="min-h-screen flex flex-col" style={{  paddingTop: isHeaderVisible ? '64px' : '0px' }}>
-      <div className="fixed top-0 left-0 right-0 z-10 bg-inherit">
-        <div className={containerClasses} style={{ paddingTop: isHeaderVisible ? '100px' : '0px' }}>
+    <div 
+      className="min-h-screen flex flex-col" 
+      style={{ 
+        paddingTop: isHeaderVisible ? '64px': '0px',
+        backgroundColor: currentTheme.colors.background
+      }}
+    >
+      <div className="w-full bg-inherit">
+        <div >
           <motion.div
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
@@ -149,7 +198,7 @@ const ComparePage = () => {
         </div>
       </div>
       
-      <div className="pt-[250px]">
+      <div className="flex-grow" >
         {currentSet && (
           <div className="flex-grow">
             <Routes>
@@ -174,11 +223,7 @@ const ComparePage = () => {
               <Route 
                 path="/" 
                 element={
-                  <CompareResultsView 
-                    items={items} 
-                    currentSetId={currentSetId} 
-                    currentSet={currentSet} 
-                  />
+                  <Navigate to={`/compare/${currentSetId}/results`} replace />
                 } 
               />
             </Routes>
@@ -188,7 +233,7 @@ const ComparePage = () => {
         <div 
           className="relative z-0 w-full transition-all duration-150 ease-in-out"
           style={{ 
-            backgroundColor: currentTheme.colors.background,
+            backgroundColor: currentTheme.colors.background
           }}
         >
           <div className="w-full max-w-4xl mx-auto">
@@ -201,7 +246,9 @@ const ComparePage = () => {
                 Explore Similar
               </h1>
             </div>
-            <Trending />
+            <div ref={trendingRef}>
+              {showTrending && <Trending />}
+            </div>
           </div>
         </div>
       </div>

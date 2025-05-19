@@ -1,36 +1,63 @@
 drop function fetch_popular_aspect_sets_for_user(v_user_id uuid);
-
-
 drop view popular_comparison_sets;
+
+drop view if exists comparison_set_vote_counts;
+CREATE OR REPLACE VIEW comparison_set_vote_counts AS
+SELECT 
+    csa.set_id,
+    COUNT(*) as total_votes
+FROM votes v
+JOIN comparison_set_aspects csa ON v.set_id = csa.id
+GROUP BY csa.set_id;
+
+drop view if exists comparison_set_comment_counts;
+CREATE OR REPLACE VIEW comparison_set_comment_counts AS
+SELECT 
+    csa.set_id,
+    COUNT(*) as total_comments
+FROM comparison_set_comments csc
+JOIN comparison_set_aspects csa ON csc.set_id = csa.id
+GROUP BY csa.set_id;
+
 CREATE OR REPLACE VIEW popular_comparison_sets AS
+WITH activity_scores AS (
+    SELECT 
+        entity_id as set_id,
+        SUM(
+            CASE 
+                WHEN activity_type = 'comparison_set_view' THEN 1
+                WHEN activity_type = 'vote' THEN 2
+                WHEN activity_type = 'vote_revert' THEN -2
+                WHEN activity_type = 'comment' THEN 5
+                WHEN activity_type = 'comment_reply' THEN 3
+                WHEN activity_type = 'like_comparison_set' THEN 3
+                WHEN activity_type = 'dislike_comparison_set' THEN -3
+                WHEN activity_type = 'unlike_comparison_set' THEN -3
+                WHEN activity_type = 'undislike_comparison_set' THEN 3
+                WHEN activity_type = 'create_comparison_set' THEN 10
+                WHEN activity_type = 'edit_comparison_set' THEN 5
+                ELSE 0
+            END * 
+            -- Time decay factor: activities from last 7 days get full weight, older activities get less weight
+            GREATEST(0.1, 1 - EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - created_at)) / (7 * 24 * 3600))
+        ) as popularity_score
+    FROM user_activity_log
+    WHERE entity_type = 'comparison_set'
+    GROUP BY entity_id
+)
 SELECT 
     cs.id as set_id,
     cs.user_id,
     cs.name,
-    csa.description,
-    cs.category_id,
     cs.created_at,
-    csa.metric_name,
-    csa.id as aspect_set_id,
-    votes_count.total_votes,
-    comments_count.total_comments,
-    COALESCE(votes_count.total_votes, 0) * 2 + COALESCE(comments_count.total_comments, 0) AS popularity_score
-FROM comparison_set_aspects csa 
-join comparison_sets cs on cs.id = csa.set_id and cs.is_published = true
-LEFT JOIN (
-    SELECT 
-        v.set_id, 
-        COUNT(v.id) AS total_votes
-    FROM votes v
-    GROUP BY v.set_id
-) votes_count ON csa.id = votes_count.set_id
-LEFT JOIN (
-    SELECT 
-        csc.set_id, 
-        COUNT(csc.id) AS total_comments
-    FROM comparison_set_comments csc 
-    GROUP BY csc.set_id
-) comments_count ON csa.id = comments_count.set_id
+    COALESCE(vc.total_votes, 0) as total_votes,
+    COALESCE(cc.total_comments, 0) as total_comments,
+    COALESCE(activity_scores.popularity_score, 0) as popularity_score
+FROM comparison_sets cs
+LEFT JOIN activity_scores ON cs.id = activity_scores.set_id
+LEFT JOIN comparison_set_vote_counts vc ON cs.id = vc.set_id
+LEFT JOIN comparison_set_comment_counts cc ON cs.id = cc.set_id
+WHERE cs.is_published = true
 ORDER BY popularity_score DESC;
 
 drop  VIEW searchable_items ;
@@ -44,16 +71,19 @@ LEFT JOIN reviews r ON i.id = r.item_id
 GROUP BY i.id
 ORDER BY avg_likes DESC, review_count DESC;
 
-
-
-
 create or replace function fetch_popular_aspect_sets_for_user(v_user_id uuid)
 returns setof popular_comparison_sets as $$
 begin
   return query
-  select cas.*
-  from popular_comparison_sets cas
-  where v_user_id is null or v_user_id not in (select vv.user_id from votes vv where vv.set_id = cas.aspect_set_id)
-  order by cas.popularity_score desc;
+  select pcs.*
+  from popular_comparison_sets pcs
+  where v_user_id is null 
+    or v_user_id not in (
+      select v.user_id 
+      from votes v 
+      join comparison_set_aspects csa on v.set_id = csa.id 
+      where csa.set_id = pcs.set_id
+    )
+  order by pcs.popularity_score desc;
 end;
 $$ language plpgsql;

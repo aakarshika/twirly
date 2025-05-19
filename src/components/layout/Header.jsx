@@ -26,7 +26,6 @@ const Header = () => {
   const [error, setError] = useState(null);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const { isHeaderVisible, setIsHeaderVisible } = useHeader();
-  const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -126,24 +125,40 @@ const Header = () => {
 
   // Add scroll event listener for header visibility
   useEffect(() => {
+    let ticking = false;
+    let lastScrollY = window.scrollY;
+    let scrollTimeout;
+
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      // Show header when scrolling up or at the top of the page
-      if (currentScrollY < lastScrollY || currentScrollY < 10) {
-        setIsHeaderVisible(true);
-      } 
-      // Hide header when scrolling down and not at the top
-      else if (currentScrollY > lastScrollY && currentScrollY > 10) {
-        setIsHeaderVisible(false);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          const scrollDelta = currentScrollY - lastScrollY;
+          
+          // Only update if we've scrolled more than 5 pixels
+          if (Math.abs(scrollDelta) > 5) {
+            // Show header when scrolling up or at the top of the page
+            if (currentScrollY < lastScrollY || currentScrollY < 10) {
+              setIsHeaderVisible(true);
+            } 
+            // Hide header when scrolling down and not at the top
+            else if (currentScrollY > lastScrollY && currentScrollY > 10) {
+              setIsHeaderVisible(false);
+            }
+            
+            lastScrollY = currentScrollY;
+          }
+          
+          ticking = false;
+        });
+        
+        ticking = true;
       }
-      
-      setLastScrollY(currentScrollY);
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY, setIsHeaderVisible]);
+  }, [setIsHeaderVisible]);
 
   if (loading) {
     return (
@@ -166,11 +181,12 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed container mx-auto top-0 left-0 right-0 z-40 w-full border-b ${!isHeaderVisible ? 'hidden' : ''}`}
+      className={`fixed container mx-auto top-0 left-0 right-0 z-50 w-full border-b ${!isHeaderVisible ? 'hidden' : ''}`}
       style={{
         backgroundColor: location.pathname.includes('/compare/') ? currentTheme.colors.primary : currentTheme.colors.background,
-        paddingTop: 'calc( var(--safe-area-inset-top))',
+        paddingTop: 'calc(var(--safe-area-inset-top))',
         borderColor: currentTheme.colors.card,
+        '--header-height': '64px'
       }}
     >
       <div className="px-4 header-content">

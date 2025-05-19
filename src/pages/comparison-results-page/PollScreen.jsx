@@ -6,7 +6,6 @@ import BarChart from './comparison-sections/BarChart';
 import { useComparisonDetails } from '../../hooks/useComparisonDetails';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
-import ComparisonGridSkeleton from '../../components/skeletons/ComparisonGridSkeleton';
 import ComparisonCirclesView from './ComparisonCirclesView';
 import Trending from '../trending-page/Trending';
 import { Globe2, TrendingUp } from 'lucide-react';
@@ -24,7 +23,6 @@ const PollScreen = ({items, currentSetId, currentSet}) => {
     if (!currentSetId || !user) return;
     
     try {
-      // Fetch comparison aspects with their votes
       const { data: comparisonSetAspects, error } = await supabase
         .from('comparison_set_aspects')
         .select('*, votes(*)')
@@ -32,7 +30,6 @@ const PollScreen = ({items, currentSetId, currentSet}) => {
 
       if (error) throw error;
 
-      // Process aspects to include user vote status
       const processedAspects = comparisonSetAspects.map(aspect => ({
         ...aspect,
         userVoted: aspect.votes.some(vote => vote.user_id === user.id)
@@ -45,44 +42,40 @@ const PollScreen = ({items, currentSetId, currentSet}) => {
     }
   };
 
-  // Fetch metrics when component mounts or when set ID changes
   useEffect(() => {
     fetchSetMetrics();
   }, [currentSetId, user]);
 
   return (
-    <div className="min-h-screen h-full flex flex-col max-w-4xl mx-auto"
+    <div 
+      className="min-h-screen w-full flex flex-col items-center justify-center"
       style={{ 
         backgroundColor: currentTheme.colors.background
-      }}>
-      {items && items.length > 0 && (
-        <ComparisonCirclesView 
-          items={items} 
-          comparisonMetrics={comparisonMetrics}
-          comparison={currentSet}
-          userVotedAll={userVotedAll}
-        />
-      )}
-      
-      {userVotedAll && items && items.length > 0 && (
-        <div 
-          className="relative z-0 w-full transition-all duration-150 ease-in-out"
-          style={{ 
-            backgroundColor: currentTheme.colors.background,
-          }}
-        >
-          <div className="w-full max-w-4xl mx-auto">
-            <div className="w-full p-1" style={{ backgroundColor: 'white', marginBottom: '100px' }}>
-              <div className="">
-                <BarChart 
-                  items={items} 
-                  comparisonMetrics={comparisonMetrics}
-                />
-              </div>
+      }}
+    >
+      <div className="w-full max-w-4xl">
+        {items && items.length > 0 && (
+          <div className="w-full flex flex-col items-center">
+            <ComparisonCirclesView 
+              items={items} 
+              comparisonMetrics={comparisonMetrics}
+              comparison={currentSet}
+              userVotedAll={userVotedAll}
+            />
+          </div>
+        )}
+        
+        {userVotedAll && items && items.length > 0 && (
+          <div className="w-full mt-8">
+            <div className="w-full bg-white rounded-lg shadow-sm p-6">
+              <BarChart 
+                items={items} 
+                comparisonMetrics={comparisonMetrics}
+              />
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

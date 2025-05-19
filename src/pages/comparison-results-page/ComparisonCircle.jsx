@@ -9,28 +9,25 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, runnerUp, tot
 
     const badgeClasses = isMobile ? {
         container: "absolute top-1 left-1 transform -translate-x-1/2 z-10",
-        badge: "flex items-center gap-1.5 rounded-lg px-3 py-1.5 shadow-lg",
+        badge: "flex justify-between items-center gap-1.5 rounded-lg px-3 py-1.5 shadow-lg",
         icon: "w-6 h-6",
         text: "text-xs font-semibold",
         sparkles: "w-3 h-3"
     } : {
         container: "absolute top-4 left-1/2 transform -translate-x-1/2 z-10",
-        badge: "flex items-center gap-2 rounded-lg px-4 py-2 shadow-lg",
+        badge: "flex justify-between items-center gap-2 rounded-lg px-4 py-2 shadow-lg",
         icon: "w-6 h-6",
         text: "text-sm font-semibold",
         sparkles: "w-4 h-4"
     };
 
     return (
-        <motion.div
+        <div
             key={item.id}
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.2 }}
-            className="relative w-full"
+            className="relative w-full h-full flex flex-col items-center"
         >
             <motion.div 
-                className="relative bg-white h-full rounded-xl shadow-lg overflow-hidden"
+                className="relative bg-white w-full h-full rounded-xl shadow-lg overflow-hidden"
                 style={{
                     backgroundColor: winner && winner.id !== item.id ? 
                         itemColor.substring(0, itemColor.length - 1) + ', 0.2)' : 
@@ -83,8 +80,8 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, runnerUp, tot
                         <motion.div 
                             className={`${badgeClasses.badge} ${
                                 winner?.id === item.id 
-                                    ? 'bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400'
-                                    : 'bg-gradient-to-r from-blue-400 via-blue-500 to-blue-400'
+                                    ? 'flex bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400'
+                                    : 'flex bg-gradient-to-r from-blue-400 via-blue-500 to-blue-400'
                             }`}
                             animate={{ 
                                 boxShadow: winner?.id === item.id ? [
@@ -141,7 +138,7 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, runnerUp, tot
                                 <>
                                     <motion.div
                                         animate={{ 
-                                            rotate: [0, 5, 0],
+                                            rotate: [0, 5, 0, -5, 0],
                                             scale: [1, 1.05, 1]
                                         }}
                                         transition={{
@@ -159,7 +156,6 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, runnerUp, tot
                     </motion.div>
                 )}
 
-                {/* Content Container */}
                 <div className={`p-6 ${isMobile ? 'pt-12' : 'pt-16'}`}>
                     {/* Image or Fallback */}
                     <div className="relative w-full aspect-square mb-4 rounded-lg overflow-hidden">
@@ -171,7 +167,7 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, runnerUp, tot
                                     className="w-full h-full object-cover"
                                     loading="lazy"
                                 />
-                                <div className="absolute items-center justify-center bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent">
+                                <div className="absolute inset-0 flex items-end justify-center p-4 bg-gradient-to-t from-black/70 to-transparent">
                                     <h3 className="text-lg font-bold text-white text-center line-clamp-2">
                                         {item.name}
                                     </h3>
@@ -199,28 +195,28 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, runnerUp, tot
 
                     {/* Leading Metrics */}
                     {item.leadingMetrics && item.leadingMetrics.length > 0 && (
-                      item.leadingMetrics.map((metric) => (
-                        <motion.div 
-                            key={metric.metric_name}
-                            className="mt-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-purple-200 rounded-full"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.5 }}
-                        >
-                            <div className="flex flex-col flex-wrap items-center gap-2 justify-center">
-                                <div className="flex flex-row items-center gap-2">
-                                    <Target className="w-4 h-4 text-purple-600" />
-                                    <span className="text-sm font-medium text-purple-700">
-                                        {splitAndJoin(metric.metric_name)}
-                                    </span>
-                                </div>
-                            </div>
-                        </motion.div>
-                      ))
+                        <div className="flex flex-col gap-2">
+                            {item.leadingMetrics.map((metric) => (
+                                <motion.div 
+                                    key={metric.metric_name}
+                                    className="px-4 py-2 bg-gradient-to-r from-purple-100 to-purple-200 rounded-full"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: 0.5 }}
+                                >
+                                    <div className="flex items-center justify-center gap-2">
+                                        <Target className="w-4 h-4 text-purple-600" />
+                                        <span className="text-sm font-medium text-purple-700">
+                                            {splitAndJoin(metric.metric_name)}
+                                        </span>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
                     )}
                 </div>
             </motion.div>
-        </motion.div>
+        </div>
     );
 };
 
