@@ -9,6 +9,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useHeader } from '../../contexts/HeaderContext';
 import CommentAppearancesTab from './tabs/CommentAppearancesTab';
 import AppearancesTab from './tabs/AppearancesTab';
+
 const ProductDetails = () => {
   const { itemId } = useParams();
   const { currentTheme } = useTheme();
@@ -154,28 +155,90 @@ const ProductDetails = () => {
     }
   };
 
-  if (loading) return <div className="flex justify-center items-center h-screen">Loading...</div>;
-  if (error) return <div className="text-red-500 p-4">Error: {error}</div>;
-  if (!item) return <div className="p-4">Product not found</div>;
+  if (loading) {
+    return (
+      <div 
+        className="min-h-screen flex flex-col items-center justify-center transition-all duration-300 ease-in-out"
+        style={{ backgroundColor: 'var(--color-background)' }}
+      >
+        <div className="text-center animate-fade-in">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto transition-transform duration-300" 
+               style={{ borderColor: 'var(--color-primary)' }}></div>
+          <p className="mt-4" style={{ color: 'var(--color-text)' }}>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div 
+        className="min-h-screen flex flex-col items-center justify-center transition-all duration-300 ease-in-out"
+        style={{ backgroundColor: 'var(--color-background)' }}
+      >
+        <div className="text-center animate-fade-in">
+          <p className="text-red-500 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 rounded-full font-semibold transition-all duration-200 hover:scale-105"
+            style={{ 
+              backgroundColor: 'var(--color-primary)',
+              color: 'var(--color-text)'
+            }}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!item) {
+    return (
+      <div 
+        className="min-h-screen flex flex-col items-center justify-center transition-all duration-300 ease-in-out"
+        style={{ backgroundColor: 'var(--color-background)' }}
+      >
+        <div className="text-center animate-fade-in">
+          <p style={{ color: 'var(--color-text)' }}>Product not found</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background,
-      position: 'relative',
-      top: isHeaderVisible ? '64px' : '0px',
-    }}>
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <ProductHeader item={item} />
-        <QuickStats comparisonSets={comparisonSets} reviews={reviews} />
-        
-        <AppearancesTab
-            comparisonSets={comparisonSets}
-            item={item}
-          />
-          <h4 className="p-4">Review Mentions </h4>
-        <CommentAppearancesTab 
-            comparisonSets={comparisonSets}
-            item={item}
-          />
+    <div 
+      className="min-h-screen flex flex-col transition-all duration-200 ease-in-out"
+      style={{ 
+        backgroundColor: 'var(--color-background)',
+        position: 'relative',
+        top: isHeaderVisible ? '64px' : '0px',
+        paddingTop: 'env(safe-area-inset-top)',
+        paddingBottom: 'env(safe-area-inset-bottom)'
+      }}
+    >
+      <div className="max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-8 py-8">
+        <div className="space-y-8">
+          <ProductHeader item={item} />
+          <QuickStats comparisonSets={comparisonSets} reviews={reviews} />
+          
+          <div className="space-y-6">
+            <AppearancesTab
+              comparisonSets={comparisonSets}
+              item={item}
+            />
+            <div className="border-b transition-colors duration-200" style={{ borderColor: 'var(--color-border)' }}>
+              <h4 className="p-4 text-lg font-semibold transition-colors duration-200" 
+                  style={{ color: 'var(--color-text)' }}>
+                Review Mentions
+              </h4>
+            </div>
+            <CommentAppearancesTab 
+              comparisonSets={comparisonSets}
+              item={item}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

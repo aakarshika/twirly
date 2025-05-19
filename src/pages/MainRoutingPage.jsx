@@ -27,6 +27,9 @@ import FeedbackManagement from './feedback/feedback-page/FeedbackManagement';
 import CreateComparison from './user-dashboard-page/dashboard/tabs/CreateComparison';
 import { TrendingUp } from 'lucide-react';
 import ComparePage from './compare-page/ComparePage';
+import { LoadingProvider } from '../contexts/LoadingContext';
+import LoadingScreen from '../components/common/LoadingScreen';
+import InitialLoadingScreen from '../components/common/InitialLoadingScreen';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -58,28 +61,12 @@ const ProtectedRoute = ({ children }) => {
     }
   }, [user]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <img src="/public_logo_transparent.png" alt="logo" className="h-100 w-100 mx-auto rotate-45" />
-        </div>
-      </div>
-    );
+  if (loading || checkingOnboarding) {
+    return <LoadingScreen showLogo={true} message="Loading..." />;
   }
 
   if (!user) {
     return <Navigate to="/landing" />;
-  }
-
-  if (checkingOnboarding) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <img src="/public_logo_transparent.png" alt="logo" className="h-100 w-100 mx-auto rotate-45" />
-        </div>
-      </div>
-    );
   }
 
   if (!isOnboardingComplete && location.pathname !== '/onboarding') {
@@ -126,90 +113,112 @@ const ScrollToTop = () => {
 const MainRoutingPage = () => {
   const { currentTheme } = useTheme();
   const { loading } = useAuth();
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
+  useEffect(() => {
+    // Simulate minimum loading time to prevent flash
+    const timer = setTimeout(() => {
+      setIsInitialLoad(false);
+    }, 1000); // Minimum 1 second loading time
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Show initial loading screen during first load
+  if (isInitialLoad) {
+    return <InitialLoadingScreen />;
+  }
+
+  // Show regular loading screen for subsequent auth checks
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: currentTheme.colors.background }}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading?...</p>
-        </div>
-      </div>
-    );
+    return <LoadingScreen showLogo={true} message="Loading..." />;
   }
 
   return (
-      <FeedbackProvider>
+    <FeedbackProvider>
+      <LoadingProvider>
         <ScrollToTop />
-        <div className="min-h-screen flex flex-col" style={{ backgroundColor: currentTheme.colors.background, color: currentTheme.colors.text,
-                paddingBottom: 'calc( var(--safe-area-inset-bottom))' }}>
+        <div 
+          className="min-h-screen flex flex-col transition-all duration-200 ease-in-out"
+          style={{ 
+            backgroundColor: 'var(--color-background)',
+            color: 'var(--color-text)',
+            paddingBottom: 'calc(var(--safe-area-inset-bottom))'
+          }}
+        >
           <Header />
-            <main 
-              className="flex-grow"
-              style={{ 
-                paddingBottom: '100px',
-                paddingTop: 'calc( var(--safe-area-inset-top))',
-              }}
-            >
-              <Routes>
-                {/* Protected Routes */}
-                <Route path="/onboarding" element={<ProtectedRoute><OnboardingFlow /></ProtectedRoute>}/>
-                <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>}/>
-                <Route path="/" element={<ProtectedRoute>
-                  
-        <div className="flex justify-center p-4" style={{ marginTop: true ? '64px' : '0px' }}>
-          <TrendingUp size={24} className="mr-2" style={{ color: currentTheme.colors.primary }} />
-          <h1 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
-            Trending Comparisons
-          </h1>
-        </div>
-        <Trending /></ProtectedRoute>}/>
-                
-                {/* Compare routes */}
-                <Route path="/compare/:id/*" element={
-                  <ProtectedRoute>
-                      <ComparePage />
-                  </ProtectedRoute>
-                }/>
-                
-                
-                {/* Other routes */}
-                <Route path="/new-comparison" element={
-                  <ProtectedRoute>
-                    <ComparisonDraftProvider>
-                      <CreateComparison />
-                    </ComparisonDraftProvider>
-                  </ProtectedRoute>
-                }/>
-                <Route path="/edit-comparison/:id" element={
-                  <ProtectedRoute>
-                    <ComparisonDraftProvider>
-                      <CreateComparison />
-                    </ComparisonDraftProvider>
-                  </ProtectedRoute>}/>
-                <Route path="/item/:itemId" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>}/>
-                <Route path="/item/:itemId/:tab" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>}/>
-                <Route path="/settings/*" element={<ProtectedRoute><Settings /></ProtectedRoute>}/>
-                <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>}/>
-                <Route path="/dashboard/:tab" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>}/>
-                <Route path="/user/:username" element={<UserProfile />} />
-                <Route path="/user/:username/:tab" element={<UserProfile />} />
-                <Route path="/feedback" element={<ProtectedRoute><FeedbackManagement /></ProtectedRoute>} />
+          <main 
+            className="flex-grow transition-all duration-200 ease-in-out"
+            style={{ 
+              paddingBottom: '100px',
+              paddingTop: 'calc(var(--safe-area-inset-top) + 64px)',
+              maxWidth: '100%',
+              margin: '0 auto'
+            }}
+          >
+            <Routes>
+              {/* Protected Routes */}
+              <Route path="/onboarding" element={<ProtectedRoute><OnboardingFlow /></ProtectedRoute>}/>
+              <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>}/>
+              <Route path="/" element={<ProtectedRoute>
+                <div className="flex justify-center p-4 md:p-6 lg:p-8 transition-all duration-200" 
+                     style={{ marginTop: true ? '64px' : '0px' }}>
+                  <TrendingUp size={24} className="mr-2 transition-colors duration-200" 
+                             style={{ color: 'var(--color-primary)' }} />
+                  <h1 className="text-2xl font-bold transition-colors duration-200" 
+                      style={{ color: 'var(--color-text)' }}>
+                    Trending Comparisons
+                  </h1>
+                </div>
+                <Trending />
+              </ProtectedRoute>}/>
+              
+              {/* Compare routes */}
+              <Route path="/compare/:id/*" element={
+                <ProtectedRoute>
+                    <ComparePage />
+                </ProtectedRoute>
+              }/>
+              
+              
+              {/* Other routes */}
+              <Route path="/new-comparison" element={
+                <ProtectedRoute>
+                  <ComparisonDraftProvider>
+                    <CreateComparison />
+                  </ComparisonDraftProvider>
+                </ProtectedRoute>
+              }/>
+              <Route path="/edit-comparison/:id" element={
+                <ProtectedRoute>
+                  <ComparisonDraftProvider>
+                    <CreateComparison />
+                  </ComparisonDraftProvider>
+                </ProtectedRoute>}/>
+              <Route path="/item/:itemId" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>}/>
+              <Route path="/item/:itemId/:tab" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>}/>
+              <Route path="/settings/*" element={<ProtectedRoute><Settings /></ProtectedRoute>}/>
+              <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>}/>
+              <Route path="/dashboard/:tab" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>}/>
+              <Route path="/user/:username" element={<UserProfile />} />
+              <Route path="/user/:username/:tab" element={<UserProfile />} />
+              <Route path="/feedback" element={<ProtectedRoute><FeedbackManagement /></ProtectedRoute>} />
 
-                {/* Waiting Verification Route */}
-                <Route path="/waiting-verification" element={<WaitingVerification />} />
+              {/* Waiting Verification Route */}
+              <Route path="/waiting-verification" element={<WaitingVerification />} />
 
-                {/* Public Routes */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/landing" element={<Landing />} />
-                <Route path="/signup" element={<Signup />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-              </Routes>
-            </main>
+              {/* Public Routes */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/landing" element={<Landing />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+            </Routes>
+          </main>
           <FloatingFeedbackButton />
           <FeedbackModal />
         </div>
-      </FeedbackProvider>
+      </LoadingProvider>
+    </FeedbackProvider>
   );
 };
 

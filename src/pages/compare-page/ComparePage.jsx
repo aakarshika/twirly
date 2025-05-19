@@ -309,11 +309,11 @@ const ComparePage = () => {
             backgroundColor: currentTheme.colors.background
           }}
         >
-          <div className="w-full max-w-4xl mx-auto">
-            <div id="trending" className="flex h-full justify-start p-4">
+          <div className="w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+            <div id="trending" className="flex h-full justify-start py-4">
             </div>
     
-            <div className="flex justify-start p-4">
+            <div className="flex justify-start py-4">
               <Globe2 size={24} className="mr-2" style={{ color: currentTheme.colors.primary }} />
               <h1 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
                 Explore Similar
