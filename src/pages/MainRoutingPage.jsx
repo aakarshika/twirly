@@ -17,9 +17,7 @@ import Signup from '../components/auth/Signup';
 import ForgotPassword from '../components/auth/ForgotPassword';
 import OnboardingFlow from './onboarding/OnboardingFlow';
 import { userService } from '../services/userService';
-import PollScreenAspect from './comparison-aspect-page/PollScreenAspect';
 import SearchPage from './search/search-page/SearchPage';
-import { useSwipeable } from 'react-swipeable';
 import UserProfile from './user-dashboard-page/UserProfile';
 import WaitingVerification from '../components/auth/WaitingVerification';
 import { FeedbackProvider } from '../contexts/FeedbackContext';
@@ -27,10 +25,8 @@ import FloatingFeedbackButton from './feedback/FloatingFeedbackButton';
 import FeedbackModal from './feedback/FeedbackModal';
 import FeedbackManagement from './feedback/feedback-page/FeedbackManagement';
 import CreateComparison from './user-dashboard-page/dashboard/tabs/CreateComparison';
-import AddProductModal from './user-dashboard-page/dashboard/AddProductModal';
 import { TrendingUp } from 'lucide-react';
 import ComparePage from './compare-page/ComparePage';
-import CompareAspectView from './compare-page/CompareAspectView';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -193,8 +189,6 @@ const MainRoutingPage = () => {
                   </ProtectedRoute>}/>
                 <Route path="/item/:itemId" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>}/>
                 <Route path="/item/:itemId/:tab" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>}/>
-                <Route path="/dashboard/products/add" element={<ProtectedRoute><AddProductModal /></ProtectedRoute>}/>
-                <Route path="/dashboard/products/edit/:id" element={<ProtectedRoute><AddProductModal /></ProtectedRoute>}/>
                 <Route path="/settings/*" element={<ProtectedRoute><Settings /></ProtectedRoute>}/>
                 <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>}/>
                 <Route path="/dashboard/:tab" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>}/>

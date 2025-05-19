@@ -63,7 +63,7 @@ const SearchBar = ({ searchComplete }) => {
         navigate(`/item/${result.id}`);
         break;
       case 'comparison':
-        navigate(`/comparison/${result.id}`);
+        navigate(`/compare/${result.id}`);
         break;
       case 'user':
         navigate(`/user/${result.id}`);
