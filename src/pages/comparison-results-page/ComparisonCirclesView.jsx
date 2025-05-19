@@ -29,7 +29,7 @@ const List = ({displayItems, isMobile, winner, runnerUp, comparison, totalVotes,
                             key={item.id}
                             className="flex w-full"
                             style={{ 
-                                opacity: isInCenterStage ? 0 : (shouldShow ? 1 : 0),
+                                opacity: 1,
                                 transition: 'opacity 0.2s ease-in-out'
                             }}
                         >
@@ -92,38 +92,6 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
         <div className="w-full">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className='flex flex-col'>
-                    {/* Desktop Layout */}
-                    <div className="hidden sm:block">
-                        <AnimatePresence mode="wait">
-                            {animationState === 'winner' && winner && (
-                                <CenterStage
-                                    item={winner}
-                                    isMobile={false}
-                                    comparison={comparison}
-                                    winner={winner}
-                                    runnerUp={runnerUp}
-                                    totalVotes={totalVotes}
-                                />
-                            )}
-                        </AnimatePresence>
-                    </div>
-
-                    {/* Mobile Layout */}
-                    <div className="sm:hidden">
-                        <AnimatePresence mode="wait">
-                            {animationState === 'winner' && winner && (
-                                <CenterStage
-                                    item={winner}
-                                    isMobile={true}
-                                    comparison={comparison}
-                                    winner={winner}
-                                    runnerUp={runnerUp}
-                                    totalVotes={totalVotes}
-                                />
-                            )}
-                        </AnimatePresence>
-                    </div>
-
                     {/* Desktop Layout */}
                     <div className="hidden sm:block">
                         <List 

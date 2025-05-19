@@ -27,9 +27,35 @@ const ComparePage = () => {
   const [userVotedAll, setUserVotedAll] = useState(false);
   const [initialNavigationDone, setInitialNavigationDone] = useState(false);
   const [showTrending, setShowTrending] = useState(false);
+  const [celebratingAspectId, setCelebratingAspectId] = useState(null);
+  const [currentAspect, setCurrentAspect] = useState(null);
   const trendingRef = useRef(null);
   
   const { items, currentSet } = useComparisonDetails(currentSetId);
+
+  const getNextUnvotedAspect = () => {
+    if (!comparisonMetrics.length) return null;
+    
+    const currentIndex = currentAspect 
+      ? comparisonMetrics.findIndex(metric => metric.id === currentAspect.id)
+      : -1;
+    
+    // First try to find unvoted aspects from current position to end
+    for (let i = currentIndex + 1; i < comparisonMetrics.length; i++) {
+      if (!comparisonMetrics[i].userVoted) {
+        return comparisonMetrics[i];
+      }
+    }
+    
+    // If no unvoted aspects found after current position, start from beginning
+    for (let i = 0; i < currentIndex; i++) {
+      if (!comparisonMetrics[i].userVoted) {
+        return comparisonMetrics[i];
+      }
+    }
+    
+    return null; // Return null if all aspects are voted
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -56,6 +82,17 @@ const ComparePage = () => {
       }
     };
   }, []);
+
+  // Update currentAspect when URL changes
+  useEffect(() => {
+    const aspectId = location.pathname.split('/').pop();
+    if (aspectId && aspectId !== 'results') {
+      const aspect = comparisonMetrics.find(metric => metric.id === parseInt(aspectId));
+      if (aspect) {
+        setCurrentAspect(aspect);
+      }
+    }
+  }, [location.pathname, comparisonMetrics]);
 
   const fetchSetMetrics = async () => {
     if (!currentSetId || !user) return;
@@ -113,6 +150,25 @@ const ComparePage = () => {
       const allVoted = updatedMetrics.every(metric => metric.userVoted);
       console.log('ComparePage: allVoted:', allVoted);
       setUserVotedAll(allVoted);
+
+      // Set celebrating aspect if vote was added
+      if (hasVoted) {
+        setCelebratingAspectId(parseInt(aspectId));
+        // Start celebration timer
+        setTimeout(() => {
+          setCelebratingAspectId(null);
+          
+          const next = getNextUnvotedAspect();
+
+          if (next) {
+            setCurrentAspect(next);
+            navigate(`/compare/${currentSetId}/aspect/${next.id}`);
+          } else {
+            setCurrentAspect(null);
+            navigate(`/compare/${currentSetId}/results`);
+          }
+        }, 3000);
+      }
       
       return updatedMetrics;
     });
@@ -174,9 +230,20 @@ const ComparePage = () => {
             className="text-white gap-4"
           >
             <AspectsProgressBar
+              onNextClick={() => {
+                const next = getNextUnvotedAspect();
+                if (next) {
+                  setCurrentAspect(next);
+                  navigate(`/compare/${id}/aspect/${next.id}`);
+                } else {
+                  setCurrentAspect(null);
+                  navigate(`/compare/${id}/results`);
+                }
+              }}
               comparisonMetrics={comparisonMetrics}
               onAspectClick={(aspect) => {
                 if (aspect.id === 'results') {
+                  setCurrentAspect(null);
                   navigate(`/compare/${id}/results`);
                 } else if (aspect.id === 'explore') {
                   const trendingElement = document.getElementById('trending');
@@ -188,11 +255,14 @@ const ComparePage = () => {
                     });
                   }
                 } else {
+                  setCurrentAspect(aspect);
                   navigate(`/compare/${id}/aspect/${aspect.id}`);
                 }
               }}
               userVotedAll={userVotedAll}
               currentSet={currentSet}
+              celebratingAspectId={celebratingAspectId}
+              currentAspect={currentAspect}
             />
           </motion.div>
         </div>
