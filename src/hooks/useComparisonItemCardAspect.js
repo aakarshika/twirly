@@ -44,13 +44,13 @@ export const useComparisonItemCardAspect = ({
     navigate(`/item/${item.id}`);
   };
 
-  const onVoteCasted = (e) => {
+  const onVoteCasted = async (e) => {
     if (userVoted) return;
-    handleVote(item.id);
+    await handleVote(item.id);
   };
 
-  const handleRevertClick = (e) => {
-    handleRevertVote();
+  const handleRevertClick = async (e) => {
+    await handleRevertVote();
   };
 
   const isVotedItem = userVoted && votedItemId === item.id;

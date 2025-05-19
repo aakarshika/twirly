@@ -7,14 +7,11 @@ import { submitReview, likeReview, getItemReviews } from '../services/reviews';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { COMPARISON_COLOR_SET } from '../lib/constants';
+export const useComparison = (id) => {
 
-const ComparisonContext = createContext();
-
-export const ComparisonProvider = ({ children }) => {
-  // Main state
-  const [items, setItems] = useState(initialItemSets[0]);
+  const [items, setItems] = useState([]);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
-  const [currentSetId, setCurrentSetId] = useState(null);
+  const [currentSetId, setCurrentSetId] = useState(id);
   const [currentComparisonName, setCurrentComparisonName] = useState(null);
   const [currentComparisonDescription, setCurrentComparisonDescription] = useState(null);
   const [currentSet, setCurrentSet] = useState(null);
@@ -66,98 +63,6 @@ export const ComparisonProvider = ({ children }) => {
       localStorage.setItem('currentSetId', currentSetId.toString());
     }
   }, [currentSetId]);
-
-  // Handle voting
-  const handleVote = async (itemId) => {
-    if (!currentSetId) {
-      console.error('No current set ID available');
-      return;
-    }
-
-    try {
-      // First check if user has already voted in this set
-      const hasVoted = await hasUserVoted(currentSetId, user);
-      if (hasVoted) {
-        console.log('User has already voted in this set');
-        setUserVoted(true);
-        return;
-      }
-
-      console.log('Handling vote in context:', { itemId, currentSetId });
-      // Cast the vote in the database
-      await castVote({ itemId, setId: currentSetId }, user);
-
-      // Update the local state
-      setItems(prevItems => 
-        prevItems.map(item => 
-          item.id === itemId ? { ...item, votes: (item.votes || 0) + 1 } : item
-        )
-      );
-      setUserVoted(true);
-      setVotedItemId(itemId);
-
-      // Refresh vote counts for all items
-      const updatedItems = await Promise.all(items.map(async item => {
-        const voteCount = await getVoteCount(currentSetId, item.id);
-        return {
-          ...item,
-          votes: voteCount || 0
-        };
-      }));
-      setItems(updatedItems);
-
-      console.log('Vote handled successfully');
-    } catch (error) {
-      console.error('Error in handleVote:', error);
-      if (error.message === 'User has already voted in this comparison set') {
-        setUserVoted(true);
-      }
-    }
-  };
-
-  // Handle vote reversion
-  const handleRevertVote = async () => {
-    console.log('Starting vote reversion process...');
-    console.log('Current state:', { currentSetId, userVoted, votedItemId });
-    
-    if (!currentSetId) {
-      console.error('No current set ID available');
-      return;
-    }
-
-    try {
-      console.log('Attempting to revert vote in database...');
-      // Revert the vote in the database
-      const success = await revertVote(currentSetId, user);
-      console.log('Revert vote result:', success);
-      
-      if (!success) {
-        console.log('No vote found to revert');
-        return;
-      }
-
-      console.log('Updating local state...');
-      // Update the local state
-      setUserVoted(false);
-      setVotedItemId(null);
-
-      console.log('Refreshing vote counts...');
-      // Refresh vote counts for all items
-      const updatedItems = await Promise.all(items.map(async item => {
-        const voteCount = await getVoteCount(currentSetId, item.id);
-        console.log(`Vote count for item ${item.id}:`, voteCount);
-        return {
-          ...item,
-          votes: voteCount || 0
-        };
-      }));
-      setItems(updatedItems);
-
-      console.log('Vote reversion completed successfully');
-    } catch (error) {
-      console.error('Error in handleRevertVote:', error);
-    }
-  };
 
   // Move to the next set of items
   const loadNextSet = () => {
@@ -394,16 +299,12 @@ export const ComparisonProvider = ({ children }) => {
   };
 
 
-  return (
-    <ComparisonContext.Provider
-      value={{
+  return {
         // Items and voting
         items,
         setItems,
         userVoted,
         setUserVoted,
-        handleVote,
-        handleRevertVote,
         loadNextSet,
         resetToDefault,
         completedSets,
@@ -447,14 +348,5 @@ export const ComparisonProvider = ({ children }) => {
         // Show combined review modal
         showCombinedReviewModal,
         setShowCombinedReviewModal
-      }}
-    >
-      {children}
-    </ComparisonContext.Provider>
-  );
+      };
 };
-
-// Custom hook for using the comparison context
-export const useComparison = () => useContext(ComparisonContext);
-
-export default ComparisonProvider;

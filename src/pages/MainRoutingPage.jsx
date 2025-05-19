@@ -2,13 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { ComparisonProvider } from '../contexts/ComparisonContext';
 import { ComparisonDraftProvider } from '../contexts/ComparisonDraftContext';
 import { useAuth } from '../contexts/AuthContext';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Trending from './trending-page/Trending';
-import PollScreen from './comparison-results-page/PollScreen';
 import ProductDetails from './product-details/ProductDetails';
 import UserDashboard from './user-dashboard-page/UserDashboard';
 import { useTheme } from '../contexts/ThemeContext';
@@ -31,6 +29,8 @@ import FeedbackManagement from './feedback/feedback-page/FeedbackManagement';
 import CreateComparison from './user-dashboard-page/dashboard/tabs/CreateComparison';
 import AddProductModal from './user-dashboard-page/dashboard/AddProductModal';
 import { TrendingUp } from 'lucide-react';
+import ComparePage from './compare-page/ComparePage';
+import CompareAspectView from './compare-page/CompareAspectView';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -169,21 +169,13 @@ const MainRoutingPage = () => {
         </div>
         <Trending /></ProtectedRoute>}/>
                 
-                {/* Comparison routes wrapped in ComparisonProvider */}
-                <Route path="/comparison-aspect/:id" element={
+                {/* Compare routes */}
+                <Route path="/compare/:id/*" element={
                   <ProtectedRoute>
-                    <ComparisonProvider>
-                      <PollScreenAspect />
-                    </ComparisonProvider>
+                      <ComparePage />
                   </ProtectedRoute>
                 }/>
-                <Route path="/comparison/:id" element={
-                  <ProtectedRoute>
-                    <ComparisonProvider>
-                      <PollScreen />
-                    </ComparisonProvider>
-                  </ProtectedRoute>
-                }/>
+                
                 
                 {/* Other routes */}
                 <Route path="/new-comparison" element={

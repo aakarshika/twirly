@@ -3,10 +3,11 @@ import { Heart } from 'lucide-react';
 import VoteStats from './VoteStats/VoteStats';
 import { useVotedCard } from '../../../hooks/useVotedCard';
 import './ComparisonItemCard.css';
+import { darkenColor } from '../../../lib/utils';
 
 const VotedCard = ({
   item,
-  newHeight = '35vh',
+  newHeight = '25vh',
   handleRevertClick,
   handleItemClick,
   totalVotes = 0,
@@ -68,7 +69,6 @@ const VotedCard = ({
                       backgroundColor: color,
                     }}
                   >
-                    <span className="" style={{ color: item.item_color_string }}>Y</span>
                     <VoteStats
                       votes={item.votes?.length || 0}
                       totalVotes={totalVotes}
@@ -87,7 +87,7 @@ const VotedCard = ({
             <div 
               className="bottom-0 left-0 right-0 p-4 content-overlay" 
               onClick={handleItemClick}
-              style={{ backgroundColor: color }}
+              style={{ backgroundColor: darkenColor(color, 40) }}
             >
               <h3 className="item-name">{item.name}</h3>
               {item.votes?.length > 0 && (

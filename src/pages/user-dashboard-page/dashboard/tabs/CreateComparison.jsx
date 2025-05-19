@@ -44,6 +44,18 @@ const CreateComparison = () => {
   const { isHeaderVisible } = useHeader();
   const [isSearchExpanded, setIsSearchExpanded] = useState(true);
   const [addItemModalOpen, setAddItemModalOpen] = useState(false);
+  const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const placeholders = [
+    "Which phone should I buy",
+    "What's the best laptop for coding",
+    "Which car is better for family",
+    "Which gaming console should I get",
+    "What's the best camera for beginners",
+    "Which smartwatch should I buy",
+    "What's the best e-reader",
+    "Which headphones are worth it"
+  ];
+
   useEffect(() => {
     const loadComparisonData = async () => {
       if (!user || hasLoadedData.current) return;
@@ -147,6 +159,14 @@ const CreateComparison = () => {
       setIsSearchExpanded(true);
     }
   }, [draft.items.length]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPlaceholderIndex((prevIndex) => (prevIndex + 1) % placeholders.length);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSaveDraft = async () => {
     if (!validateDraft()) return;
@@ -315,8 +335,11 @@ const CreateComparison = () => {
                 backgroundColor: currentTheme.colors.background,
                 color: currentTheme.colors.primary
               }}
-              placeholder="Enter comparison title..."
+              placeholder={placeholders[placeholderIndex]}
             />
+          </div>
+          <div className="text-sm text-gray-500">
+            Users will vote <span className="font-bold">based on</span>
           </div>
           {draft.aspects.length > 0 && draft.aspects.map((aspect) => (
             <div key={aspect.id}>
@@ -353,7 +376,7 @@ const CreateComparison = () => {
                   color: 'whitesmoke'
                 }}
               >
-                + Add Aspect
+                + Add Basis
               </button>
             </div>
           )}

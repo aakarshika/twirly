@@ -25,6 +25,7 @@ const Header = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const { isHeaderVisible, setIsHeaderVisible } = useHeader();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -122,6 +123,43 @@ const Header = () => {
     }
   };
 
+  // Add scroll event listener for header visibility
+  useEffect(() => {
+    let ticking = false;
+    let lastScrollY = window.scrollY;
+    let scrollTimeout;
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          const scrollDelta = currentScrollY - lastScrollY;
+          
+          // Only update if we've scrolled more than 5 pixels
+          if (Math.abs(scrollDelta) > 5) {
+            // Show header when scrolling up or at the top of the page
+            if (currentScrollY < lastScrollY || currentScrollY < 10) {
+              setIsHeaderVisible(true);
+            } 
+            // Hide header when scrolling down and not at the top
+            else if (currentScrollY > lastScrollY && currentScrollY > 10) {
+              setIsHeaderVisible(false);
+            }
+            
+            lastScrollY = currentScrollY;
+          }
+          
+          ticking = false;
+        });
+        
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [setIsHeaderVisible]);
+
   if (loading) {
     return (
       <div>hello</div>
@@ -143,11 +181,12 @@ const Header = () => {
 
   return (
     <header
-      className="fixed container mx-auto top-0 left-0 right-0 z-40 w-full border-b"
+      className={`fixed container mx-auto top-0 left-0 right-0 z-50 w-full border-b ${!isHeaderVisible ? 'hidden' : ''}`}
       style={{
-        backgroundColor: currentTheme.colors.background,
-        paddingTop: 'calc( var(--safe-area-inset-top))',
+        backgroundColor: location.pathname.includes('/compare/') ? currentTheme.colors.primary : currentTheme.colors.background,
+        paddingTop: 'calc(var(--safe-area-inset-top))',
         borderColor: currentTheme.colors.card,
+        '--header-height': '64px'
       }}
     >
       <div className="px-4 header-content">
@@ -157,14 +196,16 @@ const Header = () => {
 
             {location.pathname !== '/' && (<Link to="/" className="flex items-center">
                 <div className="flex flex-col items-center" onClick={() => navigate(-1)}>
-                  <ChevronLeft size={24} />
+                  <ChevronLeft size={24} style={{ color: location.pathname.includes('/compare/') ? 'white' : currentTheme.colors.text }} />
                 </div>
             </Link>)}
             <Link to="/" className="flex items-center">
               <div className="flex flex-col items-center">
                 <img src="/public_logo_transparent.png" alt="Twirly Logo" className="w-10 h-10 mr-2" />
               </div>
-              {!isSearchExpanded && (<h1 className="ml-2 text-lg font-bold" style={{ color: currentTheme.colors.text }}>{pageName}</h1>) }
+              {!isSearchExpanded && (<h1 className="ml-2 text-lg font-bold" style={{ 
+                color: location.pathname.includes('/compare/') ? 'white' : currentTheme.colors.text
+                 }}>{pageName}</h1>) }
             </Link>
           </div>
 
@@ -196,7 +237,9 @@ const Header = () => {
           <div className="flex items-center space-x-4">
             {user ? (
               <>
-              <div className="flex flex-row items-center space-x-4">
+              <div className="flex flex-row items-center space-x-4"
+              style={{ color: location.pathname.includes('/compare/') ? 'white' : currentTheme.colors.text }}
+              >
 
                 {location.pathname !== '/search' && (
                   <div className="" >
@@ -222,7 +265,7 @@ const Header = () => {
                 <button
                   onClick={handleDrawerClick}
                   className="p-2 rounded-md drawer-button"
-                  style={{ color: currentTheme.colors.text }}
+                  style={{ color: location.pathname.includes('/compare/') ? 'white' : currentTheme.colors.text }}
                   aria-label="Open settings"
                 >
                   <Menu size={24} />
