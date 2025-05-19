@@ -60,6 +60,7 @@ const ComparePage = () => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
+        console.log('Intersection observer triggered:', entry.isIntersecting);
         if (entry.isIntersecting) {
           setShowTrending(true);
           observer.disconnect(); // Stop observing once loaded
@@ -67,12 +68,13 @@ const ComparePage = () => {
       },
       {
         root: null,
-        rootMargin: '100px', // Start loading slightly before the element comes into view
+        rootMargin: '200px', // Increased margin to start loading earlier
         threshold: 0.1
       }
     );
 
     if (trendingRef.current) {
+      console.log('Starting to observe trending section');
       observer.observe(trendingRef.current);
     }
 
@@ -81,7 +83,7 @@ const ComparePage = () => {
         observer.disconnect();
       }
     };
-  }, []);
+  }, [trendingRef.current]); // Added dependency to ensure observer is set up when ref is available
 
   // Update currentAspect when URL changes
   useEffect(() => {
@@ -307,7 +309,7 @@ const ComparePage = () => {
           }}
         >
           <div className="w-full max-w-4xl mx-auto">
-            <div id="trending" className="flex h-100 justify-start p-4">
+            <div id="trending" className="flex h-full justify-start p-4">
             </div>
     
             <div className="flex justify-start p-4">
@@ -316,7 +318,11 @@ const ComparePage = () => {
                 Explore Similar
               </h1>
             </div>
-            <div ref={trendingRef}>
+            <div 
+              ref={trendingRef} 
+              className="min-h-[200px] w-full"
+              style={{ visibility: showTrending ? 'visible' : 'hidden' }}
+            >
               {showTrending && <Trending />}
             </div>
           </div>

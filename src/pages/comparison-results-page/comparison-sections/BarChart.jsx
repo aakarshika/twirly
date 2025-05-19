@@ -19,7 +19,7 @@ const MetricCard = ({ metric, items, getMetricAverageVotes, currentTheme, userVo
     }}>
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-2">
-          <Target className="w-5 h-5 text-purple-500" />
+          <Target className="w-5 h-5" style={{ color: currentTheme.colors.secondary }} />
           <h3 className="text-lg font-semibold text-gray-800">{metric.metric_name.split('_').map(word => 
             word.charAt(0).toUpperCase() + word.slice(1)
           ).join(' ')}</h3>
@@ -46,20 +46,21 @@ const MetricCard = ({ metric, items, getMetricAverageVotes, currentTheme, userVo
           const percentage = (value / (totalVotes || 1)) * 100;
           
           return userVoted ? (
-            <div key={item.id} className="flex items-center space-x-3">
-              <div className="flex-1">
-                <div className="flex justify-between mb-1">
+            <div key={item.id} className="flex flex-row items-center space-x-3">
+              <div className="flex flex-row w-full">
+                <div className="flex  w-32">
                   <span className="text-sm font-medium text-gray-700">{item.name}</span>
-                  <span className="text-sm text-gray-500">{value} votes ({percentage.toFixed(1)}%)</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
+                <span className=' text-sm text-white-500 ml-2 w-6'>{value} </span>
+                <div className="flex w-full bg-gray-200 rounded-full h-4">
                   <div 
-                    className="h-2 rounded-full transition-all duration-300"
+                    className="flex rounded-full transition-all duration-300"
                     style={{ 
                       width: `${percentage}%`,
                       backgroundColor: item.item_color_string
                     }}
-                  />
+                  >
+                  </div>
                 </div>
               </div>
             </div>
@@ -100,6 +101,13 @@ const BarChart = ({ items,  comparisonMetrics }) => {
           <div key={metric.metric_name}>
           <MetricCard
             key={metric.metric_name}
+            metric={metric}
+            items={items}
+            getMetricAverageVotes={getMetricAverageVotes}
+            currentTheme={currentTheme}
+            userVoted={metric.userVoted}
+          />
+          <ComparisonCommentsInshort 
             metric={metric}
             items={items}
             getMetricAverageVotes={getMetricAverageVotes}
