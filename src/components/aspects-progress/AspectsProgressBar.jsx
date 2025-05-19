@@ -5,6 +5,7 @@ import { useHeader } from '../../contexts/HeaderContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import AspectBox from './AspectBox';
 import { changeColorAlpha } from '../../lib/utils';
+import { SHOW_RESULTS_DURATION } from '../../lib/constants';
 
 const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, currentSet, celebratingAspectId, currentAspect, onNextClick }) => {
   const scrollContainerRef = useRef(null);
@@ -95,18 +96,6 @@ const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, cu
                 </motion.div>
               </motion.div>
             )}
-            {!userVotedAll && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <motion.div className="flex items-center justify-center space-x-3 p-2">
-                  <h2 className="text-sm font-bold text-center">Vote all to reveal results</h2>
-                </motion.div>
-              </motion.div>
-            )}
           </AnimatePresence>
         </div>
 
@@ -166,12 +155,12 @@ const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, cu
                                   r="18"
                                   fill="none"
                                   stroke="lightgray"
-                                  strokeWidth="3"
-                                  strokeDasharray="113"
-                                  strokeDashoffset="113"
-                                  initial={{ strokeDashoffset: 113 }}
+                                  strokeWidth="4"
+                                  strokeDasharray="125"
+                                  strokeDashoffset="125"
+                                  initial={{ strokeDashoffset: 125 }}
                                   animate={{ strokeDashoffset: 0 }}
-                                  transition={{ duration: 3, ease: "linear" }}
+                                  transition={{ duration: SHOW_RESULTS_DURATION, ease: "linear" }}
                                 />
                               </motion.svg>
                             )}
@@ -210,6 +199,18 @@ const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, cu
           </div>
         </div>
 
+        {showAspectRoutes && !userVotedAll && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <motion.div className="flex items-center justify-center space-x-3 p-2">
+                  <h2 className="text-sm font-bold text-center">Vote all to reveal results</h2>
+                </motion.div>
+              </motion.div>
+            )}
         {showAspectRoutes && (
           <div
             ref={scrollContainerRef}

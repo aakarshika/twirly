@@ -5,6 +5,7 @@ import { splitAndJoin, changeColorAlpha } from '../../lib/utils';
 import { useTheme } from '../../contexts/ThemeContext';
 import VoteCelebration from './VoteCelebration';
 import ProgressBar from './ProgressBar';
+import { SHOW_RESULTS_DURATION } from '../../lib/constants';
 
 const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2line, currentAspect }) => {
   const isCurrentAspect = currentAspect?.id === aspect.id;
@@ -60,7 +61,7 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2l
         color: 'white'
       }}
     >
-      {showProgress && <ProgressBar />}
+      {showProgress && <ProgressBar duration={SHOW_RESULTS_DURATION} />}
       
       {!showCelebration && isCurrentAspect && !isResults && (
         <motion.div

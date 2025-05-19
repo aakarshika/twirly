@@ -12,6 +12,7 @@ import { Globe2, PartyPopper } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Trending from '../trending-page/Trending';
 import { useComparisonDetails } from '../../hooks/useComparisonDetails';
+import { SHOW_RESULTS_DURATION } from '../../lib/constants';
 
 const ComparePage = () => {
   const { id } = useParams();
@@ -169,7 +170,7 @@ const ComparePage = () => {
             setCurrentAspect(null);
             navigate(`/compare/${currentSetId}/results`);
           }
-        }, 3000);
+        }, SHOW_RESULTS_DURATION*1000);
       }
       
       return updatedMetrics;

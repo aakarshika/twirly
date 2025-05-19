@@ -1,7 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { SHOW_RESULTS_DURATION } from '../../lib/constants';
 
-const ProgressBar = ({ duration = 3 }) => {
+const ProgressBar = ({ duration = SHOW_RESULTS_DURATION }) => {
   return (
     <motion.div
       className="absolute bottom-0 left-0 h-1 bg-white"
