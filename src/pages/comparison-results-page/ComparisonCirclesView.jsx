@@ -18,7 +18,7 @@ const List = ({displayItems, isMobile, winner, runnerUp, comparison, totalVotes,
     return (
         <div>
             {/* Grid Layout */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 gap-4 mt-0">
+            <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 mt-0">
                 {displayItems.map((item, index) => {
                     const isInCenterStage = animationState === 'winner' && item.id === winner?.id;
                     const isRunnerUp = item.id === runnerUp?.id;
@@ -90,7 +90,7 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
 
     return (
         <div className="w-full">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
                 <div className='flex flex-col'>
                     {/* Desktop Layout */}
                     <div className="hidden sm:block">

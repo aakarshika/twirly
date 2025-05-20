@@ -50,6 +50,17 @@ SELECT
     cs.user_id,
     cs.name,
     cs.created_at,
+    (
+        select concat((select string_agg(csa.metric_name, ' ') 
+            from comparison_set_aspects csa
+            where csa.set_id = cs.id
+            group by csa.set_id), ' ',cs.name, ' ',
+        (select string_agg(i.name, ' ') 
+            from comparison_set_items csi
+            join items i on csi.item_id = i.id
+            where csi.set_id = cs.id
+            group by csi.set_id))
+     ) as all_stuff_names,
     COALESCE(vc.total_votes, 0) as total_votes,
     COALESCE(cc.total_comments, 0) as total_comments,
     COALESCE(activity_scores.popularity_score, 0) as popularity_score

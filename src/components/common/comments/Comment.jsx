@@ -1,16 +1,10 @@
 import React, { useState, useRef } from 'react';
 import Reply from './Reply';
-import {  getPublicUrl } from '../../../lib/utils';
-import useMentionInput from '../../../hooks/useMentionInput';
-import { useAuth } from '../../../contexts/AuthContext';
-import { userService } from '../../../services/userService';
-import { useEffect } from 'react';
-import { supabase } from '../../../lib/supabase';
 import CommentForm from './CommentForm';
 import { useComments } from '../../../hooks/useComments';
 import CommentHeader from './CommentHeader';
 const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPreferences, handleReply }) => {
-  const [isReplying, setIsReplying] = useState(false);
+  const [isReplying, setIsReplying] = useState(comment.replies?.length > 0);
   const [isReplySectionExpanded, setIsReplySectionExpanded] = useState(comment.replies?.length > 0);
   const [newComment, setNewComment] = useState('');
 
@@ -24,7 +18,7 @@ const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPre
   };
   return (
     <div className="flex">
-    <div className="p-2 rounded bg-white dark:bg-gray-800 w-full">
+    <div className="rounded bg-white dark:bg-gray-800 w-full">
       <CommentHeader
           type="Reply"
         comment={comment}
@@ -44,7 +38,7 @@ const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPre
         numReplies={comment.replies?.length}
         items={items}
       />
-      <div style={{ scale: '0.9' }}>
+      <div className='pl-5'>
       {isReplying && isReplySectionExpanded && (
             <CommentForm
               newComment={newComment}
@@ -60,12 +54,16 @@ const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPre
             />
       )}
       </div>
-      <div style={{ scale: '0.9' }}>
+      <div className='pl-5'>
       {isReplySectionExpanded && comment.replies?.map(reply => (
         <Reply 
           key={reply.id} 
           reply={reply} 
           onLike={onLike}
+          onReply={(r) => {
+            console.log('onReply', r, newComment);
+            setNewComment(newComment + ' @[' + r.user.display_name + '](' + r.user.user_id + ') ');
+          }}
           items={items}
         />
       ))}

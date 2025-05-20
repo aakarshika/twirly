@@ -7,8 +7,8 @@ const Reply = ({ reply, onLike, onReply, appendText, items }) => {
 
   return (
     <div className="flex">    
-      <div className="w-1 h-auto bg-gray-200 dark:bg-gray-700 ml-2 mr-2" style={{marginTop: '2px', background: 'lightgray'}}></div>
-      <div className="p-1 w-full border-b border-gray-200 dark:border-gray-700">
+      <div className="w-1 h-auto bg-gray-200 dark:bg-gray-700 mr-2" style={{ background: 'lightgray'}}></div>
+      <div className="w-full ">
 
         <CommentHeader
           type="LastReply"
@@ -16,6 +16,7 @@ const Reply = ({ reply, onLike, onReply, appendText, items }) => {
           onLike={onLike}
           replyClicked={() => {
             console.log('replyClicked');
+            onReply(reply);
           }}
           profile_image_url={reply.user?.profile_image_url}
           display_name={reply.user?.display_name}

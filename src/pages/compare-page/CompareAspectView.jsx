@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { motion } from 'framer-motion';
@@ -8,11 +8,15 @@ import ComparisonSetAspectsCommentsSection from '../comparison-aspect-page/Compa
 import { useComparisonAspectData } from '../../hooks/useComparisonAspectData';
 import { SHOW_RESULTS_DURATION } from '../../lib/constants';
 import { changeColorAlpha } from '../../lib/utils';
+import CommentHeader from '../../components/common/comments/CommentHeader';
 
 const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isResultsPage, currentAspect, nextUnvotedAspect }) => {
   const { aspectId } = useParams();
   const { currentTheme } = useTheme();
   
+  useEffect(() => {
+    console.log("Dsfghj", celebratingAspectId);
+  }, [celebratingAspectId]);
   const {
     loading,
     error,
@@ -33,7 +37,7 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
     console.log('CompareAspectView: handleVote success:', success);
     if (success) {
       console.log('CompareAspectView: calling onVoteChange with aspectId:', aspectId);
-      onVoteChange(aspectId, true);
+      onVoteChange(aspectId, true, itemId);
     }
   };
 
@@ -70,9 +74,9 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
 
   return (
     <div className="flex flex-col">
-      <div className="shadow-md rounded-md p-4 mobile-friendly-margin-bottom"
+      <div className="shadow-md rounded-md p-3 mobile-friendly-margin-bottom"
         style={{
-          backgroundColor: currentTheme.colors.card,
+          backgroundColor: currentTheme.colors.background,
           transform: 'translateY(0)',
           transition: 'transform 0.3s ease-in-out',
         }}>
@@ -87,7 +91,7 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
             }}
           >
             {items.map((item, i) => (
-              <div key={item.id} className="transform transition-all duration-300 hover:scale-105">
+              <div key={item.id} className="">
                 <ComparisonItemCardAspect
                   key={item.id}
                   item={item}
@@ -103,6 +107,43 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
             ))}
           </div>
         </div>
+
+        {celebratingAspectId && (
+          <div className='flex-row mt-2'>
+          <div className='flex flex-col w-full items-center justify-center bg-amber-300 ml-10'>
+            <h2 className='text-md p-1 ' style={{ color: 'rgb(255, 255, 255)' }}>Next Aspect</h2>
+            <motion.div
+              className="h-1"
+              style={{ backgroundColor: currentTheme.colors.secondary }}
+              initial={{ width: "0%" }}
+              animate={{ width: "100%" }}
+              transition={{ duration: SHOW_RESULTS_DURATION, ease: "linear" }}
+            />
+          </div>
+          <div className='flex flex-col items-center justify-center bg-gray-300 mr-4'>
+            <h2 className='text-md p-1 ' style={{ color: 'rgb(255, 255, 255)' }}>Cancel</h2>
+          </div>
+          
+          </div>
+        )}
+        <div className="pt-1" >
+          <div >
+        <CommentHeader
+          type="Comment"
+          comment={currentAspectSet}
+          replyClicked={() => {}}
+          profile_image_url={currentAspectSet?.comparison_sets?.user?.profile_image_url}
+          display_name={currentAspectSet?.comparison_sets?.user?.display_name}
+          created_at={currentAspectSet?.comparison_sets?.created_at}
+          userReaction={currentAspectSet?.userReaction}
+          reactions={currentAspectSet?.reactions}
+          objectId={currentAspectSet?.id}
+          numReplies={currentAspectSet?.comments?.length}
+          items={items}
+        />
+        </div>
+        </div>
+
         {!isResultsPage && currentAspect && (
                     <motion.div
                       animate={{
@@ -166,8 +207,10 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
                   )}
       </div>
 
+
+
       <div className="text-center animate-fadeIn" style={{ backgroundColor: 'white' }}>
-        <div className="w-full" style={{ marginBottom: '300px' }}>
+        <div className="w-full p-4" style={{ marginBottom: '100px' }}>
           <ComparisonSetAspectsCommentsSection
             userVoted={userVoted}
             aspectSetId={aspectId}
@@ -175,7 +218,7 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
             aspectSet={currentAspectSet}
           />
         </div>
-        <span className="text-2xl animate-bounce">. . .</span>
+        <span className="text-2xl animate-bounce" >. . .</span>
       </div>
     </div>
   );

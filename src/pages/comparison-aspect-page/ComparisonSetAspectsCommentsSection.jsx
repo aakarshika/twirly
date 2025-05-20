@@ -42,41 +42,8 @@ const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, as
     return <LoadingOrError type="error" />;
   }
 
-  return (
-    <div className="space-y-4">
-      <div className="bg-white rounded-lg p-4">
-        <CommentHeader
-          type="Comment"
-          comment={aspectSet}
-          onLike={handleLikeComparisonAspectSet}
-          replyClicked={() => {}}
-          profile_image_url={aspectSet?.comparison_sets?.user?.profile_image_url}
-          display_name={aspectSet?.comparison_sets?.user?.display_name}
-          created_at={aspectSet?.comparison_sets?.created_at}
-          text={aspectSet?.description}
-          userReaction={aspectSet?.userReaction}
-          reactions={aspectSet?.reactions}
-          objectId={aspectSetId}
-          numReplies={comments?.length}
-          items={items}
-        />
-
-        {userVoted && (
-          <div className="mt-4">
-            <div
-              onClick={() => navigate('/compare/' + aspectSet?.comparison_sets?.id)}
-              className="flex items-center justify-end gap-2 p-2 rounded-md cursor-pointer hover:bg-gray-50 transition-colors"
-              style={{ color: currentTheme.colors.primary }}
-            >
-              <span className="text-sm font-medium">See Comparison</span>
-              <ChartArea size={18} />
-            </div>
-          </div>
-        )}
-      </div>
-
-      {userVoted && (
-        <div className="space-y-4">
+  return userVoted &&  (
+        <div className="">
           <CommentForm
             newComment={newComment}
             setNewComment={setNewComment}
@@ -87,7 +54,7 @@ const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, as
             type="Comment"
           />
 
-          <div className="space-y-4">
+          <div className="">
             {comments.map((comment) => {
               const toggleVisibility = () => {
                 setCommentVisibility(prev => ({
@@ -96,7 +63,7 @@ const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, as
                 }));
               };
               return (
-                <div key={comment.id} className="bg-white rounded-lg p-4">
+                <div key={comment.id} className="">
                   <Comment
                     comment={comment}
                     onLike={handleLikeComment}
@@ -124,9 +91,7 @@ const ComparisonSetAspectsCommentsSection = ({ userVoted, aspectSetId, items, as
             </div>
           )}
         </div>
-      )}
-    </div>
-  );
+      );
 };
 
 export default ComparisonSetAspectsCommentsSection;

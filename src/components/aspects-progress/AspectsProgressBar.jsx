@@ -6,8 +6,9 @@ import { useTheme } from '../../contexts/ThemeContext';
 import AspectBox from './AspectBox';
 import { changeColorAlpha } from '../../lib/utils';
 import { SHOW_RESULTS_DURATION } from '../../lib/constants';
+import ProgressBar from './ProgressBar';
 
-const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, currentSet, celebratingAspectId, currentAspect, onNextClick }) => {
+const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVotedAll, currentSet, celebratingAspectId, currentAspect, onNextClick }) => {
   const scrollContainerRef = useRef(null);
   const isResultsPage = location.pathname.includes('results');
   const [sortedMetrics, setSortedMetrics] = useState([]);
@@ -18,6 +19,7 @@ const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, cu
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [is2line, setIs2line] = useState(false);
   const [nextUnvotedAspect, setNextUnvotedAspect] = useState(null);
+
 
   useEffect(() => {
     const sorted = [...comparisonMetrics];
@@ -124,8 +126,9 @@ const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, cu
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <motion.div className="flex ml-10 items-center justify-start ">
+                <motion.div className="flex ml-10 items-center justify-between ">
                   <h2 className="text-sm font-semibold" style={{ color: 'rgb(174, 174, 174)' }}>Cast your vote based on</h2>
+                  <h2 className="text-md mr-10" style={{ color: 'rgb(174, 174, 174)' }}>{sortedMetrics.filter(metric => metric.userVoted).length}/{sortedMetrics.length}</h2>
                 </motion.div>
               </motion.div>
             )}
@@ -162,6 +165,7 @@ const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, cu
                     showCelebration={celebratingAspectId === aspect.id}
                     is2line={is2line}
                     currentAspect={currentAspect}
+                    items={items}
                   />
                 </motion.div>
               ))}
@@ -183,7 +187,7 @@ const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, cu
                 />
               </motion.div>
 
-              <motion.div
+              {/* <motion.div
                 key={'explore'}
                 className='flex flex-col items-center justify-center'
                 initial={{ opacity: 0, y: 20 }}
@@ -198,7 +202,7 @@ const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, cu
                   is2line={is2line}
                   currentAspect={currentAspect}
                 />
-              </motion.div>
+              </motion.div> */}
               </div>
           </div>
         )}

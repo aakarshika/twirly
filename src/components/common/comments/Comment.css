@@ -10,7 +10,8 @@
 
 .mention-user {
     z-index: 2000;
-    background-color: transparent;
+    background-color: white;
+    font-weight: 700;
     color: rgb(171, 88, 4);
     border-radius: 4px;
     border: none;

@@ -48,7 +48,7 @@ const PollScreen = ({items, currentSetId, currentSet}) => {
 
   return (
     <div 
-      className="min-h-screen w-full flex flex-col items-center justify-center"
+      className="min-h-screen w-full flex flex-col"
       style={{ 
         backgroundColor: currentTheme.colors.background
       }}

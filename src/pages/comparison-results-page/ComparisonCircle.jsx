@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, Target, Sparkles, CupSoda, TargetIcon } from 'lucide-react';
-import { splitAndJoin, getRGB, getPublicUrlItems, darkenColor } from '../../lib/utils';
+import { splitAndJoin, getRGB, getPublicUrlItems, darkenColor, changeColorAlpha } from '../../lib/utils';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const ComparisonCircle = ({ item, index, isMobile = false, winner, runnerUp, totalVotes }) => {
@@ -10,25 +10,112 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, runnerUp, tot
 
     const { currentTheme } = useTheme();
     const badgeClasses = isMobile ? {
-        container: "absolute left-0 rounded-full z-10",
-        badge: " gap-1.5 rounded-full px-3 py-1.5 shadow-lg w-[70px] h-[70px] rounded-full items-center justify-center",
+        container: "absolute right-0 bottom-0 rounded-full z-10",
+        badge: " gap-1.5 rounded-full p-1 rounded-full items-center justify-center",
         icon: "w-8 h-8",
         text: "text-xs font-semibold",
         sparkles: "w-3 h-3"
     } : {
-      container: "absolute left-0 rounded-full z-10",
-      badge: " gap-1.5 rounded-full px-3 py-1.5 shadow-lg w-[70px] h-[70px] rounded-full items-center justify-center",
+      container: "absolute right-0 bottom-0 rounded-full z-10",
+      badge: " gap-1.5 rounded-full p-1 rounded-full items-center justify-center",
       icon: "w-8 h-8",
         text: "text-sm font-semibold",
         sparkles: "w-4 h-4"
     };
 
+    const titleRef = useRef(null);
+  
+    useEffect(() => {
+      if (titleRef.current) {
+        const titleElement = titleRef.current;
+        const wordCount = item.name.trim().split(/\s+/).length;
+        
+        if (wordCount > 10) {
+          titleElement.style.fontSize = '0.875rem';
+        } else {
+          titleElement.style.fontSize = '1.5rem';
+        }
+      }
+    }, [item.name]);
+  
     return (
         <div
             key={item.id}
             className="relative w-full h-full flex flex-col items-center"
         >
-        {/* Status Badge - Winner or Runner Up */}
+        
+            <motion.div 
+                className="relative bg-white w-full h-40 rounded-xl shadow-lg overflow-hidden"
+                style={{
+                        aspectRatio: '1/1',
+                        height: itemImage ? '30vh': '20vh' ,
+                        backgroundColor: changeColorAlpha(itemColor, 0.2)
+                }}
+                transition={winner && winner.id === item.id ? {
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                } : runnerUp && runnerUp.id === item.id ? {
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                } : {}}
+            >
+
+                <div className={`p-3`}>
+                    {/* Image or Fallback */}
+                    <div className="relative w-full aspect-square rounded-lg overflow-hidden">
+                        {itemImage ? (
+                            <>
+                                <img
+                                    src={itemImage}
+                                    alt={item.name}
+                                    className="w-full h-full object-cover"
+                                    loading="lazy"
+                                />
+                            </>
+                        ) : (
+                            <div 
+                                className="flex flex-col h-full items-center justify-center"
+                            >
+                                {/* {winner && winner.id === item.id && (
+                                  <div className="flex flex-col items-center justify-center">
+                                    <span className="text-sm text-amber-500 font-medium">Winner Cup</span>
+                                    <span className="text-xs text-gray-400 font-medium">goes to</span>
+                                  </div>
+                                  )}
+                                  {runnerUp && runnerUp.id === item.id && (
+                                  <div className="flex flex-col items-center justify-center">
+                                    <span className="text-sm text-blue-500 font-medium">Runner Cup</span>
+                                    <span className="text-xs text-gray-400 font-medium">goes to</span>
+                                  </div>
+                                  )} */}
+                                <div className="flex flex-col items-center justify-center">
+                                    
+                <div className="flex justify-center items-center">
+                  <h3 ref={titleRef} className="" style={{ color: darkenColor(item.item_color_string, 70) }}>{item.name}</h3>
+                </div>
+                                </div>
+                                {item.votes?.length > 0 && (
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-medium">
+                                            {item.votes.length} votes
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                    {itemImage && (
+            <div 
+              className="bottom-0 left-0 right-0 p-4 content-overlay " 
+              style={{  color: darkenColor(itemColor, 50)}}
+            >
+              <h3 className="item-name">{item.name}</h3>
+            </div>
+                    )}
+                </div>
+                {/* Status Badge - Winner or Runner Up */}
         {(winner?.id === item.id || runnerUp?.id === item.id) && (
             <motion.div 
                 className={badgeClasses.container}
@@ -50,15 +137,6 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, runnerUp, tot
                             : ' bg-gradient-to-r from-blue-400 via-blue-500 to-blue-400'
                     }`}
                     animate={{ 
-                        boxShadow: winner?.id === item.id ? [
-                            "0 0 0 0 rgba(234, 179, 8, 0.4)",
-                            "0 0 20px 10px rgba(234, 179, 8, 0.2)",
-                            "0 0 0 0 rgba(234, 179, 8, 0.4)"
-                        ] : [
-                            "0 0 0 0 rgba(59, 130, 246, 0.4)",
-                            "0 0 15px 5px rgba(59, 130, 246, 0.2)",
-                            "0 0 0 0 rgba(59, 130, 246, 0.4)"
-                        ],
                         backgroundPosition: ['0% 50%', '100% 50%', '0% 50%']
                     }}
                     transition={{
@@ -108,95 +186,24 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, runnerUp, tot
                 </motion.div>
             </motion.div>
         )}
-            <motion.div 
-                className="relative bg-white w-full h-full rounded-xl shadow-lg overflow-hidden"
-                style={{
-                    backgroundColor: winner && winner.id !== item.id ? 
-                        itemColor.substring(0, itemColor.length - 1) + ', 0.2)' : 
-                        itemColor.substring(0, itemColor.length - 1) + ', 0.5)',
-                    border: `4px solid ${winner && winner.id !== item.id ? 
-                        itemColor.substring(0, itemColor.length - 1) + ', 0.3)' : 
-                        itemColor}`
-                }}
-                animate={winner && winner.id === item.id ? {
-                    boxShadow: [
-                        "0 0 0 0 rgba(234, 179, 8, 0.4)",
-                        "0 0 20px 10px rgba(234, 179, 8, 0.2)",
-                        "0 0 0 0 rgba(234, 179, 8, 0.4)"
-                    ],
-                    scale: [1, 1.02, 1],
-                    rotate: [0, 0.5, 0]
-                } : runnerUp && runnerUp.id === item.id ? {
-                    boxShadow: [
-                        "0 0 0 0 rgba(59, 130, 246, 0.4)",
-                        "0 0 15px 5px rgba(59, 130, 246, 0.2)",
-                        "0 0 0 0 rgba(59, 130, 246, 0.4)"
-                    ],
-                    scale: [1, 1.01, 1]
-                } : {}}
-                transition={winner && winner.id === item.id ? {
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                } : runnerUp && runnerUp.id === item.id ? {
-                    duration: 2,
-                    repeat: Infinity,
-                    ease: "easeInOut"
-                } : {}}
-            >
-
-                <div className={`p-6 ${isMobile ? 'pt-12' : 'pt-16'}`}>
-                    {/* Image or Fallback */}
-                    <div className="relative w-full aspect-square mb-4 rounded-lg overflow-hidden">
-                        {itemImage ? (
-                            <>
-                                <img
-                                    src={itemImage}
-                                    alt={item.name}
-                                    className="w-full h-full object-cover"
-                                    loading="lazy"
-                                />
-                                <div className="absolute inset-0 flex items-end justify-center p-4 bg-gradient-to-t from-black/70 to-transparent">
-                                    <h3 className="text-lg font-bold text-white text-center line-clamp-2">
-                                        {item.name} <span> bla</span>
-                                    </h3>
-                                </div>
-                            </>
-                        ) : (
-                            <div 
-                                className="w-full h-full flex flex-col items-center justify-center"
-                            >
-                                {winner && winner.id === item.id && (
-                                  <div className="flex flex-col items-center justify-center">
-                                    <span className="text-sm text-amber-500 font-medium">Winner Cup</span>
-                                    <span className="text-xs text-gray-400 font-medium">goes to</span>
-                                  </div>
-                                  )}
-                                  {runnerUp && runnerUp.id === item.id && (
-                                  <div className="flex flex-col items-center justify-center">
-                                    <span className="text-sm text-blue-500 font-medium">Runner Cup</span>
-                                    <span className="text-xs text-gray-400 font-medium">goes to</span>
-                                  </div>
-                                  )}
-                                <div className="flex flex-col items-center justify-center">
-                                    <h3 className="text-xl font-bold text-center" style={{ color: darkenColor(item.item_color_string, 40) }}>
-                                        {item.name} 
-                                    </h3>
-                                </div>
-                                {item.votes?.length > 0 && (
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-sm font-medium">
-                                            {item.votes.length} votes
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
+            </motion.div> 
 
                     {/* Leading Metrics */}
                     {item.leadingMetrics && item.leadingMetrics.length > 0 && (
-                        <div className="flex flex-col gap-1">
+                        <div className="flex flex-col mt-2">
+                            <motion.div 
+                                key={'icon-target'}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.5 }}
+                            >
+                                <div className="flex items-center justify-start gap-1" style={{ color: currentTheme.colors.secondary }}>
+                                    <Target className="w-4 h-4" />
+                                    <span className="text-sm font-norm,al">
+                                        Shining at
+                                    </span>
+                                </div>
+                            </motion.div>
                             {item.leadingMetrics.map((metric, index) => (
                                 <motion.div 
                                     key={metric.metric_name}
@@ -204,9 +211,9 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, runnerUp, tot
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.5 }}
                                 >
-                                    <div className="flex items-center justify-start gap-1" style={{ color: currentTheme.colors.secondary }}>
-                                        {index === 0 ? (<Target className="w-4 h-4" />) : (<div className="w-4 h-4" />)}
-                                        <span className="text-sm font-medium">
+                                    <div className="flex items-center justify-start" style={{ color: currentTheme.colors.secondary }}>
+                                        
+                                        <span className="text-sm font-semibold ml-5">
                                             {splitAndJoin(metric.metric_name)}
                                         </span>
                                     </div>
@@ -214,8 +221,6 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, runnerUp, tot
                             ))}
                         </div>
                     )}
-                </div>
-            </motion.div>
         </div>
     );
 };
