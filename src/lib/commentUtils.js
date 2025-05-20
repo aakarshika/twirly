@@ -51,8 +51,8 @@ export const renderTextWithMentions = (text, itemColorCoding) => {
     const mentionElement = mention.type === 'user' 
       ? `<span class="text-amber-800">@${mention.display.trim()}</span>`
       : `<a href="/item/${mention.id}"
-          <span class="text-blue-800 px-1 rounded"   
-            style="background-color: ${color}; color: white;">
+          <span class="text-blue-800 pl-1 mr-1 rounded"   
+            style="background-color: ${color}; padding-bottom: 2px; color: white;">
             #${(mention.display).trim()}
           </span>
         </a>`;

@@ -69,7 +69,7 @@ const ComparePage = () => {
       },
       {
         root: null,
-        rootMargin: '200px', // Increased margin to start loading earlier
+        rootMargin: '0px', // Changed from 200px to 0px to only trigger when actually in view
         threshold: 0.1
       }
     );
@@ -109,11 +109,13 @@ const ComparePage = () => {
 
       if (error) throw error;
 
+      console.log(comparisonSetAspects ,"comparisonSetAspectscomparisonSetAspectscomparisonSetAspectscomparisonSetAspectscomparisonSetAspects");
       // Process aspects to include user vote status
       const processedAspects = comparisonSetAspects.map(aspect => ({
         ...aspect,
-        userVoted: aspect.votes.some(vote => vote.user_id === user.id)
-      })).sort((a, b) => a.userVoted ? -1 : b.userVoted ? 1 : 0);
+        userVoted: aspect.votes.some(vote => vote.user_id === user.id),
+        itemVoted: aspect.votes.find(vote => vote.user_id === user.id)?.item_id || -1
+      })).sort((a, b) => a.userVoted ? -1 : b.userVoted ? 1 :                                                                                               0);
 
       setUserVotedAll(processedAspects.every(aspect => aspect.userVoted));
       setComparisonMetrics(processedAspects);
@@ -136,14 +138,14 @@ const ComparePage = () => {
   };
 
   // Handle vote changes from CompareAspectView
-  const handleVoteChange = (aspectId, hasVoted) => {
-    console.log('ComparePage: handleVoteChange called with:', { aspectId, hasVoted });
+  const handleVoteChange = (aspectId, hasVoted, item_id) => {
+    console.log('ComparePage: handleVoteChange called with:', { aspectId, hasVoted, item_id });
     console.log('ComparePage: current comparisonMetrics:', comparisonMetrics);
     
     setComparisonMetrics(prevMetrics => {
       const updatedMetrics = prevMetrics.map(metric => 
         metric.id === parseInt(aspectId)
-          ? { ...metric, userVoted: hasVoted }
+          ? { ...metric, userVoted: hasVoted, itemVoted: hasVoted ? item_id : -1 }
           : metric
       );
       
@@ -179,7 +181,7 @@ const ComparePage = () => {
 
   useEffect(() => {
     fetchSetMetrics();
-  }, [currentSetId, user]);
+  }, [currentSetId, user, items]);
 
   if (loading) {
     return (
@@ -232,6 +234,7 @@ const ComparePage = () => {
             className="text-white gap-4"
           >
             <AspectsProgressBar
+              items={items}
               onNextClick={() => {
                 const next = getNextUnvotedAspect();
                 if (next) {
@@ -279,6 +282,7 @@ const ComparePage = () => {
                 element={
                   <CompareAspectView 
                     onVoteChange={handleVoteChange}
+                    celebratingAspectId={celebratingAspectId}
                   />
                 } 
               />

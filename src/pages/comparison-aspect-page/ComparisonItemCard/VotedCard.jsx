@@ -36,7 +36,7 @@ const VotedCard = ({
         style={{ 
           aspectRatio: '1/1',
           height: itemImage ? '30vh': newHeight ,
-          backgroundColor: color?.substring(0, color.length - 1) + ', 0.2)'
+          backgroundColor: changeColorAlpha(color, 0.2)
         }}
       >
         <div className="card-container">
@@ -50,10 +50,7 @@ const VotedCard = ({
               />
             ) : (
               <div
-                className="flex h-full flex-col items-center"
-                style={{
-                  background: changeColorAlpha(color, 0.2)
-                }}
+                className="flex h-full flex-col items-center p-3"
                 onClick={handleItemClick}
               >
                 <div className="flex h-full justify-center items-center">
@@ -83,9 +80,9 @@ const VotedCard = ({
 
           {itemImage && (
             <div 
-              className="bottom-0 left-0 right-0 p-4 content-overlay" 
+              className="bottom-0 left-0 right-0 p-4 content-overlay " 
               onClick={handleItemClick}
-              style={{ backgroundColor: changeColorAlpha(color, 0.2), color: darkenColor(color, 50)}}
+              style={{  color: darkenColor(color, 50)}}
             >
               <h3 className="item-name">{item.name}</h3>
               {item.votes?.length > 0 && (

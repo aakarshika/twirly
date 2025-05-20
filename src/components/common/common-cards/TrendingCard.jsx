@@ -14,7 +14,7 @@ const TrendingCard = ({set, from}) => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
     const [userVoted, setUserVoted] = useState(false);
-    const [voted_item_id, setVotedItemId] = useState(null);
+    const [votedItems, setVotedItems] = useState([]);
 
     const { currentTheme } = useTheme();
 
@@ -48,17 +48,18 @@ const TrendingCard = ({set, from}) => {
         const { data, error } = await supabase
           .from('votes')
           .select(`
+            comparison_set_aspects!inner(id),
             *
           `)
           .eq('user_id', user.id)
-          .eq('set_id', set.aspect_set_id);
+          .eq('comparison_set_aspects.set_id', set.set_id);
 
         if (error) {
           throw error;
         }
-        setUserVoted(data);
+        setUserVoted(data.length > 0);
           set.voted = data;
-          setVotedItemId(data && data.length > 0 ? data[0].item_id : null);
+          setVotedItems(data && data.length > 0 ? data : null);
       } catch (error) {
         console.error('Error fetching search results:', error);
       } finally {
@@ -96,7 +97,7 @@ const TrendingCard = ({set, from}) => {
               <div
                 key={item.id}
                 className={`relative rounded-lg overflow-hidden ${
-                  voted_item_id ? '' : index >= 2 ? 'blur-sm' : ''
+                  userVoted? '' : index >= 2 ? 'blur-sm' : ''
                 }`}
               >
                 <img
@@ -117,12 +118,12 @@ const TrendingCard = ({set, from}) => {
                     {item.name}
                   </div>
                 )}
-                {itemImage && !set.imageError && (index < 2 || voted_item_id) && (
+                {itemImage && !set.imageError && (index < 2 || userVoted) && (
                   <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-1">
                     <p className="text-white text-sm truncate">{item.name}</p>
                   </div>
                 )}
-                {voted_item_id == item.id && (<div className="absolute top-0 right-0 bg-gray-100 bg-opacity-50 p-1 rounded-full m-1">
+                {votedItems?.some(votedItem => votedItem.item_id === item.id) && (<div className="absolute top-0 right-0 bg-gray-100 bg-opacity-50 p-1 rounded-full m-1">
                   <ThumbsUp size={16} className="m-1" />
                 </div>)}
               </div>

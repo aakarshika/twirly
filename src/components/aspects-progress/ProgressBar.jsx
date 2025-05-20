@@ -6,7 +6,7 @@ const ProgressBar = ({ duration = SHOW_RESULTS_DURATION }) => {
   const { currentTheme } = useTheme();
   return (
     <motion.div
-      className="absolute bottom-0 left-0 h-1"
+      className="absolute bottom-0 left-0 h-2"
       style={{ backgroundColor: currentTheme.colors.primary }}
       initial={{ width: "0%" }}
       animate={{ width: "100%" }}

@@ -172,7 +172,5 @@ export function darkenColor(c, amount) {
   const newR = Math.max(0, Math.min(255, r - amount));
   const newG = Math.max(0, Math.min(255, g - amount));
   const newB = Math.max(0, Math.min(255, b - amount));
-  console.log("old", r, g, b);
-  console.log("new", newR, newG, newB);
   return `rgb(${newR}, ${newG}, ${newB})`;
 }

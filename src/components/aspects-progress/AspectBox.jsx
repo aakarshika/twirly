@@ -1,19 +1,25 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Trophy } from 'lucide-react';
+import { Check, ChevronRight, Heart, Trophy } from 'lucide-react';
 import { splitAndJoin, changeColorAlpha } from '../../lib/utils';
 import { useTheme } from '../../contexts/ThemeContext';
 import VoteCelebration from './VoteCelebration';
 import ProgressBar from './ProgressBar';
 import { SHOW_RESULTS_DURATION } from '../../lib/constants';
 
-const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2line, currentAspect }) => {
+const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2line, currentAspect, items }) => {
   const isCurrentAspect = currentAspect?.id === aspect.id;
   const { currentTheme } = useTheme();
   const [isClamped, setIsClamped] = useState(false);
   const textRef = useRef(null);
   const [showProgress, setShowProgress] = useState(false);
-  
+
+  const [itemVoted, setItemVoted] = useState('');
+
+  useEffect(() => {
+    setItemVoted(items?.find(item => item.id === aspect.itemVoted)?.name || '');
+  }, [items, aspect]);
+
   useEffect(() => {
     if (textRef.current) {
       const { scrollHeight, clientHeight } = textRef.current;
@@ -64,13 +70,14 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2l
         // scale: isCurrentAspect ? 1.1 : 1 
       }}
       transition={{ duration: 0.3 }}
-      className="flex mx-1 rounded-sm cursor-pointer relative flex flex-col items-center justify-center px-2 p-1"
+      className={`flex mx-1 rounded-sm cursor-pointer relative flex flex-col items-center justify-center px-2 p-1 ${is2line ? 'h-[75px] ' : 'h-[50px]'}`}
       style={{
+        border: isCurrentAspect ? `2px solid ${currentTheme.colors.secondary}` : 'none',
         backgroundColor: getBackgroundColor(),
         color: 'white'
       }}
     >
-      {showCelebration && showProgress && <ProgressBar duration={SHOW_RESULTS_DURATION} />}
+      {/* {showCelebration && showProgress && <ProgressBar duration={SHOW_RESULTS_DURATION} />} */}
 {/*       
       {!showCelebration && isCurrentAspect && !isResults && (
         <motion.div
@@ -91,7 +98,7 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2l
 
       <motion.div
         ref={textRef}
-        className={`flex items-center justify-center max-w-[200px] ${aspect.metric_name.length > 25 ? `line-clamp-2 min-w-[200px] overflow-hidden`:`whitespace-nowrap`} ${is2line ? 'h-[50px] ' : ''}`}
+        className={`flex items-center justify-center max-w-[200px]  ${aspect.metric_name.length > 25 ? `min-w-[200px] overflow-hidden`:`whitespace-nowrap`} `}
         animate={{ scale: isPlayed ? [1, 1.1, 1] : 1 }}
         transition={{ duration: 0.3 }}
       >
@@ -103,7 +110,14 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2l
         {isResults && (<span className='text-white font-medium text-center'>
           <Trophy className='w-6 h-6' />
               </span>)}
+              
       </motion.div>
+      {aspect.userVoted && (
+        <div className="flex flex-row text-white-500 items-center gap-1.5 w-full">
+          <Heart className="w-3 h-3 flex-shrink-0" fill='white'/>  
+          <span className='line-clamp-1 text-xs flex-1 min-w-0 text-white-1/2'>{itemVoted}</span>
+        </div>
+      )}
     </motion.div>
   );
 };

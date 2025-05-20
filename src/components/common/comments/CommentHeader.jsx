@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Dot, Heart, MessageSquare } from 'lucide-react';
+import { Circle, Dot, Heart, MessageSquare } from 'lucide-react';
 import { getPublicUrl } from '../../../lib/utils';
 import { renderTextWithMentions } from '../../../lib/commentUtils';
 import { useNavigate } from 'react-router-dom';
@@ -32,31 +32,36 @@ const CommentHeader = ({ onLike, isReplySectionExpanded, replyClicked,
 
   return (
     <div className="flex flex-col w-full">
-      <div className="flex items-start gap-3">
-        <Avatar
-          profileImageUrl={profile_image_url ? getPublicUrl(profile_image_url) : null}
-          displayName={display_name}
-          size="sm"
-        />
+      <div className="flex items-start gap-1">
         <div className="flex-1">
-          <div className="flex flex-col items-start">
+          <div className="flex mt-4 items-center gap-2">
+            <div style={{scale: '0.9'}}>
+            <Avatar
+              profileImageUrl={profile_image_url ? getPublicUrl(profile_image_url) : null}
+              displayName={display_name}
+              size="sm"
+            />
+            </div>
+          <div className="flex flex-row items-center gap-1">
             <span 
-              className="text-md font-medium cursor-pointer hover:underline text-left"
+              className="text-sm font-medium cursor-pointer hover:underline text-left"
               style={{ color: currentTheme.colors.text }}
               onClick={() => navigate(`/user/${display_name}`)}
             >
               {display_name || 'Anonymous'}
             </span>
-            <span className="text-xs text-gray-400 mt-0.5 text-left">
-              {formatDistanceToNow(new Date(created_at ? created_at : new Date()), { addSuffix: true })}
+            <Circle className="w-1 h-1 text-gray-400 ml-4" fill='lightgray' /> 
+            <span className="text-xs text-gray-400 text-left">
+              {formatDistanceToNow(new Date(created_at ? created_at : new Date()) )}
             </span>
           </div>
+          </div>
 
-          <p className="text-sm text-gray-700 dark:text-gray-300 mt-2 text-left">
+          {text && (<p className="text-sm mt-1 text-gray-700 dark:text-gray-300 text-left">
             <span dangerouslySetInnerHTML={{ __html: renderTextWithMentions(text, itemColorCoding) }} />
-          </p>
+          </p>)}
 
-          <div className="flex items-center gap-4 mt-2">
+          { (type === 'Reply' || type === 'LastReply') && (<div className="flex items-center gap-4 mt-2 mb-4 ">
             <button 
               onClick={() => onLike(objectId, type)} 
               className={`flex items-center gap-1.5 text-xs ${userReaction === 'like' ? 'text-amber-400' : 'text-gray-500 hover:text-amber-400'}`}
@@ -84,7 +89,7 @@ const CommentHeader = ({ onLike, isReplySectionExpanded, replyClicked,
                 @Reply
               </button>
             )}
-          </div>
+          </div>)}
         </div>
       </div>
     </div>

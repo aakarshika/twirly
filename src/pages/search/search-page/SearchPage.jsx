@@ -56,26 +56,27 @@ const SearchPage = () => {
     { id: 'people', label: 'People' }
   ];
 
-  const renderItemCard = (item) => {
+  const renderItemCard = (item, index) => {
     return (
-      <div key={item.id}>
+      <div key={'item' + item.id + index}>
         <ItemCard item={item} />
       </div>
     );
   };
 
-  const renderComparisonCard = (comparison) => {
+  const renderComparisonCard = (comparison, index) => {
     
     return (
-      <div key={comparison.aspect_set_id}>
+      <div key={'comparison' + comparison.aspect_set_id + index}>
         <TrendingCardCommon set={comparison} from={'search'} />
       </div>
       )
   };
 
-  const renderUserCard = (user) => {
+  const renderUserCard = (user, index) => {
     return (
       <Link
+        key={'user' + user.user_id + index}
         to={`/user/${user.user_id}`}
         className="block p-4 rounded-lg hover:bg-gray-50"
         style={{
@@ -154,11 +155,11 @@ const SearchPage = () => {
         {filteredResults.map((result, index) => {
           switch (result.type) {
             case 'item':
-              return renderItemCard(result);
+              return renderItemCard(result, index);
             case 'comparison':
-              return renderComparisonCard(result);
+              return renderComparisonCard(result, index);
             case 'user':
-              return renderUserCard(result);
+              return renderUserCard(result, index);
             default:
               return null;
           }
