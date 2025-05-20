@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PartyPopper, Target, ChevronRight, ChevronDown, ChevronUp } from 'lucide-react';
+import { PartyPopper, Target, ChevronRight, ChevronDown, ChevronUp, FileQuestion } from 'lucide-react';
 import { useHeader } from '../../contexts/HeaderContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import AspectBox from './AspectBox';
@@ -14,7 +14,7 @@ const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, cu
   const [scale, setScale] = useState(1);
   const { isHeaderVisible } = useHeader();
   const { currentTheme } = useTheme();
-  const [showAspectRoutes, setShowAspectRoutes] = useState(false);
+  const [showAspectRoutes, setShowAspectRoutes] = useState(true);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [is2line, setIs2line] = useState(false);
   const [nextUnvotedAspect, setNextUnvotedAspect] = useState(null);
@@ -100,101 +100,19 @@ const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, cu
         </div>
 
         <div
-          className='flex flex-row rounded-full m-2 ml-4 mr-4 justify-center items-center'
+          className='flex flex-row rounded-full  justify-center items-center'
           style={{ backgroundColor: 'rgba(255, 255, 255, 0.98)', cursor: 'pointer' }}
         >
-          <div className='flex flex-col rounded-lg items-center justify-center py-2 px-8'>
-            <h4> <span className='text-md font-bold text-center px-2 mb-2'>{currentSet?.name.substring(0,currentSet?.name.length - 1)}</span> <span className='text-sm' >based on </span></h4>
+          <div className='flex flex-col rounded-lg justify-start py-2 px-2'>
+            <div className='flex flex-row items-center justify-center'>
+            <motion.span className='text-4xl p-2'
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ duration: 0.3 }}
+            
 
-            {sortedMetrics.length > 0  && (
-              <motion.div
-                className="relative"
-              >
-                <div className='flex flex-row items-center justify-center'>
-                  <motion.span 
-                    animate={{
-                      scale: [1, 1.1, 1],
-                      rotate: [0, 1, -1, 0]
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: !currentAspect?.userVoted ? Infinity : 0,
-                      repeatType: "reverse"
-                    }} 
-                    className='text-md text-gray-500 text-center rounded-lg px-4 py-2 mt-2 flex flex-row items-center justify-center'
-                    style={{ backgroundColor: currentTheme.colors.secondary, color: 'white' }}
-                  >
-                    <Target className='w-4 h-4' />{isResultsPage ? (<span className='font-bold'>{sortedMetrics.length} Aspects</span>) : (<span className='font-bold'>{currentAspect?.metric_name || ''}</span>)}
-                  </motion.span>
-
-                  {!isResultsPage && currentAspect && (
-                    <motion.div
-                      animate={{
-                        scale: [1, 1.1, 1],
-                        rotate: [0, 1, -1, 0]
-                      }}
-                      transition={{
-                        duration: 2,
-                        repeat: currentAspect?.userVoted ? Infinity : 0,
-                        repeatType: "reverse"
-                      }}
-                      className="relative"
-                    >
-                        <>
-                          <div className="relative">
-                            {celebratingAspectId && (
-                              <motion.svg
-                                className="absolute -inset-1"
-                                width="40"
-                                height="40"
-                                viewBox="0 0 40 40"
-                              >
-                                <motion.circle
-                                  cx="20"
-                                  cy="20"
-                                  r="18"
-                                  fill="none"
-                                  stroke="lightgray"
-                                  strokeWidth="4"
-                                  strokeDasharray="125"
-                                  strokeDashoffset="125"
-                                  initial={{ strokeDashoffset: 125 }}
-                                  animate={{ strokeDashoffset: 0 }}
-                                  transition={{ duration: SHOW_RESULTS_DURATION, ease: "linear" }}
-                                />
-                              </motion.svg>
-                            )}
-                      {!nextUnvotedAspect && (
-                            <ChevronRight 
-                              className="bg-yellow-300 rounded-full w-8 h-8 text-amber-800 p-1 mt-2 cursor-pointer relative z-10"
-                              onClick={(e) => {
-                                
-                              onNextClick();
-                              }}
-                            />
-                      )}
-                      {nextUnvotedAspect && (
-                        
-                            <ChevronRight 
-                            className="rounded-full w-8 h-8 text-white p-1 mt-2 cursor-pointer relative z-10" 
-                            style={{ backgroundColor: celebratingAspectId ?  currentTheme.colors.secondary:  changeColorAlpha(currentTheme.colors.secondary, 0.5) }}
-                            onClick={(e) => {
-                              
-                              onNextClick();
-                            }}
-                            />
-                      )}
-                          </div>
-                        </>
-                    </motion.div>
-                  )}
-                </div>
-              </motion.div>
-            )}
-            <div className='absolute right-0 top-50 m-4'
-                    onClick={() => setShowAspectRoutes(!showAspectRoutes)}
-                    >
-              {!showAspectRoutes ? (<ChevronDown size={24} className='ml-2' />) : (<ChevronUp size={24} className='ml-2' />)}
+             >?</motion.span>
+            <span className='text-md text-gray-500 font-bold pr-4'>{currentSet?.name.substring(0,currentSet?.name.length - 1)}</span> 
+            {/* <span className='text-sm' >based on </span> */}
             </div>
           </div>
         </div>
@@ -206,20 +124,20 @@ const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, cu
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <motion.div className="flex items-center justify-center ">
-                  <h2 className="text-sm font-bold text-center">Vote all to reveal results</h2>
+                <motion.div className="flex ml-10 items-center justify-start ">
+                  <h2 className="text-sm font-semibold" style={{ color: 'rgb(174, 174, 174)' }}>Cast your vote based on</h2>
                 </motion.div>
               </motion.div>
             )}
         {showAspectRoutes && (
           <div
             ref={scrollContainerRef}
-            className="flex pt-2 "
+            className="flex "
           >
-            <span className='absolute  text-sm text-gray-500 mt-2 z-10 bg-white justify-center items-center rounded-full p-2 mr-2'
-            style={{ backgroundColor: currentTheme.colors.secondary, color: 'white' }}
-            ><Target className='w-10 h-10' /></span>
-            <div className='flex overflow-x-auto px-4 ml-16 scrollbar-hide items-center'
+            <div className='absolute  text-sm rounded-full text-gray-500 z-10 justify-center items-center ml-1 mr-1 '
+            
+            ><Target className='w-6 h-6 rounded-full p-1 m-1' style={{ backgroundColor: currentTheme.colors.secondary, color: 'white' }} /></div>
+            <div className='flex overflow-x-auto px-4 ml-5 scrollbar-hide items-center'
               style={{
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
@@ -228,7 +146,6 @@ const AspectsProgressBar = ({ comparisonMetrics, onAspectClick, userVotedAll, cu
               {sortedMetrics.map((aspect) => (
                 <motion.div
                   key={aspect.id}
-                  className='pt-2'
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}

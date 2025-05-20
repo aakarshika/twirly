@@ -5,7 +5,7 @@ import './ComparisonItemCard.css';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
-import { createProduct, updateProduct, searchCategories } from '../../../services/products';
+import { createProduct, updateProduct, searchCategories, createCategory } from '../../../services/products';
 import { randomPastelColorHex } from '../../../lib/utils';
 
 const ItemCardEditable = ({
@@ -129,6 +129,16 @@ const ItemCardEditable = ({
       setCategoryResults(filtered);
     }
   }, [categorySearch, allCategories, showCategorySearch]);
+
+  const handleCreateCategory = async () => {
+    try {
+      const newCategory = await createCategory(categorySearch);
+      handleCategorySelect(newCategory);
+    } catch (err) {
+      console.error('Error creating category:', err);
+      setError(err.message || 'Failed to create category');
+    }
+  };
 
   const handleImageChange = async (e) => {
     const file = e.target.files[0];
@@ -474,8 +484,14 @@ const ItemCardEditable = ({
                   />
                 </div>
                 <div className="mt-2 max-h-48 overflow-y-auto">
-                  {categoryResults.length === 0 && (
-                    <div className="p-2 text-gray-400 text-sm">No categories found</div>
+                  {!categoryResults.some(c => c.name.toLowerCase().trim() === categorySearch.toLowerCase().trim()) && categorySearch.length > 0 && (
+                    <div 
+                      onClick={handleCreateCategory}
+                      className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900 cursor-pointer rounded flex items-center gap-2 text-blue-600 dark:text-blue-400"
+                    >
+                      <Plus size={16} />
+                      <span>Create "{categorySearch}"</span>
+                    </div>
                   )}
                   {categoryResults.map(category => (
                     <div

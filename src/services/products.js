@@ -258,3 +258,28 @@ export const searchCategories = async (query) => {
     throw error;
   }
 };
+
+/**
+ * Create a new category
+ * @param {string} name - The name of the category
+ * @param {string} description - The description of the category
+ * @returns {Promise<Object>} The created category
+ */
+export const createCategory = async (name, description = '') => {
+  try {
+    const { data, error } = await supabase
+      .from('categories')
+      .insert([{
+        name,
+        description
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  } catch (error) {
+    console.error('Error creating category:', error);
+    throw error;
+  }
+};

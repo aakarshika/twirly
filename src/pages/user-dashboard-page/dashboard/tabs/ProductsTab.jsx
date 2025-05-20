@@ -29,10 +29,10 @@ const ProductsTab = ({ userId, isPublic }) => {
       className="rounded-lg"
       style={{ backgroundColor: currentTheme.colors.cardBackground }}
     >
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex justify-between items-center mb-6" 
+          style={{ color: currentTheme.colors.text,backgroundColor: currentTheme.colors.cardBackground }}>
         <h2 
           className="text-xl font-semibold"
-          style={{ color: currentTheme.colors.text }}
         >
           {isPublic ? 'Products' : 'Your Products'}
         </h2>

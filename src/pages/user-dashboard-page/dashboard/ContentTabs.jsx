@@ -196,7 +196,7 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
         {/* Sticky Tabs Container */}
         <div 
           ref={tabsRef}
-          className="sticky top-0 z-30 mb-6 md:mb-8"
+          className=" mb-6 md:mb-8"
           style={{ 
             paddingTop: '1rem',
             paddingBottom: '1rem',
@@ -206,6 +206,7 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
         >
           <div className="flex justify-center">
             <div className="relative p-2 rounded-2xl backdrop-blur-md w-full max-w-4xl" style={{ backgroundColor: currentTheme.colors.card + '80' }}>
+              <div className='flex flex-col'>
               <div className="flex flex-wrap justify-center gap-2">
                 {tabs.map(tab => (
                   <motion.button
@@ -213,8 +214,8 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
                     onClick={() => handleTabClick(tab.id)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className={`relative px-4 md:px-6 py-2 md:py-3 rounded-xl font-medium transition-all duration-300 flex-1 min-w-[120px] max-w-[200px] ${
-                      activeTab === tab.id ? 'text-white' : 'text-gray-600'
+                    className={` px-4 md:px-6 py-2 md:py-3 rounded-xl font-medium transition-all duration-300 flex-1 min-w-[120px] max-w-[200px] ${
+                      activeTab === tab.id ? ' sticky top-0 z-30 text-white' : 'relative text-gray-600'
                     }`}
                     style={{
                       backgroundColor: activeTab === tab.id ? currentTheme.colors.primary : 'transparent'
@@ -257,9 +258,6 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
                   </motion.button>
                 ))}
               </div>
-            </div>
-          </div>
-        </div>
 
         <AnimatePresence mode="wait">
           <motion.div
@@ -274,6 +272,11 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
             {renderTabContent()}
           </motion.div>
         </AnimatePresence>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   );
