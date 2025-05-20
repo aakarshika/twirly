@@ -20,7 +20,6 @@ const NotVotedCard = ({
       className="comparison-item-card rounded-lg"
       style={{ 
         height: newHeight,
-        border: '4px solid lightgray',
         backgroundColor: 'rgba(255, 255, 255, 0.4)'
       }}
     >

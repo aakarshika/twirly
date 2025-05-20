@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, Trophy } from 'lucide-react';
 import { splitAndJoin, changeColorAlpha } from '../../lib/utils';
 import { useTheme } from '../../contexts/ThemeContext';
 import VoteCelebration from './VoteCelebration';
@@ -61,17 +61,17 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2l
       animate={{ 
         opacity: 1, 
         y: 0, 
-        scale: isCurrentAspect ? 1.1 : 1 
+        // scale: isCurrentAspect ? 1.1 : 1 
       }}
       transition={{ duration: 0.3 }}
-      className="flex mx-2 rounded-lg cursor-pointer relative flex flex-col items-center justify-center p-4"
+      className="flex mx-1 rounded-sm cursor-pointer relative flex flex-col items-center justify-center px-2 p-1"
       style={{
         backgroundColor: getBackgroundColor(),
         color: 'white'
       }}
     >
       {showCelebration && showProgress && <ProgressBar duration={SHOW_RESULTS_DURATION} />}
-      
+{/*       
       {!showCelebration && isCurrentAspect && !isResults && (
         <motion.div
           animate={{
@@ -87,7 +87,7 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2l
         >
           <ChevronRight className="w-4 h-4 text-amber-800" />
         </motion.div>
-      )}
+      )} */}
 
       <motion.div
         ref={textRef}
@@ -95,7 +95,14 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2l
         animate={{ scale: isPlayed ? [1, 1.1, 1] : 1 }}
         transition={{ duration: 0.3 }}
       >
-        <span className='text-white font-medium text-center'>{isResults ? 'Results' : splitAndJoin(aspect.metric_name.length > 50 ? aspect.metric_name.substring(0, 50) + '...' : aspect.metric_name)}</span>
+      {!isResults && (<span className='text-white font-medium text-center px-2'>
+        {splitAndJoin(aspect.metric_name.length > 50 
+          ? aspect.metric_name.substring(0, 50) + '...' 
+            : aspect.metric_name)}
+            </span>)}
+        {isResults && (<span className='text-white font-medium text-center'>
+          <Trophy className='w-6 h-6' />
+              </span>)}
       </motion.div>
     </motion.div>
   );

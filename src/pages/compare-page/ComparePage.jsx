@@ -220,7 +220,6 @@ const ComparePage = () => {
     <div 
       className="min-h-screen flex flex-col" 
       style={{ 
-        paddingTop: isHeaderVisible ? '64px': '0px',
         backgroundColor: currentTheme.colors.background
       }}
     >

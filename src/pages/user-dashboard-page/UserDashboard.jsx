@@ -68,9 +68,7 @@ const UserDashboard = () => {
       style={{ 
         backgroundColor: 'var(--color-background)',
         position: 'relative',
-        top: isHeaderVisible ? '64px' : '0px',
-        paddingTop: 'env(safe-area-inset-top)',
-        paddingBottom: 'env(safe-area-inset-bottom)'
+        top: isHeaderVisible ? '64px' : '0px'
       }}
     >
       {showFirstTimeDashboard && (

@@ -3,7 +3,7 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useEffect } from 'react';
 import { X, Plus, Pencil, Upload, Search, Info } from 'lucide-react';
-import { createProduct, searchCategories } from '../../../services/products';
+import { createProduct, searchCategories, createCategory } from '../../../services/products';
 import { randomPastelColor, randomPastelColorHex } from '../../../lib/utils';
 import { useNavigate, useParams } from 'react-router-dom';
 import { getProduct, updateProduct } from '../../../services/products';
@@ -288,6 +288,19 @@ const AddProductModal = () => {
     }
   }, [categorySearch, allCategories, showCategorySearch]);
 
+  const handleCreateCategory = async () => {
+    try {
+      const newCategory = await createCategory(categorySearch);
+      handleCategorySelect(newCategory);
+    } catch (err) {
+      console.error('Error creating category:', err);
+      setErrors(prev => ({
+        ...prev,
+        category: err.message || 'Failed to create category'
+      }));
+    }
+  };
+
   return (
     <div
       className="w-full max-w-3xl mx-auto rounded-2xl shadow-xl p-0 md:p-0"
@@ -493,8 +506,14 @@ const AddProductModal = () => {
                         />
                       </div>
                       <div className="mt-2 max-h-48 overflow-y-auto">
-                        {categoryResults.length === 0 && (
-                          <div className="p-2 text-gray-400 text-sm">No categories found</div>
+                        {categoryResults.length === 0 && categorySearch.length > 0 && (
+                          <div 
+                            onClick={handleCreateCategory}
+                            className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900 cursor-pointer rounded flex items-center gap-2 text-blue-600 dark:text-blue-400"
+                          >
+                            <Plus size={16} />
+                            <span>Create "{categorySearch}"</span>
+                          </div>
                         )}
                         {categoryResults.map(category => (
                           <div

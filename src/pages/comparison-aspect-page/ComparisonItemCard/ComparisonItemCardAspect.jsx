@@ -36,7 +36,8 @@ const ComparisonItemCardAspect = ({
   });
 
   const numericHeight = parseFloat('100');
-  const newHeight = (numericHeight*2 / 6) + 'vh';
+  // const newHeight = (numericHeight*2 / 6) + 'vh';
+  const newHeight = '20vh';
 
   return (
     <div className="relative">

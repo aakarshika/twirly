@@ -1,11 +1,15 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
+import { motion } from 'framer-motion';
+import { ChevronRight } from 'lucide-react';
 import ComparisonItemCardAspect from '../comparison-aspect-page/ComparisonItemCard/ComparisonItemCardAspect';
 import ComparisonSetAspectsCommentsSection from '../comparison-aspect-page/ComparisonSetAspectsCommentsSection';
 import { useComparisonAspectData } from '../../hooks/useComparisonAspectData';
+import { SHOW_RESULTS_DURATION } from '../../lib/constants';
+import { changeColorAlpha } from '../../lib/utils';
 
-const CompareAspectView = ({ onVoteChange }) => {
+const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isResultsPage, currentAspect, nextUnvotedAspect }) => {
   const { aspectId } = useParams();
   const { currentTheme } = useTheme();
   
@@ -99,6 +103,67 @@ const CompareAspectView = ({ onVoteChange }) => {
             ))}
           </div>
         </div>
+        {!isResultsPage && currentAspect && (
+                    <motion.div
+                      animate={{
+                        scale: [1, 1.1, 1],
+                        rotate: [0, 1, -1, 0]
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: currentAspect?.userVoted ? Infinity : 0,
+                        repeatType: "reverse"
+                      }}
+                      className="relative"
+                    >
+                        <>
+                          <div className="relative">
+                            {celebratingAspectId && (
+                              <motion.svg
+                                className="absolute -inset-1"
+                                width="40"
+                                height="40"
+                                viewBox="0 0 40 40"
+                              >
+                                <motion.circle
+                                  cx="20"
+                                  cy="20"
+                                  r="18"
+                                  fill="none"
+                                  stroke="lightgray"
+                                  strokeWidth="4"
+                                  strokeDasharray="125"
+                                  strokeDashoffset="125"
+                                  initial={{ strokeDashoffset: 125 }}
+                                  animate={{ strokeDashoffset: 0 }}
+                                  transition={{ duration: SHOW_RESULTS_DURATION, ease: "linear" }}
+                                />
+                              </motion.svg>
+                            )}
+                      {!nextUnvotedAspect && (
+                            <ChevronRight 
+                              className="bg-yellow-300 rounded-full w-8 h-8 text-amber-800 p-1 mt-2 cursor-pointer relative z-10"
+                              onClick={(e) => {
+                                
+                              onNextClick();
+                              }}
+                            />
+                      )}
+                      {nextUnvotedAspect && (
+                        
+                            <ChevronRight 
+                            className="rounded-full w-8 h-8 text-white p-1 mt-2 cursor-pointer relative z-10" 
+                            style={{ backgroundColor: celebratingAspectId ?  currentTheme.colors.secondary:  changeColorAlpha(currentTheme.colors.secondary, 0.5) }}
+                            onClick={(e) => {
+                              
+                              onNextClick();
+                            }}
+                            />
+                      )}
+                          </div>
+                        </>
+                    </motion.div>
+                  )}
       </div>
 
       <div className="text-center animate-fadeIn" style={{ backgroundColor: 'white' }}>

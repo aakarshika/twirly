@@ -3,7 +3,7 @@ import { Heart } from 'lucide-react';
 import VoteStats from './VoteStats/VoteStats';
 import { useVotedCard } from '../../../hooks/useVotedCard';
 import './ComparisonItemCard.css';
-import { darkenColor } from '../../../lib/utils';
+import { changeColorAlpha, darkenColor } from '../../../lib/utils';
 
 const VotedCard = ({
   item,
@@ -35,8 +35,7 @@ const VotedCard = ({
         className="comparison-item-card rounded-lg"
         style={{ 
           aspectRatio: '1/1',
-          height: newHeight,
-          border: '4px solid ' + color,
+          height: itemImage ? '30vh': newHeight ,
           backgroundColor: color?.substring(0, color.length - 1) + ', 0.2)'
         }}
       >
@@ -51,22 +50,21 @@ const VotedCard = ({
               />
             ) : (
               <div
-                className="text-fallback"
+                className="flex h-full flex-col items-center"
                 style={{
-                  background: color?.substring(0, color.length - 1) + ', 0.2)',
-                  color: '#000'
+                  background: changeColorAlpha(color, 0.2)
                 }}
                 onClick={handleItemClick}
               >
-                <div className="flex flex-col text-fallback-content">
-                  <h3 ref={titleRef} className="text-fallback-title" style={{ color: item.item_color_string }}>{item.name}</h3>
+                <div className="flex h-full justify-center items-center">
+                  <h3 ref={titleRef} className="" style={{ color: darkenColor(color, 70) }}>{item.name}</h3>
                 </div>
                 {item.votes?.length > 0 && (
                   <div 
-                    className="flex items-center content-overlay"
+                    className="flex absolute bottom-0 w-full p-2"
                     style={{
-                      cursor: 'pointer',
-                      backgroundColor: color,
+                      color: darkenColor(color, 80),
+                      cursor: 'pointer'
                     }}
                   >
                     <VoteStats
@@ -87,7 +85,7 @@ const VotedCard = ({
             <div 
               className="bottom-0 left-0 right-0 p-4 content-overlay" 
               onClick={handleItemClick}
-              style={{ backgroundColor: darkenColor(color, 40) }}
+              style={{ backgroundColor: changeColorAlpha(color, 0.2), color: darkenColor(color, 50)}}
             >
               <h3 className="item-name">{item.name}</h3>
               {item.votes?.length > 0 && (
