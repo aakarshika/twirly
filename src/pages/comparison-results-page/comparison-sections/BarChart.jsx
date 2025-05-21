@@ -8,12 +8,13 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
 import { useState } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
+import ComparisonSetAspectsCommentsSection from '../../comparison-aspect-page/ComparisonSetAspectsCommentsSection';
 
 const MetricCard = ({ metric, items, getMetricAverageVotes, currentTheme, userVoted }) => {
   const totalVotes = metric.votes.length;
   const navigate = useNavigate();
   return (
-    <div className="bg-white rounded-lg shadow-sm p-4 mb-4"
+    <div className="bg-white rounded-lg shadow-sm"
     onClick={() => {
       navigate(`/compare/${metric.set_id}/aspect/${metric.id}`);
     }}>
@@ -40,16 +41,16 @@ const MetricCard = ({ metric, items, getMetricAverageVotes, currentTheme, userVo
         </div>)}
       </div>
       
-      <div className="space-y-3">
+      <div className="space-y-1">
         {items.map((item, i) => {
           const value = getMetricAverageVotes(item.id, metric.metric_name);
           const percentage = (value / (totalVotes || 1)) * 100;
           
           return userVoted ? (
-            <div key={item.id} className="flex flex-row items-center space-x-3">
+            <div key={item.id} className="flex flex-row items-center">
               <div className="flex flex-row w-full">
                 <div className="flex  w-32">
-                  <span className="text-sm font-medium text-gray-700">{item.name}</span>
+                  <span className="text-sm font-medium text-gray-700 line-clamp-1">{item.name}</span>
                 </div>
                 <span className=' text-sm text-white-500 ml-2 w-6'>{value} </span>
                 <div className="flex w-full bg-gray-200 rounded-full h-4">
@@ -107,13 +108,15 @@ const BarChart = ({ items,  comparisonMetrics }) => {
             currentTheme={currentTheme}
             userVoted={metric.userVoted}
           />
-          <ComparisonCommentsInshort 
-            metric={metric}
+          <div className='pl-4'>
+
+          <ComparisonSetAspectsCommentsSection
+            userVoted={true}
+            aspectSetId={metric.id}
             items={items}
-            getMetricAverageVotes={getMetricAverageVotes}
-            currentTheme={currentTheme}
-            userVoted={metric.userVoted}
+            aspectSet={metric}
           />
+          </div>
           </div>
         )})}
       </div>

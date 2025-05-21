@@ -66,8 +66,8 @@ const PollScreen = ({items, currentSetId, currentSet}) => {
         )}
         
         {userVotedAll && items && items.length > 0 && (
-          <div className="w-full mt-8">
-            <div className="w-full bg-white rounded-lg shadow-sm p-6">
+          <div className="w-full">
+            <div className="w-full bg-white shadow-sm">
               <BarChart 
                 items={items} 
                 comparisonMetrics={comparisonMetrics}

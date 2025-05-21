@@ -7,13 +7,11 @@ import { changeColorAlpha, darkenColor } from '../../../lib/utils';
 
 const VotedCard = ({
   item,
-  newHeight = '25vh',
   handleRevertClick,
   handleItemClick,
   totalVotes = 0,
-  itemReviewData = { reviews: [], metrics: {} } || null,
-  reviewCount = 0,
-  isVotedItem
+  isVotedItem,
+  userVotedAll
 }) => {
   const {
     titleRef,
@@ -24,10 +22,12 @@ const VotedCard = ({
     handleRevertClick,
     handleItemClick,
     totalVotes,
-    itemReviewData,
-    reviewCount,
     isVotedItem
   });
+
+  // Calculate total votes from metric_votes
+  const voteCount = item.metric_votes ? 
+    item.metric_votes.reduce((sum, metric) => sum + metric.itemVotes, 0) : 0;
 
   return (
     <div className="flex flex-col bg-white w-full rounded-lg" >
@@ -35,7 +35,7 @@ const VotedCard = ({
         className="comparison-item-card rounded-lg"
         style={{ 
           aspectRatio: '1/1',
-          height: itemImage ? '30vh': newHeight ,
+          height: itemImage ? '30vh': '25vh' ,
           backgroundColor: changeColorAlpha(color, 0.2)
         }}
       >
@@ -50,30 +50,27 @@ const VotedCard = ({
               />
             ) : (
               <div
-                className="flex h-full flex-col items-center p-3"
+                className="flex h-full justify-center flex-col items-center p-3"
                 onClick={handleItemClick}
               >
-                <div className="flex h-full justify-center items-center">
-                  <h3 ref={titleRef} className="" style={{ color: darkenColor(color, 70) }}>{item.name}</h3>
+                <div className="flex justify-center items-center">
+                  <h3 ref={titleRef} className="text-center" style={{ color: darkenColor(color, 70) }}>{item.name}</h3>
                 </div>
-                {item.votes?.length > 0 && (
-                  <div 
-                    className="flex absolute bottom-0 w-full p-2"
+                  {userVotedAll && (<div 
+                    className="p-2"
                     style={{
                       color: darkenColor(color, 80),
                       cursor: 'pointer'
                     }}
                   >
                     <VoteStats
-                      votes={item.votes?.length || 0}
+                      votes={voteCount}
                       totalVotes={totalVotes}
                       color={color}
                       isVotedItem={isVotedItem}
-                      reviewCount={reviewCount}
-                      itemReviewData={itemReviewData}
+                      leadingMetrics={item.leadingMetrics}
                     />
-                  </div>
-                )}
+                  </div>)}
               </div>
             )}
           </div>
@@ -85,22 +82,19 @@ const VotedCard = ({
               style={{  color: darkenColor(color, 50)}}
             >
               <h3 className="item-name">{item.name}</h3>
-              {item.votes?.length > 0 && (
-                <div 
+                {userVotedAll && (<div 
                   className="flex items-center gap-2" 
                   style={{ cursor: 'pointer' }} 
                   onClick={handleItemClick}
                 >
                   <VoteStats
-                    votes={item.votes?.length || 200}
-                    totalVotes={totalVotes || 350}
+                    votes={voteCount}
+                    totalVotes={totalVotes}
                     color={color}
                     isVotedItem={isVotedItem}
-                    reviewCount={reviewCount}
-                    itemReviewData={itemReviewData}
+                    leadingMetrics={item.leadingMetrics}
                   />
-                </div>
-              )}
+                </div>)}
             </div>
           )}
 

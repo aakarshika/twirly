@@ -74,7 +74,7 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
 
   return (
     <div className="flex flex-col">
-      <div className="shadow-md rounded-md p-3 mobile-friendly-margin-bottom"
+      <div className="p-3 mobile-friendly-margin-bottom"
         style={{
           backgroundColor: currentTheme.colors.background,
           transform: 'translateY(0)',
@@ -108,27 +108,31 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
           </div>
         </div>
 
-        {celebratingAspectId && (
+        {(
           <div className='flex-row mt-2'>
-          <div className='flex flex-col w-full items-center justify-center bg-amber-300 ml-10'>
-            <h2 className='text-md p-1 ' style={{ color: 'rgb(255, 255, 255)' }}>Next Aspect</h2>
-            <motion.div
-              className="h-1"
-              style={{ backgroundColor: currentTheme.colors.secondary }}
-              initial={{ width: "0%" }}
-              animate={{ width: "100%" }}
-              transition={{ duration: SHOW_RESULTS_DURATION, ease: "linear" }}
-            />
-          </div>
-          <div className='flex flex-col items-center justify-center bg-gray-300 mr-4'>
-            <h2 className='text-md p-1 ' style={{ color: 'rgb(255, 255, 255)' }}>Cancel</h2>
-          </div>
-          
+            <div className='flex flex-col w-full items-center justify-center bg-amber-300 ml-10' 
+            onClick={() => {
+              console.log("Next Aspect");
+              onNextClick();
+            }}>
+              <h2 className='text-md p-1 ' style={{ color: 'rgb(255, 255, 255)' }}>Next Aspect</h2>
+              {celebratingAspectId && (<motion.div
+                className="h-1"
+                style={{ backgroundColor: currentTheme.colors.secondary }}
+                initial={{ width: "0%" }}
+                animate={{ width: "100%" }}
+                transition={{ duration: SHOW_RESULTS_DURATION, ease: "linear" }}
+              />)}
+            </div>
+            {(<div className='flex flex-col items-center justify-center bg-gray-300 mr-4'>
+              {celebratingAspectId && (<h2 className='text-md p-1 ' style={{ color: 'rgb(255, 255, 255)' }}>Cancel</h2>)}
+            </div>)}
+            
           </div>
         )}
         <div className="pt-1" >
           <div >
-        <CommentHeader
+        {/* <CommentHeader
           type="Comment"
           comment={currentAspectSet}
           replyClicked={() => {}}
@@ -140,7 +144,7 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
           objectId={currentAspectSet?.id}
           numReplies={currentAspectSet?.comments?.length}
           items={items}
-        />
+        /> */}
         </div>
         </div>
 
@@ -210,14 +214,14 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
 
 
       <div className="text-center animate-fadeIn" style={{ backgroundColor: 'white' }}>
-        <div className="w-full p-4" style={{ marginBottom: '100px' }}>
+        {userVoted && (<div className="w-full p-4" style={{ marginBottom: '100px' }}>
           <ComparisonSetAspectsCommentsSection
             userVoted={userVoted}
             aspectSetId={aspectId}
             items={items}
             aspectSet={currentAspectSet}
           />
-        </div>
+        </div>)}
         <span className="text-2xl animate-bounce" >. . .</span>
       </div>
     </div>

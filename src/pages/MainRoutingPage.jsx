@@ -30,6 +30,7 @@ import ComparePage from './compare-page/ComparePage';
 import { LoadingProvider } from '../contexts/LoadingContext';
 import LoadingScreen from '../components/common/LoadingScreen';
 import InitialLoadingScreen from '../components/common/InitialLoadingScreen';
+import { useMediaQuery } from 'react-responsive';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -114,6 +115,23 @@ const MainRoutingPage = () => {
   const { currentTheme } = useTheme();
   const { loading } = useAuth();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const isMobile = useMediaQuery({ maxWidth: 767 });
+  const location = useLocation();
+
+  const shouldShowHeader = () => {
+    if (!isMobile) return true; // Always show header on desktop
+    
+    // Only show header on specific pages for mobile
+    const mobileHeaderPages = ['/', '/dashboard', '/settings'];
+    const currentPath = location.pathname;
+    console.log('Current path:', currentPath, 'Is mobile:', isMobile); // Debug log
+    return mobileHeaderPages.some(path => currentPath === path || currentPath.startsWith(path + '/'));
+  };
+
+  useEffect(() => {
+    // Debug log for header visibility
+    console.log('Should show header:', shouldShowHeader());
+  }, [location.pathname, isMobile]);
 
   useEffect(() => {
     // Simulate minimum loading time to prevent flash
@@ -146,12 +164,12 @@ const MainRoutingPage = () => {
             paddingBottom: 'calc(var(--safe-area-inset-bottom))'
           }}
         >
-          <Header />
+          {shouldShowHeader() && <Header />}
           <main 
             className="flex-grow transition-all duration-200 ease-in-out"
             style={{ 
               paddingBottom: '100px',
-              paddingTop: 'calc(var(--safe-area-inset-top) + 64px)',
+              paddingTop: shouldShowHeader() ? 'calc(var(--safe-area-inset-top) + 64px)' : 'calc(var(--safe-area-inset-top))',
               maxWidth: '100%',
               margin: '0 auto'
             }}

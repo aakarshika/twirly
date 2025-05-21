@@ -31,6 +31,7 @@ const ComparePage = () => {
   const [celebratingAspectId, setCelebratingAspectId] = useState(null);
   const [currentAspect, setCurrentAspect] = useState(null);
   const trendingRef = useRef(null);
+  const celebrationTimerRef = useRef(null);
   
   const { items, currentSet } = useComparisonDetails(currentSetId);
 
@@ -142,6 +143,12 @@ const ComparePage = () => {
     console.log('ComparePage: handleVoteChange called with:', { aspectId, hasVoted, item_id });
     console.log('ComparePage: current comparisonMetrics:', comparisonMetrics);
     
+    // Clear any existing celebration timer
+    if (celebrationTimerRef.current) {
+      clearTimeout(celebrationTimerRef.current);
+      celebrationTimerRef.current = null;
+    }
+    
     setComparisonMetrics(prevMetrics => {
       const updatedMetrics = prevMetrics.map(metric => 
         metric.id === parseInt(aspectId)
@@ -160,8 +167,9 @@ const ComparePage = () => {
       if (hasVoted) {
         setCelebratingAspectId(parseInt(aspectId));
         // Start celebration timer
-        setTimeout(() => {
+        celebrationTimerRef.current = setTimeout(() => {
           setCelebratingAspectId(null);
+          celebrationTimerRef.current = null;
           
           const next = getNextUnvotedAspect();
 
@@ -178,6 +186,39 @@ const ComparePage = () => {
       return updatedMetrics;
     });
   };
+
+  // Add cleanup effect for celebration timer
+  useEffect(() => {
+    return () => {
+      if (celebrationTimerRef.current) {
+        clearTimeout(celebrationTimerRef.current);
+        celebrationTimerRef.current = null;
+      }
+    };
+  }, []);
+
+  // Add effect to handle user interactions
+  useEffect(() => {
+    const handleUserInteraction = () => {
+      if (celebrationTimerRef.current) {
+        clearTimeout(celebrationTimerRef.current);
+        celebrationTimerRef.current = null;
+        setCelebratingAspectId(null);
+      }
+    };
+
+    // Add event listeners for common user interactions
+    document.addEventListener('click', handleUserInteraction);
+    document.addEventListener('keydown', handleUserInteraction);
+    document.addEventListener('scroll', handleUserInteraction);
+
+    return () => {
+      // Clean up event listeners
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('keydown', handleUserInteraction);
+      document.removeEventListener('scroll', handleUserInteraction);
+    };
+  }, []);
 
   useEffect(() => {
     fetchSetMetrics();
@@ -282,6 +323,16 @@ const ComparePage = () => {
                 element={
                   <CompareAspectView 
                     onVoteChange={handleVoteChange}
+                    onNextClick={() => {
+                      const next = getNextUnvotedAspect();
+                      if (next) {
+                        setCurrentAspect(next);
+                        navigate(`/compare/${id}/aspect/${next.id}`);
+                      } else {
+                        setCurrentAspect(null);
+                        navigate(`/compare/${id}/results`);
+                      }
+                    }}
                     celebratingAspectId={celebratingAspectId}
                   />
                 } 
@@ -306,7 +357,7 @@ const ComparePage = () => {
           </div>
         )}
 
-        <div 
+        {!currentAspect && (<div 
           className="relative z-0 w-full transition-all duration-150 ease-in-out"
           style={{ 
             backgroundColor: currentTheme.colors.background
@@ -330,10 +381,10 @@ const ComparePage = () => {
               {showTrending && <Trending />}
             </div>
           </div>
-        </div>
+        </div>)}
       </div>
     </div>
   );
 };
 
-export default ComparePage; 
+export default ComparePage;

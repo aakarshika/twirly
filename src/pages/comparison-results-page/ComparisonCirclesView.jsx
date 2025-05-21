@@ -14,38 +14,39 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useHeader } from '../../contexts/HeaderContext';
 
-const List = ({displayItems, isMobile, winner, runnerUp, comparison, totalVotes, animationState}) => {
+const List = ({displayItems, isMobile, winner, runnerUp, comparison, totalVotes, animationState, userVotedAll}) => {
     return (
         <div>
-            {/* Grid Layout */}
-            <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 mt-0">
-                {displayItems.map((item, index) => {
-                    const isInCenterStage = animationState === 'winner' && item.id === winner?.id;
-                    const isRunnerUp = item.id === runnerUp?.id;
-                    const shouldShow = true;// !isRunnerUp || animationState === 'rest';
-                    
-                    return (
-                        <div
-                            key={item.id}
-                            className="flex w-full"
-                            style={{ 
-                                opacity: 1,
-                                transition: 'opacity 0.2s ease-in-out'
-                            }}
-                        >
-                            <ComparisonCircle
+
+      <div className="p-3">
+        <div>
+          <div className={`grid ${displayItems.length === 1 ? 'grid-cols-1' :
+            displayItems.length === 2 ? 'grid-cols-2' :
+              displayItems.length % 3 === 0 ? 'grid-cols-3' :
+                'grid-cols-2'
+            }`}
+            style={{
+              gap: '1vh'
+            }}
+          >
+            {displayItems.map((item, i) => (
+              <div key={item.id} className="">
+                
+                <ComparisonCircle
                                 item={item}
-                                index={index}
+                                index={i}
                                 isMobile={isMobile}
                                 comparison={comparison}
                                 winner={winner}
                                 runnerUp={runnerUp}
                                 totalVotes={totalVotes}
+                                userVotedAll={userVotedAll}
                             />
-                        </div>
-                    );
-                })}
-            </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
         </div>
     );
 };
@@ -55,8 +56,10 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
     const navigate = useNavigate();
     const winner = userVotedAll ? findWinner(displayItems) : null;
     const runnerUp = userVotedAll ? findRunnerUp(displayItems) : null;
-    const totalVotes = userVotedAll ? countTotalVotes(displayItems) : null;
-
+    const totalVotes = userVotedAll ? countTotalVotes(comparisonMetrics) : null;
+    console.log(totalVotes, 'totalVotes');
+    console.log(displayItems, 'displayItems');
+    console.log(comparisonMetrics, 'comparisonMetrics');
     const {isHeaderVisible} = useHeader();
     const [animationState, setAnimationState] = useState(userVotedAll ? 'winner' : 'rest');
     const [scale, setScale] = useState(1);
@@ -90,8 +93,13 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
 
     return (
         <div className="w-full">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+            <div className="">
                 <div className='flex flex-col'>
+                    {!userVotedAll && (
+                        <div className="text-center text-sm text-gray-500">
+                            Vote all to view results
+                        </div>
+                    )}
                     {/* Desktop Layout */}
                     <div className="hidden sm:block">
                         <List 
@@ -101,6 +109,7 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
                             isMobile={false}
                             comparison={comparison}
                             totalVotes={totalVotes}
+                            userVotedAll={userVotedAll}
                             animationState={animationState}
                         />
                     </div>
@@ -114,6 +123,7 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
                             isMobile={true}
                             comparison={comparison}
                             totalVotes={totalVotes}
+                            userVotedAll={userVotedAll}
                             animationState={animationState}
                         />
                     </div>
