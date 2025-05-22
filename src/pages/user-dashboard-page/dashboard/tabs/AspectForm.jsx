@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../../contexts/ThemeContext';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Check, Pencil, Trash2, X } from 'lucide-react';
 
 const AspectForm = ({ 
   aspect, 
@@ -41,31 +41,21 @@ const AspectForm = ({
 
   if (!isEditing) {
     return (
-      <div className="w-full flex flex-row justify-between items-center text-sm rounded-full py-2 px-4 transition-all duration-300 hover:scale-[1.02] backdrop-blur-sm" 
+      <div className="w-full flex flex-row justify-between items-center text-sm rounded-md py-1 px-2 transition-all duration-300 hover:scale-[1.02] backdrop-blur-sm" 
         style={{ 
           color: 'whitesmoke', 
-          background: `linear-gradient(135deg, ${currentTheme.colors.primary}40, ${currentTheme.colors.primary}80)`,
-          border: `1px solid ${currentTheme.colors.primary}30`,
+
+          background: `${currentTheme.colors.secondary}90`,          border: `1px solid ${currentTheme.colors.primary}30`,
           boxShadow: `0 4px 15px ${currentTheme.colors.primary}20`
         }}>
         <span className="font-medium">{aspect.metric_name}</span>
         <div className="flex flex-row gap-2 items-center">
           <button
-            onClick={() => onUpdate(aspect)}
-            className="p-2 hover:scale-110 transition-all duration-200 rounded-full"
-            style={{
-              background: `linear-gradient(135deg, ${currentTheme.colors.error}20, ${currentTheme.colors.error}40)`,
-              color: currentTheme.colors.error
-            }}
-          >
-            <Pencil size={16} />
-          </button>
-          <button
             onClick={() => onDelete(aspect.id)}
             className="p-2 hover:scale-110 transition-all duration-200 rounded-full"
             style={{
-              background: `linear-gradient(135deg, ${currentTheme.colors.error}20, ${currentTheme.colors.error}40)`,
-              color: currentTheme.colors.error
+              background: `${currentTheme.colors.secondary}90`,
+              color: 'whitesmoke'
             }}
           >
             <Trash2 size={16} />
@@ -76,19 +66,25 @@ const AspectForm = ({
   }
 
   return (
-    <div className="flex justify-between items-center text-sm rounded-xl py-4 px-4 backdrop-blur-sm animate-fadeIn" 
+    <div className="flex justify-between items-center text-sm rounded-md py-1 px-1 backdrop-blur-sm animate-fadeIn" 
       style={{ 
         color: 'whitesmoke', 
-        background: `linear-gradient(135deg, ${currentTheme.colors.primary}40, ${currentTheme.colors.primary}80)`,
-        border: `1px solid ${currentTheme.colors.primary}30`,
+        background: `${currentTheme.colors.secondary}90`,
+        border: `1px solid ${currentTheme.colors.secondary}30`,
         boxShadow: `0 4px 15px ${currentTheme.colors.primary}20`
       }}>
-      <div className="flex flex-col space-y-4 w-full">
+      <div className="flex flex-row w-full">
         <input
           type="text"
+          autoFocus
           value={aspectData.metric_name}
           onChange={(e) => setAspectData(prev => ({ ...prev, metric_name: e.target.value }))}
-          className="w-full p-3 rounded-xl transition-all duration-300 focus:scale-[1.01]"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              onSave(aspect.id);
+            }
+          }}
+          className="w-full p-1 rounded-lg transition-all duration-300 focus:scale-[1.01]"
           style={{
             backgroundColor: `${currentTheme.colors.background}80`,
             color: currentTheme.colors.text,
@@ -109,28 +105,15 @@ const AspectForm = ({
           placeholder="Aspect description"
           rows={2}
         /> */}
-        <div className="flex flex-row gap-3 items-center">
+        <div className="flex flex-row items-center">
           <button
             onClick={() => onSave(aspect.id)}
-            className="flex-1 p-3 font-medium rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
+            className="flex-1 p-1 font-medium "
             style={{
-              background: `linear-gradient(135deg, ${currentTheme.colors.primary}, ${currentTheme.colors.primary}80)`,
               color: currentTheme.colors.buttonText,
-              boxShadow: `0 4px 15px ${currentTheme.colors.primary}30`
             }}
           >
-            {aspect.id ? '✨ Update' : '✨ Add'}
-          </button>
-          <button
-            onClick={onCancel}
-            className="flex-1 p-3 font-medium rounded-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
-            style={{
-              background: `linear-gradient(135deg, ${currentTheme.colors.error}, ${currentTheme.colors.error}80)`,
-              color: 'whitesmoke',
-              boxShadow: `0 4px 15px ${currentTheme.colors.error}30`
-            }}
-          >
-            ✖️ Cancel
+            <Check size={16} />
           </button>
         </div>
       </div>

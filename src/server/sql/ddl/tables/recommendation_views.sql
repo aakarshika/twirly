@@ -50,6 +50,7 @@ SELECT
     cs.user_id,
     cs.name,
     cs.created_at,
+    cs.category_id,
     (
         select concat((select string_agg(csa.metric_name, ' ') 
             from comparison_set_aspects csa
@@ -86,15 +87,39 @@ create or replace function fetch_popular_aspect_sets_for_user(v_user_id uuid)
 returns setof popular_comparison_sets as $$
 begin
   return query
-  select pcs.*
-  from popular_comparison_sets pcs
+  with user_preferred_categories as (
+    select category_id 
+    from user_category_preferences 
+    where user_id = v_user_id 
+    and is_favorite = true
+  ),
+  category_boosted_sets as (
+    select 
+      pcs.*,
+      case 
+        when pcs.category_id in (select category_id from user_preferred_categories) then 1.5
+        else 1.0
+      end as category_boost
+    from popular_comparison_sets pcs
+  )
+  select 
+    set_id,
+    user_id,
+    name,
+    created_at,
+    category_id,
+    all_stuff_names,
+    total_votes,
+    total_comments,
+    popularity_score * category_boost as popularity_score
+  from category_boosted_sets
   where v_user_id is null 
     or v_user_id not in (
       select v.user_id 
       from votes v 
       join comparison_set_aspects csa on v.set_id = csa.id 
-      where csa.set_id = pcs.set_id
+      where csa.set_id = category_boosted_sets.set_id
     )
-  order by pcs.popularity_score desc;
+  order by popularity_score desc;
 end;
 $$ language plpgsql;

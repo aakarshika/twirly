@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { motion } from 'framer-motion';
@@ -8,10 +8,14 @@ import ComparisonSetAspectsCommentsSection from '../comparison-aspect-page/Compa
 import { useComparisonAspectData } from '../../hooks/useComparisonAspectData';
 import { SHOW_RESULTS_DURATION } from '../../lib/constants';
 import { changeColorAlpha } from '../../lib/utils';
+import { userService } from '../../services/userService';
+import { useAuth } from '../../contexts/AuthContext';
 
 const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isResultsPage, currentAspect, nextUnvotedAspect }) => {
   const { id: setId } = useParams();
   const { currentTheme } = useTheme();
+  const { user } = useAuth();
+  const [isCelebrating, setIsCelebrating] = useState(false);
   
   const {
     loading,
@@ -26,6 +30,40 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
     handleRevertVote,
   } = useComparisonAspectData(currentAspect?.id, setId);
 
+  // Effect to handle celebration state
+  useEffect(() => {
+    if (celebratingAspectId === currentAspect?.id) {
+      setIsCelebrating(true);
+    } else {
+      setIsCelebrating(false);
+    }
+  }, [celebratingAspectId, currentAspect?.id]);
+
+  // Function to update user category preferences
+  const updateUserCategoryPreferences = async (categoryId) => {
+    try {
+      const preferences = await userService.getUserPreferences(user.id);
+      const categoryPreferences = await userService.getUserCategoryPreferences(user.id);
+      const notificationPreferences = await userService.getUserNotificationSettings(user.id);
+
+      const hasCategory = categoryPreferences.some(pref => pref.category_id === categoryId);
+      
+      if (!hasCategory) {
+        const updatedCategories = [...categoryPreferences.map(p => p.category_id), categoryId];
+        
+        await userService.saveUserPreferences(user.id, {
+          display_name: preferences?.display_name || '',
+          id: preferences?.id || null,
+          categories: updatedCategories,
+          notifications: notificationPreferences?.notifications || [],
+          notifId: notificationPreferences?.id || null,
+        });
+      }
+    } catch (error) {
+      console.error('Error updating category preferences:', error);
+    }
+  };
+
   // Wrap the vote handlers to notify parent
   const handleVoteWithUpdate = async (itemId) => {
     console.log('CompareAspectView: handleVoteWithUpdate called with itemId:', itemId);
@@ -34,6 +72,10 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
     if (success) {
       console.log('CompareAspectView: calling onVoteChange with aspectId:', currentAspect?.id);
       onVoteChange(currentAspect?.id, true, itemId);
+      
+      if (currentSet?.category_id) {
+        await updateUserCategoryPreferences(currentSet.category_id);
+      }
     }
   };
 
@@ -44,6 +86,12 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
     if (success) {
       console.log('CompareAspectView: calling onVoteChange with aspectId:', currentAspect?.id);
       onVoteChange(currentAspect?.id, false);
+    }
+  };
+
+  const handleNextClick = () => {
+    if (!celebratingAspectId) {
+      onNextClick();
     }
   };
 
@@ -119,77 +167,32 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
         </div>
 
         <div className='flex-row mt-2'>
-          <div className='flex flex-col w-full items-center justify-center bg-amber-300 ml-10' 
-          onClick={() => {
-            console.log("Next Aspect");
-            onNextClick();
-          }}>
-            <h2 className='text-md p-1 ' style={{ color: 'rgb(255, 255, 255)' }}>Next Aspect</h2>
-            {celebratingAspectId && (<motion.div
-              className="h-1"
-              style={{ backgroundColor: currentTheme.colors.secondary }}
-              initial={{ width: "0%" }}
-              animate={{ width: "100%" }}
-              transition={{ duration: SHOW_RESULTS_DURATION, ease: "linear" }}
-            />)}
+          <div 
+            className={`flex flex-col w-full items-center justify-center ${celebratingAspectId ? 'bg-amber-400' : 'bg-amber-300'} ml-10`}
+            onClick={handleNextClick}
+          >
+            <h2 className='text-md p-1' style={{ color: 'rgb(255, 255, 255)' }}>
+              {celebratingAspectId ? 'Celebrating...' : 'Next Aspect'}
+            </h2>
+            {celebratingAspectId && (
+              <motion.div
+                className="h-1"
+                style={{ backgroundColor: currentTheme.colors.secondary }}
+                initial={{ width: "0%" }}
+                animate={{ width: "100%" }}
+                transition={{ 
+                  duration: SHOW_RESULTS_DURATION, 
+                  ease: "linear"
+                }}
+              />
+            )}
           </div>
           <div className='flex flex-col items-center justify-center bg-gray-300 mr-4'>
-            {celebratingAspectId && (<h2 className='text-md p-1 ' style={{ color: 'rgb(255, 255, 255)' }}>Cancel</h2>)}
+            {celebratingAspectId && (
+              <h2 className='text-md p-1' style={{ color: 'rgb(255, 255, 255)' }}>Cancel</h2>
+            )}
           </div>
         </div>
-
-        {!isResultsPage && currentAspect && (
-          <motion.div
-            animate={{
-              scale: [1, 1.1, 1],
-              rotate: [0, 1, -1, 0]
-            }}
-            transition={{
-              duration: 2,
-              repeat: currentAspect?.userVoted ? Infinity : 0,
-              repeatType: "reverse"
-            }}
-            className="relative"
-          >
-            <div className="relative">
-              {celebratingAspectId && (
-                <motion.svg
-                  className="absolute -inset-1"
-                  width="40"
-                  height="40"
-                  viewBox="0 0 40 40"
-                >
-                  <motion.circle
-                    cx="20"
-                    cy="20"
-                    r="18"
-                    fill="none"
-                    stroke="lightgray"
-                    strokeWidth="4"
-                    strokeDasharray="125"
-                    strokeDashoffset="125"
-                    initial={{ strokeDashoffset: 125 }}
-                    animate={{ strokeDashoffset: 0 }}
-                    transition={{ duration: SHOW_RESULTS_DURATION, ease: "linear" }}
-                  />
-                </motion.svg>
-              )}
-              {!nextUnvotedAspect && (
-                <ChevronRight 
-                  className="bg-yellow-300 rounded-full w-8 h-8 text-amber-800 p-1 mt-2 cursor-pointer relative z-10"
-                  onClick={onNextClick}
-                />
-              )}
-              {nextUnvotedAspect && (
-                <ChevronRight 
-                  className="rounded-full w-8 h-8 text-white p-1 mt-2 cursor-pointer relative z-10" 
-                  style={{ backgroundColor: celebratingAspectId ? currentTheme.colors.secondary : changeColorAlpha(currentTheme.colors.secondary, 0.5) }}
-                  onClick={onNextClick}
-                />
-              )}
-            </div>
-          </motion.div>
-        )}
       </div>
 
       <div className="text-center animate-fadeIn" style={{ backgroundColor: 'white' }}>

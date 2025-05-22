@@ -118,6 +118,7 @@ const AppearanceSettings = () => {
           >
             <Pencil size={20} />
             <span>Font Size</span>
+            <span className="text-sm text-gray-500 pl-2">Coming soon...</span>
           </h3>
           <div className="flex items-center space-x-4">
             {['small', 'medium', 'large'].map((size) => (
@@ -152,7 +153,8 @@ const AppearanceSettings = () => {
           >
             <Layout size={20} />
             <span>Layout</span>
-          </h3>
+            <span className="text-sm text-gray-500 pl-2">Coming soon...</span>
+            </h3>
           <div className="flex items-center space-x-4">
             {['default', 'compact', 'spacious'].map((layout) => (
               <button
@@ -185,6 +187,7 @@ const AppearanceSettings = () => {
             style={{ color: currentTheme.colors.text }}
           >
             Accessibility
+            <span className="text-sm text-gray-500 pl-2">Coming soon...</span>
           </h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">

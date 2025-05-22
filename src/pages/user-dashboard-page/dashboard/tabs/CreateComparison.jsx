@@ -33,7 +33,7 @@ const CreateComparison = () => {
   const [searchCategoryResults, setSearchCategoryResults] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [editAspectExpanded, setEditAspectExpanded] = useState(null);
-  const [newAspectExpanded, setNewAspectExpanded] = useState(false);
+  const [newAspectExpanded, setNewAspectExpanded] = useState(true);
   const [editingAspect, setEditingAspect] = useState({ metric_name: '', description: '', weight: 1, id: null });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -69,14 +69,14 @@ const CreateComparison = () => {
           comparisonData = await getComparison(id, user.id);
           console.log(comparisonData, 'comparisonData', id);
           setExistingComparisonId(id);
-        } else {
-          // Load unpublished comparison for new creation
+        } else if (window.location.search.includes('load_draft=true')) {
+          // Only load unpublished comparison if explicitly requested
           comparisonData = await getUnpublishedComparison(user.id);
           if (comparisonData) {
             setExistingComparisonId(comparisonData.id);
           }
         }
-        console.log(comparisonData, 'comparisonData', id);
+        
         if (comparisonData) {
           // Transform the data to match the draft format
           updateDraft({
@@ -92,6 +92,9 @@ const CreateComparison = () => {
             })),
             isPublished: comparisonData.isPublished || false
           });
+        } else {
+          // Reset draft to empty state
+          clearDraft();
         }
         hasLoadedData.current = true;
       } catch (err) {
@@ -267,7 +270,7 @@ const CreateComparison = () => {
       ...newAspect
     });
     setNewAspect({ metric_name: '', description: '', weight: 1 });
-    setNewAspectExpanded(false);
+    setNewAspectExpanded(true);
   };
 
   const handleUpdateAspect = (aspectId) => {
@@ -362,24 +365,6 @@ const CreateComparison = () => {
               />
             </div>
           ))}
-          {!newAspectExpanded && (
-            <div className="flex flex-row items-center">
-              <button
-                onClick={() => {
-                  setNewAspectExpanded(true);
-                  setEditAspectExpanded(null);
-                  setNewAspect({ metric_name: '', description: '', weight: 1 });
-                }}
-                className="w-full p-2 font-medium rounded-lg"
-                style={{
-                  backgroundColor: currentTheme.colors.primary,
-                  color: 'whitesmoke'
-                }}
-              >
-                + Add Basis
-              </button>
-            </div>
-          )}
           {newAspectExpanded && (
             <AspectForm
               aspect={{ id: null }}

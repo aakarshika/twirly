@@ -22,7 +22,6 @@ const ComparisonItemCardAspect = ({
     isVotedItem,
     itemReviewData,
     reviewCount,
-    handleItemClick,
     onVoteCasted,
     handleRevertClick
   } = useComparisonItemCardAspect({
@@ -41,7 +40,6 @@ const ComparisonItemCardAspect = ({
         <VotedCard
           item={item}
           handleRevertClick={handleRevertClick}
-          handleItemClick={handleItemClick}
           totalVotes={totalVotes}
           isVotedItem={isVotedItem}
           userVoted={userVoted}
@@ -49,7 +47,6 @@ const ComparisonItemCardAspect = ({
       ) : (
         <NotVotedCard
           item={item}
-          handleItemClick={handleItemClick}
         />
       )}
     </div>

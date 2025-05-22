@@ -10,32 +10,9 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="p-6 text-center text-gray-500 text-sm mt-8 border-t border-gray-900">
+    <footer className="flex flex-col items-center justify-center m-t-10 p-6 text-center text-gray-500 text-sm mt-8 border-t border-gray-900">
       <div className="max-w-6xl mx-auto">
-        <div className="flex justify-center space-x-6 mb-4">
-          <a 
-            href="#" 
-            className="hover:text-white transition-colors"
-            aria-label="GitHub"
-          >
-            <Github size={20} />
-          </a>
-          <a 
-            href="#" 
-            className="hover:text-white transition-colors"
-            aria-label="Twitter"
-          >
-            <Twitter size={20} />
-          </a>
-          <a 
-            href="#" 
-            className="hover:text-white transition-colors"
-            aria-label="Instagram"
-          >
-            <Instagram size={20} />
-          </a>
-        </div>
-        
+        <h4> .</h4>
         <p>© {currentYear} COMPARE. All rights reserved.</p>
         
         <div className="mt-2 flex justify-center space-x-4 text-xs">

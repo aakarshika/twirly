@@ -4,6 +4,7 @@ import { getUserComments } from '../../../../services/comments';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { splitAndJoin } from '../../../../lib/utils';
 import { renderTextWithMentions } from '../../../../lib/commentUtils';
+import { formatDistanceToNow } from 'date-fns';
 
 const CommentCard = ({ comment }) => {
   const { currentTheme } = useTheme();
@@ -11,86 +12,43 @@ const CommentCard = ({ comment }) => {
   return (
     <div 
       className="rounded-lg overflow-hidden"
-      style={{ backgroundColor: currentTheme.colors.cardBackground }}
+      style={{ backgroundColor: currentTheme.colors.card, color: currentTheme.colors.text }}
     >
       <div className="p-4">
-        <div className="flex justify-between items-start mb-4">
-          <div>
+        
+      <div className="flex justify-between items-start mb-4">
+          <div
+            onClick={() => {
+              navigate(`/compare/${comment.comparison_set_aspects?.set_id}/aspect/${comment.comparison_set_aspects?.id}`);
+            }}
+          >
             <h3 
               className="font-semibold text-lg"
               style={{ color: currentTheme.colors.text }}
             >
-              {splitAndJoin(comment.comparison_set_aspects.metric_name)}
+              {comment.comparison_set_aspects?.comparison_sets?.name}
             </h3>
-            <p 
-              className="text-sm"
-              style={{ color: currentTheme.colors.textSecondary }}
+
+            <h4 
+              className="text-sm rounded-md px-2 py-1"
+              style={{ color: 'white', backgroundColor: currentTheme.colors.secondary}}
             >
-              {comment.comparison_set_aspects.comparison_sets.name}
-            </p>
+              Based on: {splitAndJoin(comment.comparison_set_aspects?.metric_name)}
+            </h4>
           </div>
           <div className="flex items-center space-x-2">
             <span 
               className="text-sm"
-              style={{ color: currentTheme.colors.textSecondary }}
+              style={{ color: currentTheme.colors.text }}
             >
-              {new Date(comment.created_at).toLocaleDateString()}
+              {formatDistanceToNow(new Date(comment.created_at).toLocaleDateString())}
             </span>
-            {comment.isEdited && (
-              <span 
-                className="text-xs"
-                style={{ color: currentTheme.colors.textSecondary }}
-              >
-                (edited)
-              </span>
-            )}
           </div>
         </div>
         
         <p className="text-sm text-gray-700 dark:text-gray-300" style={{ textAlign: 'start' }}>
         <span dangerouslySetInnerHTML={{ __html: renderTextWithMentions(comment.text, []) }} />
       </p>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-1">
-              <span className="text-sm">👍</span>
-              <span 
-                className="text-sm"
-                style={{ color: currentTheme.colors.textSecondary }}
-              >
-                {comment.likes}
-              </span>
-            </div>
-            <div className="flex items-center space-x-1">
-              <span className="text-sm">👎</span>
-              <span 
-                className="text-sm"
-                style={{ color: currentTheme.colors.textSecondary }}
-              >
-                {comment.dislikes}
-              </span>
-            </div>
-            {comment.type === 'comment' && (
-              <div className="flex items-center space-x-1">
-                <span className="text-sm">💬</span>
-                <span 
-                  className="text-sm"
-                  style={{ color: currentTheme.colors.textSecondary }}
-                >
-                  {comment.replies}
-                </span>
-              </div>
-            )}
-          </div>
-          <div className="flex space-x-2">
-            <button className="p-2 rounded-full hover:bg-gray-100">
-              <span className="text-sm">✏️</span>
-            </button>
-            <button className="p-2 rounded-full hover:bg-gray-100">
-              <span className="text-sm">🗑️</span>
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );

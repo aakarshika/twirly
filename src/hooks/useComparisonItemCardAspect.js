@@ -40,9 +40,6 @@ export const useComparisonItemCardAspect = ({
     return () => clearTimeout(timer);
   }, [userVoted]);
 
-  const handleItemClick = (e) => {
-    navigate(`/item/${item.id}`);
-  };
 
   const onVoteCasted = async (e) => {
     if (userVoted) return;
@@ -65,7 +62,6 @@ export const useComparisonItemCardAspect = ({
     isVotedItem,
     itemReviewData,
     reviewCount,
-    handleItemClick,
     onVoteCasted,
     handleRevertClick
   };
