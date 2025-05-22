@@ -149,20 +149,28 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
       navigate(`/dashboard/${tabId}`);
     }
     
+    // Add tab-scrolling class to body during scroll
+    document.body.classList.add('tab-scrolling');
+    
     // Scroll to tabs with offset to account for any fixed headers
     setTimeout(() => {
       const tabsElement = tabsRef.current;
       if (tabsElement) {
         const headerOffset = 80; // Adjust this value based on your header height
         const elementPosition = tabsElement.getBoundingClientRect().top;
-        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        const offsetPosition = elementPosition + window.scrollY - headerOffset;
 
         window.scrollTo({
           top: offsetPosition,
           behavior: 'smooth'
         });
       }
-    }, 100); // Small delay to ensure DOM is updated
+      
+      // Remove tab-scrolling class after scroll completes
+      setTimeout(() => {
+        document.body.classList.remove('tab-scrolling');
+      }, 500);
+    }, 100);
   };
 
   const renderTabContent = () => {

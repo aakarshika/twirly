@@ -127,7 +127,7 @@ const MainRoutingPage = () => {
     if (!isMobile) return true; // Always show header on desktop
     
     // Only show header on specific pages for mobile
-    const mobileHeaderPages = ['/', '/dashboard', '/settings'];
+    const mobileHeaderPages = ['/', '/dashboard', '/settings', '/compare', '/user'];
     const currentPath = location.pathname;
     return mobileHeaderPages.some(path => currentPath === path || currentPath.startsWith(path + '/'));
   };
@@ -164,8 +164,8 @@ const MainRoutingPage = () => {
             <TrendingProvider>
               <div className="flex flex-col min-h-screen">
                 <Header />
-                <main className="flex-grow">
-                  <ScrollToTop />
+                <main className="flex-grow" style={{ position: 'relative', top: shouldShowHeader() ? '64px' : '0px' }}>
+                  {/* <ScrollToTop /> */}
                   <Routes>
                     {/* Protected Routes */}
                     <Route path="/onboarding" element={<ProtectedRoute><OnboardingFlow /></ProtectedRoute>}/>
