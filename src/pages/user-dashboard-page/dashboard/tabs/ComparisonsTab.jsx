@@ -70,7 +70,7 @@ const ComparisonsTab = ({ userId, isPublic }) => {
           {isPublic ? 'Comparisons' : 'My Comparisons'}
         </h2>
         {(!isPublic && <button
-          onClick={() => navigate('/new-comparison/')}
+          onClick={() => navigate('/new-comparison')}
           className="flex items-center space-x-2 px-4 py-2 rounded-lg font-medium"
           style={{ 
             backgroundColor: currentTheme.colors.primary,

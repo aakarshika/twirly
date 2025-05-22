@@ -8,10 +8,13 @@ import ComparisonSetAspectsCommentsSection from '../comparison-aspect-page/Compa
 import { useComparisonAspectData } from '../../hooks/useComparisonAspectData';
 import { SHOW_RESULTS_DURATION } from '../../lib/constants';
 import { changeColorAlpha } from '../../lib/utils';
+import { userService } from '../../services/userService';
+import { useAuth } from '../../contexts/AuthContext';
 
 const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isResultsPage, currentAspect, nextUnvotedAspect }) => {
   const { id: setId } = useParams();
   const { currentTheme } = useTheme();
+  const { user } = useAuth();
   
   const {
     loading,
@@ -26,6 +29,35 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
     handleRevertVote,
   } = useComparisonAspectData(currentAspect?.id, setId);
 
+  // Function to update user category preferences
+  const updateUserCategoryPreferences = async (categoryId) => {
+    try {
+      // Get current preferences
+      const preferences = await userService.getUserPreferences(user.id);
+      const categoryPreferences = await userService.getUserCategoryPreferences(user.id);
+      const notificationPreferences = await userService.getUserNotificationSettings(user.id);
+
+      // Check if category is already in preferences
+      const hasCategory = categoryPreferences.some(pref => pref.category_id === categoryId);
+      
+      if (!hasCategory) {
+        // Add new category to existing categories
+        const updatedCategories = [...categoryPreferences.map(p => p.category_id), categoryId];
+        
+        // Save preferences using the same structure as onboarding
+        await userService.saveUserPreferences(user.id, {
+          display_name: preferences?.display_name || '',
+          id: preferences?.id || null,
+          categories: updatedCategories,
+          notifications: notificationPreferences?.notifications || [],
+          notifId: notificationPreferences?.id || null,
+        });
+      }
+    } catch (error) {
+      console.error('Error updating category preferences:', error);
+    }
+  };
+
   // Wrap the vote handlers to notify parent
   const handleVoteWithUpdate = async (itemId) => {
     console.log('CompareAspectView: handleVoteWithUpdate called with itemId:', itemId);
@@ -34,6 +66,11 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
     if (success) {
       console.log('CompareAspectView: calling onVoteChange with aspectId:', currentAspect?.id);
       onVoteChange(currentAspect?.id, true, itemId);
+      
+      // Update category preferences if the set has a category
+      if (currentSet?.category_id) {
+        await updateUserCategoryPreferences(currentSet.category_id);
+      }
     }
   };
 
@@ -138,58 +175,6 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
           </div>
         </div>
 
-        {!isResultsPage && currentAspect && (
-          <motion.div
-            animate={{
-              scale: [1, 1.1, 1],
-              rotate: [0, 1, -1, 0]
-            }}
-            transition={{
-              duration: 2,
-              repeat: currentAspect?.userVoted ? Infinity : 0,
-              repeatType: "reverse"
-            }}
-            className="relative"
-          >
-            <div className="relative">
-              {celebratingAspectId && (
-                <motion.svg
-                  className="absolute -inset-1"
-                  width="40"
-                  height="40"
-                  viewBox="0 0 40 40"
-                >
-                  <motion.circle
-                    cx="20"
-                    cy="20"
-                    r="18"
-                    fill="none"
-                    stroke="lightgray"
-                    strokeWidth="4"
-                    strokeDasharray="125"
-                    strokeDashoffset="125"
-                    initial={{ strokeDashoffset: 125 }}
-                    animate={{ strokeDashoffset: 0 }}
-                    transition={{ duration: SHOW_RESULTS_DURATION, ease: "linear" }}
-                  />
-                </motion.svg>
-              )}
-              {!nextUnvotedAspect && (
-                <ChevronRight 
-                  className="bg-yellow-300 rounded-full w-8 h-8 text-amber-800 p-1 mt-2 cursor-pointer relative z-10"
-                  onClick={onNextClick}
-                />
-              )}
-              {nextUnvotedAspect && (
-                <ChevronRight 
-                  className="rounded-full w-8 h-8 text-white p-1 mt-2 cursor-pointer relative z-10" 
-                  style={{ backgroundColor: celebratingAspectId ? currentTheme.colors.secondary : changeColorAlpha(currentTheme.colors.secondary, 0.5) }}
-                  onClick={onNextClick}
-                />
-              )}
-            </div>
-          </motion.div>
-        )}
       </div>
 
       <div className="text-center animate-fadeIn" style={{ backgroundColor: 'white' }}>

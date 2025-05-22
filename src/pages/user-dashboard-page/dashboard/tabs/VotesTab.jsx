@@ -4,6 +4,7 @@ import { getUserVotes } from '../../../../services/votes';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { splitAndJoin } from '../../../../lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { formatDistanceToNow } from 'date-fns';
 const VoteCard = ({ vote }) => {
   const { currentTheme } = useTheme();
   const navigate = useNavigate();
@@ -27,8 +28,8 @@ const VoteCard = ({ vote }) => {
             </h3>
 
             <h4 
-              className="text-sm rounded-full px-2 py-1"
-              style={{ color: 'white', backgroundColor: currentTheme.colors.primary, marginBottom: '10px'}}
+              className="text-sm rounded-md px-2 py-1"
+              style={{ color: 'white', backgroundColor: currentTheme.colors.secondary}}
             >
               Based on: {splitAndJoin(vote.comparison_set_aspects?.metric_name)}
             </h4>
@@ -36,9 +37,9 @@ const VoteCard = ({ vote }) => {
           <div className="flex items-center space-x-2">
             <span 
               className="text-sm"
-              style={{ color: currentTheme.colors.textSecondary }}
+              style={{ color: currentTheme.colors.text }}
             >
-              {new Date(vote.created_at).toLocaleDateString()}
+              {formatDistanceToNow(new Date(vote.created_at).toLocaleDateString())}
             </span>
           </div>
         </div>

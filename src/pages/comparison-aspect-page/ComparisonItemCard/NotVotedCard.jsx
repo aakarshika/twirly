@@ -4,15 +4,13 @@ import './ComparisonItemCard.css';
 
 const NotVotedCard = ({
   item,
-  newHeight = '25vh',
-  handleItemClick
+  newHeight = '25vh'
 }) => {
   const {
     titleRef,
     itemImage
   } = useNotVotedCard({
-    item,
-    handleItemClick
+    item
   });
 
   return (

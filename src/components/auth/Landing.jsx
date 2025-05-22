@@ -3,6 +3,7 @@ import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { User, Lock, Facebook, Linkedin, ArrowRight } from 'lucide-react';
+import { authService } from '../../services/authService';
 
 export default function Landing() {
   const [email, setEmail] = useState('');
@@ -18,6 +19,29 @@ export default function Landing() {
   if (user) {
     return <Navigate to="/dashboard" replace />;
   }
+
+  const handleSocialAuth = async (provider) => {
+    setError('');
+    setLoading(true);
+    try {
+      switch (provider) {
+        case 'google':
+          await authService.signInWithGoogle();
+          break;
+        case 'apple':
+          await authService.signInWithApple();
+          break;
+        case 'facebook':
+          await authService.signInWithFacebook();
+          break;
+        default:
+          throw new Error('Invalid provider');
+      }
+    } catch (error) {
+      setError(error.message || `Failed to sign in with ${provider}. Please try again.`);
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
@@ -91,16 +115,60 @@ export default function Landing() {
                   </div>
                 </div>
 
-                <div className="flex justify-center gap-4">
-                  <button className="p-3 rounded-lg border-2 transition-all duration-300 hover:bg-gray-50"
-                          style={{ borderColor: currentTheme.colors.border }}>
-                    <Facebook className="w-5 h-5" style={{ color: currentTheme.colors.text }} />
+                <div className="grid grid-cols-3 gap-4">
+                  <button 
+                    onClick={() => handleSocialAuth('google')}
+                    className="p-3 rounded-lg border-2 transition-all duration-300 hover:bg-gray-50 flex items-center justify-center"
+                    style={{ borderColor: currentTheme.colors.border }}
+                    disabled={loading}
+                  >
+                    <svg className="w-5 h-5" viewBox="0 0 24 24">
+                      <path
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                        style={{ fill: '#4285F4' }}
+                      />
+                      <path
+                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                        style={{ fill: '#34A853' }}
+                      />
+                      <path
+                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                        style={{ fill: '#FBBC05' }}
+                      />
+                      <path
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                        style={{ fill: '#EA4335' }}
+                      />
+                    </svg>
                   </button>
-                  <button className="p-3 rounded-lg border-2 transition-all duration-300 hover:bg-gray-50"
-                          style={{ borderColor: currentTheme.colors.border }}>
-                    <Linkedin className="w-5 h-5" style={{ color: currentTheme.colors.text }} />
+                  <button 
+                    onClick={() => handleSocialAuth('apple')}
+                    className="p-3 rounded-lg border-2 transition-all duration-300 hover:bg-gray-50 flex items-center justify-center"
+                    style={{ borderColor: currentTheme.colors.border }}
+                    disabled={loading}
+                  >
+                    <svg className="w-5 h-5" viewBox="0 0 24 24">
+                      <path
+                        d="M17.05 20.28c-.98.95-2.05.88-3.08.41-1.09-.47-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.41C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.78 1.18-.19 2.31-.89 3.51-.84 1.54.07 2.7.61 3.44 1.57-3.14 1.88-2.29 5.13.22 6.41-.65 1.29-1.43 2.58-2.25 4.05zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"
+                        style={{ fill: 'currentColor' }}
+                      />
+                    </svg>
+                  </button>
+                  <button 
+                    onClick={() => handleSocialAuth('facebook')}
+                    className="p-3 rounded-lg border-2 transition-all duration-300 hover:bg-gray-50 flex items-center justify-center"
+                    style={{ borderColor: currentTheme.colors.border }}
+                    disabled={loading}
+                  >
+                    <Facebook className="w-5 h-5" style={{ color: '#1877F2' }} />
                   </button>
                 </div>
+
+                {error && (
+                  <div className="text-red-500 text-sm text-center">
+                    {error}
+                  </div>
+                )}
               </div>
         </div>
       </div>
