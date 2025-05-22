@@ -4,6 +4,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { User, Lock } from 'lucide-react';
 import { authService } from '../../services/authService';
+import { supabase } from '../../lib/supabase';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -42,10 +43,26 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await signIn(email, password);
-      navigate('/dashboard');
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (signInError) {
+        throw signInError;
+      }
+
+      if (data?.user) {
+        await signIn(email, password);
+        navigate('/dashboard');
+      }
     } catch (error) {
-      setError(error.message || 'Failed to sign in. Please check your credentials.');
+      console.error('Login error:', error);
+      if (error.message === 'Invalid login credentials') {
+        setError('Invalid email or password. Please try again.');
+      } else {
+        setError(error.message || 'Failed to sign in. Please check your credentials.');
+      }
     } finally {
       setLoading(false);
     }
