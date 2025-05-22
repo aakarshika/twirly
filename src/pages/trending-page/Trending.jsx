@@ -154,7 +154,7 @@ const Trending = () => {
   return (
     <div 
       ref={containerRef}
-      className="min-h-screen mx-auto transition-all duration-200 ease-in-out"
+      className="min-h-screen max-w-7xl mx-auto transition-all duration-200 ease-in-out"
       style={{ 
         position: 'relative',
         backgroundColor: 'var(--color-background)'
