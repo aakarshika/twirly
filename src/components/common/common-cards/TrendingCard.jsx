@@ -4,12 +4,13 @@ import { Dot, MessageSquare, ThumbsUp, Users } from 'lucide-react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { supabase } from '../../../lib/supabase';
-import { getPublicUrl, getPublicUrlItems, splitAndJoin } from '../../../lib/utils';
+import { changeColorAlpha, getPublicUrl, getPublicUrlItems, splitAndJoin } from '../../../lib/utils';
 import { userActivityService, ACTIVITY_TYPES, ENTITY_TYPES } from '../../../services/userActivityService';
 import { formatDistanceToNow } from 'date-fns';
 import Avatar from '../Avatar';
 
 const TrendingCard = ({set, from}) => {
+  console.log(set);
     const {user} = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -98,9 +99,10 @@ const TrendingCard = ({set, from}) => {
          </div>
         <div className="grid grid-cols-2 gap-2">
           {set.comparison_set_items?.slice(0, 4).map((it, index) => {
-            set.imageError = false;
+            const [imageError, setImageError] = useState(false);
             const item = it.items;
-            const itemImage = item.image_url && item.image_url.startsWith('http') ? item.image_url : getPublicUrlItems(item.image_url);
+            const itemImage = !item.image_url || (item.image_url && item.image_url.startsWith('http')) ? item.image_url : getPublicUrlItems(item.image_url);
+            console.log(itemImage);
             return (
               <div
                 key={item.id}
@@ -108,25 +110,25 @@ const TrendingCard = ({set, from}) => {
                   userVoted? '' : index >= 2 ? 'blur-sm' : ''
                 }`}
               >
-                <img
+                  <img
                   src={itemImage}
                   alt={item.name}
                   className="w-full h-24 object-cover"
                   onError={(e) => {
                     e.target.style.display = 'none';
                     e.target.nextSibling.style.display = 'flex';
-                    set.imageError = true;
+                    setImageError(true);
                   }}
                 />
-                {(!itemImage || set.imageError )&& (
+                {(!itemImage || imageError )&& (
                   <div
                     className="absolute inset-0 flex items-center justify-center text-lg font-bold"
-                    style={{ color: 'black', backgroundColor: 'white' }}
+                    style={{ color: 'black', backgroundColor: !userVoted ? 'white' : changeColorAlpha(item.item_color_string, 0.5) }}
                   >
                     {item.name}
                   </div>
                 )}
-                {itemImage && !set.imageError && (index < 2 || userVoted) && (
+                {itemImage && !imageError && (index < 2 || userVoted) && (
                   <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-1">
                     <p className="text-white text-sm truncate">{item.name}</p>
                   </div>
