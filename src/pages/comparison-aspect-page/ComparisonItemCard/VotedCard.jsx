@@ -7,13 +7,11 @@ import { changeColorAlpha, darkenColor } from '../../../lib/utils';
 
 const VotedCard = ({
   item,
-  newHeight = '25vh',
   handleRevertClick,
   handleItemClick,
   totalVotes = 0,
-  itemReviewData = { reviews: [], metrics: {} } || null,
-  reviewCount = 0,
-  isVotedItem
+  isVotedItem,
+  userVoted
 }) => {
   const {
     titleRef,
@@ -24,8 +22,6 @@ const VotedCard = ({
     handleRevertClick,
     handleItemClick,
     totalVotes,
-    itemReviewData,
-    reviewCount,
     isVotedItem
   });
 
@@ -35,7 +31,7 @@ const VotedCard = ({
         className="comparison-item-card rounded-lg"
         style={{ 
           aspectRatio: '1/1',
-          height: itemImage ? '30vh': newHeight ,
+          height: itemImage ? '30vh': '25vh' ,
           backgroundColor: changeColorAlpha(color, 0.2)
         }}
       >
@@ -50,57 +46,43 @@ const VotedCard = ({
               />
             ) : (
               <div
-                className="flex h-full flex-col items-center p-3"
+                className="flex h-full justify-center flex-col items-center p-3"
                 onClick={handleItemClick}
               >
-                <div className="flex h-full justify-center items-center">
-                  <h3 ref={titleRef} className="" style={{ color: darkenColor(color, 70) }}>{item.name}</h3>
+                <div className="flex justify-center items-center">
+                  <h3 ref={titleRef} className="text-center" style={{ color: darkenColor(color, 70) }}>{item.name}</h3>
                 </div>
-                {item.votes?.length > 0 && (
-                  <div 
-                    className="flex absolute bottom-0 w-full p-2"
-                    style={{
-                      color: darkenColor(color, 80),
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <VoteStats
-                      votes={item.votes?.length || 0}
-                      totalVotes={totalVotes}
-                      color={color}
-                      isVotedItem={isVotedItem}
-                      reviewCount={reviewCount}
-                      itemReviewData={itemReviewData}
-                    />
-                  </div>
-                )}
+                <div className="p-2" style={{ color: darkenColor(color, 80), cursor: 'pointer' }}>
+                  <VoteStats
+                    votes={item.voteCount}
+                    totalVotes={totalVotes}
+                    color={color}
+                    isVotedItem={isVotedItem}
+                  />
+                </div>
               </div>
             )}
           </div>
 
           {itemImage && (
             <div 
-              className="bottom-0 left-0 right-0 p-4 content-overlay " 
+              className="bottom-0 left-0 right-0 p-4 content-overlay" 
               onClick={handleItemClick}
-              style={{  color: darkenColor(color, 50)}}
+              style={{ color: darkenColor(color, 50)}}
             >
               <h3 className="item-name">{item.name}</h3>
-              {item.votes?.length > 0 && (
-                <div 
-                  className="flex items-center gap-2" 
-                  style={{ cursor: 'pointer' }} 
-                  onClick={handleItemClick}
-                >
-                  <VoteStats
-                    votes={item.votes?.length || 200}
-                    totalVotes={totalVotes || 350}
-                    color={color}
-                    isVotedItem={isVotedItem}
-                    reviewCount={reviewCount}
-                    itemReviewData={itemReviewData}
-                  />
-                </div>
-              )}
+              <div 
+                className="flex items-center gap-2" 
+                style={{ cursor: 'pointer' }} 
+                onClick={handleItemClick}
+              >
+                <VoteStats
+                  votes={item.voteCount}
+                  totalVotes={totalVotes}
+                  color={color}
+                  isVotedItem={isVotedItem}
+                />
+              </div>
             </div>
           )}
 

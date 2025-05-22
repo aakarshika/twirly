@@ -39,9 +39,11 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
     if (scrollContainerRef.current) {
       const aspectWidth = 144;
       const targetScroll = index * aspectWidth;
+      const containerWidth = scrollContainerRef.current.clientWidth;
+      const scrollPosition = Math.max(0, targetScroll - (containerWidth / 2) + (aspectWidth / 2));
 
       scrollContainerRef.current.scrollTo({
-        left: targetScroll,
+        left: scrollPosition,
         behavior: 'smooth'
       });
     }
@@ -66,6 +68,21 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
       }
     }
   }, [sortedMetrics]);
+
+  // Modified useEffect for current aspect changes
+  useEffect(() => {
+    if (!currentAspect || !scrollContainerRef.current || sortedMetrics.length === 0) return;
+
+    const currentIndex = sortedMetrics.findIndex(metric => metric.id === currentAspect.id);
+    console.log('Scrolling to index:', currentIndex);
+    
+    if (currentIndex !== -1) {
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        scrollToAspect(currentIndex);
+      }, 100);
+    }
+  }, [currentAspect, sortedMetrics]);
 
   return (
     <motion.div
@@ -133,77 +150,63 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
               </motion.div>
             )}
         {showAspectRoutes && (
-          <div
-            ref={scrollContainerRef}
-            className="flex "
-          >
-            <div className='absolute  text-sm rounded-full text-gray-500 z-10 justify-center items-center ml-1 mr-1 '
-            
-            ><Target className='w-6 h-6 rounded-full p-1 m-1' style={{ backgroundColor: currentTheme.colors.secondary, color: 'white' }} /></div>
-            <div className='flex overflow-x-auto px-4 ml-5 scrollbar-hide items-center'
+          <div className="relative w-full overflow-hidden">
+            <div
+              ref={scrollContainerRef}
+              className="flex overflow-x-auto scrollbar-hide"
               style={{
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
-                paddingBottom: '0.5rem'
-              }}>
-              {sortedMetrics.map((aspect) => (
+                WebkitOverflowScrolling: 'touch',
+                scrollBehavior: 'smooth'
+              }}
+            >
+              <div className='absolute text-sm rounded-full text-gray-500 z-10 justify-center items-center ml-1 mr-1'>
+                <Target className='w-6 h-6 rounded-full p-1 m-1' style={{ backgroundColor: currentTheme.colors.secondary, color: 'white' }} />
+              </div>
+              <div className='flex px-4 ml-5 items-center'>
+                {sortedMetrics.map((aspect) => (
+                  <motion.div
+                    key={aspect.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <AspectBox
+                      key={aspect.id}
+                      aspect={aspect}
+                      isPlayed={aspect.userVoted}
+                      scale={scale}
+                      isResults={false}
+                      onClick={() => {
+                        onAspectClick(aspect);
+                      }}
+                      showCelebration={celebratingAspectId === aspect.id}
+                      is2line={is2line}
+                      currentAspect={currentAspect}
+                      items={items}
+                    />
+                  </motion.div>
+                ))}
+
                 <motion.div
-                  key={aspect.id}
+                  key={'results'}
+                  className='flex flex-col items-center justify-center'
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
                 >
                   <AspectBox
-                    key={aspect.id}
-                    aspect={aspect}
-                    isPlayed={aspect.userVoted}
-                    scale={scale}
-                    isResults={false}
-                    onClick={() => {
-                      onAspectClick(aspect);
-                    }}
-                    showCelebration={celebratingAspectId === aspect.id}
+                    aspect={{ metric_name: 'Results' }}
+                    isPlayed={true}
+                    isResults={true}
+                    onClick={() => onAspectClick({ id: 'results' })}
                     is2line={is2line}
                     currentAspect={currentAspect}
-                    items={items}
                   />
                 </motion.div>
-              ))}
-
-              <motion.div
-                key={'results'}
-                className='flex flex-col items-center justify-center'
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <AspectBox
-                  aspect={{ metric_name: 'Results' }}
-                  isPlayed={true}
-                  isResults={true}
-                  onClick={() => onAspectClick({ id: 'results' })}
-                  is2line={is2line}
-                  currentAspect={currentAspect}
-                />
-              </motion.div>
-
-              {/* <motion.div
-                key={'explore'}
-                className='flex flex-col items-center justify-center'
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <AspectBox
-                  aspect={{ metric_name: 'Explore More' }}
-                  isPlayed={false}
-                  isResults={false}
-                  onClick={() => onAspectClick({ id: 'explore' })}
-                  is2line={is2line}
-                  currentAspect={currentAspect}
-                />
-              </motion.div> */}
               </div>
+            </div>
           </div>
         )}
       </div>

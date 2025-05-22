@@ -18,6 +18,7 @@ const PollScreen = ({items, currentSetId, currentSet}) => {
   
   const [comparisonMetrics, setComparisonMetrics] = useState([]);
   const [userVotedAll, setUserVotedAll] = useState(false);
+  const [processedItems, setProcessedItems] = useState([]);
 
   const fetchSetMetrics = async () => {
     if (!currentSetId || !user) return;
@@ -30,13 +31,31 @@ const PollScreen = ({items, currentSetId, currentSet}) => {
 
       if (error) throw error;
 
+      // Calculate total votes across all aspects
+      const totalVotesAcrossAspects = comparisonSetAspects.reduce((total, aspect) => total + aspect.votes.length, 0);
+
+      // Process items with their total votes across all aspects
+      const itemsWithVotes = items.map(item => {
+        const itemVotes = comparisonSetAspects.reduce((total, aspect) => {
+          const aspectVotesForItem = aspect.votes.filter(vote => vote.item_id === item.id).length;
+          return total + aspectVotesForItem;
+        }, 0);
+        
+        return {
+          ...item,
+          voteCount: itemVotes
+        };
+      });
+
       const processedAspects = comparisonSetAspects.map(aspect => ({
         ...aspect,
-        userVoted: aspect.votes.some(vote => vote.user_id === user.id)
+        userVoted: aspect.votes.some(vote => vote.user_id === user.id),
+        totalVotes: totalVotesAcrossAspects
       }));
 
       setUserVotedAll(processedAspects.every(aspect => aspect.userVoted));
       setComparisonMetrics(processedAspects);
+      setProcessedItems(itemsWithVotes);
     } catch (err) {
       console.error('Error fetching comparison metrics:', err);
     }
@@ -54,10 +73,10 @@ const PollScreen = ({items, currentSetId, currentSet}) => {
       }}
     >
       <div className="w-full max-w-4xl">
-        {items && items.length > 0 && (
+        {processedItems && processedItems.length > 0 && (
           <div className="w-full flex flex-col items-center">
             <ComparisonCirclesView 
-              items={items} 
+              items={processedItems} 
               comparisonMetrics={comparisonMetrics}
               comparison={currentSet}
               userVotedAll={userVotedAll}
@@ -65,11 +84,11 @@ const PollScreen = ({items, currentSetId, currentSet}) => {
           </div>
         )}
         
-        {userVotedAll && items && items.length > 0 && (
-          <div className="w-full mt-8">
-            <div className="w-full bg-white rounded-lg shadow-sm p-6">
+        {userVotedAll && processedItems && processedItems.length > 0 && (
+          <div className="w-full">
+            <div className="w-full bg-white shadow-sm">
               <BarChart 
-                items={items} 
+                items={processedItems} 
                 comparisonMetrics={comparisonMetrics}
               />
             </div>

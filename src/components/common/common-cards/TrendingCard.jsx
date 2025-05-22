@@ -18,25 +18,33 @@ const TrendingCard = ({set, from}) => {
 
     const { currentTheme } = useTheme();
 
-    const handleSetClick = async (set) => {
+    const handleSetClick = async (set, event) => {
         try {
+            // Get the exact card element that was clicked
+            const cardElement = event.currentTarget;
+            const cardRect = cardElement.getBoundingClientRect();
+            const cardTop = cardRect.top + window.scrollY;
+
+            // Save both scroll position and card position
+            sessionStorage.setItem('trending_scroll_position', window.scrollY.toString());
+            sessionStorage.setItem('trending_card_position', cardTop.toString());
+
             // Log the aspect set view activity
             await userActivityService.logActivity({
-                userId: user.id, // Assuming set has user_id
+                userId: user.id,
                 activityType: ACTIVITY_TYPES.ASPECT_SET_VIEW,
                 entityType: ENTITY_TYPES.ASPECT_SET,
                 entityId: set.aspect_set_id,
                 pageName: '/trending',
                 metadata: { 
                     aspectSetId: set.aspect_set_id,
-                    aspectSetTitle: set.title // Assuming set has title
+                    aspectSetTitle: set.title
                 }
             });
 
             navigate(`/compare/${set.set_id}`);
         } catch (error) {
             console.error('Error logging aspect set view:', error);
-            // Still navigate even if logging fails
             navigate(`/compare/${set.set_id}`);
         }
     };
@@ -75,7 +83,7 @@ const TrendingCard = ({set, from}) => {
   return (
     <div
       key={set.id}
-      onClick={() => handleSetClick(set)}
+      onClick={(e) => handleSetClick(set, e)}
       style={{ backgroundColor: 'white' }}
     >
       <div className="p-4 mx-auto max-w-2xl"

@@ -34,29 +34,21 @@ const ComparisonItemCardAspect = ({
     totalVotes,
     itemReviews
   });
-
-  const numericHeight = parseFloat('100');
-  // const newHeight = (numericHeight*2 / 6) + 'vh';
-  const newHeight = '20vh';
-
   return (
     <div className="relative">
       {!userVoted && <VotingAnimation onVote={onVoteCasted} />}
       {userVoted ? (
         <VotedCard
           item={item}
-          newHeight={newHeight}
           handleRevertClick={handleRevertClick}
           handleItemClick={handleItemClick}
           totalVotes={totalVotes}
-          itemReviewData={itemReviewData}
-          reviewCount={reviewCount}
           isVotedItem={isVotedItem}
+          userVoted={userVoted}
         />
       ) : (
         <NotVotedCard
           item={item}
-          newHeight={newHeight}
           handleItemClick={handleItemClick}
         />
       )}
