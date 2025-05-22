@@ -222,6 +222,7 @@ const MainRoutingPage = () => {
                     <Route path="/landing" element={<Landing />} />
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/auth/v1/callback" element={<Navigate to="/" replace />} />
                   </Routes>
                 </main>
                 <Footer />

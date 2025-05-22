@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { User, Lock, Facebook, Linkedin } from 'lucide-react';
+import { User, Lock } from 'lucide-react';
 import { authService } from '../../services/authService';
 
 export default function Login() {
@@ -55,18 +55,10 @@ export default function Login() {
     setError('');
     setLoading(true);
     try {
-      switch (provider) {
-        case 'google':
-          await authService.signInWithGoogle();
-          break;
-        case 'apple':
-          await authService.signInWithApple();
-          break;
-        case 'facebook':
-          await authService.signInWithFacebook();
-          break;
-        default:
-          throw new Error('Invalid provider');
+      if (provider === 'google') {
+        await authService.signInWithGoogle();
+      } else {
+        throw new Error('Invalid provider');
       }
     } catch (error) {
       setError(error.message || `Failed to sign in with ${provider}. Please try again.`);
@@ -98,7 +90,7 @@ export default function Login() {
           <div className="space-y-4 mb-6">
             <button
               onClick={() => handleSocialLogin('google')}
-              className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium transition-colors"
+              className="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium transition-all duration-300 hover:shadow-md hover:scale-[1.02]"
               style={{
                 backgroundColor: '#fff',
                 color: '#757575',
@@ -107,32 +99,6 @@ export default function Login() {
             >
               <img src="/google-icon.svg" alt="Google" className="w-5 h-5 mr-2" />
               Continue with Google
-            </button>
-
-            <button
-              onClick={() => handleSocialLogin('apple')}
-              className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium transition-colors"
-              style={{
-                backgroundColor: '#000',
-                color: '#fff',
-              }}
-            >
-              <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17.05 20.28c-.98.95-2.05.88-3.08.41-1.09-.47-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.41C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.78 1.18-.19 2.31-.89 3.51-.84 1.54.07 2.7.61 3.44 1.57-3.14 1.88-2.29 5.13.22 6.41-.65 1.29-1.43 2.58-2.25 4.05zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
-              </svg>
-              Continue with Apple
-            </button>
-
-            <button
-              onClick={() => handleSocialLogin('facebook')}
-              className="w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium transition-colors"
-              style={{
-                backgroundColor: '#1877F2',
-                color: '#fff',
-              }}
-            >
-              <Facebook className="w-5 h-5 mr-2" />
-              Continue with Facebook
             </button>
           </div>
 
@@ -232,7 +198,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-2 px-4 rounded-lg font-medium transition-colors"
+              className="w-full py-3 px-4 rounded-lg font-medium transition-all duration-300 hover:shadow-md hover:scale-[1.02]"
               style={{
                 backgroundColor: currentTheme.colors.primary,
                 color: currentTheme.colors.buttonText,
