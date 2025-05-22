@@ -154,17 +154,17 @@ const ComparePage = () => {
   useEffect(() => {
     if (!loading && !comparisonLoading && comparisonMetrics.length > 0) {
       const firstUnvotedAspect = comparisonMetrics.find(aspect => !aspect.userVoted);
-      if (firstUnvotedAspect) {
+      if (firstUnvotedAspect && !celebratingAspectId) {
         console.log('Setting first unvoted aspect from metrics:', firstUnvotedAspect);
         setCurrentAspect(firstUnvotedAspect);
         setViewMode('aspect');
-      } else {
+      } else if (!firstUnvotedAspect && !celebratingAspectId) {
         console.log('No unvoted aspects found in metrics, showing results');
         setCurrentAspect(null);
         setViewMode('results');
       }
     }
-  }, [loading, comparisonLoading, comparisonMetrics]);
+  }, [loading, comparisonLoading, comparisonMetrics, celebratingAspectId]);
 
   // Add effect to handle aspect changes
   useEffect(() => {
@@ -175,6 +175,9 @@ const ComparePage = () => {
   }, [currentAspect]);
 
   const handleVoteChange = (aspectId, hasVoted, item_id) => {
+    console.log('handleVoteChange', aspectId, hasVoted, item_id);
+    console.log('celebratingAspectId', celebratingAspectId);
+
     if (celebrationTimerRef.current) {
       clearTimeout(celebrationTimerRef.current);
       celebrationTimerRef.current = null;
@@ -192,10 +195,12 @@ const ComparePage = () => {
 
       if (hasVoted) {
         setCelebratingAspectId(parseInt(aspectId));
+        // Start celebration timer
         celebrationTimerRef.current = setTimeout(() => {
           setCelebratingAspectId(null);
           celebrationTimerRef.current = null;
           
+          // Only move to next aspect after celebration is done
           const next = getNextUnvotedAspect();
           if (next) {
             setCurrentAspect(next);
@@ -204,7 +209,7 @@ const ComparePage = () => {
             setCurrentAspect(null);
             setViewMode('results');
           }
-        }, SHOW_RESULTS_DURATION*1000);
+        }, SHOW_RESULTS_DURATION * 1000);
       }
       
       return updatedMetrics;
@@ -286,16 +291,6 @@ const ComparePage = () => {
           >
             <AspectsProgressBar
               items={items}
-              onNextClick={() => {
-                const next = getNextUnvotedAspect();
-                if (next) {
-                  setCurrentAspect(next);
-                  setViewMode('aspect');
-                } else {
-                  setCurrentAspect(null);
-                  setViewMode('results');
-                }
-              }}
               comparisonMetrics={comparisonMetrics}
               onAspectClick={(aspect) => {
                 if (aspect.id === 'results') {

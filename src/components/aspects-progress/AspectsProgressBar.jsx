@@ -8,7 +8,7 @@ import { changeColorAlpha } from '../../lib/utils';
 import { SHOW_RESULTS_DURATION } from '../../lib/constants';
 import ProgressBar from './ProgressBar';
 
-const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVotedAll, currentSet, celebratingAspectId, currentAspect, onNextClick }) => {
+const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVotedAll, currentSet, celebratingAspectId, currentAspect }) => {
   const scrollContainerRef = useRef(null);
   const isResultsPage = location.pathname.includes('results');
   const [sortedMetrics, setSortedMetrics] = useState([]);

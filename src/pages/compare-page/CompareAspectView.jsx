@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { motion } from 'framer-motion';
@@ -15,6 +15,7 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
   const { id: setId } = useParams();
   const { currentTheme } = useTheme();
   const { user } = useAuth();
+  const [isCelebrating, setIsCelebrating] = useState(false);
   
   const {
     loading,
@@ -29,22 +30,27 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
     handleRevertVote,
   } = useComparisonAspectData(currentAspect?.id, setId);
 
+  // Effect to handle celebration state
+  useEffect(() => {
+    if (celebratingAspectId === currentAspect?.id) {
+      setIsCelebrating(true);
+    } else {
+      setIsCelebrating(false);
+    }
+  }, [celebratingAspectId, currentAspect?.id]);
+
   // Function to update user category preferences
   const updateUserCategoryPreferences = async (categoryId) => {
     try {
-      // Get current preferences
       const preferences = await userService.getUserPreferences(user.id);
       const categoryPreferences = await userService.getUserCategoryPreferences(user.id);
       const notificationPreferences = await userService.getUserNotificationSettings(user.id);
 
-      // Check if category is already in preferences
       const hasCategory = categoryPreferences.some(pref => pref.category_id === categoryId);
       
       if (!hasCategory) {
-        // Add new category to existing categories
         const updatedCategories = [...categoryPreferences.map(p => p.category_id), categoryId];
         
-        // Save preferences using the same structure as onboarding
         await userService.saveUserPreferences(user.id, {
           display_name: preferences?.display_name || '',
           id: preferences?.id || null,
@@ -67,7 +73,6 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
       console.log('CompareAspectView: calling onVoteChange with aspectId:', currentAspect?.id);
       onVoteChange(currentAspect?.id, true, itemId);
       
-      // Update category preferences if the set has a category
       if (currentSet?.category_id) {
         await updateUserCategoryPreferences(currentSet.category_id);
       }
@@ -81,6 +86,12 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
     if (success) {
       console.log('CompareAspectView: calling onVoteChange with aspectId:', currentAspect?.id);
       onVoteChange(currentAspect?.id, false);
+    }
+  };
+
+  const handleNextClick = () => {
+    if (!celebratingAspectId) {
+      onNextClick();
     }
   };
 
@@ -156,25 +167,32 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
         </div>
 
         <div className='flex-row mt-2'>
-          <div className='flex flex-col w-full items-center justify-center bg-amber-300 ml-10' 
-          onClick={() => {
-            console.log("Next Aspect");
-            onNextClick();
-          }}>
-            <h2 className='text-md p-1 ' style={{ color: 'rgb(255, 255, 255)' }}>Next Aspect</h2>
-            {celebratingAspectId && (<motion.div
-              className="h-1"
-              style={{ backgroundColor: currentTheme.colors.secondary }}
-              initial={{ width: "0%" }}
-              animate={{ width: "100%" }}
-              transition={{ duration: SHOW_RESULTS_DURATION, ease: "linear" }}
-            />)}
+          <div 
+            className={`flex flex-col w-full items-center justify-center ${celebratingAspectId ? 'bg-amber-400' : 'bg-amber-300'} ml-10`}
+            onClick={handleNextClick}
+          >
+            <h2 className='text-md p-1' style={{ color: 'rgb(255, 255, 255)' }}>
+              {celebratingAspectId ? 'Celebrating...' : 'Next Aspect'}
+            </h2>
+            {celebratingAspectId && (
+              <motion.div
+                className="h-1"
+                style={{ backgroundColor: currentTheme.colors.secondary }}
+                initial={{ width: "0%" }}
+                animate={{ width: "100%" }}
+                transition={{ 
+                  duration: SHOW_RESULTS_DURATION, 
+                  ease: "linear"
+                }}
+              />
+            )}
           </div>
           <div className='flex flex-col items-center justify-center bg-gray-300 mr-4'>
-            {celebratingAspectId && (<h2 className='text-md p-1 ' style={{ color: 'rgb(255, 255, 255)' }}>Cancel</h2>)}
+            {celebratingAspectId && (
+              <h2 className='text-md p-1' style={{ color: 'rgb(255, 255, 255)' }}>Cancel</h2>
+            )}
           </div>
         </div>
-
       </div>
 
       <div className="text-center animate-fadeIn" style={{ backgroundColor: 'white' }}>
