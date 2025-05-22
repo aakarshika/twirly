@@ -161,6 +161,7 @@ export function getRGB(color) {
 
 
 export function changeColorAlpha(c, amount) {
+  if (!c) return 'rgba(0, 0, 0, 0)';
   const color = getRGB(c);
   return color.substring(0, color.length - 1) + ', '+ amount + ')';
 }

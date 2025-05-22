@@ -68,6 +68,7 @@ const UserDashboard = () => {
       style={{ 
         backgroundColor: 'var(--color-background)',
         position: 'relative',
+        color: currentTheme.colors.text,
         top: isHeaderVisible ? '64px' : '0px'
       }}
     >

@@ -150,34 +150,21 @@ const ComparePage = () => {
     }
   };
 
-  // Add effect to handle view mode changes
-  useEffect(() => {
-    if (!loading && !comparisonLoading && comparisonMetrics.length > 0) {
-      const firstUnvotedAspect = comparisonMetrics.find(aspect => !aspect.userVoted);
-      if (firstUnvotedAspect && !celebratingAspectId) {
-        console.log('Setting first unvoted aspect from metrics:', firstUnvotedAspect);
-        setCurrentAspect(firstUnvotedAspect);
-        setViewMode('aspect');
-      } else if (!firstUnvotedAspect && !celebratingAspectId) {
-        console.log('No unvoted aspects found in metrics, showing results');
-        setCurrentAspect(null);
-        setViewMode('results');
-      }
-    }
-  }, [loading, comparisonLoading, comparisonMetrics, celebratingAspectId]);
-
-  // Add effect to handle aspect changes
-  useEffect(() => {
-    if (currentAspect) {
-      console.log('Current aspect changed:', currentAspect);
+  const moveToNextAspect = () => {
+    const next = getNextUnvotedAspect();
+    if (next) {
+      setCurrentAspect(next);
       setViewMode('aspect');
+    } else {
+      setCurrentAspect(null);
+      setViewMode('results');
     }
-  }, [currentAspect]);
+  };
 
   const handleVoteChange = (aspectId, hasVoted, item_id) => {
     console.log('handleVoteChange', aspectId, hasVoted, item_id);
-    console.log('celebratingAspectId', celebratingAspectId);
-
+    
+    // Clear any existing celebration
     if (celebrationTimerRef.current) {
       clearTimeout(celebrationTimerRef.current);
       celebrationTimerRef.current = null;
@@ -199,31 +186,13 @@ const ComparePage = () => {
         celebrationTimerRef.current = setTimeout(() => {
           setCelebratingAspectId(null);
           celebrationTimerRef.current = null;
-          
-          // Only move to next aspect after celebration is done
-          const next = getNextUnvotedAspect();
-          if (next) {
-            setCurrentAspect(next);
-            setViewMode('aspect');
-          } else {
-            setCurrentAspect(null);
-            setViewMode('results');
-          }
+          moveToNextAspect();
         }, SHOW_RESULTS_DURATION * 1000);
       }
       
       return updatedMetrics;
     });
   };
-
-  useEffect(() => {
-    return () => {
-      if (celebrationTimerRef.current) {
-        clearTimeout(celebrationTimerRef.current);
-        celebrationTimerRef.current = null;
-      }
-    };
-  }, []);
 
   useEffect(() => {
     const handleUserInteraction = () => {
@@ -234,14 +203,16 @@ const ComparePage = () => {
       }
     };
 
-    document.addEventListener('click', handleUserInteraction);
-    document.addEventListener('keydown', handleUserInteraction);
-    document.addEventListener('scroll', handleUserInteraction);
+    window.addEventListener('click', handleUserInteraction);
+    window.addEventListener('keydown', handleUserInteraction);
+    window.addEventListener('scroll', handleUserInteraction);
+    window.addEventListener('touchstart', handleUserInteraction);
 
     return () => {
-      document.removeEventListener('click', handleUserInteraction);
-      document.removeEventListener('keydown', handleUserInteraction);
-      document.removeEventListener('scroll', handleUserInteraction);
+      window.removeEventListener('click', handleUserInteraction);
+      window.removeEventListener('keydown', handleUserInteraction);
+      window.removeEventListener('scroll', handleUserInteraction);
+      window.removeEventListener('touchstart', handleUserInteraction);
     };
   }, []);
 
@@ -263,7 +234,7 @@ const ComparePage = () => {
 
   if (error || comparisonError) {
     return (
-      <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background,
+      <div className="min-h-screen w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" style={{ backgroundColor: currentTheme.colors.background,
         paddingTop: isHeaderVisible ? '64px': '0px'}}>
         <div className="h-screen flex items-center justify-center">
           <div className="text-center">
@@ -276,18 +247,19 @@ const ComparePage = () => {
 
   return (
     <div 
-      className="min-h-screen flex flex-col" 
+      className="min-h-screen w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" 
       style={{ 
+        paddingTop: isHeaderVisible ? '0px': '0px',
         backgroundColor: currentTheme.colors.background
       }}
     >
-      <div className="w-full bg-inherit">
-        <div>
+      <div className="bg-inherit">
+        <div className="w-full">
           <motion.div
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.3, delay: 0.2 }}
-            className="text-white gap-4"
+            className="text-white"
           >
             <AspectsProgressBar
               items={items}
@@ -349,10 +321,10 @@ const ComparePage = () => {
               backgroundColor: currentTheme.colors.background
             }}
           >
-            <div className="w-full max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+            <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex justify-start py-4">
                 <Globe2 size={24} className="mr-2" style={{ color: currentTheme.colors.primary }} />
-                <h1 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
+                <h1 className="text-xl sm:text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
                   Explore Similar
                 </h1>
               </div>

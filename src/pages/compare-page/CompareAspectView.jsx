@@ -172,7 +172,7 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
             onClick={handleNextClick}
           >
             <h2 className='text-md p-1' style={{ color: 'rgb(255, 255, 255)' }}>
-              {celebratingAspectId ? 'Celebrating...' : 'Next Aspect'}
+              {celebratingAspectId ? 'Next Aspect...' : 'Next Aspect'}
             </h2>
             {celebratingAspectId && (
               <motion.div

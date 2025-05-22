@@ -116,6 +116,13 @@ const Header = () => {
 
   const pageName = 'TWIRLY';
 
+  // Add scroll to top effect for compare page
+  useEffect(() => {
+    if (isComparePage) {
+      window.scrollTo(0, 0);
+    }
+  }, [isComparePage]);
+
   const handleLogout = async () => {
     try {
       await signOut();
@@ -139,7 +146,8 @@ const Header = () => {
           const scrollDelta = currentScrollY - lastScrollY;
           
           // Only update if we've scrolled more than 10 pixels and not during tab navigation
-          if (Math.abs(scrollDelta) > 10 && !document.querySelector('.tab-scrolling')) {
+          // AND the drawer is not open
+          if (Math.abs(scrollDelta) > 10 && !document.querySelector('.tab-scrolling') && !isDrawerOpen) {
             // Show header when scrolling up or at the top of the page
             if (currentScrollY < lastScrollY || currentScrollY < 10) {
               setIsHeaderVisible(true);
@@ -161,7 +169,7 @@ const Header = () => {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [setIsHeaderVisible]);
+  }, [setIsHeaderVisible, isDrawerOpen]);
 
   if (loading) {
     return (
@@ -192,11 +200,11 @@ const Header = () => {
 
   return (
     <header
-      className={`fixed container mx-auto top-0 left-0 right-0 z-50 w-full border-b transition-all duration-200 ease-in-out ${!isHeaderVisible ? 'hidden' : ''}`}
+      className={`fixed container mx-auto top-0 left-0 right-0 z-50 w-full transition-all duration-200 ease-in-out ${!isHeaderVisible ? 'hidden' : ''}`}
       style={{
         backgroundColor: 'var(--color-background)',
         paddingTop: 'calc(var(--safe-area-inset-top))',
-        borderColor: 'var(--color-border)',
+        color: 'var(--color-text)',
         height: showTinyHeader ? '40px' : 'auto'
       }}
     >
@@ -349,8 +357,8 @@ const Header = () => {
               className="fixed z-[60] settings-drawer transition-all duration-200 ease-in-out"
               style={{ 
                 backgroundColor: 'var(--color-background)',
-                top: '0',
                 right: '0',
+                paddingTop: 'calc(var(--safe-area-inset-top) + 40px)',
                 height: '100vh',
                 width: '100%',
                 maxWidth: '320px'
@@ -659,6 +667,7 @@ const Header = () => {
                         backgroundColor: 'var(--color-background)',
                         top: '0',
                         right: '0',
+                        paddingTop: 'calc(var(--safe-area-inset-top))',
                         height: '100vh',
                         width: '100%',
                         maxWidth: '320px'

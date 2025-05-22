@@ -524,7 +524,6 @@ App
 - `/onboarding` - User onboarding flow
 - `/search` - Search functionality
 - `/` - Trending comparisons
-- `/comparison-aspect/:id` - Aspect-based comparison view
 - `/comparison/:id` - Standard comparison view
 - `/new-comparison` - Create new comparison
 - `/edit-comparison/:id` - Edit existing comparison

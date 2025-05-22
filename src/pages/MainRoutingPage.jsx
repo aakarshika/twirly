@@ -162,9 +162,9 @@ const MainRoutingPage = () => {
         <FeedbackProvider>
           <ComparisonDraftProvider>
             <TrendingProvider>
-              <div className="flex flex-col min-h-screen">
+              <div className="flex flex-col min-h-screen mx-auto">
                 <Header />
-                <main className="flex-grow" style={{ position: 'relative', top: shouldShowHeader() ? '64px' : '0px' }}>
+                <main className="flex-1 overflow-x-auto" style={{ position: 'relative', top: shouldShowHeader() ? '64px' : '0px' }}>
                   {/* <ScrollToTop /> */}
                   <Routes>
                     {/* Protected Routes */}

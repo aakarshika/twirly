@@ -128,7 +128,7 @@ export const useComparisonAspectData = (aspectId, setId) => {
         activityType: ACTIVITY_TYPES.VOTE,
         entityType: ENTITY_TYPES.VOTE,
         entityId: voteData[0].id,
-        pageName: `/comparison-aspect/${aspectId}`,
+        pageName: `/compare-aspect-page/${aspectId}`,
         metadata: { 
           itemId,
           aspectSetId: aspectId,
@@ -181,7 +181,7 @@ export const useComparisonAspectData = (aspectId, setId) => {
         activityType: ACTIVITY_TYPES.VOTE_REVERT,
         entityType: ENTITY_TYPES.VOTE,
         entityId: deletedVote[0].id,
-        pageName: `/comparison-aspect/${aspectId}`,
+        pageName: `/comparison-aspect-page/${aspectId}`,
         metadata: { 
           itemId: data.votedItemId,
           aspectSetId: aspectId,

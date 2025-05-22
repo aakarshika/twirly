@@ -13,6 +13,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useHeader } from '../../contexts/HeaderContext';
+import { formatDistanceToNow } from 'date-fns';
 
 const List = ({displayItems, isMobile, winner, runnerUp, comparison, totalVotes, animationState, userVotedAll}) => {
     return (
@@ -138,12 +139,12 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
                         size="sm"
                         isEditable={false}
                     />
-                    <div className="flex flex-col">
+                    <div className="flex flex-col" onClick={() => navigate(`/user/${comparison.user?.display_name}`)}>
                         <span className="text-sm text-gray-600">
                             Created by <span className="font-medium text-gray-900">{comparison.user?.display_name || 'Anonymous'}</span>
                         </span>
                         <span className="text-xs text-gray-500">
-                            {comparison.created_at && new Date(comparison.created_at).toLocaleDateString()}
+                            {formatDistanceToNow(comparison.created_at && new Date(comparison.created_at).toLocaleDateString())}
                         </span>
                     </div>
                 </div>

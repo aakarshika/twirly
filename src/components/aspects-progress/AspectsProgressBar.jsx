@@ -49,25 +49,6 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
     }
   };
 
-  useEffect(() => {
-    if (scrollContainerRef.current) {
-      let firstUnvotedIndex = -1;
-      if (location.pathname.includes('aspect/')) {
-        firstUnvotedIndex = sortedMetrics.findIndex(metric => metric.id === parseInt(location.pathname.split('/').pop()));
-      } else {
-        firstUnvotedIndex = sortedMetrics.findIndex(metric => !metric.userVoted);
-      }
-
-      if (firstUnvotedIndex !== -1) {
-        scrollToAspect(firstUnvotedIndex);
-      } else {
-        scrollContainerRef.current.scrollTo({
-          left: scrollContainerRef.current.scrollWidth,
-          behavior: 'smooth'
-        });
-      }
-    }
-  }, [sortedMetrics]);
 
   // Modified useEffect for current aspect changes
   useEffect(() => {
@@ -93,13 +74,11 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
       style={{
         backgroundColor: currentTheme.colors.background,
         color: currentTheme.colors.primary,
-        paddingTop: '0.5rem',
         paddingBottom: '0.5rem',
-        marginTop: '-0.5rem'
       }}
     >
       <div>
-        <div className="flex flex-col mb-2">
+        <div className="flex flex-col">
           <AnimatePresence>
             {userVotedAll && (
               <motion.div
@@ -119,7 +98,7 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
         </div>
 
         <div
-          className='flex flex-row rounded-full  justify-center items-center'
+          className='flex flex-row  justify-center items-center'
           style={{ backgroundColor: 'rgba(255, 255, 255, 0.98)', cursor: 'pointer' }}
         >
           <div className='flex flex-col rounded-lg justify-start py-2 px-2'>

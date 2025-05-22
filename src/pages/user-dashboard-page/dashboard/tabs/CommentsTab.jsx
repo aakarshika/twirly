@@ -19,7 +19,7 @@ const CommentCard = ({ comment }) => {
       <div className="flex justify-between items-start mb-4">
           <div
             onClick={() => {
-              navigate(`/compare/${comment.comparison_set_aspects?.set_id}/aspect/${comment.comparison_set_aspects?.id}`);
+              navigate(`/compare/${comment.comparison_set_aspects?.set_id}`);
             }}
           >
             <h3 

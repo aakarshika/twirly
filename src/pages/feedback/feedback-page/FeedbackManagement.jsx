@@ -346,8 +346,8 @@ const FeedbackManagement = () => {
                   </div>
                 </td>
                 <td className="px-2 py-2 capitalize">
-                  <div className="max-w-md">
-                    <p className={!expandedMessages[item.id] ? "line-clamp-2" : ""}>
+                  <div className="max-w-md text-black">
+                    <p className={!expandedMessages[item.id] ? "line-clamp-2" : ""} style={{ color: currentTheme.colors.text }}>
                       {item.message}
                     </p>
                     {item.message.length > 100 && (

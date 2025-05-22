@@ -85,12 +85,6 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
 
   const tabs = isPublic ? [
     { 
-      id: 'overview', 
-      label: 'Overview', 
-      icon: ChartBarSquareIcon,
-      count: null
-    },
-    { 
       id: 'comparisons', 
       label: 'Comparisons', 
       icon: CubeIcon,

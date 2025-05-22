@@ -46,7 +46,7 @@ const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet, ha
   if (!isExpanded) {
     return (
       <div className="cursor-pointer" onClick={() => setIsExpanded(true)}>
-        <div className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors">
+        <div className="bg-gray-50 rounded-lg p-1 hover:bg-gray-100 transition-colors">
 
         <div className='flex flex-row items-start justify-start'>
       <h4 className="text-md font-medium text-gray-600 mb-2  items-center">
