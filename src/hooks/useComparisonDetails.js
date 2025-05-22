@@ -19,22 +19,23 @@ export const useComparisonDetails = (currentSetId) => {
   
   const { user } = useAuth();
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchComparisonDetails = async () => {
+      if (!currentSetId || !user) {
+        setLoading(false);
+        return;
+      }
+
       try {
+        setLoading(true);
+        setError(null);
         
         const comparisonId = parseInt(currentSetId);
         if (isNaN(comparisonId)) {
           throw new Error('Invalid comparison ID');
         }
-        
-        const defaultMetrics = {
-          quality: 3.5,
-          value: 3.5,
-          design: 3.5,
-          performance: 3.5
-        };
         
         const { data, error } = await supabase
           .from('comparison_sets')
@@ -67,19 +68,18 @@ export const useComparisonDetails = (currentSetId) => {
         const hasVoted = await hasUserVoted(data.id, user);
         setUserVoted(hasVoted);
         
-        console.log('data.comparison_set_items', data.comparison_set_items);
-        const it = data.comparison_set_items?.map(setItem => setItem.items);
+        const it = data.comparison_set_items?.map(setItem => setItem.items) || [];
         setItems(it);
       } catch (error) {
         console.error('Error fetching comparison details:', error);
         setError(error.message);
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (currentSetId) {
-      fetchComparisonDetails();
-    }
-  }, [currentSetId]);
+    fetchComparisonDetails();
+  }, [currentSetId, user]);
 
-  return { items, currentSet };
+  return { items, currentSet, loading, error };
 }; 

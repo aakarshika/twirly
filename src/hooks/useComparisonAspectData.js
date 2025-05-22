@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { userActivityService, ACTIVITY_TYPES, ENTITY_TYPES } from '../services/userActivityService';
 
-export const useComparisonAspectData = (aspectId) => {
+export const useComparisonAspectData = (aspectId, setId) => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,31 +18,40 @@ export const useComparisonAspectData = (aspectId) => {
   });
 
   const fetchData = async () => {
-    if (!aspectId || !user) return;
+    if (!aspectId || !setId || !user) {
+      console.log('Missing required data:', { aspectId, setId, user });
+      setLoading(false);
+      return;
+    }
     
     try {
       setLoading(true);
+      console.log('Fetching data for aspect:', aspectId, 'set:', setId);
       
-      // Single query to get all needed data
+      // First get the comparison set data
+      const { data: comparisonSetData, error: setError } = await supabase
+        .from('comparison_sets')
+        .select(`
+          *,
+          comparison_set_items(
+            id,
+            items(
+              *
+            )
+          )
+        `)
+        .eq('id', setId)
+        .single();
+
+      if (setError) throw setError;
+      if (!comparisonSetData) throw new Error('Comparison set not found');
+
+      // Then get the aspect data with votes
       const { data: aspectData, error: aspectError } = await supabase
         .from('comparison_set_aspects')
         .select(`
           *,
-          votes(*),
-          comparison_sets(
-            *,
-            comparison_set_items(
-              *,
-              items(
-                *,
-                votes(*)
-              )
-            ),
-            comparison_set_aspects(
-              *,
-              votes(*)
-            )
-          )
+          votes(*)
         `)
         .eq('id', aspectId)
         .single();
@@ -51,10 +60,9 @@ export const useComparisonAspectData = (aspectId) => {
       if (!aspectData) throw new Error('Aspect not found');
 
       // Process the data
-      const currentSet = aspectData.comparison_sets;
-      const items = currentSet.comparison_set_items.map(item => ({
+      const items = comparisonSetData.comparison_set_items.map(item => ({
         ...item.items,
-        votes: item.items.votes || []
+        voteCount: aspectData.votes.filter(vote => vote.item_id === item.items.id).length || 0
       }));
       
       // Calculate user vote status
@@ -65,14 +73,24 @@ export const useComparisonAspectData = (aspectId) => {
       // Calculate total votes
       const totalVotes = aspectData.votes.length;
 
-      // Process comparison metrics
-      const comparisonMetrics = currentSet.comparison_set_aspects.map(aspect => ({
+      // Get all aspects for metrics
+      const { data: allAspects, error: aspectsError } = await supabase
+        .from('comparison_set_aspects')
+        .select(`
+          *,
+          votes(*)
+        `)
+        .eq('set_id', setId);
+
+      if (aspectsError) throw aspectsError;
+
+      const comparisonMetrics = allAspects.map(aspect => ({
         ...aspect,
         userVoted: aspect.votes.some(vote => vote.user_id === user.id)
       }));
 
       setData({
-        currentSet,
+        currentSet: comparisonSetData,
         currentAspectSet: aspectData,
         items,
         totalVotes,
@@ -118,34 +136,22 @@ export const useComparisonAspectData = (aspectId) => {
         }
       });
 
-
       // Update local state
-      setData(prev => {
-        const updatedItems = prev.items.map(item => {
-          if (item.id === itemId) {
-            return {
-              ...item,
-              votes: [...(item.votes || []), voteData[0]]
-            };
-          }
-          return item;
-        });
-
-        const updatedMetrics = prev.comparisonMetrics.map(metric => 
+      setData(prev => ({
+        ...prev,
+        userVoted: true,
+        votedItemId: itemId,
+        totalVotes: prev.totalVotes + 1,
+        items: prev.items.map(item => ({
+          ...item,
+          voteCount: item.id === itemId ? item.voteCount + 1 : item.voteCount
+        })),
+        comparisonMetrics: prev.comparisonMetrics.map(metric => 
           metric.id === parseInt(aspectId)
             ? { ...metric, userVoted: true }
             : metric
-        );
-
-        return {
-          ...prev,
-          userVoted: true,
-          votedItemId: itemId,
-          totalVotes: prev.totalVotes + 1,
-          items: updatedItems,
-          comparisonMetrics: updatedMetrics
-        };
-      });
+        )
+      }));
 
       return true;
     } catch (err) {
@@ -184,32 +190,21 @@ export const useComparisonAspectData = (aspectId) => {
       });
 
       // Update local state
-      setData(prev => {
-        const updatedItems = prev.items.map(item => {
-          if (item.id === data.votedItemId) {
-            return {
-              ...item,
-              votes: (item.votes || []).filter(vote => vote.user_id !== user.id)
-            };
-          }
-          return item;
-        });
-
-        const updatedMetrics = prev.comparisonMetrics.map(metric => 
+      setData(prev => ({
+        ...prev,
+        userVoted: false,
+        votedItemId: null,
+        totalVotes: prev.totalVotes - 1,
+        items: prev.items.map(item => ({
+          ...item,
+          voteCount: item.id === data.votedItemId ? item.voteCount - 1 : item.voteCount
+        })),
+        comparisonMetrics: prev.comparisonMetrics.map(metric => 
           metric.id === parseInt(aspectId)
             ? { ...metric, userVoted: false }
             : metric
-        );
-
-        return {
-          ...prev,
-          userVoted: false,
-          votedItemId: null,
-          totalVotes: prev.totalVotes - 1,
-          items: updatedItems,
-          comparisonMetrics: updatedMetrics
-        };
-      });
+        )
+      }));
 
       return true;
     } catch (err) {
@@ -221,7 +216,7 @@ export const useComparisonAspectData = (aspectId) => {
 
   useEffect(() => {
     fetchData();
-  }, [aspectId, user]);
+  }, [aspectId, setId, user]);
 
   return {
     ...data,

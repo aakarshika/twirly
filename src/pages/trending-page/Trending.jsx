@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
-import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { useHeader } from '../../contexts/HeaderContext';
 import { MessageSquare, TrendingUp, Users } from 'lucide-react';
@@ -9,56 +8,112 @@ import { COMPARISON_COLOR_SET } from '../../lib/constants';
 import { randomPastelColor, splitAndJoin } from '../../lib/utils';
 import TrendingCard from '../../components/common/common-cards/TrendingCard';
 import TrendingCardCommon from '../../components/common/common-cards/TrendingCardCommon';
+import { useTrending } from '../../contexts/TrendingContext';
+
+const ITEMS_PER_PAGE = 10;
 
 const Trending = () => {
-  const [trendingSets, setTrendingSets] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const { currentTheme } = useTheme();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { isHeaderVisible } = useHeader();
+  const { trendingSets, loading, error, fetchTrendingSets } = useTrending();
+  const containerRef = useRef(null);
+  const [visibleItems, setVisibleItems] = useState([]);
+  const [page, setPage] = useState(1);
+  const observerRef = useRef(null);
+  const loadingRef = useRef(null);
+  const hasRestoredScroll = useRef(false);
 
+  // Initialize data
   useEffect(() => {
-    const fetchTrendingSets = async () => {
-      try {
-        setLoading(true);
-        const { data, error } = await supabase
-          .rpc('fetch_popular_aspect_sets_for_user', { v_user_id: user.id })
-          // .from('popular_comparison_sets')
-          .select(`
-            *,
-            user:user_preferences(*),
-            comparison_set_items (
-            
-              items (
-                id,
-                name,
-                image_url,
-                item_color_string
-              )
-            )
-          `)
-          // .eq('user_id_voted', user.id)
-          .limit(20);
+    if (trendingSets.length === 0) {
+      fetchTrendingSets();
+    }
+  }, []);
 
-        if (error) throw error;
-        
+  // Handle lazy loading
+  useEffect(() => {
+    const items = trendingSets.slice(0, page * ITEMS_PER_PAGE);
+    setVisibleItems(items);
 
+    // Set up intersection observer for infinite scroll
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
 
-        setTrendingSets(data);
-      } catch (err) {
-        console.error('Error fetching trending sets:', err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !loading && visibleItems.length < trendingSets.length) {
+          setPage(prev => prev + 1);
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (loadingRef.current) {
+      observerRef.current.observe(loadingRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [trendingSets, page, loading]);
+
+  // Handle scroll position
+  useEffect(() => {
+    if (!hasRestoredScroll.current && visibleItems.length > 0) {
+      const savedScroll = sessionStorage.getItem('trending_scroll_position');
+      const savedCardPosition = sessionStorage.getItem('trending_card_position');
+
+      if (savedScroll || savedCardPosition) {
+        // Add a small delay to ensure content is fully rendered
+        setTimeout(() => {
+          // If we have a card position, use that for more precise scrolling
+          if (savedCardPosition) {
+            const targetPosition = parseInt(savedCardPosition, 10);
+            window.scrollTo({
+              top: targetPosition,
+              behavior: 'instant'
+            });
+          } else if (savedScroll) {
+            // Fallback to general scroll position
+            window.scrollTo({
+              top: parseInt(savedScroll, 10),
+              behavior: 'instant'
+            });
+          }
+          
+          hasRestoredScroll.current = true;
+          // Clear the saved positions after restoring
+          sessionStorage.removeItem('trending_scroll_position');
+          sessionStorage.removeItem('trending_card_position');
+        }, 100); // Small delay to ensure content is rendered
+      }
+    }
+  }, [visibleItems]);
+
+  // Save scroll position when leaving
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (window.scrollY > 0) {
+        sessionStorage.setItem('trending_scroll_position', window.scrollY.toString());
       }
     };
 
-    fetchTrendingSets();
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      if (window.scrollY > 0) {
+        sessionStorage.setItem('trending_scroll_position', window.scrollY.toString());
+      }
+    };
   }, []);
 
-  if (loading) {
+  if (loading && trendingSets.length === 0) {
     return (
       <div 
         className="min-h-screen flex flex-col items-center justify-center transition-all duration-300 ease-in-out"
@@ -82,7 +137,7 @@ const Trending = () => {
         <div className="text-center animate-fade-in">
           <p className="text-red-500 mb-4">{error}</p>
           <button
-            onClick={() => window.location.reload()}
+            onClick={() => fetchTrendingSets()}
             className="px-4 py-2 rounded-full font-semibold transition-all duration-200 hover:scale-105"
             style={{ 
               backgroundColor: 'var(--color-primary)',
@@ -98,6 +153,7 @@ const Trending = () => {
 
   return (
     <div 
+      ref={containerRef}
       className="min-h-screen mx-auto transition-all duration-200 ease-in-out"
       style={{ 
         position: 'relative',
@@ -115,14 +171,24 @@ const Trending = () => {
           style={{ borderColor: 'var(--color-border)' }}
         >
           <div className="space-y-4 p-4 md:p-6 lg:p-8">
-            {trendingSets.map((set) => (
+            {visibleItems.map((set, index) => (
               <div 
-                key={set.aspect_set_id}
+                key={`trending-set-${set.aspect_set_id}-${index}`}
                 className="transition-transform duration-200 hover:scale-[1.02]"
               >
                 <TrendingCardCommon set={set} from={'trending'} />
               </div>
             ))}
+            {visibleItems.length < trendingSets.length && (
+              <div 
+                key="loading-indicator"
+                ref={loadingRef}
+                className="flex justify-center py-4"
+              >
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2" 
+                     style={{ borderColor: 'var(--color-primary)' }}></div>
+              </div>
+            )}
           </div>
         </div>
       </div>

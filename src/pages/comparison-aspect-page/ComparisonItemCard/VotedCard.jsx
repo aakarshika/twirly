@@ -11,7 +11,7 @@ const VotedCard = ({
   handleItemClick,
   totalVotes = 0,
   isVotedItem,
-  userVotedAll
+  userVoted
 }) => {
   const {
     titleRef,
@@ -24,10 +24,6 @@ const VotedCard = ({
     totalVotes,
     isVotedItem
   });
-
-  // Calculate total votes from metric_votes
-  const voteCount = item.metric_votes ? 
-    item.metric_votes.reduce((sum, metric) => sum + metric.itemVotes, 0) : 0;
 
   return (
     <div className="flex flex-col bg-white w-full rounded-lg" >
@@ -56,45 +52,37 @@ const VotedCard = ({
                 <div className="flex justify-center items-center">
                   <h3 ref={titleRef} className="text-center" style={{ color: darkenColor(color, 70) }}>{item.name}</h3>
                 </div>
-                  {userVotedAll && (<div 
-                    className="p-2"
-                    style={{
-                      color: darkenColor(color, 80),
-                      cursor: 'pointer'
-                    }}
-                  >
-                    <VoteStats
-                      votes={voteCount}
-                      totalVotes={totalVotes}
-                      color={color}
-                      isVotedItem={isVotedItem}
-                      leadingMetrics={item.leadingMetrics}
-                    />
-                  </div>)}
+                <div className="p-2" style={{ color: darkenColor(color, 80), cursor: 'pointer' }}>
+                  <VoteStats
+                    votes={item.voteCount}
+                    totalVotes={totalVotes}
+                    color={color}
+                    isVotedItem={isVotedItem}
+                  />
+                </div>
               </div>
             )}
           </div>
 
           {itemImage && (
             <div 
-              className="bottom-0 left-0 right-0 p-4 content-overlay " 
+              className="bottom-0 left-0 right-0 p-4 content-overlay" 
               onClick={handleItemClick}
-              style={{  color: darkenColor(color, 50)}}
+              style={{ color: darkenColor(color, 50)}}
             >
               <h3 className="item-name">{item.name}</h3>
-                {userVotedAll && (<div 
-                  className="flex items-center gap-2" 
-                  style={{ cursor: 'pointer' }} 
-                  onClick={handleItemClick}
-                >
-                  <VoteStats
-                    votes={voteCount}
-                    totalVotes={totalVotes}
-                    color={color}
-                    isVotedItem={isVotedItem}
-                    leadingMetrics={item.leadingMetrics}
-                  />
-                </div>)}
+              <div 
+                className="flex items-center gap-2" 
+                style={{ cursor: 'pointer' }} 
+                onClick={handleItemClick}
+              >
+                <VoteStats
+                  votes={item.voteCount}
+                  totalVotes={totalVotes}
+                  color={color}
+                  isVotedItem={isVotedItem}
+                />
+              </div>
             </div>
           )}
 
