@@ -66,11 +66,8 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
       return;
     }
 
-    const currentIndex = sortedMetrics.findIndex(metric => metric.id === currentAspect.id);
+    const currentIndex = sortedMetrics.findIndex(metric => metric.id === currentAspect.id) == -1 ? sortedMetrics.length : sortedMetrics.findIndex(metric => metric.id === currentAspect.id);
     console.log('Scrolling to index:', currentIndex);
-    if (currentIndex === -1) {
-      currentIndex = sortedMetrics.length;
-    }
     
     if (currentIndex !== -1) {
       // Small delay to ensure DOM is ready

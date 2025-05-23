@@ -222,6 +222,7 @@ const ComparePage = () => {
   }, []);
 
   useEffect(() => {
+    scrollTo(0, 0);
     fetchSetMetrics();
   }, [currentSetId, user, items, currentSet]);
 

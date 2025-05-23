@@ -55,18 +55,18 @@ const List = ({displayItems, isMobile, winner, runnerUp, comparison, totalVotes,
           >
             {winnerAnnouncement && (
             <div className="flex flex-col items-center justify-center">
-                <div className="rounded-full bg-amber-200 p-2">
+                <div className="rounded-full bg-amber-200 p-2 px-4">
                         <div className="text-lg text-gray-500 font-bold">
-                            WINNING CUP goes to
+                            And the WINNER is...
                         </div>
                     </div>
                 </div>
             )}
             {runnerUpAnnouncement && (
                 <div className="flex flex-col items-center justify-center">
-                    <div className="rounded-full bg-amber-200 p-2">
+                    <div className="rounded-full bg-amber-200 p-2 px-4">
                         <div className="text-lg text-gray-500 font-bold">
-                            And the RUNNER CUP goes to 
+                            RUNNER CUP goes to...
                         </div>
                     </div>
                 </div>

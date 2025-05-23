@@ -331,6 +331,7 @@ const CreateComparison = () => {
           <div>
             <input
               type="text"
+              autoFocus
               value={draft.title}
               onChange={(e) => updateDraft({ title: e.target.value })}
               className="w-full p-3 text-md font-bold rounded-lg"
@@ -409,7 +410,7 @@ const CreateComparison = () => {
                   </div>
                 </div>
               ))}
-              <div className="flex flex-row rounded-lg items-center justify-center" style={{ backgroundColor: currentTheme.colors.background, height: '250px' }}>
+              {draft.items.length < 4 && (<div className="flex flex-row text-4xl rounded-lg items-center justify-center" style={{ backgroundColor: currentTheme.colors.background, height: '250px' }}>
                 <button
                   onClick={() => {
                     setAddItemModalOpen(true);
@@ -418,7 +419,7 @@ const CreateComparison = () => {
                 >
                   +
                   </button>
-              </div>
+              </div>)}
             </div>
           </div>
 
@@ -427,7 +428,6 @@ const CreateComparison = () => {
               <input
                 id="item-input"
                 type="text"
-                autoFocus
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full p-3 pl-10 rounded-lg"
