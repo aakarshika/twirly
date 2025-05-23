@@ -127,7 +127,7 @@ export const useComparisonAspectDetails = (id) => {
         activityType: ACTIVITY_TYPES.VOTE,
         entityType: ENTITY_TYPES.VOTE,
         entityId: data[0].id,
-        pageName: `/comparison-aspect/${id}`,
+        pageName: `/comparison-aspect-page/${id}`,
         metadata: { 
           itemId,
           aspectSetId: id,
@@ -162,7 +162,7 @@ export const useComparisonAspectDetails = (id) => {
           activityType: ACTIVITY_TYPES.UNLIKE_ASPECT_SET,
           entityType: ENTITY_TYPES.ASPECT_SET,
           entityId: id,
-          pageName: `/comparison-aspect/${id}`,
+          pageName: `/comparison-aspect-page/${id}`,
           metadata: { 
             aspectSetId: id,
             aspectSetTitle: currentAspectSet.title
@@ -179,7 +179,7 @@ export const useComparisonAspectDetails = (id) => {
           activityType: ACTIVITY_TYPES.LIKE_ASPECT_SET,
           entityType: ENTITY_TYPES.ASPECT_SET,
           entityId: id,
-          pageName: `/comparison-aspect/${id}`,
+          pageName: `/comparison-aspect-page/${id}`,
           metadata: { 
             aspectSetId: id,
             aspectSetTitle: currentAspectSet.title
@@ -201,7 +201,7 @@ export const useComparisonAspectDetails = (id) => {
       activityType: ACTIVITY_TYPES.ASPECT_SET_NEXT,
       entityType: ENTITY_TYPES.ASPECT_SET,
       entityId: id,
-      pageName: `/comparison-aspect/${id}`
+      pageName: `/comparison-aspect-page/${id}`
     });
   };
   const handleRevertVote = async () => {
@@ -222,7 +222,7 @@ export const useComparisonAspectDetails = (id) => {
         activityType: ACTIVITY_TYPES.VOTE_REVERT,
         entityType: ENTITY_TYPES.VOTE,
         entityId: data[0].id,
-        pageName: `/comparison-aspect/${id}`,
+        pageName: `/comparison-aspect-page/${id}`,
         metadata: { 
           itemId: votedItemId,
           aspectSetId: id,

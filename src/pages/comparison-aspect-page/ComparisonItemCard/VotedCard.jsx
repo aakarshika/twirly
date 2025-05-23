@@ -64,7 +64,7 @@ const VotedCard = ({
                 <div className="flex justify-center items-center">
                   <h3 ref={titleRef} className="text-center" style={{ color: darkenColor(color, 70) }}>{item.name}</h3>
                 </div>
-                <div className="p-2" style={{ color: darkenColor(color, 80) }}>
+                <div className="p-2 w-full" style={{ color: darkenColor(color, 80) }}>
                   <VoteStats
                     votes={item.voteCount}
                     totalVotes={totalVotes}

@@ -10,15 +10,15 @@ const VoteCard = ({ vote }) => {
   const navigate = useNavigate();
   return (
     <div 
-      className="rounded-lg overflow-hidden"
-      style={{ backgroundColor: currentTheme.colors.cardBackground }}
+      className="rounded-lg overflow-hidden "
+            onClick={() => {
+              navigate(`/compare/${vote.comparison_set_aspects?.set_id}`);
+            }}
+      style={{ backgroundColor: currentTheme.colors.background }}
     >
       <div className="p-4">
         <div className="flex justify-between items-start mb-4">
           <div
-            onClick={() => {
-              navigate(`/compare/${vote.comparison_set_aspects?.set_id}/aspect/${vote.comparison_set_aspects?.id}`);
-            }}
           >
             <h3 
               className="font-semibold text-lg"

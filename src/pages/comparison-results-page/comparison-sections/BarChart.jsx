@@ -16,7 +16,7 @@ const MetricCard = ({ metric, items, getMetricAverageVotes, currentTheme, userVo
   return (
     <div className="bg-white rounded-lg shadow-sm"
     onClick={() => {
-      navigate(`/compare/${metric.set_id}/aspect/${metric.id}`);
+      navigate(`/compare/${metric.set_id}`);
     }}>
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-2">

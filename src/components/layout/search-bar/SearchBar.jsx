@@ -132,6 +132,7 @@ const SearchBar = ({ searchComplete }) => {
             setQuery(e.target.value);
             setShowResults(true);
           }}
+          autoFocus={true}
           onFocus={() => setShowResults(true)}
           className="w-full px-4 py-2 pl-10 pr-8 rounded-lg border"
           style={{

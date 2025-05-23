@@ -116,6 +116,7 @@ const UserProfile = () => {
       style={{ 
         backgroundColor: currentTheme.colors.background,
         position: 'relative',
+        color: currentTheme.colors.text,
         top: isHeaderVisible ? '64px' : '0px',
       }}
     >

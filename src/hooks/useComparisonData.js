@@ -240,7 +240,7 @@ export const useComparisonData = (setId, aspectId = null) => {
         activityType: ACTIVITY_TYPES.VOTE,
         entityType: ENTITY_TYPES.VOTE,
         entityId: data[0].id,
-        pageName: `/comparison-aspect/${aspectId}`,
+        pageName: `/comparison-aspect-page/${aspectId}`,
         metadata: { 
           itemId,
           aspectSetId: aspectId,
@@ -282,7 +282,7 @@ export const useComparisonData = (setId, aspectId = null) => {
         activityType: ACTIVITY_TYPES.VOTE_REVERT,
         entityType: ENTITY_TYPES.VOTE,
         entityId: data[0].id,
-        pageName: `/comparison-aspect/${aspectId}`,
+        pageName: `/comparison-aspect-page/${aspectId}`,
         metadata: { 
           itemId: votedItemId,
           aspectSetId: aspectId,

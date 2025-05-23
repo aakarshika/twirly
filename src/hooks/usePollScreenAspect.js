@@ -99,7 +99,7 @@ export const usePollScreenAspect = (id) => {
       console.log('nextCardData', nextCardData);
       if (nextCardData) {
         // Update state with nextCardData if needed
-        navigate('/comparison-aspect/' + nextCardData.id);
+        navigate('/comparison-aspect-page/' + nextCardData.id);
         console.log('nextCardData', nextCardData);
       }
       else {
