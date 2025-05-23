@@ -87,7 +87,7 @@ const TrendingCard = ({set, from}) => {
       onClick={(e) => handleSetClick(set, e)}
       style={{ backgroundColor: 'white' }}
     >
-      <div className="p-4 mx-auto max-w-2xl"
+      <div className="p-4"
       style={{ backgroundColor: currentTheme.colors.background }}>
         <div className="mb-2">
         <span className="font-medium" style={{ color: currentTheme.colors.text }}>

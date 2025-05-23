@@ -253,6 +253,7 @@ const ComparePage = () => {
         backgroundColor: currentTheme.colors.background
       }}
     >
+      <div className="sm:py-6 lg:py-8"></div>
       <div className="bg-inherit">
         <div className="w-full">
           <motion.div

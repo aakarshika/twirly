@@ -11,13 +11,12 @@ const TrendingCardCommon = ({set, from}) => {
       key={set.id}
       onClick={() => handleSetClick(set)}
       className="cursor-pointer hover:bg-gray-50 transition-colors"
-    >
+    > 
       <TrendingCard set={set} from={from} />
     </div>
     </div>
 
-    <div className="hidden sm:block" style={{
-      maxWidth: '100%',
+    <div className="hidden sm:block max-w-2xl mx-auto" style={{
       marginLeft: 'auto',
       marginRight: 'auto',
       padding: '0 1rem'

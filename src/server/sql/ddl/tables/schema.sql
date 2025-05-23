@@ -8,9 +8,6 @@ DROP TABLE IF EXISTS items CASCADE;
 DROP TABLE IF EXISTS comparison_sets CASCADE;
 DROP TABLE IF EXISTS comparison_set_items CASCADE;
 DROP TABLE IF EXISTS votes CASCADE;
-DROP TABLE IF EXISTS reviews CASCADE;
-DROP TABLE IF EXISTS review_metrics CASCADE;
-DROP TABLE IF EXISTS review_likes CASCADE;
 DROP TABLE IF EXISTS comparison_set_comments CASCADE;
 DROP TABLE IF EXISTS comparison_set_comment_replies CASCADE;
 DROP TABLE IF EXISTS comparison_set_comment_reactions CASCADE;
@@ -84,24 +81,10 @@ CREATE TABLE votes (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Reviews table
--- Stores user-written reviews for items
--- Primary key: id
--- Foreign keys: user_id, item_id
-CREATE TABLE reviews (
-    id SERIAL PRIMARY KEY,
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-    item_id INTEGER REFERENCES items(id) ON DELETE CASCADE,
-    text TEXT NOT NULL,
-    likes INTEGER DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
-
 -- Comments table
 CREATE TABLE comparison_set_comments (
     id SERIAL PRIMARY KEY,
-    set_id INTEGER REFERENCES comparison_set_aspects(id) ON DELETE CASCADE,
+    set_id INTEGER REFERENCES comparison_sets(id) ON DELETE CASCADE,
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     text TEXT NOT NULL,
     likes_count INTEGER DEFAULT 0,
@@ -189,10 +172,6 @@ CREATE INDEX idx_items_category_id ON items(category_id);
 CREATE INDEX idx_votes_user_id ON votes(user_id);
 CREATE INDEX idx_votes_item_id ON votes(item_id);
 CREATE INDEX idx_votes_set_id ON votes(set_id);
-CREATE INDEX idx_reviews_item_id ON reviews(item_id);
-CREATE INDEX idx_reviews_user_id ON reviews(user_id);
-CREATE INDEX idx_review_metrics_review_id ON review_metrics(review_id);
-CREATE INDEX idx_review_likes_review_id ON review_likes(review_id);
 CREATE INDEX idx_comments_set_id ON comparison_set_comments(set_id);
 CREATE INDEX idx_comments_user_id ON comparison_set_comments(user_id);
 CREATE INDEX idx_replies_parent_id ON comparison_set_comment_replies(parent_comment_id);
@@ -204,13 +183,10 @@ CREATE INDEX idx_user_preferences_user_id ON user_preferences(user_id);
 CREATE INDEX idx_user_notification_settings_user_id ON user_notification_settings(user_id);
 CREATE INDEX idx_user_category_preferences_user_id ON user_category_preferences(user_id);
 CREATE INDEX idx_user_category_preferences_category_id ON user_category_preferences(category_id);
-CREATE INDEX idx_review_metrics_set_id ON review_metrics(set_id);
 
 -- Enable Row Level Security
 ALTER TABLE items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE votes ENABLE ROW LEVEL SECURITY;
-ALTER TABLE reviews ENABLE ROW LEVEL SECURITY;
-ALTER TABLE review_likes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE comparison_sets ENABLE ROW LEVEL SECURITY;
 ALTER TABLE comparison_set_items ENABLE ROW LEVEL SECURITY;
 ALTER TABLE comparison_set_comments ENABLE ROW LEVEL SECURITY;
@@ -237,24 +213,6 @@ CREATE POLICY "Anyone can view votes"
 
 CREATE POLICY "Authenticated users can create and update their own votes"
   ON votes FOR ALL
-  USING (auth.uid() = user_id);
-
--- Reviews policies
-CREATE POLICY "Anyone can view reviews"
-  ON reviews FOR SELECT
-  USING (true);
-
-CREATE POLICY "Authenticated users can create and update their own reviews"
-  ON reviews FOR ALL
-  USING (auth.uid() = user_id);
-
--- Review likes policies
-CREATE POLICY "Anyone can view review likes"
-  ON review_likes FOR SELECT
-  USING (true);
-
-CREATE POLICY "Authenticated users can create and delete their own review likes"
-  ON review_likes FOR ALL
   USING (auth.uid() = user_id);
 
 -- Comparison sets policies
@@ -307,71 +265,25 @@ CREATE POLICY "Users can insert their own preferences"
   WITH CHECK (auth.uid() = user_id);
 
 -- Item metric averages view
--- Aggregates review metrics by item and metric type
--- Provides average ratings and total review counts
+-- Aggregates metrics by item
+-- Provides total comments and replies for each item
 CREATE OR REPLACE VIEW item_metric_averages AS
 SELECT
-    r.item_id,
-    rm.metric_name,
-    ROUND(AVG(rm.value), 2) AS avg_rating,
-    COUNT(rm.id) AS total_reviews
-FROM
-    reviews r
-JOIN review_metrics rm ON rm.review_id = r.id
+    i.id AS item_id,
+    i.name AS item_name,
+    COUNT(DISTINCT c.id) AS total_comments,
+    COUNT(DISTINCT r.id) AS total_replies,
+    COUNT(DISTINCT CASE WHEN cr.reaction_type = 'like' THEN cr.id END) AS total_likes,
+    COUNT(DISTINCT CASE WHEN cr.reaction_type = 'dislike' THEN cr.id END) AS total_dislikes
+FROM 
+    items i
+LEFT JOIN comparison_set_items csi ON i.id = csi.item_id
+LEFT JOIN comparison_sets cs ON csi.set_id = cs.id
+LEFT JOIN comparison_set_comments c ON cs.id = c.set_id
+LEFT JOIN comparison_set_comment_replies r ON c.id = r.parent_comment_id
+LEFT JOIN comparison_set_comment_reactions cr ON (cr.comment_id = c.id OR cr.reply_id = r.id)
 GROUP BY
-    r.item_id, rm.metric_name;
-
--- User activity summary view
--- Provides a comprehensive summary of user engagement
--- Includes total votes, reviews, polls posted, and likes received
-CREATE VIEW user_activity_summary AS
-SELECT
-    u.id AS user_id,
-    u.email,
-    COALESCE(v.vote_count, 0) AS total_votes,
-    COALESCE(r.review_count, 0) AS total_reviews,
-    COALESCE(p.poll_count, 0) AS total_polls_posted,
-    COALESCE(rl.likes_received, 0) AS total_likes_received
-FROM
-    auth.users u
-LEFT JOIN (
-    SELECT
-        user_id,
-        COUNT(*) AS vote_count
-    FROM
-        votes
-    GROUP BY
-        user_id
-) v ON u.id = v.user_id
-LEFT JOIN (
-    SELECT
-        user_id,
-        COUNT(*) AS review_count
-    FROM
-        reviews
-    GROUP BY
-        user_id
-) r ON u.id = r.user_id
-LEFT JOIN (
-    SELECT
-        user_id,
-        COUNT(*) AS poll_count
-    FROM
-        comparison_sets
-    GROUP BY
-        user_id
-) p ON u.id = p.user_id
-LEFT JOIN (
-    SELECT
-        r.user_id,
-        COUNT(rl.id) AS likes_received
-    FROM
-        reviews r
-    JOIN
-        review_likes rl ON r.id = rl.review_id
-    GROUP BY
-        r.user_id
-) rl ON u.id = rl.user_id;
+    i.id, i.name;
 
 -- Create a table for public profiles
 create table public.profiles (
@@ -410,3 +322,25 @@ $$ language plpgsql security definer;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute procedure public.handle_new_user();
+-- User Dashboard Schema
+-- This file contains schema modifications and views for the user dashboard
+-- It adds user ownership to items and creates performance metrics views
+
+-- Add user_id column to items table if it doesn't exist
+-- This allows tracking which user created each item
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 
+        FROM information_schema.columns 
+        WHERE table_name = 'items' 
+        AND column_name = 'user_id'
+    ) THEN
+        ALTER TABLE items ADD COLUMN user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE;
+    END IF;
+END $$;
+
+-- Performance indexes for product-related queries
+-- These indexes improve query performance for dashboard operations
+CREATE INDEX IF NOT EXISTS idx_items_user_id ON items(user_id);
+CREATE INDEX IF NOT EXISTS idx_items_created_at ON items(created_at);
