@@ -18,23 +18,27 @@ import { useHeader } from '../../contexts/HeaderContext';
 import { formatDistanceToNow } from 'date-fns';
 
 
-const List = ({displayItems, isMobile, winner, runnerUp, comparison, totalVotes, animationState, userVotedAll}) => {
+const List = ({displayItems, isMobile, winner, runnerUp, comparison, totalVotes, celebratingResults, userVotedAll}) => {
     const [displayItemssss, setDisplayItemssss] = useState(displayItems && displayItems.length > 0 ? displayItems.slice(0, 1) : []);
-    const [winnerAnnouncement, setWinnerAnnouncement] = useState(true);
+    const [winnerAnnouncement, setWinnerAnnouncement] = useState(false);
     const [runnerUpAnnouncement, setRunnerUpAnnouncement] = useState(false);
     useEffect(() => {
-        setWinnerAnnouncement(true);
-        setDisplayItemssss(displayItems && displayItems.length > 0 ? displayItems.slice(0, 1) : []);
-        setTimeout(() => {
-            setDisplayItemssss(displayItems.slice(1, 2));
-            setWinnerAnnouncement(false);
-            setRunnerUpAnnouncement(true);
-        }, 3000);
-        setTimeout(() => {
+        if(celebratingResults) {
+            setWinnerAnnouncement(true);
+            setDisplayItemssss(displayItems && displayItems.length > 0 ? displayItems.slice(0, 1) : []);
+            setTimeout(() => {
+                setDisplayItemssss(displayItems.slice(1, 2));
+                setWinnerAnnouncement(false);
+                setRunnerUpAnnouncement(true);
+            }, 3000);
+            setTimeout(() => {
+                setDisplayItemssss(displayItems);
+                setRunnerUpAnnouncement(false);
+            }, 6000);
+        } else {
             setDisplayItemssss(displayItems);
-            setRunnerUpAnnouncement(false);
-        }, 6000);
-    }, [displayItems]);
+        }
+    }, [celebratingResults]);
     return (
         <div>
 
@@ -50,7 +54,7 @@ const List = ({displayItems, isMobile, winner, runnerUp, comparison, totalVotes,
             }}
           >
             {winnerAnnouncement && (
-            <div className="flex flex-col">
+            <div className="flex flex-col items-center justify-center">
                 <div className="rounded-full bg-amber-200 p-2">
                         <div className="text-lg text-gray-500 font-bold">
                             WINNING CUP goes to
@@ -59,7 +63,7 @@ const List = ({displayItems, isMobile, winner, runnerUp, comparison, totalVotes,
                 </div>
             )}
             {runnerUpAnnouncement && (
-                <div className="flex flex-col">
+                <div className="flex flex-col items-center justify-center">
                     <div className="rounded-full bg-amber-200 p-2">
                         <div className="text-lg text-gray-500 font-bold">
                             And the RUNNER CUP goes to 
@@ -89,7 +93,7 @@ const List = ({displayItems, isMobile, winner, runnerUp, comparison, totalVotes,
     );
 };
 
-const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVotedAll }) => {
+const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVotedAll, celebratingResults }) => {
     const displayItems = calculateProcessedItems(items, comparisonMetrics);
     const navigate = useNavigate();
     const winner = userVotedAll ? findWinner(displayItems) : null;
@@ -99,21 +103,8 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
     console.log(displayItems, 'displayItems');
     console.log(comparisonMetrics, 'comparisonMetrics');
     const {isHeaderVisible} = useHeader();
-    const [animationState, setAnimationState] = useState(userVotedAll ? 'winner' : 'rest');
     const [scale, setScale] = useState(1);
     const [lastScrollY, setLastScrollY] = useState(0);
-
-    useEffect(() => {
-        if (!userVotedAll) return;
-
-        const sequence = async () => {
-            setAnimationState('winner');
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            setAnimationState('rest');
-        };
-
-        sequence();
-    }, [userVotedAll]);
 
     // Add scroll event listener for scaling
     useEffect(() => {
@@ -148,7 +139,7 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
                             comparison={comparison}
                             totalVotes={totalVotes}
                             userVotedAll={userVotedAll}
-                            animationState={animationState}
+                            celebratingResults={celebratingResults}
                         />
                     </div>
 
@@ -162,7 +153,7 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
                             comparison={comparison}
                             totalVotes={totalVotes}
                             userVotedAll={userVotedAll}
-                            animationState={animationState}
+                            celebratingResults={celebratingResults}
                         />
                     </div>
                 </div>

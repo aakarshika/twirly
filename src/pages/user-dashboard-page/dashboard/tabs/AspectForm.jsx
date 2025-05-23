@@ -68,7 +68,7 @@ const AspectForm = ({
   return (
     <div className="flex justify-between items-center text-sm rounded-md py-1 px-1 backdrop-blur-sm animate-fadeIn" 
       style={{ 
-        color: 'whitesmoke', 
+        color: 'black', 
         background: `${currentTheme.colors.secondary}90`,
         border: `1px solid ${currentTheme.colors.secondary}30`,
         boxShadow: `0 4px 15px ${currentTheme.colors.primary}20`
@@ -87,7 +87,7 @@ const AspectForm = ({
           className="w-full p-1 rounded-lg transition-all duration-300 focus:scale-[1.01]"
           style={{
             backgroundColor: `${currentTheme.colors.background}80`,
-            color: currentTheme.colors.text,
+            color: 'whitesmoke',
             border: `1px solid ${currentTheme.colors.border}50`,
             backdropFilter: 'blur(10px)'
           }}

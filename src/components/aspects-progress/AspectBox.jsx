@@ -50,7 +50,7 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2l
     if (isCurrentAspect) {
       return isPlayed 
         ? currentTheme.colors.secondary
-        : currentTheme.colors.background;
+        : changeColorAlpha(currentTheme.colors.secondary, 0.8);
     }
     
     return isPlayed 
@@ -70,7 +70,7 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2l
         
       }}
       transition={{ duration: 0.3 }}
-      className={`flex mx-1 rounded-sm cursor-pointer relative flex flex-col items-center justify-center px-2 p-1 ${is2line ? 'h-[75px] ' : 'h-[50px]'} m-2`}
+      className={`flex mx-1 rounded-sm cursor-pointer relative flex flex-col items-center justify-center px-2 p-1 ${is2line ? 'h-[75px] ' : 'h-[50px]'}`}
       style={{
         border: isCurrentAspect ? `2px solid ${currentTheme.colors.secondary}` : 'none',
         backgroundColor: getBackgroundColor(),
@@ -104,7 +104,7 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2l
         transition={{ duration: 0.3 }}
       >
       {!isResults && (<span className='text-white font-medium text-center px-2'
-      style={{ scale: isCurrentAspect ? 1.1 : 1, color: isCurrentAspect && !isPlayed ? currentTheme.colors.secondary : 'white' }}
+      style={{ scale: isCurrentAspect ? 1.1 : 1, color: isCurrentAspect && 'white' }}
       >
         {splitAndJoin(aspect.metric_name.length > 50 
           ? aspect.metric_name.substring(0, 50) + '...' 

@@ -10,7 +10,7 @@ import ComparisonCirclesView from './ComparisonCirclesView';
 import Trending from '../trending-page/Trending';
 import { Globe2, TrendingUp } from 'lucide-react';
 
-const PollScreen = ({items, currentSetId, currentSet}) => {
+const PollScreen = ({items, currentSetId, currentSet, celebratingResults}) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { currentTheme } = useTheme();
@@ -80,6 +80,7 @@ const PollScreen = ({items, currentSetId, currentSet}) => {
               comparisonMetrics={comparisonMetrics}
               comparison={currentSet}
               userVotedAll={userVotedAll}
+              celebratingResults={celebratingResults}
             />
           </div>
         )}

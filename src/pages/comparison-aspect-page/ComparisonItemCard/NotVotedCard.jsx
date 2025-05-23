@@ -38,8 +38,8 @@ const NotVotedCard = ({
                 color: '#fff'
               }}
             >
-              <div className="text-fallback-content">
-                <h3 ref={titleRef} className="text-fallback-title">{item.name}</h3>
+              <div className="text-fallback-content flex items-center justify-center">
+                <h3 ref={titleRef} className="text-fallback-title text-center">{item.name}</h3>
               </div>
             </div>
           )}
@@ -47,10 +47,10 @@ const NotVotedCard = ({
 
         {itemImage && (
           <div 
-            className="absolute bottom-0 left-0 right-0 p-4 content-overlay" 
+            className=" p-4 content-overlay flex items-center justify-center" 
             style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}
           >
-            <h3 className="item-name">{item.name}</h3>
+            <h3 className="item-name text-center text-white">{item.name}</h3>
           </div>
         )}
       </div>

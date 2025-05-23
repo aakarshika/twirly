@@ -1,7 +1,7 @@
 import React from 'react';
 import PollScreen from '../comparison-results-page/PollScreen';
 
-const CompareResultsView = ({ items, currentSetId, currentSet }) => {
+const CompareResultsView = ({ items, currentSetId, currentSet, celebratingResults }) => {
   if (!items || !currentSetId || !currentSet) {
     return (
       <div className="min-h-screen items-center justify-center">
@@ -18,6 +18,7 @@ const CompareResultsView = ({ items, currentSetId, currentSet }) => {
         items={items} 
         currentSetId={currentSetId} 
         currentSet={currentSet} 
+        celebratingResults={celebratingResults}
       />
     </div>
   );

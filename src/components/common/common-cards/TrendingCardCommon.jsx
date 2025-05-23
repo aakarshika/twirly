@@ -9,7 +9,6 @@ const TrendingCardCommon = ({set, from}) => {
     <div className="sm:hidden">
     <div
       key={set.id}
-      onClick={() => handleSetClick(set)}
       className="cursor-pointer hover:bg-gray-50 transition-colors"
     > 
       <TrendingCard set={set} from={from} />
@@ -23,7 +22,6 @@ const TrendingCardCommon = ({set, from}) => {
     }}>
     <div
       key={set.id}
-      onClick={() => handleSetClick(set)}
       className="cursor-pointer hover:bg-gray-50 transition-colors"
       style={{
         borderColor: currentTheme.colors.border,

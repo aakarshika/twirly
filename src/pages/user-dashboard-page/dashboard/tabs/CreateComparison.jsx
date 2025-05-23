@@ -284,7 +284,7 @@ const CreateComparison = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4" style={{ backgroundColor: currentTheme.colors.background, paddingTop: isHeaderVisible ? '64px' : '0px' }}>
+    <div className="max-w-6xl mx-auto p-4" style={{ color: 'black', backgroundColor: currentTheme.colors.background, paddingTop: isHeaderVisible ? '64px' : '0px' }}>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
           Create Comparison
@@ -412,9 +412,7 @@ const CreateComparison = () => {
               <div className="flex flex-row rounded-lg items-center justify-center" style={{ backgroundColor: currentTheme.colors.background, height: '250px' }}>
                 <button
                   onClick={() => {
-                    //focus on the input
-                    setIsSearchExpanded(true);
-
+                    setAddItemModalOpen(true);
                   }}
                   style={{  color: currentTheme.colors.buttonText }}
                 >
@@ -438,7 +436,7 @@ const CreateComparison = () => {
                   color: currentTheme.colors.text,
                   border: `1px solid ${currentTheme.colors.border}`
                 }}
-                placeholder="Search items to compare..."
+                placeholder="Or search items added by others..."
               />
               <Search className="absolute left-3 top-3.5" size={20} style={{ color: currentTheme.colors.textSecondary }} />
               <button

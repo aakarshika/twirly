@@ -77,7 +77,7 @@ const SearchPage = () => {
     return (
       <Link
         key={'user' + user.user_id + index}
-        to={`/user/${user.user_id}`}
+        to={`/user/${user.display_name}`}
         className="block p-4 rounded-lg hover:bg-gray-50"
         style={{
           backgroundColor: currentTheme.colors.card,

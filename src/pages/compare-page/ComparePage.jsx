@@ -7,6 +7,7 @@ import { supabase } from '../../lib/supabase';
 import AspectsProgressBar from '../comparison-results-page/AspectsProgressBar';
 import CompareAspectView from './CompareAspectView';
 import CompareResultsView from './CompareResultsView';
+import ExploreSimilar from './ExploreSimilar';
 import { Globe2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Trending from '../trending-page/Trending';
@@ -30,7 +31,7 @@ const ComparePage = () => {
   const trendingRef = useRef(null);
   const celebrationTimerRef = useRef(null);
   const navigate = useNavigate();
-  
+  const [celebratingResults, setCelebratingResults] = useState(false);
   const { items, currentSet, loading: comparisonLoading, error: comparisonError } = useComparisonDetails(currentSetId);
 
   const getNextUnvotedAspect = () => {
@@ -157,7 +158,11 @@ const ComparePage = () => {
       setViewMode('aspect');
     } else {
       setCurrentAspect(null);
+      setCelebratingResults(true);
       setViewMode('results');
+      setTimeout(() => {
+        setCelebratingResults(false);
+      }, SHOW_RESULTS_DURATION * 1000);
     }
   };
 
@@ -310,6 +315,7 @@ const ComparePage = () => {
                 items={items} 
                 currentSetId={currentSetId} 
                 currentSet={currentSet} 
+                celebratingResults={celebratingResults}
               />
             )}
           </div>
@@ -329,6 +335,7 @@ const ComparePage = () => {
                   Explore Similar
                 </h1>
               </div>
+              <ExploreSimilar currentSetId={currentSetId} />
             </div>
           </div>
         )}

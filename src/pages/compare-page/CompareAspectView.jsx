@@ -178,7 +178,7 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
                 initial={{ width: "0%" }}
                 animate={{ width: "100%" }}
                 transition={{ 
-                  duration: SHOW_RESULTS_DURATION, 
+                  duration: SHOW_RESULTS_DURATION-1.5, 
                   ease: "linear"
                 }}
               >

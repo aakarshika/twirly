@@ -39,13 +39,13 @@ const VotedCard = ({
   };
 
   return (
-    <div className="flex flex-col bg-white w-full rounded-lg" >
+    <div className={`flex flex-col bg-white w-full rounded-lg ${isVotedItem ? 'voted-card-border' : ''}`} >
       <div
-        className="comparison-item-card rounded-lg"
+        className={`comparison-item-card rounded-lg `}
         style={{ 
           aspectRatio: '1/1',
           height: itemImage ? '30vh': '25vh' ,
-          backgroundColor: changeColorAlpha(color, 0.2)
+          backgroundImage: isVotedItem ? `linear-gradient(to bottom, ${color}, ${changeColorAlpha(color, 0.8)} , ${changeColorAlpha(color, 0.2)}` : `linear-gradient(to bottom, ${changeColorAlpha(color, 0.2)}, ${changeColorAlpha(color, 0.2)} , ${changeColorAlpha(color, 0.2)}`
         }}
       >
         <div className="card-container">
@@ -70,6 +70,7 @@ const VotedCard = ({
                     totalVotes={totalVotes}
                     color={color}
                     isVotedItem={isVotedItem}
+                    leadingMetrics={item.leadingMetrics}
                   />
                 </div>
               </div>
@@ -90,6 +91,7 @@ const VotedCard = ({
                   totalVotes={totalVotes}
                   color={color}
                   isVotedItem={isVotedItem}
+                  leadingMetrics={item.leadingMetrics}
                 />
               </div>
             </div>

@@ -153,26 +153,39 @@ const ProfileHeader = ({ userData, isPublic = false }) => {
       </FloatingShape>
 
       <div className="relative z-10">
-        <div className="p-4 md:p-6 rounded-2xl backdrop-blur-md" style={{ backgroundColor: currentTheme.colors.cardBackground + '80' }}>
+        <div className="md:p-6 rounded-2xl backdrop-blur-md" style={{ backgroundColor: currentTheme.colors.cardBackground + '80' }}>
           <div className="flex flex-col gap-6">
             {/* Top Section: Avatar, Name, and Karma */}
-            <div className="flex flex-col md:flex-row items-center gap-6">
+            <div className="flex flex-row md:flex-row items-center gap-6">
               {/* Left: Avatar */}
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
+                <div className="flex flex-col items-center justify-center">
                 <Avatar
                   profileImageUrl={userData?.profile?.profile_image_url ? getPublicUrl(userData.profile.profile_image_url) : null}
                   displayName={userData?.profile?.display_name}
                   username={userData?.profile?.username}
                   size="lg"
                 />
+
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="text-xs"
+                style={{ color: currentTheme.colors.textSecondary }}
+              >
+                Since {userData?.profile?.created_at ? formatDate(userData.profile.created_at) : 'Unknown'}
+              </motion.p>
+
+</div>
               </motion.div>
 
               {/* Center: Name and Edit Button */}
               <div className="flex-1 text-center md:text-left">
-                <div className="flex flex-col md:flex-row items-center md:items-start gap-3 md:gap-4">
+                <div className="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-4">
                   <motion.h1
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -206,18 +219,8 @@ const ProfileHeader = ({ userData, isPublic = false }) => {
             </div>
 
             {/* Bottom Section: Member Since, Bio, and Congratulations */}
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-4">
+            <div className="flex flex-col md:flex-row items-center md:items-start">
               {/* Left: Member Since */}
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className="text-sm"
-                style={{ color: currentTheme.colors.textSecondary }}
-              >
-                Member since {userData?.profile?.created_at ? formatDate(userData.profile.created_at) : 'Unknown'}
-              </motion.p>
-
               {/* Center: Bio */}
               {userData?.profile?.bio && (
                 <motion.p
@@ -240,7 +243,7 @@ const ProfileHeader = ({ userData, isPublic = false }) => {
                   className="flex flex-col items-center md:items-end"
                 >
                   <div 
-                    className="px-4 py-2 rounded-xl text-sm font-medium flex items-center space-x-2"
+                    className="px-2 py-1 rounded-xl text-sm font-medium flex items-center space-x-2"
                     style={{ 
                       backgroundColor: currentTheme.colors.success + '20',
                       border: `1px solid ${currentTheme.colors.success}`,

@@ -136,7 +136,7 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
   };
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-2">
       <div className="flex flex-wrap justify-center gap-2 w-full">
         {tabs.map(tab => (
           <motion.button
@@ -144,7 +144,7 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
             onClick={() => handleTabClick(tab.id)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className={`relative px-4 md:px-6 py-2 md:py-3 rounded-xl font-medium transition-all duration-300 flex-1 min-w-[120px] max-w-[200px] ${
+            className={`relative px-4 md:px-6 md:py-2 rounded-xl font-medium transition-all duration-300 flex-1 min-w-[120px] max-w-[200px] ${
               activeTab === tab.id ? 'text-white' : 'text-gray-600'
             }`}
             style={{
@@ -198,7 +198,7 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
-          className="w-full p-4 md:p-6 rounded-2xl"
+          className="w-full md:p-6 rounded-2xl"
           style={{ 
             backgroundColor: currentTheme.colors.cardBackground,
             boxShadow: `0 4px 6px -1px ${currentTheme.colors.primary}10`

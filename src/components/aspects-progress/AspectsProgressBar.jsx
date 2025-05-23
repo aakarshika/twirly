@@ -19,7 +19,15 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [is2line, setIs2line] = useState(false);
   const [nextUnvotedAspect, setNextUnvotedAspect] = useState(null);
-
+  const [highlightHeading, setHighlightHeading] = useState(false);
+  useEffect(() => {
+    if(currentAspect) {
+      setHighlightHeading(true)
+      setTimeout(() => {
+        setHighlightHeading(false);
+      }, 3000);
+    }
+  }, [currentSet]);
 
   useEffect(() => {
     const sorted = [...comparisonMetrics];
@@ -37,7 +45,7 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
 
   const scrollToAspect = (index) => {
     if (scrollContainerRef.current) {
-      const aspectWidth = 144;
+      const aspectWidth = 250;
       const targetScroll = index * aspectWidth;
       const containerWidth = scrollContainerRef.current.clientWidth;
       const scrollPosition = Math.max(0, targetScroll - (containerWidth / 2) + (aspectWidth / 2));
@@ -52,10 +60,17 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
 
   // Modified useEffect for current aspect changes
   useEffect(() => {
-    if (!currentAspect || !scrollContainerRef.current || sortedMetrics.length === 0) return;
+    if (!scrollContainerRef.current || sortedMetrics.length === 0) return;
+    if (!currentAspect) {
+      scrollToAspect(sortedMetrics.length);
+      return;
+    }
 
     const currentIndex = sortedMetrics.findIndex(metric => metric.id === currentAspect.id);
     console.log('Scrolling to index:', currentIndex);
+    if (currentIndex === -1) {
+      currentIndex = sortedMetrics.length;
+    }
     
     if (currentIndex !== -1) {
       // Small delay to ensure DOM is ready
@@ -97,23 +112,28 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
           </AnimatePresence>
         </div>
 
-        <div
+        <motion.div
+          animate={{  height:highlightHeading ? '300px' : 'auto' }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
           className='flex flex-row  justify-center items-center'
           style={{ backgroundColor: 'rgba(255, 255, 255, 0.98)', cursor: 'pointer' }}
         >
           <div className='flex flex-col rounded-lg justify-start py-2 px-2'>
-            <div className='flex flex-row items-center justify-center'>
+            <div className={`flex ${highlightHeading ? 'flex-col p-5' : 'flex-row'} items-center justify-center overflow-wrap`}>
             <motion.span className='text-4xl p-2'
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 0.3 }}
+            animate={{ scale: highlightHeading ? [1, 1.2, 1] : [1, 1, 1] }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
             
 
              >?</motion.span>
-            <span className='text-md text-gray-500 font-bold pr-4'>{currentSet?.name.substring(0,currentSet?.name.length - 1)}</span> 
+            <motion.span className='text-md text-center text-gray-500 font-bold pr-4'
+            animate={{ fontSize: highlightHeading ? '1.5rem' : '1rem' }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            >{currentSet?.name.substring(0,currentSet?.name.length - 1)}</motion.span> 
             {/* <span className='text-sm' >based on </span> */}
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {showAspectRoutes && !userVotedAll && (
               <motion.div
@@ -123,7 +143,13 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
                 transition={{ duration: 0.2 }}
               >
                 <motion.div className="flex ml-10 items-center justify-between ">
-                  <h2 className="text-md font-semibold" style={{ color: 'rgb(174, 174, 174)' }}>Cast your vote based on</h2>
+                  <soan></soan>
+                  <span className="text-md font-semibold" style={{ color: 'rgb(174, 174, 174)' }}>
+                    {/* Cast your vote  */}
+                    <span className='text-lg text-gray-500'> based 
+                      <Target className='w-3 h-3 ml-1 inline-block rounded-full text-gray'  />n
+                    </span>
+                    </span>
                   <h2 className="text-md mr-10" style={{ color: 'rgb(174, 174, 174)' }}>{sortedMetrics.filter(metric => metric.userVoted).length}/{sortedMetrics.length}</h2>
                 </motion.div>
               </motion.div>

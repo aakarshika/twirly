@@ -10,7 +10,6 @@ import { formatDistanceToNow } from 'date-fns';
 import Avatar from '../Avatar';
 
 const TrendingCard = ({set, from}) => {
-  console.log(set);
     const {user} = useAuth();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -33,13 +32,13 @@ const TrendingCard = ({set, from}) => {
             // Log the aspect set view activity
             await userActivityService.logActivity({
                 userId: user.id,
-                activityType: ACTIVITY_TYPES.ASPECT_SET_VIEW,
-                entityType: ENTITY_TYPES.ASPECT_SET,
-                entityId: set.aspect_set_id,
+                activityType: ACTIVITY_TYPES.COMPARISON_SET_VIEW,
+                entityType: ENTITY_TYPES.COMPARISON_SET,
+                entityId: set.set_id,
                 pageName: '/trending',
                 metadata: { 
-                    aspectSetId: set.aspect_set_id,
-                    aspectSetTitle: set.title
+                    setId: set.set_id,
+                    setTitle: set.name
                 }
             });
 
@@ -102,7 +101,6 @@ const TrendingCard = ({set, from}) => {
             const [imageError, setImageError] = useState(false);
             const item = it.items;
             const itemImage = !item.image_url || (item.image_url && item.image_url.startsWith('http')) ? item.image_url : getPublicUrlItems(item.image_url);
-            console.log(itemImage);
             return (
               <div
                 key={item.id}
@@ -123,14 +121,14 @@ const TrendingCard = ({set, from}) => {
                 {(!itemImage || imageError )&& (
                   <div
                     className="absolute inset-0 flex items-center justify-center text-lg font-bold"
-                    style={{ color: 'black', backgroundColor: !userVoted ? 'white' : changeColorAlpha(item.item_color_string, 0.5) }}
+                    style={{ color: 'black', backgroundColor: !userVoted ? currentTheme.colors.card : changeColorAlpha(item.item_color_string, 0.5) }}
                   >
                     {item.name}
                   </div>
                 )}
                 {itemImage && !imageError && (index < 2 || userVoted) && (
-                  <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 p-1">
-                    <p className="text-white text-sm truncate">{item.name}</p>
+                  <div className="  bg-black bg-opacity-50 p-1 flex items-center justify-center" style={{ backgroundColor: !userVoted ? currentTheme.colors.card : item.item_color_string }}>
+                    <p className="text-white text-sm truncate text-center">{item.name}</p>
                   </div>
                 )}
                 {votedItems?.some(votedItem => votedItem.item_id === item.id) && (<div className="absolute top-0 right-0 bg-gray-100 bg-opacity-50 p-1 rounded-full m-1">

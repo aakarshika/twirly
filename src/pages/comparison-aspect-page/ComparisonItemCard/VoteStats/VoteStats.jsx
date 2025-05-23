@@ -41,7 +41,7 @@ const VoteStats = ({ votes, totalVotes, color, isVotedItem, leadingMetrics }) =>
 
   return (
     <div className="flex flex-col vote-stats-container">
-      {votes > 0 && (<div className="flex flex-row gap-1 w-full items-center">
+      {(<div className="flex flex-row gap-1 w-full items-center">
         <span className="text-2xl text-right">
           {Math.round(displayPercentage)}%
         </span>

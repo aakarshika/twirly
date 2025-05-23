@@ -213,13 +213,7 @@ const ItemCardEditable = ({
   };
 
   const handleColorClick = () => {
-    if (colorInputRef.current && colorButtonRef.current) {
-      // Position the color input near the button
-      const buttonRect = colorButtonRef.current.getBoundingClientRect();
-      colorInputRef.current.style.position = 'absolute';
-      colorInputRef.current.style.left = `${buttonRect.left}px`;
-      colorInputRef.current.style.top = `${buttonRect.bottom + 5}px`;
-      colorInputRef.current.style.zIndex = '1000';
+    if (colorInputRef.current) {
       colorInputRef.current.click();
     }
   };
@@ -400,22 +394,40 @@ const ItemCardEditable = ({
       </div>
 
       <div className="flex items-center justify-start">
-
-<div 
-  ref={colorButtonRef}
-  className="px-2 py-1 rounded-full shadow cursor-pointer flex items-center gap-2"
-  onClick={handleColorClick}
-  style={{
-    backgroundColor: 'white',
-    border: '1px solid ' + color,
-    color: color
-  }}
->
-  <Circle size={16} fill={color} />
-  Change 
-</div>
-
-</div>
+        <div className="relative">
+          <div 
+            ref={colorButtonRef}
+            className="px-2 py-1 rounded-full shadow cursor-pointer flex items-center gap-2"
+            onClick={handleColorClick}
+            style={{
+              backgroundColor: 'white',
+              border: '1px solid ' + color,
+              color: color
+            }}
+          >
+            <Circle size={16} fill={color} />
+            Change 
+          </div>
+          <input
+            type="color"
+            ref={colorInputRef}
+            value={rgbToHex(itemData.item_color_string)}
+            onChange={handleColorChange}
+            className="absolute left-0 top-full mt-2 w-8 h-8 opacity-0 cursor-pointer"
+            style={{ 
+              position: 'absolute',
+              left: '0',
+              top: '100%',
+              marginTop: '0.5rem',
+              width: '2rem',
+              height: '2rem',
+              opacity: '0',
+              cursor: 'pointer',
+              zIndex: '1000'
+            }}
+          />
+        </div>
+      </div>
 
       {/* Categories Section */}
       <div>
