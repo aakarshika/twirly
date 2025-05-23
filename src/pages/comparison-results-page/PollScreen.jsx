@@ -72,7 +72,7 @@ const PollScreen = ({items, currentSetId, currentSet}) => {
         backgroundColor: currentTheme.colors.background
       }}
     >
-      <div className="w-full max-w-4xl">
+      <div className="">
         {processedItems && processedItems.length > 0 && (
           <div className="w-full flex flex-col items-center">
             <ComparisonCirclesView 

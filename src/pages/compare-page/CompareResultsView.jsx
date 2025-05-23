@@ -4,7 +4,7 @@ import PollScreen from '../comparison-results-page/PollScreen';
 const CompareResultsView = ({ items, currentSetId, currentSet }) => {
   if (!items || !currentSetId || !currentSet) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen items-center justify-center">
         <div className="text-center">
           <p className="text-gray-600">Loading results...</p>
         </div>
