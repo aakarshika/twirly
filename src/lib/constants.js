@@ -21,4 +21,4 @@
 export const COMPARISON_COLOR_SET = ['#87CEEB', '#FFB6C1', '#98FB98', '#DDA0DD'];
 export const COMPARISON_COLOR_SET_2 = ['rgba(135, 206, 235', 'rgba(255, 182, 193', 'rgba(152, 251, 152', 'rgba(221, 160, 221'];
 
-export const SHOW_RESULTS_DURATION = 4;
+export const SHOW_RESULTS_DURATION = 3;

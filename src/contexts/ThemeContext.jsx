@@ -16,7 +16,7 @@ export const themes = {
       muted: '#E5E7EB', // gray-300
       hover: '#E0F2FE', // light blue for hover
       focus: '#BFDBFE', // blue for focus
-      disabled: '#D1D5DB', // gray for disabled
+      disabled: 'rgba(0, 0, 0, 0.1)', // gray for disabled
       shadow: 'rgba(0, 0, 0, 0.1)', // light shadow
     },
   },

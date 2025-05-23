@@ -50,11 +50,11 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2l
     if (isCurrentAspect) {
       return isPlayed 
         ? currentTheme.colors.secondary
-        : changeColorAlpha(currentTheme.colors.secondary, 0.6);
+        : currentTheme.colors.background;
     }
     
     return isPlayed 
-      ? changeColorAlpha(currentTheme.colors.secondary, 0.8)
+      ? changeColorAlpha(currentTheme.colors.secondary, 0.4)
       : currentTheme.colors.disabled;
   };
   
@@ -66,11 +66,11 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2l
       initial={{ opacity: 0, y: 20 }}
       animate={{ 
         opacity: 1, 
-        y: 0, 
-        // scale: isCurrentAspect ? 1.1 : 1 
+        y: 0
+        
       }}
       transition={{ duration: 0.3 }}
-      className={`flex mx-1 rounded-sm cursor-pointer relative flex flex-col items-center justify-center px-2 p-1 ${is2line ? 'h-[75px] ' : 'h-[50px]'}`}
+      className={`flex mx-1 rounded-sm cursor-pointer relative flex flex-col items-center justify-center px-2 p-1 ${is2line ? 'h-[75px] ' : 'h-[50px]'} m-2`}
       style={{
         border: isCurrentAspect ? `2px solid ${currentTheme.colors.secondary}` : 'none',
         backgroundColor: getBackgroundColor(),
@@ -96,13 +96,16 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2l
         </motion.div>
       )} */}
 
+<motion.div className='flex flex-col items-center justify-center mx-10' style={{ scale: isCurrentAspect ? 1.1 : 1 }}>
       <motion.div
         ref={textRef}
         className={`flex items-center justify-center max-w-[200px]  ${aspect.metric_name.length > 25 ? `min-w-[200px] overflow-hidden`:`whitespace-nowrap`} `}
         animate={{ scale: isPlayed ? [1, 1.1, 1] : 1 }}
         transition={{ duration: 0.3 }}
       >
-      {!isResults && (<span className='text-white font-medium text-center px-2'>
+      {!isResults && (<span className='text-white font-medium text-center px-2'
+      style={{ scale: isCurrentAspect ? 1.1 : 1, color: isCurrentAspect && !isPlayed ? currentTheme.colors.secondary : 'white' }}
+      >
         {splitAndJoin(aspect.metric_name.length > 50 
           ? aspect.metric_name.substring(0, 50) + '...' 
             : aspect.metric_name)}
@@ -118,6 +121,7 @@ const AspectBox = ({ aspect, isPlayed, isResults, onClick, showCelebration, is2l
           <span className='line-clamp-1 text-xs flex-1 min-w-0 text-white-1/2'>{itemVoted}</span>
         </div>
       )}
+      </motion.div>
     </motion.div>
   );
 };

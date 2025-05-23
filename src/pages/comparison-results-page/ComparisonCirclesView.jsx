@@ -11,26 +11,63 @@ import Avatar from '../../components/common/Avatar';
 import { getPublicUrl } from '../../lib/utils';
 import { useNavigate } from 'react-router-dom';
 
+
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { useHeader } from '../../contexts/HeaderContext';
 import { formatDistanceToNow } from 'date-fns';
 
+
 const List = ({displayItems, isMobile, winner, runnerUp, comparison, totalVotes, animationState, userVotedAll}) => {
+    const [displayItemssss, setDisplayItemssss] = useState(displayItems && displayItems.length > 0 ? displayItems.slice(0, 1) : []);
+    const [winnerAnnouncement, setWinnerAnnouncement] = useState(true);
+    const [runnerUpAnnouncement, setRunnerUpAnnouncement] = useState(false);
+    useEffect(() => {
+        setWinnerAnnouncement(true);
+        setDisplayItemssss(displayItems && displayItems.length > 0 ? displayItems.slice(0, 1) : []);
+        setTimeout(() => {
+            setDisplayItemssss(displayItems.slice(1, 2));
+            setWinnerAnnouncement(false);
+            setRunnerUpAnnouncement(true);
+        }, 3000);
+        setTimeout(() => {
+            setDisplayItemssss(displayItems);
+            setRunnerUpAnnouncement(false);
+        }, 6000);
+    }, [displayItems]);
     return (
         <div>
 
       <div className="p-3">
         <div>
-          <div className={`grid ${displayItems.length === 1 ? 'grid-cols-1' :
-            displayItems.length === 2 ? 'grid-cols-2' :
-              displayItems.length % 3 === 0 ? 'grid-cols-3' :
+          <div className={`grid ${displayItemssss.length === 1 ? 'grid-cols-1' :
+            displayItemssss.length === 2 ? 'grid-cols-2' :
+              displayItemssss.length % 3 === 0 ? 'grid-cols-3' :
                 'grid-cols-2'
             }`}
             style={{
               gap: '1vh'
             }}
           >
-            {displayItems.map((item, i) => (
+            {winnerAnnouncement && (
+            <div className="flex flex-col">
+                <div className="rounded-full bg-amber-200 p-2">
+                        <div className="text-lg text-gray-500 font-bold">
+                            WINNING CUP goes to
+                        </div>
+                    </div>
+                </div>
+            )}
+            {runnerUpAnnouncement && (
+                <div className="flex flex-col">
+                    <div className="rounded-full bg-amber-200 p-2">
+                        <div className="text-lg text-gray-500 font-bold">
+                            And the RUNNER CUP goes to 
+                        </div>
+                    </div>
+                </div>
+            )}
+            {displayItemssss.map((item, i) => (
               <div key={item.id} className="">
                 
                 <ComparisonCircle

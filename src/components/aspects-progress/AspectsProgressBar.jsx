@@ -123,7 +123,7 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
                 transition={{ duration: 0.2 }}
               >
                 <motion.div className="flex ml-10 items-center justify-between ">
-                  <h2 className="text-sm font-semibold" style={{ color: 'rgb(174, 174, 174)' }}>Cast your vote based on</h2>
+                  <h2 className="text-md font-semibold" style={{ color: 'rgb(174, 174, 174)' }}>Cast your vote based on</h2>
                   <h2 className="text-md mr-10" style={{ color: 'rgb(174, 174, 174)' }}>{sortedMetrics.filter(metric => metric.userVoted).length}/{sortedMetrics.length}</h2>
                 </motion.div>
               </motion.div>
@@ -141,9 +141,9 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
               }}
             >
               <div className='absolute text-sm rounded-full text-gray-500 z-10 justify-center items-center ml-1 mr-1'>
-                <Target className='w-6 h-6 rounded-full p-1 m-1' style={{ backgroundColor: currentTheme.colors.secondary, color: 'white' }} />
+                {/* <Target className='w-6 h-6 rounded-full p-1 m-1' style={{ backgroundColor: currentTheme.colors.secondary, color: 'white' }} /> */}
               </div>
-              <div className='flex px-4 ml-5 items-center'>
+              <div className='flex px-4 ml-5 items-center space-x-6'>
                 {sortedMetrics.map((aspect) => (
                   <motion.div
                     key={aspect.id}
