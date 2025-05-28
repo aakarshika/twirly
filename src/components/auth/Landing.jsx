@@ -18,15 +18,19 @@ export default function Landing() {
   }
 
   const handleSocialAuth = async (provider) => {
+    console.log('Social auth clicked:', provider);
     setError('');
     setLoading(true);
     try {
       if (provider === 'google') {
+        console.log('Starting Google auth...');
         await authService.signInWithGoogle();
+        console.log('Google auth completed');
       } else {
         throw new Error('Invalid provider');
       }
     } catch (error) {
+      console.error('Social auth error:', error);
       setError(error.message || `Failed to sign in with ${provider}. Please try again.`);
       setLoading(false);
     }

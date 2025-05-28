@@ -124,10 +124,13 @@ const Header = () => {
   }, [isComparePage]);
 
   const handleLogout = async () => {
+    console.log('Logging out');
     try {
       await signOut();
-      navigate('/landing');
+      // Use window.location for more reliable navigation across platforms
+      window.location.href = '/landing';
       setIsDrawerOpen(false);
+      console.log('Logged out');
     } catch (error) {
       console.error('Error logging out:', error);
     }
