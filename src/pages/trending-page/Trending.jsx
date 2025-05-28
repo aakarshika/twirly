@@ -9,6 +9,7 @@ import { randomPastelColor, splitAndJoin } from '../../lib/utils';
 import TrendingCard from '../../components/common/common-cards/TrendingCard';
 import TrendingCardCommon from '../../components/common/common-cards/TrendingCardCommon';
 import { useTrending } from '../../contexts/TrendingContext';
+import PullToRefresh from '../../components/common/PullToRefresh';
 
 const ITEMS_PER_PAGE = 10;
 
@@ -108,6 +109,11 @@ const Trending = () => {
     };
   }, []);
 
+  const handleRefresh = async () => {
+    setPage(1);
+    await fetchTrendingSets();
+  };
+
   if (loading && trendingSets.length === 0) {
     return (
       <div 
@@ -147,47 +153,56 @@ const Trending = () => {
   }
 
   return (
-    <div 
-      ref={containerRef}
-      className="min-h-screen max-w-7xl mx-auto transition-all duration-200 ease-in-out"
-      style={{ 
-        position: 'relative',
-        backgroundColor: 'var(--color-background)'
-      }}
-    >
+    <PullToRefresh onRefresh={handleRefresh}>
       <div 
-        className="container mx-auto transition-all duration-200 ease-in-out"
-        style={{
-          backgroundColor: 'var(--color-card)'
+        ref={containerRef}
+        className="min-h-screen w-full max-w-7xl mx-auto sm:px-6 lg:px-8"
+        style={{ 
+          backgroundColor: 'var(--color-background)'
         }}
       >
+        <div className="flex justify-center mt-10 p-4 md:p-6 lg:p-8 transition-all duration-200">
+          <TrendingUp size={24} className="mr-2 transition-colors duration-200" 
+                     style={{ color: 'var(--color-primary)' }} />
+          <h1 className="text-2xl font-bold transition-colors duration-200" 
+              style={{ color: 'var(--color-text)' }}>
+            Trending Comparisons
+          </h1>
+        </div>
         <div 
-          className="border-b transition-colors duration-200" 
-          style={{ borderColor: 'var(--color-border)' }}
+          className="mx-auto transition-all duration-200 ease-in-out"
+          style={{
+            backgroundColor: 'var(--color-card)'
+          }}
         >
-          <div className="space-y-4 p-4 md:p-6 lg:p-8">
-            {visibleItems.map((set, index) => (
-              <div 
-                key={`trending-set-${set.aspect_set_id}-${index}`}
-                className="transition-transform duration-200 hover:scale-[1.02]"
-              >
-                <TrendingCardCommon set={set} from={'trending'} />
-              </div>
-            ))}
-            {visibleItems.length < trendingSets.length && (
-              <div 
-                key="loading-indicator"
-                ref={loadingRef}
-                className="flex justify-center py-4"
-              >
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2" 
-                     style={{ borderColor: 'var(--color-primary)' }}></div>
-              </div>
-            )}
+          <div 
+            className="border-b transition-colors duration-200" 
+            style={{ borderColor: 'var(--color-border)' }}
+          >
+            <div className="space-y-4 p-4 md:p-6 lg:p-8">
+              {visibleItems.map((set, index) => (
+                <div 
+                  key={`trending-set-${set.aspect_set_id}-${index}`}
+                  className="transition-transform duration-200 hover:scale-[1.02]"
+                >
+                  <TrendingCardCommon set={set} from={'trending'} />
+                </div>
+              ))}
+              {visibleItems.length < trendingSets.length && (
+                <div 
+                  key="loading-indicator"
+                  ref={loadingRef}
+                  className="flex justify-center py-4"
+                >
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2" 
+                       style={{ borderColor: 'var(--color-primary)' }}></div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </PullToRefresh>
   );
 };
 

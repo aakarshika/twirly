@@ -137,6 +137,8 @@ const OtherChart = ({ data, selectedChart }) => {
 
 
   const optionsRadar = {
+    responsive: true,
+    maintainAspectRatio: false,
     scales: {
       r: {
         angleLines: {
@@ -161,6 +163,8 @@ const OtherChart = ({ data, selectedChart }) => {
   };
 
   const optionsLine = {
+    responsive: true,
+    maintainAspectRatio: false,
     scales: {
       y: {
         beginAtZero: true
@@ -169,6 +173,8 @@ const OtherChart = ({ data, selectedChart }) => {
   };
 
   const optionsBar = {
+    responsive: true,
+    maintainAspectRatio: false,
     scales: {
       y: {
         beginAtZero: true
@@ -177,6 +183,8 @@ const OtherChart = ({ data, selectedChart }) => {
   };
 
   const optionsPie = {
+    responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'top',
@@ -190,7 +198,7 @@ const OtherChart = ({ data, selectedChart }) => {
           label: function(tooltipItem) {
             const label = tooltipItem.label || '';
             const value = tooltipItem.raw || 0;
-            return `${label}`; // Display label and value
+            return `${label}`;
           }
         }
       }
@@ -198,6 +206,8 @@ const OtherChart = ({ data, selectedChart }) => {
   };
 
   const optionsBubble = {
+    responsive: true,
+    maintainAspectRatio: false,
     scales: {
       x: {
         beginAtZero: true
@@ -218,6 +228,8 @@ const OtherChart = ({ data, selectedChart }) => {
   };
 
   const optionsPolar = {
+    responsive: true,
+    maintainAspectRatio: false,
     scales: {
       r: {
         angleLines: {
@@ -254,13 +266,15 @@ const OtherChart = ({ data, selectedChart }) => {
 
   return (
     <div>
-      <div className="grid grid-cols-2 gap-4">
-        {selectedChart === 'radar' && <Radar data={chartDataRadar} options={optionsRadar} />}
-        {selectedChart === 'line' && <Line data={chartDataLine} options={optionsLine} />}
-        {selectedChart === 'bar' && <Bar data={chartDataBar} options={optionsBar} />}
-        {selectedChart === 'pie' && <Pie data={chartDataPie} options={optionsPie} />}
-        {selectedChart === 'bubble' && <Bubble data={chartDataBubble} options={optionsBubble} />}
-        {selectedChart === 'polar' && <PolarArea data={chartDataPolar} options={optionsPolar} />}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="h-[300px]">
+          {selectedChart === 'radar' && <Radar data={chartDataRadar} options={optionsRadar} />}
+          {selectedChart === 'line' && <Line data={chartDataLine} options={optionsLine} />}
+          {selectedChart === 'bar' && <Bar data={chartDataBar} options={optionsBar} />}
+          {selectedChart === 'pie' && <Pie data={chartDataPie} options={optionsPie} />}
+          {selectedChart === 'bubble' && <Bubble data={chartDataBubble} options={optionsBubble} />}
+          {selectedChart === 'polar' && <PolarArea data={chartDataPolar} options={optionsPolar} />}
+        </div>
       </div>
     </div>
   );

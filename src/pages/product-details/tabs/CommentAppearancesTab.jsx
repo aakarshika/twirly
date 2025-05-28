@@ -150,7 +150,7 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
   return (
     <div className="space-y-4">
       {comments.map((comment) => (
-        <div key={comment.id} className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow">
+        <div key={comment.id} className="rounded-lg p-4 shadow">
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-2">
               <img

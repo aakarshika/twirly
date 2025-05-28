@@ -171,15 +171,7 @@ const MainRoutingPage = () => {
                     <Route path="/onboarding" element={<ProtectedRoute><OnboardingFlow /></ProtectedRoute>}/>
                     <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>}/>
                     <Route path="/" element={<ProtectedRoute>
-                      <div className="flex justify-center p-4 md:p-6 lg:p-8 transition-all duration-200" 
-                           style={{ marginTop: true ? '64px' : '0px' }}>
-                        <TrendingUp size={24} className="mr-2 transition-colors duration-200" 
-                                   style={{ color: 'var(--color-primary)' }} />
-                        <h1 className="text-2xl font-bold transition-colors duration-200" 
-                            style={{ color: 'var(--color-text)' }}>
-                          Trending Comparisons
-                        </h1>
-                      </div>
+                      
                       <Trending />
                     </ProtectedRoute>}/>
                     

@@ -14,7 +14,7 @@ const AppearancesTab = ({ item, comparisonSets }) => {
   const [selectedChart, setSelectedChart] = useState('radar');
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" style={{color: currentTheme.colors.text}}>
       <div className="flex justify-end mb-4">
 
       <div className="flex flex-row justify-end mb-4">

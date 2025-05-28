@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { ChartArea, X } from 'lucide-react';
+import { ChartArea, MessageSquare, MessageSquareMore, X } from 'lucide-react';
 import Button from '../../components/common/Button';
 import CommentForm from '../../components/common/comments/CommentForm';
 import Comment from '../../components/common/comments/Comment';
@@ -46,11 +46,11 @@ const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet, ha
   if (!isExpanded) {
     return (
       <div className="cursor-pointer" onClick={() => setIsExpanded(true)}>
-        <div className="bg-gray-50 rounded-lg p-1 hover:bg-gray-100 transition-colors">
+        <div className="rounded-lg p-1 hover:bg-gray-100 transition-colors">
 
         <div className='flex flex-row items-start justify-start'>
       <h4 className="text-md font-medium text-gray-600 mb-2  items-center">
-          Comments <span className="text-gray-500 text-xs ml-2" style={{ color: currentTheme.colors.primary }}>{comments.length}</span>
+        <span style={{ color: currentTheme.colors.primary }}><MessageSquareMore size={14} className="mr-1 inline-block" /> </span> Comments <span className="text-gray-500 text-xs ml-2" style={{ color: currentTheme.colors.primary }}>{comments.length}</span>
         </h4>
         </div>
           {comments.length > 0 ? (
@@ -83,8 +83,8 @@ const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet, ha
       
       <div className='flex flex-row items-start justify-start'>
       <h4 className="text-md font-medium text-gray-600 mb-2  items-center">
-          Comments <span className="text-gray-500 text-xs ml-2" style={{ color: currentTheme.colors.primary }}>{comments.length}</span>
-        </h4>
+      <span style={{ color: currentTheme.colors.primary }}><MessageSquareMore size={14} className="mr-1 inline-block" /> </span> Comments <span className="text-gray-500 text-xs ml-2" style={{ color: currentTheme.colors.primary }}>{comments.length}</span>
+      </h4>
         </div>
       <CommentForm
         newComment={newComment}

@@ -4,10 +4,12 @@ import { MentionsInput, Mention } from 'react-mentions';
 import Avatar from '../Avatar';
 import { getPublicUrl } from '../../../lib/utils';
 import './Comment.css';
+import { useTheme } from '../../../contexts/ThemeContext';
 
 const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, items, userPreferences, type }) => {
   const inputRef = useRef(null);
   const [focus, setFocus] = useState(false);
+  const { currentTheme } = useTheme();
   
   const itemsToDisplay = items?.map(item => {
     // Handle both nested and flat item structures
@@ -64,7 +66,7 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
       {type === 'Reply' && (
         <div className="w-1 h-auto mr-2" style={{background: 'lightgray'}} />
       )}
-      <div className="flex-1 bg-white rounded-lg">
+      <div className="flex-1 rounded-lg">
         <div className="flex items-start gap-3">
         <div style={{scale: '0.9'}}>
           <Avatar
@@ -75,7 +77,7 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
           </div>
           <div className="flex-1">
             <div className="flex flex-col items-start">
-              <span className="font-medium text-sm text-left">
+              <span className="font-medium text-sm text-left" style={{color: currentTheme.colors.text}}>
                 {userPreferences?.display_name || 'Anonymous'}
               </span>
             </div>

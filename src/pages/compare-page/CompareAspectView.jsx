@@ -168,13 +168,17 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
 
         <div className='flex-row mt-2'>
           <div 
-            className={`flex flex-col w-full items-center justify-center ${celebratingAspectId ? 'bg-amber-400' : 'bg-amber-300'} ml-10`}
+            className={`flex flex-col w-full items-center justify-center  ml-10`}
             onClick={handleNextClick}
+            style={{
+              backgroundColor: celebratingAspectId ? currentTheme.colors.primary : changeColorAlpha(currentTheme.colors.primary, 0.5),
+              color: 'white',
+            }}
           >
           <h2 className='text-md p-1 text-center' style={{ color: 'rgb(255, 255, 255)' }}>
             {celebratingAspectId ? 'Next Aspect...' : 'Next Aspect'}
           </h2>
-            {!celebratingAspectId && (
+            {celebratingAspectId && (
               <motion.div
                 className="h-1"
                 style={{ backgroundColor: changeColorAlpha(currentTheme.colors.secondary, 0.2) }}
@@ -197,7 +201,7 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
         </div>
       </div>
 
-      <div className="text-center animate-fadeIn" style={{ backgroundColor: 'white' }}>
+      <div className="text-center animate-fadeIn">
         {userVoted && (
           <div className="w-full p-4" style={{ marginBottom: '100px' }}>
             <ComparisonSetAspectsCommentsSection
@@ -208,7 +212,7 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
             />
           </div>
         )}
-        <span className="text-2xl animate-bounce">. . .</span>
+        <span className="text-2xl text-gray-500 animate-bounce">. . .</span>
       </div>
     </div>
   );

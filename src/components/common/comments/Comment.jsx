@@ -18,7 +18,7 @@ const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPre
   };
   return (
     <div className="flex">
-    <div className="rounded bg-white dark:bg-gray-800 w-full">
+    <div className="rounded w-full">
       <CommentHeader
           type="Reply"
         comment={comment}

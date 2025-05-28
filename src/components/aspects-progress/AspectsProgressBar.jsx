@@ -89,13 +89,13 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
     >
       <div>
         <div className="flex flex-col">
-          <AnimatePresence>
+          {/* <AnimatePresence> */}
             {userVotedAll && (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
+                // initial={{ opacity: 0 }}
+                // animate={{ opacity: 1 }}
+                // exit={{ opacity: 0 }}
+                // transition={{ duration: 0.2 }}
               >
                 <motion.div className="flex items-center justify-center space-x-3 p-2">
                   <PartyPopper className="w-6 h-6 text-amber-500" />
@@ -104,14 +104,14 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
                 </motion.div>
               </motion.div>
             )}
-          </AnimatePresence>
+          {/* </AnimatePresence> */}
         </div>
 
         <motion.div
           animate={{  height:highlightHeading ? '300px' : 'auto' }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
           className='flex flex-row  justify-center items-center'
-          style={{ backgroundColor: 'rgba(255, 255, 255, 0.98)', cursor: 'pointer' }}
+          style={{ cursor: 'pointer' }}
         >
           <div className='flex flex-col rounded-lg justify-start py-2 px-2'>
             <div className={`flex ${highlightHeading ? 'flex-col p-5' : 'flex-row'} items-center justify-center overflow-wrap`}>

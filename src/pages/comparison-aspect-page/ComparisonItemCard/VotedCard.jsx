@@ -129,20 +129,20 @@ const VotedCard = ({
         onClose={() => setIsModalOpen(false)}
         title={item.name}
         size="md"
-        className="absolute top-0 left-0 right-0 bottom-0 bg-white dark:bg-gray-900 text-black dark:text-white"
+        className="absolute justify-center items-center bg-white dark:bg-gray-900 text-black dark:text-white"
       >
         <div className="space-y-4">
           {itemImage && (
-            <div className="w-full aspect-square rounded-lg overflow-hidden">
+            <div className="aspect-square rounded-lg overflow-hidden">
               <img
                 src={itemImage}
                 alt={item.name}
-                className="w-full h-full object-cover"
+                className="w-32 h-32 object-cover"
               />
             </div>
           )}
           
-          <div className="flex justify-end">
+          <div className="flex justify-center">
             <button
               onClick={handleItemClick}
               className="px-4 py-2 rounded-lg font-medium text-white hover:opacity-90 transition-opacity"
