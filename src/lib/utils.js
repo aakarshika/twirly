@@ -150,7 +150,7 @@ export function randomPastelColorHex() {
 
 
 export function getRGB(color) {
-  
+  if (!color) return 'rgba(0, 0, 0, 0)';
   //detect and convert hex to rgb:
   const isHexColor = /^(#|0x)[0-9A-Fa-f]+$/.test(color);
   //convert hex to rgb(r,g,b) where r,g,b are numbers between 0 and 255
@@ -163,12 +163,13 @@ export function getRGB(color) {
 export function changeColorAlpha(c, amount) {
   if (!c) return 'rgba(0, 0, 0, 0)';
   const color = getRGB(c);
-  return color.substring(0, color.length - 1) + ', '+ amount + ')';
+  return color?.substring(0, color?.length - 1) + ', '+ amount + ')';
 }
 
 //how to darken an rgb color by some percentage? it should add more black to the color. 
 export function darkenColor(c, amount) {
-  const color = getRGB(c).substring(4, getRGB(c).length - 1);
+  if (!c) return 'rgba(0, 0, 0, 0)';
+  const color = getRGB(c)?.substring(4, getRGB(c)?.length - 1);
   const [r, g, b] = color.split(',').map(Number);
   const newR = Math.max(0, Math.min(255, r - amount));
   const newG = Math.max(0, Math.min(255, g - amount));

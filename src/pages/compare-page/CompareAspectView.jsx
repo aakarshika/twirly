@@ -168,10 +168,10 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
 
         <div className='flex-row mt-2'>
           <div 
-            className={`flex flex-col w-full items-start justify-start ${celebratingAspectId ? 'bg-amber-400' : 'bg-amber-300'} ml-10`}
+            className={`flex flex-col w-full items-center justify-center ${celebratingAspectId ? 'bg-amber-400' : 'bg-amber-300'} ml-10`}
             onClick={handleNextClick}
           >
-          <h2 className='text-md p-1' style={{ color: 'rgb(255, 255, 255)' }}>
+          <h2 className='text-md p-1 text-center' style={{ color: 'rgb(255, 255, 255)' }}>
             {celebratingAspectId ? 'Next Aspect...' : 'Next Aspect'}
           </h2>
             {!celebratingAspectId && (
