@@ -170,16 +170,14 @@ const SearchPage = () => {
 
   return (
 
-    <div className="" style={{
-      maxWidth: '1000px',
-      marginLeft: 'auto',
-      marginRight: 'auto'
-    }}>
-    <div className="container mx-auto" style={{
-      backgroundColor: currentTheme.colors.card,
-      position: 'relative',
-      top: isHeaderVisible ? '64px' : '0px',
-    }}>
+    <div 
+      className="min-h-screen overflow-x-hidden"
+      style={{ 
+        backgroundColor: currentTheme.colors.background,
+        color: currentTheme.colors.text,
+        paddingTop: isHeaderVisible ? '64px' : '0'
+      }}
+    >
       {/* Search Header */}
       <div className="p-4">
       <div className="p-4"
@@ -202,7 +200,7 @@ const SearchPage = () => {
       </div>
 
       {/* Tabs */}
-      <div className="border-b mb-6 mt-4" style={{ borderColor: currentTheme.colors.border }}>
+      <div className="border-b mt-4" style={{ borderColor: currentTheme.colors.border }}>
         <div className="flex space-x-8">
           {tabs.map(tab => (
             <button
@@ -225,7 +223,7 @@ const SearchPage = () => {
       </div>
 
       {/* Filters */}
-      <div className="flex items-center space-x-4 mb-6">
+      {false && (<div className="flex items-center space-x-4 mb-6">
         <Filter size={20} />
         <select
           value={filters.sortBy}
@@ -258,11 +256,10 @@ const SearchPage = () => {
           <option value="month">Past Month</option>
           <option value="year">Past Year</option>
         </select>
-      </div>
+      </div>)}
       </div>
       {/* Search Results */}
       {renderResults()}
-      </div>
     </div>
   );
 };

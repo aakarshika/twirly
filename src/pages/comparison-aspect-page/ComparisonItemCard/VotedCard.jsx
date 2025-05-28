@@ -129,7 +129,7 @@ const VotedCard = ({
         onClose={() => setIsModalOpen(false)}
         title={item.name}
         size="md"
-        className="bg-white dark:bg-gray-900"
+        className="absolute top-0 left-0 right-0 bottom-0 bg-white dark:bg-gray-900 text-black dark:text-white"
       >
         <div className="space-y-4">
           {itemImage && (
@@ -142,21 +142,6 @@ const VotedCard = ({
             </div>
           )}
           
-          <div className="space-y-2">
-            <h3 className="text-xl font-bold" style={{ color: currentTheme.colors.text }}>{item.name}</h3>
-            {item.description && (
-              <p style={{ color: currentTheme.colors.textSecondary }}>{item.description}</p>
-            )}
-            <div className="flex items-center gap-2">
-              <VoteStats
-                votes={item.voteCount}
-                totalVotes={totalVotes}
-                color={color}
-                isVotedItem={isVotedItem}
-              />
-            </div>
-          </div>
-
           <div className="flex justify-end">
             <button
               onClick={handleItemClick}

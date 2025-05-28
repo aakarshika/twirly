@@ -171,10 +171,13 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
             className={`flex flex-col w-full items-start justify-start ${celebratingAspectId ? 'bg-amber-400' : 'bg-amber-300'} ml-10`}
             onClick={handleNextClick}
           >
-            {celebratingAspectId && (
+          <h2 className='text-md p-1' style={{ color: 'rgb(255, 255, 255)' }}>
+            {celebratingAspectId ? 'Next Aspect...' : 'Next Aspect'}
+          </h2>
+            {!celebratingAspectId && (
               <motion.div
-                className="h-8"
-                style={{ backgroundColor: currentTheme.colors.secondary }}
+                className="h-1"
+                style={{ backgroundColor: changeColorAlpha(currentTheme.colors.secondary, 0.2) }}
                 initial={{ width: "0%" }}
                 animate={{ width: "100%" }}
                 transition={{ 
@@ -183,9 +186,6 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
                 }}
               >
 
-            <h2 className='text-md p-1' style={{ color: 'rgb(255, 255, 255)' }}>
-              {celebratingAspectId ? 'Next Aspect...' : 'Next Aspect'}
-            </h2>
             </motion.div>
             )}
           </div>

@@ -23,7 +23,6 @@ DROP TABLE IF EXISTS user_category_preferences CASCADE;
 CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
-    description TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -36,24 +35,33 @@ CREATE TABLE items (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     image_url VARCHAR(255),
-    category_id INTEGER REFERENCES categories(id),
-    price DECIMAL(10,2),
-    comparison_type VARCHAR(50),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Item categories
+CREATE TABLE item_categories (
+    id SERIAL PRIMARY KEY,
+    item_id INTEGER REFERENCES items(id) ON DELETE CASCADE,
+    category_id INTEGER REFERENCES categories(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
 
+--set categories
+CREATE TABLE set_categories (
+    id SERIAL PRIMARY KEY,
+    set_id INTEGER REFERENCES comparison_sets(id) ON DELETE CASCADE,
+    category_id INTEGER REFERENCES categories(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
 
 -- Comparison sets table
 -- Groups of items being compared in a poll
 -- Primary key: id
--- Foreign keys: category_id, user_id
+-- Foreign keys: user_id
 CREATE TABLE comparison_sets (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255),
-    description TEXT,
-    category_id INTEGER REFERENCES categories(id),
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -77,14 +85,14 @@ CREATE TABLE votes (
     id SERIAL PRIMARY KEY,
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     item_id INTEGER REFERENCES items(id) ON DELETE CASCADE,
-    set_id INTEGER REFERENCES comparison_sets(id) ON DELETE CASCADE,
+    set_id INTEGER REFERENCES comparison_set_aspects(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Comments table
 CREATE TABLE comparison_set_comments (
     id SERIAL PRIMARY KEY,
-    set_id INTEGER REFERENCES comparison_sets(id) ON DELETE CASCADE,
+    set_id INTEGER REFERENCES comparison_set_aspects(id) ON DELETE CASCADE,
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     text TEXT NOT NULL,
     likes_count INTEGER DEFAULT 0,

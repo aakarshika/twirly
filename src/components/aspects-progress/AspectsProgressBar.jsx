@@ -22,7 +22,8 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
   const [highlightHeading, setHighlightHeading] = useState(false);
   useEffect(() => {
     if(currentAspect) {
-      setHighlightHeading(true)
+      // setHighlightHeading(true)
+      setHighlightHeading(false);
       setTimeout(() => {
         setHighlightHeading(false);
       }, 3000);
@@ -80,9 +81,6 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
   return (
     <motion.div
       className="w-full overflow-hidden"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
       style={{
         backgroundColor: currentTheme.colors.background,
         color: currentTheme.colors.primary,
@@ -126,7 +124,7 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
             <motion.span className='text-md text-center text-gray-500 font-bold pr-4'
             animate={{ fontSize: highlightHeading ? '1.5rem' : '1rem' }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            >{currentSet?.name.substring(0,currentSet?.name.length - 1)}</motion.span> 
+            >{(currentSet?.name).replace('?', '')}</motion.span> 
             {/* <span className='text-sm' >based on </span> */}
             </div>
           </div>

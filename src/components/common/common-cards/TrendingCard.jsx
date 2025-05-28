@@ -108,7 +108,7 @@ const TrendingCard = ({set, from}) => {
                   userVoted? '' : index >= 2 ? 'blur-sm' : ''
                 }`}
               >
-                  <img
+                  {itemImage ? (<img
                   src={itemImage}
                   alt={item.name}
                   className="w-full h-24 object-cover"
@@ -117,8 +117,10 @@ const TrendingCard = ({set, from}) => {
                     e.target.nextSibling.style.display = 'flex';
                     setImageError(true);
                   }}
-                />
-                {(!itemImage || imageError )&& (
+                />) : (
+                  <div className="w-full h-24 "/>
+                )}
+                {((!itemImage) || imageError )&& (
                   <div
                     className="absolute inset-0 flex items-center justify-center text-lg font-bold"
                     style={{ color: 'black', backgroundColor: !userVoted ? currentTheme.colors.card : changeColorAlpha(item.item_color_string, 0.5) }}
@@ -127,8 +129,8 @@ const TrendingCard = ({set, from}) => {
                   </div>
                 )}
                 {itemImage && !imageError && (index < 2 || userVoted) && (
-                  <div className="  bg-black bg-opacity-50 p-1 flex items-center justify-center" style={{ backgroundColor: !userVoted ? currentTheme.colors.card : item.item_color_string }}>
-                    <p className="text-white text-sm truncate text-center">{item.name}</p>
+                  <div className="  bg-black bg-opacity-50 p-1 flex items-center justify-center" style={{ backgroundColor: !userVoted ? currentTheme.colors.card : item.item_color_string, color: 'black' }}>
+                    <p className="text-sm truncate text-center">{item.name}</p>
                   </div>
                 )}
                 {votedItems?.some(votedItem => votedItem.item_id === item.id) && (<div className="absolute top-0 right-0 bg-gray-100 bg-opacity-50 p-1 rounded-full m-1">

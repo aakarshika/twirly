@@ -13,11 +13,6 @@ import { useTrending } from '../../contexts/TrendingContext';
 const ITEMS_PER_PAGE = 10;
 
 const Trending = () => {
-  const { currentTheme } = useTheme();
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { isHeaderVisible } = useHeader();
   const { trendingSets, loading, error, fetchTrendingSets } = useTrending();
   const containerRef = useRef(null);
   const [visibleItems, setVisibleItems] = useState([]);
