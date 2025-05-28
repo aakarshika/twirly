@@ -38,7 +38,8 @@ export const authService = {
       
       // Check if we're running in a native app
       const isNative = Capacitor.isNativePlatform();
-      console.log('Is native platform:', isNative);
+      console.error('Is native platform:', isNative);
+      console.error('Platform:', Capacitor.getPlatform());
       
       // Get the current URL for web fallback
       const currentUrl = typeof window !== 'undefined' ? window.location.origin : '';

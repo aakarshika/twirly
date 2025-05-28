@@ -164,10 +164,10 @@ const Trending = () => {
         <div className="flex justify-center mt-10 p-4 md:p-6 lg:p-8 transition-all duration-200">
           <TrendingUp size={24} className="mr-2 transition-colors duration-200" 
                      style={{ color: 'var(--color-primary)' }} />
-          <h1 className="text-2xl font-bold transition-colors duration-200" 
+          <p className="text-md font-semibold transition-colors duration-200" 
               style={{ color: 'var(--color-text)' }}>
             Trending Comparisons
-          </h1>
+          </p>
         </div>
         <div 
           className="mx-auto transition-all duration-200 ease-in-out"

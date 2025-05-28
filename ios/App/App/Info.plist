@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-        <string>twirly</string>
+	<string>twirly</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -18,6 +18,22 @@
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.twirly.app</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>twirly</string>
+			</array>
+			<key>UIViewControllerBasedStatusBarAppearance</key>
+			<false/>
+		</dict>
+		<dict/>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -45,34 +61,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>com.twirly.app</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>twirly</string>
-			</array>
-			<key>CFBundleURLTypes</key>
-			<array>
-				<dict>
-					<key>CFBundleURLName</key>
-					<string>com.twirly.app</string>
-					<key>CFBundleURLSchemes</key>
-					<array>
-						<string>twirly</string>
-					</array>
-					<key>CFBundleURLPatterns</key>
-					<array>
-						<string>twirly://*</string>
-						<string>twirly://auth/callback</string>
-					</array>
-				</dict>
-			</array>
-		</dict>
-	</array>
 </dict>
 </plist>
