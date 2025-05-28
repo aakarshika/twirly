@@ -8,9 +8,22 @@
     }
   },
   "ios": {
-    "contentInset": "always"
+    "contentInset": "always",
+    "scheme": "twirly",
+    "limitsNavigationsToAppBoundDomains": true,
+    "preferredContentMode": "mobile"
   },
   "android": {
-    "allowMixedContent": true
+    "allowMixedContent": true,
+    "scheme": "twirly"
+  },
+  "server": {
+    "allowNavigation": [
+      "*.google.com",
+      "*.googleapis.com",
+      "*.supabase.co",
+      "accounts.google.com"
+    ],
+    "cleartext": true
   }
 }
