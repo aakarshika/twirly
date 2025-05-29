@@ -68,9 +68,6 @@ const PollScreen = ({items, currentSetId, currentSet, celebratingResults}) => {
   return (
     <div 
       className="min-h-screen w-full flex flex-col"
-      style={{ 
-        backgroundColor: currentTheme.colors.background
-      }}
     >
       <div className="">
         {processedItems && processedItems.length > 0 && (
@@ -87,7 +84,7 @@ const PollScreen = ({items, currentSetId, currentSet, celebratingResults}) => {
         
         {userVotedAll && processedItems && processedItems.length > 0 && (
           <div className="w-full">
-            <div className="w-full bg-white shadow-sm">
+            <div className="w-full">
               <BarChart 
                 items={processedItems} 
                 comparisonMetrics={comparisonMetrics}

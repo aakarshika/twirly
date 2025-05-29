@@ -68,10 +68,6 @@ const AspectForm = ({
   return (
     <div className="flex justify-between items-center text-sm rounded-md py-1 px-1 backdrop-blur-sm animate-fadeIn" 
       style={{ 
-        color: 'black', 
-        background: `${currentTheme.colors.secondary}90`,
-        border: `1px solid ${currentTheme.colors.secondary}30`,
-        boxShadow: `0 4px 15px ${currentTheme.colors.primary}20`
       }}>
       <div className="flex flex-row w-full">
         <input
@@ -84,11 +80,11 @@ const AspectForm = ({
               onSave(aspect.id);
             }
           }}
-          className="w-full p-1 rounded-lg transition-all duration-300 focus:scale-[1.01]"
+          className="w-full px-4 py-2 rounded-md transition-all duration-300 focus:scale-[1.01] text-white placeholder:text-white"
           style={{
-            backgroundColor: `${currentTheme.colors.background}80`,
-            color: 'whitesmoke',
-            border: `1px solid ${currentTheme.colors.border}50`,
+            backgroundColor: `${currentTheme.colors.secondary}90`,
+            color: 'rgb(255, 255, 255)',
+            border: `1px solid ${currentTheme.colors.secondary}90`,
             backdropFilter: 'blur(10px)'
           }}
           placeholder={placeholders[currentPlaceholder]}
@@ -108,9 +104,12 @@ const AspectForm = ({
         <div className="flex flex-row items-center">
           <button
             onClick={() => onSave(aspect.id)}
-            className="flex-1 p-1 font-medium "
+            className="p-2 hover:scale-110 transition-all duration-200 rounded-full"
             style={{
               color: currentTheme.colors.buttonText,
+              backgroundColor: aspectData.metric_name ? `${currentTheme.colors.secondary}90` : `${currentTheme.colors.secondary}50`,
+              border: `1px solid ${currentTheme.colors.secondary}90`,
+              backdropFilter: 'blur(10px)'
             }}
           >
             <Check size={16} />

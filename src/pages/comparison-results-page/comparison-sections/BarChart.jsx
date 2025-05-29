@@ -14,14 +14,14 @@ const MetricCard = ({ metric, items, getMetricAverageVotes, currentTheme, userVo
   const totalVotes = metric.votes.length;
   const navigate = useNavigate();
   return (
-    <div className="bg-white rounded-lg shadow-sm"
+    <div className=""
     onClick={() => {
       navigate(`/compare/${metric.set_id}`);
     }}>
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-2">
           <Target className="w-5 h-5" style={{ color: currentTheme.colors.secondary }} />
-          <h3 className="text-lg font-semibold text-gray-800">{metric.metric_name.split('_').map(word => 
+          <h3 className="text-md text-gray-500">{metric.metric_name.split('_').map(word => 
             word.charAt(0).toUpperCase() + word.slice(1)
           ).join(' ')}</h3>
         </div>
@@ -49,7 +49,7 @@ const MetricCard = ({ metric, items, getMetricAverageVotes, currentTheme, userVo
           return userVoted ? (
             <div key={item.id} className="flex flex-row items-center">
               <div className="flex flex-row w-full">
-                <div className="flex  w-32">
+                <div className="flex  w-60">
                   <span className="text-sm font-medium text-gray-700 line-clamp-1">{item.name}</span>
                 </div>
                 <span className=' text-sm text-white-500 ml-2 w-6'>{value} </span>
@@ -91,7 +91,7 @@ const BarChart = ({ items,  comparisonMetrics }) => {
   };
 
   return (
-    <div className="w-full p-4">
+    <div className="w-full">
       <div  className={`grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2`}
                   style={{
                     gap: '1vh'
@@ -108,7 +108,7 @@ const BarChart = ({ items,  comparisonMetrics }) => {
             currentTheme={currentTheme}
             userVoted={metric.userVoted}
           />
-          <div className='pl-4'>
+          <div className='mt-4 mb-8'>
 
           <ComparisonSetAspectsCommentsSection
             userVoted={true}

@@ -192,7 +192,6 @@ const Header = () => {
     return (
       <div 
         className="min-h-screen flex flex-col items-center justify-center transition-all duration-300 ease-in-out"
-        style={{ backgroundColor: 'var(--color-background)' }}
       >
         <div className="text-center animate-fade-in">
           <p className="text-red-500">{error}</p>
@@ -205,7 +204,6 @@ const Header = () => {
     <header
       className={`fixed container mx-auto top-0 left-0 right-0 z-50 w-full transition-all duration-200 ease-in-out ${!isHeaderVisible ? 'hidden' : ''}`}
       style={{
-        backgroundColor: 'var(--color-background)',
         paddingTop: 'calc(var(--safe-area-inset-top))',
         color: 'var(--color-text)',
         height: showTinyHeader ? '40px' : 'auto'

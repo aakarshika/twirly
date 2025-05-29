@@ -42,7 +42,7 @@ const ComparisonItemCardAspect = ({
           handleRevertClick={handleRevertClick}
           totalVotes={totalVotes}
           isVotedItem={isVotedItem}
-          userVoted={userVoted}
+          userVotedAll={userVoted}
         />
       ) : (
         <NotVotedCard

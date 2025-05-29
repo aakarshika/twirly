@@ -149,7 +149,7 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
             }`}
             style={{
               backgroundColor: activeTab === tab.id 
-                ? currentTheme.colors.primary 
+                ? currentTheme.colors.primary
                 : currentTheme.colors.cardBackground
             }}
           >
@@ -176,16 +176,6 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
                 )}
               </div>
             </div>
-            {activeTab === tab.id && (
-              <motion.div
-                layoutId="activeTab"
-                className="absolute inset-0 rounded-xl"
-                style={{ 
-                  backgroundColor: currentTheme.colors.primary
-                }}
-                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-              />
-            )}
           </motion.button>
         ))}
       </div>

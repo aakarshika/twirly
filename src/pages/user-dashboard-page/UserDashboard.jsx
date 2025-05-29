@@ -62,15 +62,13 @@ const UserDashboard = () => {
     <div 
       className="min-h-screen overflow-x-hidden"
       style={{ 
-        backgroundColor: currentTheme.colors.background,
-        color: currentTheme.colors.text,
-        paddingTop: isHeaderVisible ? '64px' : '0'
+        color: currentTheme.colors.text
       }}
     >
       {showFirstTimeDashboard && (
         <FirstTimeDashboard onComplete={handleTourComplete} />
       )}
-      <main className="w-full">
+      <main className="w-full" style={{ paddingTop: isHeaderVisible ? '20px': '0px', backgroundColor: currentTheme.colors.background + '20' }}>
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
           <ProfileHeader userData={userData} isPublic={false} />
           <div className="md:mt-4 lg:mt-8">

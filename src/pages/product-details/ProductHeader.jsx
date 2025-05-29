@@ -10,7 +10,7 @@ const ProductHeader = ({ item }) => {
   return (
     <div className="flex flex-col items-center">
       <div style={{ margin: '20px' }}>
-        <VotedCard item={item} />
+        <h1 className='text-2xl font-bold'>{item.name}</h1>
       </div>
       <div>
       </div>

@@ -9,6 +9,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useHeader } from '../../contexts/HeaderContext';
 import CommentAppearancesTab from './tabs/CommentAppearancesTab';
 import AppearancesTab from './tabs/AppearancesTab';
+import { changeColorAlpha } from '../../lib/utils';
+import { motion } from 'framer-motion';
 
 const ProductDetails = () => {
   const { itemId } = useParams();
@@ -208,16 +210,34 @@ const ProductDetails = () => {
 
   return (
     <div 
-      className="min-h-screen overflow-x-hidden transition-all duration-200 ease-in-out"
-      style={{ 
-        backgroundColor: 'var(--color-background)',
-        paddingTop: isHeaderVisible ? '64px' : '0px'
-      }}
+      className="min-h-screen overflow-x-hidden relative"
     >
-      <div className="max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-8 py-8" style={{ color: currentTheme.colors.text }}>
+      <div className='max-w-7xl mx-auto w-full relative z-10'>
+      <div className='relative' >
+      <motion.div className="absolute inset-0 overflow-hidden pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}>
+        <motion.div className="absolute -top-40 -right-40 w-80 h-80 rounded-full opacity-20"
+             style={{ backgroundColor: 'rgba(205, 170, 240, 0.35)' }}
+             initial={{ opacity: 0 }}
+             animate={{ opacity: 1, scale: 1.2, x: -100, y: -100 }}
+             transition={{ duration: 2, delay: 0.5, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}></motion.div>
+        <motion.div className="absolute left-0 bottom-0 w-80 h-80 rounded-full opacity-20"
+             style={{ backgroundColor: 'rgba(205, 226, 247, 0.35)' }}
+             initial={{ opacity: 1 }}
+             animate={{ opacity: 0, scale: 1.5, x: -100, y: -100 }}
+             transition={{ duration: 3, delay: 0, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}></motion.div>
+      <motion.div className="absolute left-0 top-0 w-60 h-60 rounded-full opacity-20"
+             style={{ backgroundColor: 'rgba(217, 205, 247, 0.42)' }}
+             initial={{ opacity: 1 }}
+             animate={{ opacity: 0, scale: 1.5, x: 100, y: 100 }}
+             transition={{ duration: 3, delay: 0, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}></motion.div>
+      </motion.div>
+      </div>
+      <div className="px-4 md:px-6 lg:px-8" style={{ paddingTop: isHeaderVisible ? '64px': '0px', backgroundColor: changeColorAlpha(item.item_color_string, 0.2), color: currentTheme.colors.text }}>
         <div className="space-y-8">
-          <ProductHeader item={item} />
-          <QuickStats comparisonSets={comparisonSets} reviews={reviews} />
+          <QuickStats comparisonSets={comparisonSets} reviews={reviews} item={item} />
           
           <div className="space-y-6">
             <AppearancesTab
@@ -236,6 +256,7 @@ const ProductDetails = () => {
             />
           </div>
         </div>
+      </div>
       </div>
     </div>
   );

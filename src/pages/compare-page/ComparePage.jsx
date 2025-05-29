@@ -260,7 +260,6 @@ const ComparePage = () => {
   return (
     <PullToRefresh onRefresh={handleRefresh}>
       <div className="min-h-screen w-full max-w-7xl relative">
-        <BackgroundImage />
         <div className="relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
           <div className="lg:py-4"></div>
           <div className="">
@@ -324,7 +323,7 @@ const ComparePage = () => {
 
             {!currentAspect && viewMode === 'results' && (
               <div className="relative w-full transition-all duration-150 ease-in-out">
-                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="w-full max-w-7xl mx-auto lg:px-8">
                   <div className="flex justify-start py-4">
                     <Globe2 size={24} className="mr-2" style={{ color: currentTheme.colors.primary }} />
                     <h1 className="text-xl sm:text-2xl font-bold" style={{ color: currentTheme.colors.text }}>

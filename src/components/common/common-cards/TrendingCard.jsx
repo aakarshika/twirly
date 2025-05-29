@@ -87,12 +87,12 @@ const TrendingCard = ({set, from}) => {
 
     return (
         <div
+            className='rounded-lg'
             key={set.id}
             onClick={(e) => handleSetClick(set, e)}
-            style={{ backgroundColor: 'white' }}
+            style={{ backgroundColor: 'rgba(255, 255, 255, 0.6)' }}
         >
-            <div className="p-4"
-                style={{ backgroundColor: currentTheme.colors.background }}>
+            <div className="p-4">
                 <div className="mb-2">
                     <span className="font-medium" style={{ color: currentTheme.colors.text }}>
                         {set.name}
@@ -123,7 +123,7 @@ const TrendingCard = ({set, from}) => {
                                 )}
                                 {((!itemImage) || hasImageError) && (
                                     <div
-                                        className="absolute inset-0 flex items-center justify-center text-lg font-bold"
+                                        className="absolute inset-0 flex text-center items-center justify-center text-lg font-bold pl-1 pr-1"
                                         style={{ 
                                             color: 'black', 
                                             backgroundColor: !userVoted ? currentTheme.colors.card : changeColorAlpha(item.item_color_string, 0.5) 
