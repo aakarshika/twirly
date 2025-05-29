@@ -44,6 +44,9 @@ const SidePanel = ({ userData, navigate, location, settingsSectionExpanded, setS
           <div className="p-4" style={{ borderColor: 'var(--color-border)' }}>
             <div className="flex flex-col">
               <div className="flex justify-center">
+                <img src='/public_logo_transparent.png' alt="Twirly Logo" className="w-10 h-10 rounded-full" />
+              </div>
+              <div className="flex justify-center">
                 <h4 className="text-sm items-center" style={{ color: 'var(--color-text-secondary)', borderBottom: `1px solid var(--color-border)` }}>Your opinion matters here!</h4>
               </div>
 
@@ -107,7 +110,7 @@ const SidePanel = ({ userData, navigate, location, settingsSectionExpanded, setS
                   }}
                 >
                   <PencilIcon size={24} />
-                  <span className="text-sm rounded-md px-2 py-1" style={{backgroundColor: 'var(--color-background)'}}>Your Comparison</span>
+                  <span className="text-sm rounded-md px-2 py-1" style={{backgroundColor: location.pathname === `/new-comparison` ? 'var(--color-primary)' : 'var(--color-background)'}}>Your Comparison</span>
                 </button>
 
                 <button
@@ -225,8 +228,10 @@ const WebHeader = ({
     { name: 'Dashboard', icon: <User size={20} />, path: '/dashboard' },
   ];
 
+  const { currentTheme } = useTheme();
   return (
-    <div className="hidden md:block px-4 md:px-6 lg:px-8 header-content max-w-7xl mx-auto">
+    <div className="hidden md:block px-4 md:px-6 lg:px-8 header-content max-w-7xl mx-auto"
+    >
       <div className="flex items-center justify-between h-full">
         {/* Logo and Title */}
         <div className="flex flex-row items-center">
@@ -364,7 +369,7 @@ const MobileSettingsDrawer = ({
           <BackgroundImage />
         </div>
         <div className="relative z-10 h-full flex flex-col">
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto" >
             <div className="p-4" style={{ borderColor: 'var(--color-border)' }}>
               <div className="flex flex-col">
                 <div className="flex justify-center">
@@ -509,7 +514,7 @@ const MobileSettingsDrawer = ({
                       {/* Logout Button */}
                       <button
                         onClick={handleLogout}
-                        className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mt-4"
+                        className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2 pb-60"
                         style={{
                           color: 'var(--color-text)',
                           backgroundColor: 'transparent'
@@ -703,7 +708,8 @@ const Header = () => {
           paddingTop: 'calc(var(--safe-area-inset-top))',
           color: 'var(--color-text)',
           height: showTinyHeader ? '40px' : 'auto',
-          marginLeft: !isMobile && user ? '16rem' : '0'
+          marginLeft: !isMobile && user ? '16rem' : '0',
+          backgroundImage: `linear-gradient(to bottom, ${currentTheme.colors.background}, transparent)`
         }}
       >
         {showTinyHeader ? (
