@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { User, ArrowRight } from 'lucide-react';
 import { authService } from '../../services/authService';
+import { App } from '@capacitor/app';
+import { supabase } from '../../lib/supabase';
 
 export default function Landing() {
   const [error, setError] = useState('');
@@ -11,6 +13,20 @@ export default function Landing() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { currentTheme } = useTheme();
+
+  useEffect(() => {
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('Auth state changed:', event, session);
+      if (event === 'SIGNED_IN' && session?.user) {
+        navigate('/dashboard');
+      }
+    });
+
+    return () => {
+      subscription?.unsubscribe();
+    };
+  }, [navigate]);
 
   // Redirect if user is already logged in
   if (user) {
@@ -32,6 +48,7 @@ export default function Landing() {
     } catch (error) {
       console.error('Social auth error:', error);
       setError(error.message || `Failed to sign in with ${provider}. Please try again.`);
+    } finally {
       setLoading(false);
     }
   };

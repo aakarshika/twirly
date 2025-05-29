@@ -215,6 +215,7 @@ const MainRoutingPage = () => {
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/auth/v1/callback" element={<Navigate to="/" replace />} />
+                    <Route path="/auth/callback" element={<Navigate to="/" replace />} />
                   </Routes>
                 </main>
                 <Footer />

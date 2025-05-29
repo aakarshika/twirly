@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
+import { App } from '@capacitor/app';
 
 export const authService = {
   // Sign up with email and password
@@ -38,21 +39,48 @@ export const authService = {
       
       // Check if we're running in a native app
       const isNative = Capacitor.isNativePlatform();
-      console.error('Is native platform:', isNative);
-      console.error('Platform:', Capacitor.getPlatform());
+      console.log('Is native platform:', isNative);
+      console.log('Platform:', Capacitor.getPlatform());
       
       // Get the current URL for web fallback
       const currentUrl = typeof window !== 'undefined' ? window.location.origin : '';
       console.log('Current URL:', currentUrl);
+
+      // Set up app URL open listener for handling the callback
+      if (isNative) {
+        App.addListener('appUrlOpen', async ({ url }) => {
+          console.log('App URL opened:', url);
+          
+          if (url.includes('auth/callback')) {
+            // Extract the tokens from the URL
+            const params = new URLSearchParams(url.split('#')[1]);
+            const access_token = params.get('access_token');
+            const refresh_token = params.get('refresh_token');
+            
+            if (access_token && refresh_token) {
+              console.log('Got tokens from URL, setting session...');
+              const { data: { session }, error } = await supabase.auth.setSession({
+                access_token,
+                refresh_token
+              });
+              
+              if (error) {
+                console.error('Error setting session:', error);
+                throw error;
+              }
+              
+              console.log('Session set successfully:', session);
+              return session;
+            }
+          }
+        });
+      }
       
       // Configure OAuth options
       const options = {
         provider: 'google',
         options: {
-          redirectTo: isNative ? 'twirly://auth/callback' : `${currentUrl}/auth/v1/callback`,
-          queryParams: {
-            redirect_to: isNative ? 'twirly://' : `${currentUrl}/`
-          },
+          redirectTo: isNative ? 'twirly://auth/callback' : `${currentUrl}/auth/callback`,
           skipBrowserRedirect: isNative,
           flowType: 'pkce'
         }
@@ -61,10 +89,7 @@ export const authService = {
       console.log('OAuth options:', options);
 
       // Start the OAuth flow
-      console.log('Calling Supabase OAuth...');
       const { data, error } = await supabase.auth.signInWithOAuth(options);
-      
-      console.log('OAuth response:', { data, error });
       
       if (error) {
         console.error('OAuth error:', error);
@@ -73,7 +98,15 @@ export const authService = {
 
       if (isNative && data?.url) {
         console.log('Opening browser with URL:', data.url);
-        await Browser.open({ url: data.url });
+        // Use window.open for iOS to open in system browser
+        if (Capacitor.getPlatform() === 'ios') {
+          window.open(data.url, '_system');
+        } else {
+          await Browser.open({ 
+            url: data.url,
+            presentationStyle: 'fullscreen'
+          });
+        }
       }
       
       return data;

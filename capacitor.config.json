@@ -2,28 +2,7 @@
   "appId": "com.twirly.app",
   "appName": "twirly",
   "webDir": "dist",
-  "plugins": {
-    "SplashScreen": {
-      "launchShowDuration": 0
-    }
-  },
-  "ios": {
-    "contentInset": "always",
-    "scheme": "twirly",
-    "limitsNavigationsToAppBoundDomains": true,
-    "preferredContentMode": "mobile"
-  },
-  "android": {
-    "allowMixedContent": true,
-    "scheme": "twirly"
-  },
   "server": {
-    "allowNavigation": [
-      "*.google.com",
-      "*.googleapis.com",
-      "*.supabase.co",
-      "accounts.google.com"
-    ],
-    "cleartext": true
+    "androidScheme": "https"
   }
-}
+} 
