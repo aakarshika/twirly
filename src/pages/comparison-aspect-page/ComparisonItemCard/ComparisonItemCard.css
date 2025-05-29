@@ -219,7 +219,6 @@
     #ff0000
   );
   background-size: 400% 400%;
-  z-index: -1;
   border-radius: 10px;
   animation: gradient 5s ease infinite;
 }

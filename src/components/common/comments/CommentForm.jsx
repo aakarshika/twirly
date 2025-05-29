@@ -28,8 +28,7 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
       minHeight: '35px',
       outline: 'none',
       border: `none`,
-      paddingLeft: '5px',
-      zIndex: '1',
+      paddingLeft: '5px'
     },
     suggestions: {
       list: {

@@ -208,16 +208,13 @@ const ProductDetails = () => {
 
   return (
     <div 
-      className="min-h-screen flex flex-col transition-all duration-200 ease-in-out"
+      className="min-h-screen overflow-x-hidden transition-all duration-200 ease-in-out"
       style={{ 
         backgroundColor: 'var(--color-background)',
-        position: 'relative',
-        top: isHeaderVisible ? '64px' : '0px',
-        paddingTop: 'env(safe-area-inset-top)',
-        paddingBottom: 'env(safe-area-inset-bottom)'
+        paddingTop: isHeaderVisible ? '64px' : '0px'
       }}
     >
-      <div className="max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto w-full px-4 md:px-6 lg:px-8 py-8" style={{ color: currentTheme.colors.text }}>
         <div className="space-y-8">
           <ProductHeader item={item} />
           <QuickStats comparisonSets={comparisonSets} reviews={reviews} />

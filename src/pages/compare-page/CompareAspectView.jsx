@@ -134,7 +134,6 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
     <div className="flex flex-col">
       <div className="p-3 mobile-friendly-margin-bottom"
         style={{
-          backgroundColor: currentTheme.colors.background,
           transform: 'translateY(0)',
           transition: 'transform 0.3s ease-in-out',
         }}>

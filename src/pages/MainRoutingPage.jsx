@@ -157,7 +157,7 @@ const MainRoutingPage = () => {
   }
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background }}>
+    <div className="min-h-screen">
       <LoadingProvider>
         <FeedbackProvider>
           <ComparisonDraftProvider>

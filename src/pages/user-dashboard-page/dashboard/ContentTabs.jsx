@@ -181,8 +181,7 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
                 layoutId="activeTab"
                 className="absolute inset-0 rounded-xl"
                 style={{ 
-                  backgroundColor: currentTheme.colors.primary,
-                  zIndex: -1
+                  backgroundColor: currentTheme.colors.primary
                 }}
                 transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
               />

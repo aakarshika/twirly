@@ -80,9 +80,8 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
 
   return (
     <motion.div
-      className="w-full overflow-hidden"
+      className="w-full overflow-hidden z-10"
       style={{
-        backgroundColor: currentTheme.colors.background,
         color: currentTheme.colors.primary,
         paddingBottom: '0.5rem',
       }}
@@ -121,8 +120,8 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
             
 
              >?</motion.span>
-            <motion.span className='text-md text-center text-gray-500 font-bold pr-4'
-            animate={{ fontSize: highlightHeading ? '1.5rem' : '1rem' }}
+            <motion.span className='text-md md:text-lg lg:text-2xl text-center text-gray-500 font-bold pr-4'
+            // animate={{ fontSize: highlightHeading ? '1.5rem' : '1rem' }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
             >{(currentSet?.name).replace('?', '')}</motion.span> 
             {/* <span className='text-sm' >based on </span> */}
