@@ -173,7 +173,7 @@ const Trending = () => {
             className="border-b transition-colors duration-200" 
             style={{ borderColor: 'var(--color-border)' }}
           >
-            <div className="space-y-4 p-4 md:p-6 lg:p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 md:p-6 lg:p-8">
               {visibleItems.map((set, index) => (
                 <div 
                   key={`trending-set-${set.aspect_set_id}-${index}`}

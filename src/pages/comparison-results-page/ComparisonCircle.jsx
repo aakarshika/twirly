@@ -30,7 +30,7 @@ const ComparisonCircle = ({ item, index, isMobile = false, winner, runnerUp, tot
         >
         
             <motion.div 
-                className=" bg-white w-full h-full rounded-xl overflow-hidden"
+                className="w-full h-full rounded-xl overflow-hidden"
                 style={{
                 }}
                 transition={winner && winner.id === item.id ? {

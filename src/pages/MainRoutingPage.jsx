@@ -123,6 +123,7 @@ const MainRoutingPage = () => {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const location = useLocation();
+  const { user } = useAuth();
 
   const shouldShowHeader = () => {
     if (!isMobile) return true; // Always show header on desktop
@@ -163,28 +164,29 @@ const MainRoutingPage = () => {
         <FeedbackProvider>
           <ComparisonDraftProvider>
             <TrendingProvider>
-        <BackgroundImage />
+              <BackgroundImage />
 
-              <div className="relative flex flex-col min-h-screen mx-auto z-10" style={{ paddingTop: shouldShowHeader() ? '64px' : '0px' }}>
+              <div 
+                className="relative flex flex-col min-h-screen mx-auto z-10" 
+                style={{ 
+                  paddingTop: shouldShowHeader() ? '64px' : '0px',
+                  marginLeft: !isMobile && user ? '16rem' : '0' // Add margin for side panel on web
+                }}
+              >
                 <Header />
                 <main className="flex-1 overflow-x-auto" >
-                  {/* <ScrollToTop /> */}
                   <Routes>
                     {/* Protected Routes */}
                     <Route path="/onboarding" element={<ProtectedRoute><OnboardingFlow /></ProtectedRoute>}/>
                     <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>}/>
-                    <Route path="/" element={<ProtectedRoute>
-                      
-                      <Trending />
-                    </ProtectedRoute>}/>
+                    <Route path="/" element={<ProtectedRoute><Trending /></ProtectedRoute>}/>
                     
                     {/* Compare routes */}
                     <Route path="/compare/:id/*" element={
                       <ProtectedRoute>
-                          <ComparePage />
+                        <ComparePage />
                       </ProtectedRoute>
                     }/>
-                    
                     
                     {/* Other routes */}
                     <Route path="/new-comparison" element={

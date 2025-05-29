@@ -20,9 +20,9 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
   const [is2line, setIs2line] = useState(false);
   const [nextUnvotedAspect, setNextUnvotedAspect] = useState(null);
   const [highlightHeading, setHighlightHeading] = useState(false);
+
   useEffect(() => {
     if(currentAspect) {
-      // setHighlightHeading(true)
       setHighlightHeading(false);
       setTimeout(() => {
         setHighlightHeading(false);
@@ -45,36 +45,30 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
   }, [comparisonMetrics, sortedMetrics, isInitialLoad]);
 
   const scrollToAspect = (index) => {
-    if (scrollContainerRef.current) {
-      const aspectWidth = 250;
-      const targetScroll = index * aspectWidth;
-      const containerWidth = scrollContainerRef.current.clientWidth;
-      const scrollPosition = Math.max(0, targetScroll - (containerWidth / 2) + (aspectWidth / 2));
-
-      scrollContainerRef.current.scrollTo({
-        left: scrollPosition,
-        behavior: 'smooth'
-      });
-    }
+    if (!scrollContainerRef.current) return;
+    
+    const aspectWidth = 240; // 200px width + 40px margins
+    const containerWidth = scrollContainerRef.current.clientWidth;
+    const targetPosition = index * aspectWidth;
+    
+    // Calculate the center position
+    const centerPosition = targetPosition - (containerWidth / 2) + (aspectWidth / 2);
+    
+    scrollContainerRef.current.scrollTo({
+      left: Math.max(0, centerPosition),
+      behavior: 'smooth'
+    });
   };
 
-
-  // Modified useEffect for current aspect changes
   useEffect(() => {
     if (!scrollContainerRef.current || sortedMetrics.length === 0) return;
-    if (!currentAspect) {
-      scrollToAspect(sortedMetrics.length);
-      return;
-    }
-
-    const currentIndex = sortedMetrics.findIndex(metric => metric.id === currentAspect.id) == -1 ? sortedMetrics.length : sortedMetrics.findIndex(metric => metric.id === currentAspect.id);
-    console.log('Scrolling to index:', currentIndex);
     
+    const currentIndex = currentAspect 
+      ? sortedMetrics.findIndex(metric => metric.id === currentAspect.id)
+      : sortedMetrics.length;
+      
     if (currentIndex !== -1) {
-      // Small delay to ensure DOM is ready
-      setTimeout(() => {
-        scrollToAspect(currentIndex);
-      }, 100);
+      setTimeout(() => scrollToAspect(currentIndex), 100);
     }
   }, [currentAspect, sortedMetrics]);
 
@@ -88,13 +82,13 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
     >
       <div>
         <div className="flex flex-col">
-          {/* <AnimatePresence> */}
+          <AnimatePresence>
             {userVotedAll && (
               <motion.div
-                // initial={{ opacity: 0 }}
-                // animate={{ opacity: 1 }}
-                // exit={{ opacity: 0 }}
-                // transition={{ duration: 0.2 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
               >
                 <motion.div className="flex items-center justify-center space-x-3 p-2">
                   <PartyPopper className="w-6 h-6 text-amber-500" />
@@ -103,51 +97,50 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
                 </motion.div>
               </motion.div>
             )}
-          {/* </AnimatePresence> */}
+          </AnimatePresence>
         </div>
 
         <motion.div
-          animate={{  height:highlightHeading ? '300px' : 'auto' }}
+          animate={{ height: highlightHeading ? '300px' : 'auto' }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className='flex flex-row  justify-center items-center'
+          className='flex flex-row justify-center items-center'
           style={{ cursor: 'pointer' }}
         >
           <div className='flex flex-col rounded-lg justify-start py-2 px-2'>
             <div className={`flex ${highlightHeading ? 'flex-col p-5' : 'flex-row'} items-center justify-center overflow-wrap`}>
-            <motion.span className='text-4xl p-2'
-            animate={{ scale: highlightHeading ? [1, 1.2, 1] : [1, 1, 1] }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            
-
-             >?</motion.span>
-            <motion.span className='text-md md:text-lg lg:text-2xl text-center text-gray-500 font-bold pr-4'
-            // animate={{ fontSize: highlightHeading ? '1.5rem' : '1rem' }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            >{(currentSet?.name).replace('?', '')}</motion.span> 
-            {/* <span className='text-sm' >based on </span> */}
+              <motion.span 
+                className='text-4xl p-2'
+                animate={{ scale: highlightHeading ? [1, 1.2, 1] : [1, 1, 1] }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >?</motion.span>
+              <motion.span 
+                className='text-md md:text-lg lg:text-2xl text-center text-gray-500 font-bold pr-4'
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >{(currentSet?.name).replace('?', '')}</motion.span>
             </div>
           </div>
         </motion.div>
 
         {showAspectRoutes && !userVotedAll && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <motion.div className="flex ml-10 items-center justify-between ">
-                  <soan></soan>
-                  <span className="text-md font-semibold" style={{ color: 'rgb(174, 174, 174)' }}>
-                    {/* Cast your vote  */}
-                    <span className='text-lg text-gray-500'> based 
-                      <Target className='w-3 h-3 ml-1 inline-block rounded-full text-gray'  />n
-                    </span>
-                    </span>
-                  <h2 className="text-md mr-10" style={{ color: 'rgb(174, 174, 174)' }}>{sortedMetrics.filter(metric => metric.userVoted).length}/{sortedMetrics.length}</h2>
-                </motion.div>
-              </motion.div>
-            )}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="flex ml-10 items-center justify-center "style={{ color: currentTheme.colors.secondary }}>
+              <span className="text-md font-semibold mr-10" >
+                <span className='text-lg'> based 
+                  <Target className='w-3 h-3 ml-1 inline-block rounded-full'  />n
+                </span>
+              </span>
+                  <h2 className="text-md mr-10" >
+                {sortedMetrics.filter(metric => metric.userVoted).length}/{sortedMetrics.length}
+              </h2>
+            </div>
+          </motion.div>
+        )}
+
         {showAspectRoutes && (
           <div className="relative w-full overflow-hidden">
             <div
@@ -160,50 +153,59 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
                 scrollBehavior: 'smooth'
               }}
             >
-              <div className='absolute text-sm rounded-full text-gray-500 z-10 justify-center items-center ml-1 mr-1'>
-                {/* <Target className='w-6 h-6 rounded-full p-1 m-1' style={{ backgroundColor: currentTheme.colors.secondary, color: 'white' }} /> */}
-              </div>
-              <div className='flex px-4 ml-5 items-center space-x-6'>
-                {sortedMetrics.map((aspect) => (
+              <div className="flex items-center" style={{ minWidth: 'max-content' }}>
+                {/* Left padding */}
+                <div style={{ width: 'calc(50% - 120px)' }} />
+                
+                {/* Aspects container */}
+                <div className="flex items-center space-x-6">
+                  {sortedMetrics.map((aspect, index) => (
+                    <motion.div
+                      key={aspect.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <AspectBox
+                        key={aspect.id}
+                        aspect={aspect}
+                        isPlayed={aspect.userVoted}
+                        scale={scale}
+                        isResults={false}
+                        onClick={() => {
+                          scrollToAspect(index);
+                          onAspectClick(aspect);
+                        }}
+                        showCelebration={celebratingAspectId === aspect.id}
+                        is2line={is2line}
+                        currentAspect={currentAspect}
+                        items={items}
+                      />
+                    </motion.div>
+                  ))}
                   <motion.div
-                    key={aspect.id}
+                    key={'results'}
+                    className='flex flex-col items-center justify-center'
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
                   >
                     <AspectBox
-                      key={aspect.id}
-                      aspect={aspect}
-                      isPlayed={aspect.userVoted}
-                      scale={scale}
-                      isResults={false}
+                      aspect={{ metric_name: 'Results' }}
+                      isPlayed={true}
+                      isResults={true}
                       onClick={() => {
-                        onAspectClick(aspect);
+                        scrollToAspect(sortedMetrics.length);
+                        onAspectClick({ id: 'results' });
                       }}
-                      showCelebration={celebratingAspectId === aspect.id}
                       is2line={is2line}
                       currentAspect={currentAspect}
-                      items={items}
                     />
                   </motion.div>
-                ))}
+                </div>
 
-                <motion.div
-                  key={'results'}
-                  className='flex flex-col items-center justify-center'
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <AspectBox
-                    aspect={{ metric_name: 'Results' }}
-                    isPlayed={true}
-                    isResults={true}
-                    onClick={() => onAspectClick({ id: 'results' })}
-                    is2line={is2line}
-                    currentAspect={currentAspect}
-                  />
-                </motion.div>
+                {/* Right padding */}
+                <div style={{ width: 'calc(50% - 120px)' }} />
               </div>
             </div>
           </div>
