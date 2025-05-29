@@ -6,6 +6,8 @@ import { User, ArrowRight } from 'lucide-react';
 import { authService } from '../../services/authService';
 import { App } from '@capacitor/app';
 import { supabase } from '../../lib/supabase';
+import { motion } from 'framer-motion';
+import { changeColorAlpha } from '../../lib/utils';
 
 export default function Landing() {
   const [error, setError] = useState('');
@@ -54,32 +56,53 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden"
+    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden"
          style={{ backgroundColor: currentTheme.colors.background }}>
       {/* Background decorative elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full opacity-20"
-             style={{ backgroundColor: currentTheme.colors.primary }}></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full opacity-20"
-             style={{ backgroundColor: currentTheme.colors.primary }}></div>
-      </div>
+      <motion.div className="absolute inset-0 overflow-hidden pointer-events-none"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1 }}>
+        <motion.div className="absolute -top-40 -right-40 w-80 h-80 rounded-full opacity-20"
+             style={{ backgroundColor: 'rgba(205, 170, 240, 0.6)' }}
+             initial={{ opacity: 0 }}
+             animate={{ opacity: 1, scale: 1.2, x: 100, y: 100 }}
+             transition={{ duration: 2, delay: 0.5, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}></motion.div>
+        <motion.div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full opacity-20"
+             style={{ backgroundColor: 'rgba(158, 158, 253, 0.5)' }}
+             initial={{ opacity: 0 }}
+             animate={{ opacity: 1, scale: 1.2, x: 100, y: 100 }}
+             transition={{ duration: 2, delay: 1.5, ease: "easeInOut", repeat: Infinity, repeatType: "loop" }}></motion.div>
+        <motion.div className="absolute right-0 w-80 h-80 rounded-full opacity-20"
+             style={{ backgroundColor: 'rgba(198, 170, 240, 0.6)' }}
+             initial={{ opacity: 0.8, scale: 0.2, x: -40, y: -100 }}
+             animate={{ opacity: 0, scale: 5, x: -100, y: 100 }}
+             transition={{ duration: 3, ease: "easeInOut", repeat: Infinity, repeatType: "loop" }}></motion.div>
+        <motion.div className="absolute right-0 w-80 h-80 rounded-full opacity-20"
+             style={{ backgroundColor: 'rgba(209, 237, 251, 0.63)' }}
+             initial={{ opacity: 0.4, scale: 0.2, x: 0, y: 0 }}
+             animate={{ opacity: 0.2, scale: 5, x: -100, y: -100 }}
+             transition={{ duration: 3, delay: 0.5, ease: "easeInOut", repeat: Infinity, repeatType: "loop" }}></motion.div>
+        <motion.div className="absolute left-0 bottom-0 w-80 h-80 rounded-full opacity-20"
+             style={{ backgroundColor: 'rgba(205, 226, 247, 0.6)' }}
+             initial={{ opacity: 1 }}
+             animate={{ opacity: 0, scale: 1.5, x: 100, y: 100 }}
+             transition={{ duration: 3, delay: 0, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}></motion.div>
+      </motion.div>
 
       <div className="max-w-md w-full h-full relative z-10">
         <div className="bg-white rounded-2xl shadow-xl p-8 transform transition-all duration-300 hover:scale-[1.02]"
              style={{ 
-               backgroundColor: currentTheme.colors.card,
+               backgroundColor: changeColorAlpha(currentTheme.colors.card, 0.5),
                borderColor: currentTheme.colors.border,
              }}>
-              <div className="flex flex-col items-center justify-center space-y-6"> 
+              <div className="flex flex-col items-center justify-center"> 
                 <div className="relative group">
                   <img src={'/public_logo_transparent.png'} alt="Twirly Logo" 
-                       className="w-100 h-100 transition-transform duration-300 group-hover:scale-110" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent 
-                                animate-shimmer opacity-0 group-hover:opacity-100"></div>
+                       className="w-60 h-60 transition-transform duration-300 group-hover:scale-110" />
                 </div>
-                <div className="text-center space-y-2">
-                  <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-primary/80 
-                               bg-clip-text text-transparent">
+                <div className="text-center">
+                  <h1 className="text-3xl md:text-4xl text-gray-500 font-bold">
                     Welcome to Twirly
                   </h1>
                   <p className="text-gray-500 text-lg">Your opinions matter here.</p>
