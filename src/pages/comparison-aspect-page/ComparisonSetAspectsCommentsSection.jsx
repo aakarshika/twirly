@@ -49,8 +49,8 @@ const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet, ha
         <div className="rounded-lg p-1 hover:bg-gray-100 transition-colors">
 
         <div className='flex flex-row items-start justify-start'>
-      <h4 className="text-md font-medium text-gray-600 mb-2  items-center">
-        <span style={{ color: currentTheme.colors.primary }}><MessageSquareMore size={14} className="mr-1 inline-block" /> </span> Comments <span className="text-gray-500 text-xs ml-2" style={{ color: currentTheme.colors.primary }}>{comments.length}</span>
+      <h4 className="text-md text-gray-500 items-center">
+        <span style={{ color: currentTheme.colors.primary }}><MessageSquareMore  className="w-5 h-5 inline-block" /> </span> Comments <span className="text-gray-500 text-xs ml-2" style={{ color: currentTheme.colors.primary }}>{comments.length}</span>
         </h4>
         </div>
           {comments.length > 0 ? (
@@ -65,7 +65,7 @@ const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet, ha
               userPreferences={userPreferences}
             />
           ) : (
-            <div className="text-gray-500 italic">No comments yet. Click to add one.</div>
+            <div className="text-gray-500 text-sm italic">No comments yet. Click to add one.</div>
           )}
         </div>
       </div>

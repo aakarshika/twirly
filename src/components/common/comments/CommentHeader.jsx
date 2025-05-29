@@ -29,16 +29,17 @@ const CommentHeader = ({ onLike, isReplySectionExpanded, replyClicked,
       item_color_string: item.items ? item.items.item_color_string : item.item_color_string
     }
   }) || [];
+  const display_name_clipped = display_name ? display_name.slice(0, 25) : 'Anonymous';
 
   return (
     <div className="flex flex-col w-full">
       <div className="flex items-start gap-1">
         <div className="flex-1">
-          <div className="flex mt-4 items-center gap-2">
+          <div className="flex items-center gap-2">
             <div style={{scale: '0.9'}}>
             <Avatar
               profileImageUrl={profile_image_url ? getPublicUrl(profile_image_url) : null}
-              displayName={display_name}
+              displayName={display_name_clipped}
               size="sm"
             />
             </div>
@@ -48,7 +49,7 @@ const CommentHeader = ({ onLike, isReplySectionExpanded, replyClicked,
               style={{ color: currentTheme.colors.text }}
               onClick={() => navigate(`/user/${display_name}`)}
             >
-              {display_name || 'Anonymous'}
+              {display_name_clipped || 'Anonymous'}
             </span>
             <Circle className="w-1 h-1 text-gray-400 ml-4" fill='lightgray' /> 
             <span className="text-xs text-gray-400 text-left">

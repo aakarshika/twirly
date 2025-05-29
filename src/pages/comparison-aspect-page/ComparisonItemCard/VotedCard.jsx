@@ -7,13 +7,18 @@ import { changeColorAlpha, darkenColor } from '../../../lib/utils';
 import { useNavigate } from 'react-router-dom';
 import Modal from '../../../components/common/Modal';
 import { useTheme } from '../../../contexts/ThemeContext';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Trophy, Target, Sparkles, CupSoda, TargetIcon } from 'lucide-react';
+
 
 const VotedCard = ({
   item,
   handleRevertClick,
   totalVotes = 0,
   isVotedItem,
-  userVoted
+  userVotedAll,
+  winner,
+  runnerUp
 }) => {
   const navigate = useNavigate();
   const { currentTheme } = useTheme();
@@ -37,7 +42,14 @@ const VotedCard = ({
     e.stopPropagation();
     setIsModalOpen(true);
   };
-
+  const [expandedType, setExpandedType] = useState(null);
+  const badgeClasses = {
+      container: "rounded-full z-10",
+      badge: " gap-1.5 rounded-full p-1 rounded-full items-center justify-center",
+      icon: "w-14 h-14",
+      text: "text-xs font-semibold",
+      sparkles: "w-3 h-3"
+  } ;
   return (
     <div className={`flex flex-col bg-white w-full rounded-lg ${isVotedItem ? 'voted-card-border' : ''}`} >
       <div
@@ -63,6 +75,65 @@ const VotedCard = ({
               >
                 <div className="flex justify-center items-center">
                   <h3 ref={titleRef} className="text-center" style={{ color: darkenColor(color, 70) }}>{item.name}</h3>
+
+                {/* Status Badge - Winner or Runner Up */}
+                {(winner?.id === item.id || runnerUp?.id === item.id) && (
+                    <motion.div 
+                        className={badgeClasses.container}
+                        initial={{ scale: 0.8, y: -10 }}
+                        animate={{ 
+                            scale: [1, 1.05, 1],
+                            y: [0, -5, 0]
+                        }}
+                        transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        }}
+                    >
+                        <motion.div 
+                            style={{
+                                backgroundSize: '200% 100%'
+                            }}
+                        >
+                            {winner?.id === item.id ? (
+                                <>
+                                    <motion.div
+                                        animate={{ 
+                                            rotate: [0, 10, 0, -10, 0],
+                                            scale: [1, 1.1, 1]
+                                        }}
+                                        className='p-2'
+                                    >
+                                        <Trophy onClick={() => setExpandedType("Winner")} className={`${badgeClasses.icon} items-center justify-center`} color = 'rgb(237, 193, 21)' fill = 'rgb(244, 213, 90)' />
+                                        {expandedType === "Winner" && (
+                                            <div className='flex flex-col items-center justify-center text-center text-black'>
+                                                <h4 className='text-xs font-semibold'>Winning <br></br>Cup</h4>
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                </>
+                            ) : (
+                                <>
+                                    <motion.div
+                                        animate={{ 
+                                            rotate: [0, 5, 0, -5, 0],
+                                            scale: [1, 1.05, 1]
+                                        }}
+                                        className='p-2'
+                                    >
+                                        <CupSoda onClick={() => setExpandedType("Runner Up")} className={`${badgeClasses.icon}`} color = 'rgb(70, 137, 243)' fill = 'rgb(137, 179, 246)'  />
+                                        {expandedType === "Runner Up" && (
+                                            <div className='flex flex-col items-center justify-center text-center text-black'>
+                                                <h4 className='text-xs font-semibold'>Runner <br></br>Cup</h4>
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                </>
+                            )}
+                        </motion.div>
+                    </motion.div>
+                )}
                 </div>
                 <div className="p-2 w-full" style={{ color: darkenColor(color, 80) }}>
                   <VoteStats
@@ -71,6 +142,7 @@ const VotedCard = ({
                     color={color}
                     isVotedItem={isVotedItem}
                     leadingMetrics={item.leadingMetrics}
+                    userVotedAll={userVotedAll}
                   />
                 </div>
               </div>
@@ -83,6 +155,64 @@ const VotedCard = ({
               style={{ color: darkenColor(color, 50)}}
             >
               <h3 className="item-name">{item.name}</h3>
+
+              {(winner?.id === item.id || runnerUp?.id === item.id) && (
+                    <motion.div 
+                        className={badgeClasses.container}
+                        initial={{ scale: 0.8, y: -10 }}
+                        animate={{ 
+                            scale: [1, 1.05, 1],
+                            y: [0, -5, 0]
+                        }}
+                        transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            ease: "easeInOut"
+                        }}
+                    >
+                        <motion.div 
+                            style={{
+                                backgroundSize: '200% 100%'
+                            }}
+                        >
+                            {winner?.id === item.id ? (
+                                <>
+                                    <motion.div
+                                        animate={{ 
+                                            rotate: [0, 10, 0, -10, 0],
+                                            scale: [1, 1.1, 1]
+                                        }}
+                                        className='p-2'
+                                    >
+                                        <Trophy onClick={() => setExpandedType("Winner")} className={`${badgeClasses.icon} items-center justify-center`} color = 'rgb(237, 193, 21)' fill = 'rgb(244, 213, 90)' />
+                                        {expandedType === "Winner" && (
+                                            <div className='flex flex-col items-center justify-center text-center text-black'>
+                                                <h4 className='text-xs font-semibold'>Winning <br></br>Cup</h4>
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                </>
+                            ) : (
+                                <>
+                                    <motion.div
+                                        animate={{ 
+                                            rotate: [0, 5, 0, -5, 0],
+                                            scale: [1, 1.05, 1]
+                                        }}
+                                        className='p-2'
+                                    >
+                                        <CupSoda onClick={() => setExpandedType("Runner Up")} className={`${badgeClasses.icon}`} color = 'rgb(70, 137, 243)' fill = 'rgb(137, 179, 246)'  />
+                                        {expandedType === "Runner Up" && (
+                                            <div className='flex flex-col items-center justify-center text-center text-black'>
+                                                <h4 className='text-xs font-semibold'>Runner <br></br>Cup</h4>
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                </>
+                            )}
+                        </motion.div>
+                    </motion.div>
+                )}
               <div 
                 className="flex items-center gap-2"
               >
@@ -92,6 +222,7 @@ const VotedCard = ({
                   color={color}
                   isVotedItem={isVotedItem}
                   leadingMetrics={item.leadingMetrics}
+                  userVotedAll={userVotedAll}
                 />
               </div>
             </div>

@@ -20,7 +20,7 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
       description: itemData.description
     };
   }) || [];
-
+  const display_name_clipped = userPreferences?.display_name ? userPreferences?.display_name.slice(0, 25) : 'Anonymous';
   const mentionStyles = {
     input: {
       fontSize: '16px',
@@ -70,14 +70,14 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
         <div style={{scale: '0.9'}}>
           <Avatar
             profileImageUrl={getPublicUrl(userPreferences?.profile_image_url)}
-            displayName={userPreferences?.display_name}
+            displayName={display_name_clipped}
             size="sm"
           />
           </div>
           <div className="flex-1">
             <div className="flex flex-col items-start">
               <span className="font-medium text-sm text-left" style={{color: currentTheme.colors.text}}>
-                {userPreferences?.display_name || 'Anonymous'}
+                {display_name_clipped || 'Anonymous'}
               </span>
             </div>
             <div className="w-full rounded-md border border-gray-200 focus-within:border-amber-400 transition-colors" style={{color: 'black'}}>

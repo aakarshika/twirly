@@ -212,7 +212,7 @@ const ProfileSettings = () => {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h2 
-          className="text-2xl font-semibold"
+          className="text-md font-semibold"
           style={{ color: currentTheme.colors.text }}
         >
           Profile Settings

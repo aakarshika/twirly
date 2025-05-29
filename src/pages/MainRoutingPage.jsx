@@ -32,6 +32,7 @@ import LoadingScreen from '../components/common/LoadingScreen';
 import InitialLoadingScreen from '../components/common/InitialLoadingScreen';
 import { useMediaQuery } from 'react-responsive';
 import { TrendingProvider, useTrending } from '../contexts/TrendingContext';
+import BackgroundImage from '../components/common/BackgroundImage';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -162,9 +163,11 @@ const MainRoutingPage = () => {
         <FeedbackProvider>
           <ComparisonDraftProvider>
             <TrendingProvider>
-              <div className="flex flex-col min-h-screen mx-auto">
+        <BackgroundImage />
+
+              <div className="relative flex flex-col min-h-screen mx-auto z-10" style={{ paddingTop: shouldShowHeader() ? '64px' : '0px' }}>
                 <Header />
-                <main className="flex-1 overflow-x-auto" style={{ position: 'relative', top: shouldShowHeader() ? '64px' : '0px' }}>
+                <main className="flex-1 overflow-x-auto" >
                   {/* <ScrollToTop /> */}
                   <Routes>
                     {/* Protected Routes */}

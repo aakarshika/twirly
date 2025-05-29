@@ -58,7 +58,7 @@ const SearchPage = () => {
 
   const renderItemCard = (item, index) => {
     return (
-      <div key={'item' + item.id + index}>
+      <div className='ml-4 mr-4' key={'item' + item.id + index}>
         <ItemCard item={item} />
       </div>
     );
@@ -75,8 +75,8 @@ const SearchPage = () => {
 
   const renderUserCard = (user, index) => {
     return (
+      <div className='ml-4 mr-4' key={'user' + user.user_id + index}>
       <Link
-        key={'user' + user.user_id + index}
         to={`/user/${user.display_name}`}
         className="block p-4 rounded-lg hover:bg-gray-50"
         style={{
@@ -109,6 +109,7 @@ const SearchPage = () => {
           </div>
         </div>
       </Link>
+      </div>
     );
   };
 
@@ -173,7 +174,6 @@ const SearchPage = () => {
     <div 
       className="min-h-screen overflow-x-hidden"
       style={{ 
-        backgroundColor: currentTheme.colors.background,
         color: currentTheme.colors.text,
         paddingTop: isHeaderVisible ? '64px' : '0'
       }}
@@ -189,7 +189,7 @@ const SearchPage = () => {
             onChange={(e) => setSearchInput(e.target.value)}
             className="w-full px-4 py-3 pl-12 rounded-lg border"
             style={{
-              backgroundColor: currentTheme.colors.background,
+              backgroundColor: 'transparent',
               borderColor: currentTheme.colors.border,
               color: currentTheme.colors.text
             }}

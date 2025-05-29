@@ -9,27 +9,8 @@ import {
 } from '@heroicons/react/24/solid';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const FloatingShape = ({ delay, children }) => (
-  <motion.div
-    initial={{ y: 0, x: 0 }}
-    animate={{
-      y: [0, -15, 0],
-      x: [0, 10, 0],
-      rotate: [0, 5, 0]
-    }}
-    transition={{
-      duration: 4,
-      delay,
-      repeat: Infinity,
-      ease: "easeInOut"
-    }}
-    className="absolute"
-  >
-    {children}
-  </motion.div>
-);
 
-const QuickStats = ({ comparisonSets, reviews }) => {
+const QuickStats = ({ comparisonSets, reviews, item }) => {
   const { currentTheme } = useTheme();
   const [animatedComparisons, setAnimatedComparisons] = useState(0);
   const [animatedWinRate, setAnimatedWinRate] = useState(0);
@@ -62,13 +43,7 @@ const QuickStats = ({ comparisonSets, reviews }) => {
   return (
     <div className="relative min-h-[300px] p-8 overflow-hidden">
       {/* Background decorative elements */}
-      <FloatingShape delay={0}>
-        <div className="w-24 h-24 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-xl" />
-      </FloatingShape>
-      <FloatingShape delay={1}>
-        <div className="w-32 h-32 rounded-full bg-gradient-to-r from-blue-500/20 to-teal-500/20 blur-xl" />
-      </FloatingShape>
-
+      
       {/* Main content */}
       <div className="relative z-10">
         <motion.div 
@@ -81,9 +56,8 @@ const QuickStats = ({ comparisonSets, reviews }) => {
             whileHover={{ scale: 1.1 }}
             className="text-4xl font-bold mb-2 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 bg-clip-text text-transparent"
           >
-            Quick Stats
+            {item.name}
           </motion.div>
-          <div className="w-20 h-1 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" />
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

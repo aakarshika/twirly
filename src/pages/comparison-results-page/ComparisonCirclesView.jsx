@@ -8,9 +8,9 @@ import {
     calculateProcessedItems
 } from '../../services/comparisonService';
 import Avatar from '../../components/common/Avatar';
-import { getPublicUrl } from '../../lib/utils';
+import { changeColorAlpha, getPublicUrl } from '../../lib/utils';
 import { useNavigate } from 'react-router-dom';
-
+import { useTheme } from '../../contexts/ThemeContext';
 
 
 import { motion, AnimatePresence } from 'framer-motion';
@@ -105,7 +105,7 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
     const {isHeaderVisible} = useHeader();
     const [scale, setScale] = useState(1);
     const [lastScrollY, setLastScrollY] = useState(0);
-
+    const { currentTheme } = useTheme();
     // Add scroll event listener for scaling
     useEffect(() => {
         const handleScroll = () => {
@@ -158,8 +158,7 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
                     </div>
                 </div>
 
-                {/* Creator Info */}
-                <div className="flex items-center gap-3 mt-8 p-4 bg-white rounded-lg shadow-sm">
+                <div className="flex items-center gap-3 mb-4 pl-4">
                     <Avatar 
                         profileImageUrl={comparison.user?.profile_image_url ? getPublicUrl(comparison.user?.profile_image_url) : null}
                         displayName={comparison.user?.display_name}
@@ -176,6 +175,13 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
                         </span>
                     </div>
                 </div>
+
+                {/* Creator Info */}
+                {/* <div className='flex flex-row items-center justify-start'>
+                <h4 className='text-md text-gray-500 p-2 w-full' style={{backgroundColor: changeColorAlpha(currentTheme.colors.background, 0.2)}}>
+                    Results
+                </h4> 
+                </div> */}
             </div>
         </div>
     );

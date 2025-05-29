@@ -80,7 +80,7 @@ const SecuritySettings = () => {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h2 
-          className="text-2xl font-semibold"
+          className="text-md text-gray-500 font-semibold"
           style={{ color: currentTheme.colors.text }}
         >
           Security Settings

@@ -6,7 +6,7 @@ import { useTheme } from '../../../../contexts/ThemeContext';
 import { splitAndJoin } from '../../../../lib/utils';
 import { SHOW_RESULTS_DURATION } from '../../../../lib/constants';
 
-const VoteStats = ({ votes, totalVotes, color, isVotedItem, leadingMetrics }) => {
+const VoteStats = ({ votes, totalVotes, color, isVotedItem, leadingMetrics, userVotedAll }) => {
   const { currentTheme } = useTheme();
   const percentage = totalVotes > 0 && votes > 0 ? (votes / totalVotes) * 100 : 0;
   const [displayPercentage, setDisplayPercentage] = useState(0);
@@ -41,7 +41,7 @@ const VoteStats = ({ votes, totalVotes, color, isVotedItem, leadingMetrics }) =>
 
   return (
     <div className="flex flex-col vote-stats-container">
-      {(<div className="flex flex-row gap-1 w-full items-center">
+      {((userVotedAll) && <div className="flex flex-row gap-1 w-full items-center">
         <span className="text-2xl text-right">
           {Math.round(displayPercentage)}%
         </span>
@@ -58,7 +58,7 @@ const VoteStats = ({ votes, totalVotes, color, isVotedItem, leadingMetrics }) =>
         </div>
       </div>)}
       {/* Leading Metrics */}
-      {leadingMetrics && leadingMetrics.length > 0 && (
+      {userVotedAll && leadingMetrics && leadingMetrics.length > 0 && (
         <div className="">
           <motion.div 
             key={'icon-target'}
@@ -68,7 +68,7 @@ const VoteStats = ({ votes, totalVotes, color, isVotedItem, leadingMetrics }) =>
           >
             <span style={{ color: currentTheme.colors.secondary }}>
               <Target className="w-4 h-4 inline-block mr-1" />
-              <span className="text-sm font-normal">Shining at{' '}</span>
+              <span className="text-sm font-normal">Won{' '}</span>
               {leadingMetrics.map((metric, index) => (
                 <span className="text-sm font-semibold" key={metric.metric_name}>
                   {splitAndJoin(metric.metric_name)}{index < leadingMetrics.length - 1 ? ', ' : ''}

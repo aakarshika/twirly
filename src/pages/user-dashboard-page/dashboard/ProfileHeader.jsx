@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { Pencil, User, Coins, Sparkles, Trophy } from 'lucide-react';
+import { Pencil, User, Coins, Sparkles, Trophy, HeartHandshake } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getPublicUrl } from '../../../lib/utils';
 import Avatar from '../../../components/common/Avatar';
@@ -59,28 +59,26 @@ const KarmaBox = ({ points, isLoading, theme }) => {
       onHoverEnd={() => setIsHovered(false)}
       className="relative w-full md:w-auto"
     >
-      <div 
+      <div
         className="flex flex-col items-center p-4 rounded-2xl backdrop-blur-md w-full md:w-[200px]"
-        style={{ 
+        style={{
           background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.primary}10)`,
           border: `1px solid ${theme.colors.primary}30`
         }}
       >
+        <div className='flex flex-row items-center justify-center'>
         <motion.div
           animate={{
             rotate: isHovered ? 360 : 0,
             scale: isHovered ? 1.2 : 1
           }}
           transition={{ duration: 0.5 }}
-          className="mb-2"
+          className="mb-2 inline-block"
         >
-          <Trophy size={24} style={{ color: theme.colors.primary }} />
+          <HeartHandshake className='inline-block' size={24} style={{ color: theme.colors.primary }} />
         </motion.div>
-        
+
         <div className="text-center">
-          <span className="text-sm font-medium" style={{ color: theme.colors.textSecondary }}>
-            Karma Points
-          </span>
           <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
             {isLoading ? '...' : points}
           </h3>
@@ -88,7 +86,7 @@ const KarmaBox = ({ points, isLoading, theme }) => {
             {karmaLevel.level}
           </span>
         </div>
-
+        </div>
         {showConfetti && (
           <motion.div
             initial={{ opacity: 0, scale: 0 }}
@@ -143,79 +141,70 @@ const ProfileHeader = ({ userData, isPublic = false }) => {
   };
 
   return (
-    <div className="relative">
-      {/* Background decorative elements */}
-      <FloatingShape delay={0}>
-        <div className="w-32 h-32 rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 blur-xl" />
-      </FloatingShape>
-      <FloatingShape delay={1}>
-        <div className="w-40 h-40 rounded-full bg-gradient-to-r from-blue-500/10 to-teal-500/10 blur-xl" />
-      </FloatingShape>
+    <div className="">
 
-      <div className="relative z-10">
-        <div className="md:p-6 rounded-2xl backdrop-blur-md" style={{ backgroundColor: currentTheme.colors.cardBackground + '80' }}>
-          <div className="flex flex-col gap-6">
+      <div className="">
+        <div className="">
+          <div className="flex flex-col w-full">
             {/* Top Section: Avatar, Name, and Karma */}
-            <div className="flex flex-row md:flex-row items-center gap-6">
+            <div className="flex flex-row w-full">
               {/* Left: Avatar */}
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                <div className="flex flex-col items-center justify-center">
-                <Avatar
-                  profileImageUrl={userData?.profile?.profile_image_url ? getPublicUrl(userData.profile.profile_image_url) : null}
-                  displayName={userData?.profile?.display_name}
-                  username={userData?.profile?.username}
-                  size="lg"
-                />
+                <div className="flex flex-col w-full justify-center p-4">
+                  <div className="flex flex-row w-full justify-between">
+                    <div className="relative items-center">
+                    <Avatar
+                      profileImageUrl={userData?.profile?.profile_image_url ? getPublicUrl(userData.profile.profile_image_url) : null}
+                      displayName={userData?.profile?.display_name}
+                      username={userData?.profile?.username}
+                      size="lg"
+                    />
 
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className="text-xs"
-                style={{ color: currentTheme.colors.textSecondary }}
-              >
-                Since {userData?.profile?.created_at ? formatDate(userData.profile.created_at) : 'Unknown'}
-              </motion.p>
-
-</div>
-              </motion.div>
-
-              {/* Center: Name and Edit Button */}
-              <div className="flex-1 text-center md:text-left">
-                <div className="flex flex-col md:flex-row items-center md:items-start gap-1 md:gap-4">
-                  <motion.h1
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 bg-clip-text text-transparent"
+                    {!isPublic && (
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => navigate('/settings')}
+                        className="absolute right-0 top-0 p-2 rounded-full text-sm font-medium"
+                        style={{
+                          backgroundColor: currentTheme.colors.primary,
+                          color: 'white'
+                        }}
+                      >
+                        <Pencil size={14} />
+                      </motion.button>
+                    )}
+                    </div>
+                    {/* Right: Karma Box */}
+                    <div className="">
+                      <KarmaBox points={karmaPoints} isLoading={isLoadingKarma} theme={currentTheme} />
+                    </div>
+                  </div>
+                  <div className="w-80">
+                   <div className="overflow-x-auto scrollbar-hide" style={{
+                          scrollbarWidth: 'none',
+                          msOverflowStyle: 'none',
+                          WebkitOverflowScrolling: 'touch',
+                          scrollBehavior: 'smooth',
+                          width: '100%',
+                          display: 'block'
+                       }}>
+                       <div className="inline-block whitespace-nowrap text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 bg-clip-text text-transparent cursor-grab active:cursor-grabbing">
+                        {userData?.profile?.display_name}
+                     </div>
+                   </div>
+                  </div>
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="text-xs"
+                    style={{ color: currentTheme.colors.textSecondary }}
                   >
-                    {userData?.profile?.display_name}
-                  </motion.h1>
-                  
-                  {!isPublic && (
-                    <motion.button
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => navigate('/settings')}
-                      className="flex items-center justify-center space-x-2 px-3 py-1.5 rounded-xl text-sm font-medium"
-                      style={{
-                        backgroundColor: currentTheme.colors.primary + '20',
-                        color: currentTheme.colors.primary
-                      }}
-                    >
-                      <Pencil size={14} />
-                      <span>Edit Profile</span>
-                    </motion.button>
-                  )}
-                </div>
-              </div>
+                    Since {userData?.profile?.created_at ? formatDate(userData.profile.created_at) : 'Unknown'}
+                  </motion.p>
 
-              {/* Right: Karma Box */}
-              <div className="w-full md:w-auto">
-                <KarmaBox points={karmaPoints} isLoading={isLoadingKarma} theme={currentTheme} />
-              </div>
+                </div>
+
             </div>
 
             {/* Bottom Section: Member Since, Bio, and Congratulations */}
@@ -242,9 +231,9 @@ const ProfileHeader = ({ userData, isPublic = false }) => {
                   transition={{ delay: 0.4 }}
                   className="flex flex-col items-center md:items-end"
                 >
-                  <div 
+                  <div
                     className="px-2 py-1 rounded-xl text-sm font-medium flex items-center space-x-2"
-                    style={{ 
+                    style={{
                       backgroundColor: currentTheme.colors.success + '20',
                       border: `1px solid ${currentTheme.colors.success}`,
                       color: currentTheme.colors.success
