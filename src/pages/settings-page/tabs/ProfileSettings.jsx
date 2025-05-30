@@ -5,10 +5,12 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { User, Mail, Phone, MapPin, Globe, Camera, Save, Twitter, Instagram, Facebook } from 'lucide-react';
 import Button from '../../../components/common/Button';
 import Avatar from '../../../components/common/Avatar';
+import { useLoading } from '../../../contexts/LoadingContext';
 
 const ProfileSettings = () => {
   const { user } = useAuth();
   const { currentTheme } = useTheme();
+  const { setLoading, setError: setGlobalError } = useLoading();
   const [profileData, setProfileData] = useState({
     username: '',
     display_name: '',
@@ -24,17 +26,17 @@ const ProfileSettings = () => {
       linkedin: ''
     }
   });
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(true);
   const [avatarPreview, setAvatarPreview] = useState('');
   const [usernameError, setUsernameError] = useState(null);
+
   useEffect(() => {
     const fetchProfileData = async () => {
       if (!user) return;
 
       try {
-        setLoading(true);
+        setLoading('global', true, 'Loading profile...');
         setError(null);
 
         // Fetch user preferences
@@ -43,8 +45,6 @@ const ProfileSettings = () => {
           .select('*')
           .eq('user_id', user.id)
           .single();
-
-
 
         if (profileError) throw profileError;
 
@@ -55,11 +55,9 @@ const ProfileSettings = () => {
             ? profile.profile_image_url.split('storage/v1/object/public/profile-pics/')[1]
             : profile.profile_image_url;
 
-          console.log('Extracted file path:', filePath);
           const { data: { publicUrl } } = supabase.storage
             .from('profile-pics')
             .getPublicUrl(filePath);
-          console.log('Generated public URL:', publicUrl);
           setAvatarPreview(publicUrl);
           setProfileData(prev => ({
             ...prev,
@@ -74,8 +72,9 @@ const ProfileSettings = () => {
       } catch (err) {
         console.error('Error fetching profile data:', err);
         setError(err.message);
+        setGlobalError('global', err.message, () => window.location.reload());
       } finally {
-        setLoading(false);
+        setLoading('global', false);
       }
     };
 
@@ -163,6 +162,7 @@ const ProfileSettings = () => {
 
   const handleSave = async () => {
     try {
+      setLoading('global', true, 'Saving profile...');
       const { error } = await supabase
         .from('user_preferences')
         .upsert({
@@ -182,9 +182,13 @@ const ProfileSettings = () => {
       } else {
         console.error('Error saving profile:', err);
         setError(err.message);
+        setGlobalError('global', err.message, () => window.location.reload());
       }
+    } finally {
+      setLoading('global', false);
     }
   };
+
   const getPublicUrl = (filePath) => {
     if (!filePath) return null;
     const { data: { publicUrl } } = supabase.storage
@@ -192,20 +196,9 @@ const ProfileSettings = () => {
       .getPublicUrl(filePath);
     return publicUrl;
   };
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2" style={{ borderColor: currentTheme.colors.primary }}></div>
-      </div>
-    );
-  }
 
   if (error) {
-    return (
-      <div className="p-4 rounded-lg" style={{ backgroundColor: currentTheme.colors.errorBackground, color: currentTheme.colors.errorText }}>
-        Error loading profile data: {error}
-      </div>
-    );
+    return null; // Error screen is now handled by LoadingContext
   }
 
   return (

@@ -4,6 +4,8 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { userService } from '../../services/userService';
 import { useEffect } from 'react';
+import { useLoading } from '../../contexts/LoadingContext';
+
 const categoriesAll = [
   { id: '1', name: 'Technology', icon: '💻' },
   { id: '2', name: 'Fashion', icon: '👗' },
@@ -26,7 +28,7 @@ const notificationsAll = [
 const OnboardingFlow = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true);
+  const { setLoading, setError: setGlobalError } = useLoading();
   const navigate = useNavigate();
   const { currentTheme } = useTheme();
   const { user } = useAuth();
@@ -42,10 +44,11 @@ const OnboardingFlow = () => {
   const [allCategories, setAllCategories] = useState([]);
 
   const fetchPreferences = async () => {
-    setLoading(true);
-    const prefs = await userService.getUserPreferences(user.id);
-    const notif = await userService.getUserNotificationSettings(user.id);
-    const cats = await userService.getUserCategoryPreferences(user.id);
+    setLoading('global', true, 'Loading preferences...');
+    try {
+      const prefs = await userService.getUserPreferences(user.id);
+      const notif = await userService.getUserNotificationSettings(user.id);
+      const cats = await userService.getUserCategoryPreferences(user.id);
       setPreferences(prefs);
       setNotificationPreferences(notif);
       setCategoryPreferences(cats);
@@ -62,8 +65,13 @@ const OnboardingFlow = () => {
         setUsername(prefs.display_name);
         setCurrentStep(3);
       }
-    console.log(prefs);
-    setLoading(false);
+    } catch (err) {
+      console.error('Error fetching preferences:', err);
+      setError(err.message);
+      setGlobalError('global', err.message, () => window.location.reload());
+    } finally {
+      setLoading('global', false);
+    }
   };
   useEffect(() => {
     fetchPreferences();
@@ -149,7 +157,7 @@ const OnboardingFlow = () => {
   };
 
   const handleComplete = async () => {
-    setLoading(true);
+    setLoading('global', true, 'Saving preferences...');
     try {
       await userService.saveUserPreferences(user.id, {
         display_name: username,
@@ -162,9 +170,10 @@ const OnboardingFlow = () => {
       navigate('/dashboard', { replace: true });
     } catch (error) {
       setError('Error saving preferences. Please try again.');
+      setGlobalError('global', error.message, () => window.location.reload());
       console.error('Error saving preferences:', error);
     } finally {
-      setLoading(false);
+      setLoading('global', false);
     }
   };
 
@@ -270,14 +279,8 @@ const OnboardingFlow = () => {
         return null;
     }
   };
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: currentTheme.colors.background }}>
-        <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-8">
-          <img src="/public_logo_transparent.png" alt="logo" className="h-40 w-40 mx-auto rotate-45" />
-        </div>
-      </div>
-    );
+  if (error) {
+    return null; // Error screen is now handled by LoadingContext
   }
   return (
     <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: currentTheme.colors.background }}>
@@ -316,7 +319,6 @@ const OnboardingFlow = () => {
             <button
               onClick={() => setCurrentStep(currentStep - 1)}
               className="px-6 py-2 text-gray-600 hover:text-gray-800"
-              disabled={loading}
             >
               Back
             </button>
@@ -324,7 +326,6 @@ const OnboardingFlow = () => {
           <button
             onClick={handleNext}
             disabled={
-              loading ||
               (currentStep === 2 && !username) ||
               (currentStep === 3 && selectedCategories.length === 0)
             }
@@ -334,17 +335,7 @@ const OnboardingFlow = () => {
                 : 'bg-indigo-600 hover:bg-indigo-700'
             } text-white disabled:opacity-50 disabled:cursor-not-allowed`}
           >
-            {loading ? (
-              <span className="flex items-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-                {currentStep === totalSteps ? 'Saving...' : 'yoLoading...'}
-              </span>
-            ) : (
-              currentStep === totalSteps ? 'Complete Setup' : 'Next'
-            )}
+            {currentStep === totalSteps ? 'Complete Setup' : 'Next'}
           </button>
         </div>
       </div>

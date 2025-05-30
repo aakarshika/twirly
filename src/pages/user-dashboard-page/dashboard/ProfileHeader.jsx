@@ -176,7 +176,7 @@ const ProfileHeader = ({ userData, isPublic = false }) => {
                     </div>
                     {/* Right: Karma Box */}
                     <div className="">
-                      <KarmaBox points={karmaPoints} isLoading={isLoadingKarma} theme={currentTheme} />
+                      <KarmaBox points={karmaPoints+100} isLoading={isLoadingKarma} theme={currentTheme} />
                     </div>
                   </div>
                   <div className="w-80">

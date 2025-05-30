@@ -11,6 +11,7 @@ import CommentAppearancesTab from './tabs/CommentAppearancesTab';
 import AppearancesTab from './tabs/AppearancesTab';
 import { changeColorAlpha } from '../../lib/utils';
 import { motion } from 'framer-motion';
+import { useLoading } from '../../contexts/LoadingContext';
 
 const ProductDetails = () => {
   const { itemId } = useParams();
@@ -20,11 +21,11 @@ const ProductDetails = () => {
   const [item, setItem] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [comparisonSets, setComparisonSets] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('mentions');
   const [showReviewForm, setShowReviewForm] = useState(false);
   const { isHeaderVisible } = useHeader();
+  const { setLoading, setError: setGlobalError } = useLoading();
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -35,6 +36,8 @@ const ProductDetails = () => {
   useEffect(() => {
     const fetchProductDetails = async () => {
       try {
+        setLoading('global', true, 'Loading product details...');
+        
         // Fetch item details with company, category, and metrics
         const { data: itemData, error: itemError } = await supabase
           .from('items')
@@ -49,7 +52,7 @@ const ProductDetails = () => {
         if (itemError) throw itemError;
         if (!itemData) {
           setError('Item not found');
-          setLoading(false);
+          setGlobalError('global', 'Item not found', () => window.location.reload());
           return;
         }
         setItem(itemData);
@@ -87,7 +90,6 @@ const ProductDetails = () => {
 
           if (reviewsError) throw reviewsError;
 
-
           // Get comment count from comparison_set_aspects
           const { data: aspectsData, error: aspectsError } = await supabase
             .from('comparison_set_aspects')
@@ -105,14 +107,13 @@ const ProductDetails = () => {
           };
         }));
 
-        console.log("transformedSets",transformedSets);
         setComparisonSets(transformedSets);
-
-
-        setLoading(false);
       } catch (err) {
+        console.error('Error fetching product details:', err);
         setError(err.message);
-        setLoading(false);
+        setGlobalError('global', err.message, () => window.location.reload());
+      } finally {
+        setLoading('global', false);
       }
     };
 
@@ -142,9 +143,10 @@ const ProductDetails = () => {
       }
 
       setHasMoreReviews(reviewsData.length === REVIEWS_PER_PAGE);
-      setLoadingMoreReviews(false);
     } catch (error) {
       console.error('Error fetching reviews:', error);
+      setGlobalError('global', 'Failed to load reviews. Please try again.', () => window.location.reload());
+    } finally {
       setLoadingMoreReviews(false);
     }
   };
@@ -157,42 +159,8 @@ const ProductDetails = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div 
-        className="min-h-screen flex flex-col items-center justify-center transition-all duration-300 ease-in-out"
-        style={{ backgroundColor: 'var(--color-background)' }}
-      >
-        <div className="text-center animate-fade-in">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto transition-transform duration-300" 
-               style={{ borderColor: 'var(--color-primary)' }}></div>
-          <p className="mt-4" style={{ color: 'var(--color-text)' }}>Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
   if (error) {
-    return (
-      <div 
-        className="min-h-screen flex flex-col items-center justify-center transition-all duration-300 ease-in-out"
-        style={{ backgroundColor: 'var(--color-background)' }}
-      >
-        <div className="text-center animate-fade-in">
-          <p className="text-red-500 mb-4">{error}</p>
-          <button
-            onClick={() => window.location.reload()}
-            className="px-4 py-2 rounded-full font-semibold transition-all duration-200 hover:scale-105"
-            style={{ 
-              backgroundColor: 'var(--color-primary)',
-              color: 'var(--color-text)'
-            }}
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
+    return null; // Error screen is now handled by LoadingContext
   }
 
   if (!item) {
