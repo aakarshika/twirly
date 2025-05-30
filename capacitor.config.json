@@ -1,6 +1,6 @@
 {
   "appId": "com.twirly.app",
-  "appName": "twirly",
+  "appName": "Twirly",
   "webDir": "dist",
   "server": {
     "androidScheme": "https"

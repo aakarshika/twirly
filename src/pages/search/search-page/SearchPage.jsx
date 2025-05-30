@@ -9,6 +9,8 @@ import { useHeader } from '../../../contexts/HeaderContext';
 import ItemCard from '../../../components/common/common-cards/ItemCard';
 import TrendingCard from '../../../components/common/common-cards/TrendingCard';
 import TrendingCardCommon from '../../../components/common/common-cards/TrendingCardCommon';
+import { useLoading } from '../../../contexts/LoadingContext';
+
 const SearchPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
@@ -24,18 +26,21 @@ const SearchPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { isHeaderVisible } = useHeader();
+  const { setLoading, setError: setGlobalError } = useLoading();
+
   useEffect(() => {
     const fetchResults = async () => {
       if (!query) return;
       
-      setIsLoading(true);
+      setLoading('global', true, 'Searching...');
       try {
         const searchResults = await searchService.searchAll(query);
         setResults(searchResults);
       } catch (error) {
         console.error('Error fetching search results:', error);
+        setGlobalError('global', 'Failed to fetch search results. Please try again.', () => window.location.reload());
       } finally {
-        setIsLoading(false);
+        setLoading('global', false);
       }
     };
 
@@ -65,12 +70,11 @@ const SearchPage = () => {
   };
 
   const renderComparisonCard = (comparison, index) => {
-    
     return (
       <div key={'comparison' + comparison.aspect_set_id + index}>
         <TrendingCardCommon set={comparison} from={'search'} />
       </div>
-      )
+    )
   };
 
   const renderUserCard = (user, index) => {
@@ -115,11 +119,7 @@ const SearchPage = () => {
 
   const renderResults = () => {
     if (isLoading) {
-      return (
-        <div className="text-center py-8" style={{ color: currentTheme.colors.text }}>
-          Loading results...
-        </div>
-      );
+      return null; // Loading screen is now handled by LoadingContext
     }
 
     const getResultsForTab = () => {
@@ -170,7 +170,6 @@ const SearchPage = () => {
   };
 
   return (
-
     <div 
       className="min-h-screen overflow-x-hidden"
       style={{ 

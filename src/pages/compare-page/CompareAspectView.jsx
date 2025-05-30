@@ -10,16 +10,18 @@ import { SHOW_RESULTS_DURATION } from '../../lib/constants';
 import { changeColorAlpha } from '../../lib/utils';
 import { userService } from '../../services/userService';
 import { useAuth } from '../../contexts/AuthContext';
+import { useLoading } from '../../contexts/LoadingContext';
 
 const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isResultsPage, currentAspect, nextUnvotedAspect }) => {
   const { id: setId } = useParams();
   const { currentTheme } = useTheme();
   const { user } = useAuth();
   const [isCelebrating, setIsCelebrating] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { setLoading: setGlobalLoading, setError: setGlobalError } = useLoading();
   
   const {
-    loading,
-    error,
     currentSet,
     currentAspectSet,
     items,
@@ -100,24 +102,11 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
   }
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Loading aspect...</p>
-        </div>
-      </div>
-    );
+    return null; // Loading screen is now handled by LoadingContext
   }
 
   if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-500 mb-4">{error}</p>
-        </div>
-      </div>
-    );
+    return null; // Error screen is now handled by LoadingContext
   }
 
   if (!items || items.length === 0) {

@@ -1,12 +1,13 @@
 // File: src/App.jsx
 
 import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { HeaderProvider } from './contexts/HeaderContext';
-import { AuthProvider } from './contexts/AuthContext';
 import { FeedbackProvider } from './contexts/FeedbackContext';
 import { BetaTestingProvider } from './contexts/BetaTestingContext';
+import { LoadingProvider } from './contexts/LoadingContext';
 import MainRoutingPage from './pages/MainRoutingPage';
 
 /**
@@ -14,19 +15,21 @@ import MainRoutingPage from './pages/MainRoutingPage';
  */
 const App = () => {
   return (
-    <Router>
+    <BrowserRouter>
       <AuthProvider>
         <ThemeProvider>
-          <HeaderProvider>
-            <FeedbackProvider>
-              <BetaTestingProvider>
-                <MainRoutingPage />
-              </BetaTestingProvider>
-            </FeedbackProvider>
-          </HeaderProvider>
+          <LoadingProvider>
+            <HeaderProvider>
+              <FeedbackProvider>
+                <BetaTestingProvider>
+                  <MainRoutingPage />
+                </BetaTestingProvider>
+              </FeedbackProvider>
+            </HeaderProvider>
+          </LoadingProvider>
         </ThemeProvider>
       </AuthProvider>
-    </Router>
+    </BrowserRouter>
   );
 };
 

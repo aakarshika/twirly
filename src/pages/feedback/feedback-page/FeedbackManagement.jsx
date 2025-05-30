@@ -5,6 +5,7 @@ import { useAuth } from '../../../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { FiImage, FiTrash2, FiExternalLink, FiEdit2, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { supabase } from '../../../lib/supabase';
+import { useLoading } from '../../../contexts/LoadingContext';
 
 const ADMIN_EMAILS = ['aakarshika93@gmail.com', 'great.shivam19@gmail.com'];
 
@@ -12,7 +13,8 @@ const FeedbackManagement = () => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
   const [feedbackList, setFeedbackList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { setLoading, setError: setGlobalError } = useLoading();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [feedbackToDelete, setFeedbackToDelete] = useState(null);
@@ -189,20 +191,13 @@ const FeedbackManagement = () => {
     return <Navigate to="/" replace />;
   }
 
+  if (error) {
+    return null; // Error screen is now handled by LoadingContext
+  }
+
   const handlePageRouteClick = (route) => {
     window.open(route, '_blank', 'noopener,noreferrer');
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: currentTheme.colors.background }}>
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4" style={{ color: currentTheme.colors.text }}>Loading feedback...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="container mx-auto px-4 py-8" style={{ backgroundColor: currentTheme.colors.background, paddingTop: '104px' }}>

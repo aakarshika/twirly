@@ -5,6 +5,7 @@ import ProfileHeader from './dashboard/ProfileHeader';
 import ContentTabs from './dashboard/ContentTabs';
 import { useHeader } from '../../contexts/HeaderContext';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useLoading } from '../../contexts/LoadingContext';
 
 const UserProfile = () => {
   const { username } = useParams();
@@ -12,13 +13,13 @@ const UserProfile = () => {
   const { isHeaderVisible } = useHeader();
   const [activeTab, setActiveTab] = useState('overview');
   const [userData, setUserData] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { setLoading, setError: setGlobalError } = useLoading();
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        setLoading(true);
+        setLoading('global', true, 'Loading profile...');
         
         // First get the user_id from the username
         const { data: userPrefs, error: userError } = await supabase
@@ -50,47 +51,17 @@ const UserProfile = () => {
       } catch (err) {
         console.error('Error fetching user data:', err);
         setError(err.message);
+        setGlobalError('global', err.message, () => window.location.reload());
       } finally {
-        setLoading(false);
+        setLoading('global', false);
       }
     };
 
     fetchUserData();
   }, [username]);
 
-  if (loading) {
-    return (
-      <div 
-        className="min-h-screen p-4 p-y-8 md:p-8 flex items-center justify-center"
-        style={{ 
-          backgroundColor: currentTheme.colors.background,
-          position: 'relative',
-          top: isHeaderVisible ? '64px' : '0px',
-        }}
-      >
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-          <p className="mt-4" style={{ color: currentTheme.colors.text }}>Loading profile...</p>
-        </div>
-      </div>
-    );
-  }
-
   if (error) {
-    return (
-      <div 
-        className="min-h-screen p-4 md:p-8 flex items-center justify-center"
-        style={{ 
-          backgroundColor: currentTheme.colors.background,
-          position: 'relative',
-          top: isHeaderVisible ? '64px' : '0px',
-        }}
-      >
-        <div className="text-center">
-          <p style={{ color: currentTheme.colors.error }}>{error}</p>
-        </div>
-      </div>
-    );
+    return null; // Error screen is now handled by LoadingContext
   }
 
   if (!userData) {
@@ -112,24 +83,24 @@ const UserProfile = () => {
 
   return (
     <div 
-      className="min-h-screen overflow-x-hidden relative"
+      className="min-h-screen p-4 md:p-8"
+      style={{ 
+        backgroundColor: currentTheme.colors.background,
+        position: 'relative',
+        top: isHeaderVisible ? '64px' : '0px',
+      }}
     >
-    <main className="w-full" style={{ paddingTop: '104px', backgroundColor: currentTheme.colors.background + '20' }}>
-      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-        <ProfileHeader userData={userData} isPublic={true} />
-        
-        <div className="mt-8">
-          <ContentTabs 
-            activeTab={activeTab} 
-            setActiveTab={setActiveTab}
-            userId={userData.profile.user_id}
-            username={userData.profile.display_name}
-            isPublic={true}
-          />
-        </div>
+      <ProfileHeader userData={userData} isPublic={true} />
+      <div className="mt-8">
+        <ContentTabs 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab}
+          userId={userData.profile.user_id}
+          username={userData.profile.username}
+          isPublic={true}
+        />
       </div>
-      </main>
-      </div>
+    </div>
   );
 };
 

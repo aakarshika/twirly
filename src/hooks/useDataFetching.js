@@ -1,19 +1,37 @@
 import { useEffect } from 'react';
 import { useLoading } from '../contexts/LoadingContext';
 
-export const useDataFetching = (key, fetchFunction, dependencies = []) => {
+export const useDataFetching = (key, fetchFunction, dependencies = [], options = {}) => {
   const { setLoading, setError, clearError, clearLoading, isLoading, getError } = useLoading();
+  const { 
+    useGlobalLoading = false, 
+    loadingMessage = 'Loading...',
+    useGlobalError = false,
+    retryFunction = null
+  } = options;
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setLoading(key, true);
+        if (useGlobalLoading) {
+          setLoading('global', true, loadingMessage);
+        } else {
+          setLoading(key, true);
+        }
         clearError(key);
         await fetchFunction();
       } catch (error) {
-        setError(key, error.message || 'An error occurred');
+        if (useGlobalError) {
+          setError('global', error.message || 'An error occurred', retryFunction);
+        } else {
+          setError(key, error.message || 'An error occurred');
+        }
       } finally {
-        setLoading(key, false);
+        if (useGlobalLoading) {
+          setLoading('global', false);
+        } else {
+          setLoading(key, false);
+        }
       }
     };
 
@@ -21,13 +39,21 @@ export const useDataFetching = (key, fetchFunction, dependencies = []) => {
 
     // Cleanup function
     return () => {
-      clearLoading(key);
-      clearError(key);
+      if (useGlobalLoading) {
+        clearLoading('global');
+      } else {
+        clearLoading(key);
+      }
+      if (useGlobalError) {
+        clearError('global');
+      } else {
+        clearError(key);
+      }
     };
-  }, [...dependencies, key]);
+  }, [...dependencies, key, useGlobalLoading, useGlobalError]);
 
   return {
-    isLoading: isLoading(key),
-    error: getError(key)
+    isLoading: useGlobalLoading ? isLoading('global') : isLoading(key),
+    error: useGlobalError ? getError('global') : getError(key)
   };
 }; 

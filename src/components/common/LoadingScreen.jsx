@@ -1,14 +1,15 @@
 import React from 'react';
-
+import LottieAnimation from './LottieAnimation';
+import loadingBarsAnimation from '../../assets/animations/loadingbars_lottie.json';
 const LoadingScreen = ({ 
   message = 'Loading...', 
   showLogo = false,
   size = 'default' // 'small' | 'default' | 'large'
 }) => {
   const sizeClasses = {
-    small: 'h-8 w-8',
-    default: 'h-12 w-12',
-    large: 'h-16 w-16'
+    small: 'h-32 w-32',
+    default: 'h-48 w-48',
+    large: 'h-64 w-64'
   };
 
   return (
@@ -27,10 +28,14 @@ const LoadingScreen = ({
             className="h-24 w-24 mx-auto mb-4 transition-transform duration-300 hover:scale-105" 
           />
         )}
-        <div 
-          className={`animate-spin rounded-full border-b-2 mx-auto transition-transform duration-300 ${sizeClasses[size]}`}
-          style={{ borderColor: 'var(--color-primary)' }}
-        />
+        <div className={sizeClasses[size]}>
+          <LottieAnimation
+            animationData={loadingBarsAnimation}
+            loop={true}
+            autoplay={true}
+            speed={1}
+          />
+        </div>
         <p 
           className="mt-4 text-lg transition-colors duration-200"
           style={{ color: 'var(--color-text)' }}

@@ -115,41 +115,11 @@ const Trending = () => {
   };
 
   if (loading && trendingSets.length === 0) {
-    return (
-      <div 
-        className="min-h-screen flex flex-col items-center justify-center transition-all duration-300 ease-in-out"
-        style={{ backgroundColor: 'var(--color-background)' }}
-      >
-        <div className="text-center animate-fade-in">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto transition-transform duration-300" 
-               style={{ borderColor: 'var(--color-primary)' }}></div>
-          <p className="mt-4" style={{ color: 'var(--color-text)' }}>Loading...</p>
-        </div>
-      </div>
-    );
+    return null; // Loading screen is now handled by LoadingContext
   }
 
   if (error) {
-    return (
-      <div 
-        className="min-h-screen flex flex-col items-center justify-center transition-all duration-300 ease-in-out"
-        style={{ backgroundColor: 'var(--color-background)' }}
-      >
-        <div className="text-center animate-fade-in">
-          <p className="text-red-500 mb-4">{error}</p>
-          <button
-            onClick={() => fetchTrendingSets()}
-            className="px-4 py-2 rounded-full font-semibold transition-all duration-200 hover:scale-105"
-            style={{ 
-              backgroundColor: 'var(--color-primary)',
-              color: 'var(--color-text)'
-            }}
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
+    return null; // Error screen is now handled by LoadingContext
   }
 
   return (

@@ -29,7 +29,13 @@ const UserDashboard = () => {
       const isFirstTime = !localStorage.getItem('dashboard_tour_completed');
       setShowFirstTimeDashboard(isFirstTime);
     },
-    [user]
+    [user],
+    {
+      useGlobalLoading: true,
+      loadingMessage: 'Loading your dashboard...',
+      useGlobalError: true,
+      retryFunction: () => window.location.reload()
+    }
   );
 
   const handleTourComplete = () => {
@@ -38,11 +44,11 @@ const UserDashboard = () => {
   };
 
   if (isLoading) {
-    return <LoadingScreen showLogo={true} message="Loading your dashboard..." />;
+    return null; // Loading screen is now handled by LoadingContext
   }
 
   if (error) {
-    return <ErrorScreen message={error} onRetry={() => window.location.reload()} />;
+    return null; // Error screen is now handled by LoadingContext
   }
 
   if (!userData) {
