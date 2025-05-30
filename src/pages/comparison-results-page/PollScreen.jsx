@@ -13,8 +13,6 @@ import { Globe2, TrendingUp } from 'lucide-react';
 const PollScreen = ({items, currentSetId, currentSet, celebratingResults}) => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { currentTheme } = useTheme();
-  const { isHeaderVisible } = useHeader();
   
   const [comparisonMetrics, setComparisonMetrics] = useState([]);
   const [userVotedAll, setUserVotedAll] = useState(false);

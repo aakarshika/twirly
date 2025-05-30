@@ -68,7 +68,7 @@ const UserDashboard = () => {
       {showFirstTimeDashboard && (
         <FirstTimeDashboard onComplete={handleTourComplete} />
       )}
-      <main className="w-full" style={{ paddingTop: isHeaderVisible ? '20px': '0px', backgroundColor: currentTheme.colors.background + '20' }}>
+      <main className="w-full" style={{ paddingTop: '20px', backgroundColor: currentTheme.colors.background + '20' }}>
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
           <ProfileHeader userData={userData} isPublic={false} />
           <div className="md:mt-4 lg:mt-8">

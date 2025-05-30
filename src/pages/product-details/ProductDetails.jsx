@@ -235,7 +235,7 @@ const ProductDetails = () => {
              transition={{ duration: 3, delay: 0, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}></motion.div>
       </motion.div>
       </div>
-      <div className="px-4 md:px-6 lg:px-8" style={{ paddingTop: isHeaderVisible ? '64px': '0px', backgroundColor: changeColorAlpha(item.item_color_string, 0.2), color: currentTheme.colors.text }}>
+      <div className="px-4 md:px-6 lg:px-8" style={{ paddingTop: '104px', backgroundColor: changeColorAlpha(item.item_color_string, 0.2), color: currentTheme.colors.text }}>
         <div className="space-y-8">
           <QuickStats comparisonSets={comparisonSets} reviews={reviews} item={item} />
           

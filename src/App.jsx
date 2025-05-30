@@ -5,6 +5,8 @@ import { BrowserRouter as Router } from 'react-router-dom';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { HeaderProvider } from './contexts/HeaderContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { FeedbackProvider } from './contexts/FeedbackContext';
+import { BetaTestingProvider } from './contexts/BetaTestingContext';
 import MainRoutingPage from './pages/MainRoutingPage';
 
 /**
@@ -16,7 +18,11 @@ const App = () => {
       <AuthProvider>
         <ThemeProvider>
           <HeaderProvider>
-            <MainRoutingPage />
+            <FeedbackProvider>
+              <BetaTestingProvider>
+                <MainRoutingPage />
+              </BetaTestingProvider>
+            </FeedbackProvider>
           </HeaderProvider>
         </ThemeProvider>
       </AuthProvider>

@@ -67,27 +67,27 @@ export default function Landing() {
              style={{ backgroundColor: 'rgba(205, 170, 240, 0.6)' }}
              initial={{ opacity: 0 }}
              animate={{ opacity: 1, scale: 1.2, x: 100, y: 100 }}
-             transition={{ duration: 2, delay: 0.5, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}></motion.div>
+             transition={{ duration: 4, delay: 0.5, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}></motion.div>
         <motion.div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full opacity-20"
              style={{ backgroundColor: 'rgba(158, 158, 253, 0.5)' }}
              initial={{ opacity: 0 }}
              animate={{ opacity: 1, scale: 1.2, x: 100, y: 100 }}
-             transition={{ duration: 2, delay: 1.5, ease: "easeInOut", repeat: Infinity, repeatType: "loop" }}></motion.div>
+             transition={{ duration: 3, delay: 1.5, ease: "easeInOut", repeat: Infinity, repeatType: "loop" }}></motion.div>
         <motion.div className="absolute right-0 w-80 h-80 rounded-full opacity-20"
              style={{ backgroundColor: 'rgba(198, 170, 240, 0.6)' }}
              initial={{ opacity: 0.8, scale: 0.2, x: -40, y: -100 }}
              animate={{ opacity: 0, scale: 5, x: -100, y: 100 }}
-             transition={{ duration: 3, ease: "easeInOut", repeat: Infinity, repeatType: "loop" }}></motion.div>
+             transition={{ duration: 9, ease: "easeInOut", repeat: Infinity, repeatType: "loop" }}></motion.div>
         <motion.div className="absolute right-0 w-80 h-80 rounded-full opacity-20"
              style={{ backgroundColor: 'rgba(209, 237, 251, 0.63)' }}
              initial={{ opacity: 0.4, scale: 0.2, x: 0, y: 0 }}
              animate={{ opacity: 0.2, scale: 5, x: -100, y: -100 }}
-             transition={{ duration: 3, delay: 0.5, ease: "easeInOut", repeat: Infinity, repeatType: "loop" }}></motion.div>
+             transition={{ duration: 7, delay: 0.5, ease: "easeInOut", repeat: Infinity, repeatType: "loop" }}></motion.div>
         <motion.div className="absolute left-0 bottom-0 w-80 h-80 rounded-full opacity-20"
              style={{ backgroundColor: 'rgba(205, 226, 247, 0.6)' }}
              initial={{ opacity: 1 }}
              animate={{ opacity: 0, scale: 1.5, x: 100, y: 100 }}
-             transition={{ duration: 3, delay: 0, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}></motion.div>
+             transition={{ duration: 5, delay: 0, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}></motion.div>
       </motion.div>
 
       <div className="max-w-md w-full h-full relative z-10">

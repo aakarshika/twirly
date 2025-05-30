@@ -175,7 +175,7 @@ const SearchPage = () => {
       className="min-h-screen overflow-x-hidden"
       style={{ 
         color: currentTheme.colors.text,
-        paddingTop: isHeaderVisible ? '64px' : '0'
+        paddingTop: '64px' 
       }}
     >
       {/* Search Header */}

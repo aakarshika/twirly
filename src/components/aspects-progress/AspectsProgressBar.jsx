@@ -13,7 +13,6 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
   const isResultsPage = location.pathname.includes('results');
   const [sortedMetrics, setSortedMetrics] = useState([]);
   const [scale, setScale] = useState(1);
-  const { isHeaderVisible } = useHeader();
   const { currentTheme } = useTheme();
   const [showAspectRoutes, setShowAspectRoutes] = useState(true);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
