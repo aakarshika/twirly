@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from './ui/button';
 import { Home, ArrowLeft } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import LottieAnimation from './common/LottieAnimation';
+import notFoundAnimation from '../assets/animations/pagenotfound_lottie.json';
 
 const NotFoundPage = () => {
   const navigate = useNavigate();
@@ -14,19 +16,18 @@ const NotFoundPage = () => {
       style={{ backgroundColor: currentTheme.colors.background }}
     >
       <div className="text-center space-y-6 max-w-md">
-        {/* Animated 404 text */}
-        <div className="relative">
-          <h1 className="text-9xl font-bold animate-bounce" style={{ color: currentTheme.colors.primary }}>
-            404
-          </h1>
-          <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-24 h-1 bg-gradient-to-r from-transparent via-current to-transparent animate-pulse" />
+        {/* Lottie Animation */}
+        <div className="w-64 h-64 mx-auto">
+          <LottieAnimation
+            animationData={notFoundAnimation}
+            loop={true}
+            autoplay={true}
+            speed={1}
+          />
         </div>
 
         {/* Uh oh message */}
         <div className="space-y-2">
-          <h2 className="text-3xl font-semibold" style={{ color: currentTheme.colors.text }}>
-            Oops! Page Not Found
-          </h2>
           <p className="text-lg" style={{ color: currentTheme.colors.primary }}>
             Looks like you've ventured into uncharted territory. Let's get you back on track!
           </p>
