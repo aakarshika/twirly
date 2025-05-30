@@ -1,6 +1,5 @@
 import React from 'react';
 import Lottie from 'lottie-react';
-import { useTheme } from '../../contexts/ThemeContext';
 
 const LottieAnimation = ({
   animationData,
@@ -20,7 +19,6 @@ const LottieAnimation = ({
     preserveAspectRatio: 'xMidYMid slice'
   }
 }) => {
-  const { currentTheme } = useTheme();
 
   const defaultStyle = {
     width: width || '100%',

@@ -32,8 +32,8 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
   useEffect(() => {
     const sorted = [...comparisonMetrics];
     setSortedMetrics(sorted);
-    setIs2line(sorted.some(metric => metric.metric_name.length > 25));
-    setNextUnvotedAspect(sorted.find(metric => !metric.userVoted));
+    setIs2line(sorted.some(metric => metric?.metric_name?.length > 25));
+    setNextUnvotedAspect(sorted.find(metric => !metric?.userVoted));
   }, [comparisonMetrics]);
 
   useEffect(() => {
@@ -89,13 +89,26 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.2 }}
               >
-                <motion.div className="flex items-center justify-center space-x-3 p-2">
+                <motion.div className="flex items-center justify-center space-x-3">
                   <PartyPopper className="w-6 h-6 text-amber-500" />
                   <h2 className="text-lg font-bold text-center">The Results Are In!</h2>
                   <PartyPopper className="w-6 h-6 text-amber-500" />
                 </motion.div>
               </motion.div>
             )}
+            {/* {!userVotedAll && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <motion.div className="flex items-center justify-center space-x-3 p-2">
+                  <PartyPopper className="w-6 h-6 text-transparent" />
+                  <PartyPopper className="w-6 h-6 text-transparent" />
+                </motion.div>
+              </motion.div>
+            )} */}
           </AnimatePresence>
         </div>
 
@@ -115,7 +128,7 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
               <motion.span 
                 className='text-md md:text-lg lg:text-2xl text-center text-gray-500 font-bold pr-4'
                 transition={{ duration: 0.3, ease: "easeInOut" }}
-              >{(currentSet?.name).replace('?', '')}</motion.span>
+              >{(currentSet?.name || '').replace('?', '')}</motion.span>
             </div>
           </div>
         </motion.div>
@@ -134,7 +147,7 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
                 </span>
               </span>
                   <h2 className="text-md mr-10" >
-                {sortedMetrics.filter(metric => metric.userVoted).length}/{sortedMetrics.length}
+                {sortedMetrics.filter(metric => metric?.userVoted).length}/{sortedMetrics.length}
               </h2>
             </div>
           </motion.div>

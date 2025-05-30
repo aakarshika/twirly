@@ -30,7 +30,6 @@ export const useComparisonDetails = (currentSetId) => {
 
       try {
         setLoading(true);
-        setError(null);
         
         const comparisonId = parseInt(currentSetId);
         if (isNaN(comparisonId)) {

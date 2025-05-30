@@ -69,7 +69,6 @@ const UserProfile = () => {
       <div 
         className="min-h-screen p-4 md:p-8 flex items-center justify-center"
         style={{ 
-          backgroundColor: currentTheme.colors.background,
           position: 'relative',
           top: isHeaderVisible ? '64px' : '0px',
         }}
@@ -85,7 +84,6 @@ const UserProfile = () => {
     <div 
       className="min-h-screen p-4 md:p-8"
       style={{ 
-        backgroundColor: currentTheme.colors.background,
         position: 'relative',
         top: isHeaderVisible ? '64px' : '0px',
       }}

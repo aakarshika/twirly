@@ -1,12 +1,15 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import { userActivityService, ACTIVITY_TYPES, ENTITY_TYPES } from '../services/userActivityService';
 
+// Add cache for fetched data
+const dataCache = new Map();
+
 export const useComparisonAspectData = (aspectId, setId) => {
   const { user } = useAuth();
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [data, setData] = useState({
     currentSet: null,
     currentAspectSet: null,
@@ -17,9 +20,17 @@ export const useComparisonAspectData = (aspectId, setId) => {
     comparisonMetrics: []
   });
 
-  const fetchData = async () => {
-    if (!aspectId || !setId || !user) {
-      console.log('Missing required data:', { aspectId, setId, user });
+  const fetchData = useCallback(async () => {
+    if (!aspectId || !setId) {
+      console.log('Missing required data:', { aspectId, setId });
+      setLoading(false);
+      return;
+    }
+
+    // Check cache first
+    const cacheKey = `${setId}-${aspectId}`;
+    if (dataCache.has(cacheKey)) {
+      setData(dataCache.get(cacheKey));
       setLoading(false);
       return;
     }
@@ -28,50 +39,49 @@ export const useComparisonAspectData = (aspectId, setId) => {
       setLoading(true);
       console.log('Fetching data for aspect:', aspectId, 'set:', setId);
       
-      // First get the comparison set data
-      const { data: comparisonSetData, error: setError } = await supabase
-        .from('comparison_sets')
-        .select(`
-          *,
-          comparison_set_items(
-            id,
-            items(
-              *
+      // Fetch both set and aspect data in parallel
+      const [setResult, aspectResult] = await Promise.all([
+        supabase
+          .from('comparison_sets')
+          .select(`
+            *,
+            comparison_set_items(
+              id,
+              items(
+                *
+              )
             )
-          )
-        `)
-        .eq('id', setId)
-        .single();
+          `)
+          .eq('id', setId)
+          .single(),
+        supabase
+          .from('comparison_set_aspects')
+          .select(`
+            *,
+            votes(*)
+          `)
+          .eq('id', aspectId)
+          .single()
+      ]);
 
-      if (setError) throw setError;
-      if (!comparisonSetData) throw new Error('Comparison set not found');
-
-      // Then get the aspect data with votes
-      const { data: aspectData, error: aspectError } = await supabase
-        .from('comparison_set_aspects')
-        .select(`
-          *,
-          votes(*)
-        `)
-        .eq('id', aspectId)
-        .single();
-
-      if (aspectError) throw aspectError;
-      if (!aspectData) throw new Error('Aspect not found');
+      if (setResult.error) throw setResult.error;
+      if (aspectResult.error) throw aspectResult.error;
+      if (!setResult.data) throw new Error('Comparison set not found');
+      if (!aspectResult.data) throw new Error('Aspect not found');
 
       // Process the data
-      const items = comparisonSetData.comparison_set_items.map(item => ({
+      const items = setResult.data.comparison_set_items.map(item => ({
         ...item.items,
-        voteCount: aspectData.votes.filter(vote => vote.item_id === item.items.id).length || 0
+        voteCount: aspectResult.data.votes.filter(vote => vote.item_id === item.items.id).length || 0
       }));
       
       // Calculate user vote status
-      const userVote = aspectData.votes.find(vote => vote.user_id === user.id);
+      const userVote = aspectResult.data.votes.find(vote => vote.user_id === user?.id);
       const userVoted = !!userVote;
       const votedItemId = userVote?.item_id;
 
       // Calculate total votes
-      const totalVotes = aspectData.votes.length;
+      const totalVotes = aspectResult.data.votes.length;
 
       // Get all aspects for metrics
       const { data: allAspects, error: aspectsError } = await supabase
@@ -86,18 +96,22 @@ export const useComparisonAspectData = (aspectId, setId) => {
 
       const comparisonMetrics = allAspects.map(aspect => ({
         ...aspect,
-        userVoted: aspect.votes.some(vote => vote.user_id === user.id)
+        userVoted: aspect.votes.some(vote => vote.user_id === user?.id)
       }));
 
-      setData({
-        currentSet: comparisonSetData,
-        currentAspectSet: aspectData,
+      const newData = {
+        currentSet: setResult.data,
+        currentAspectSet: aspectResult.data,
         items,
         totalVotes,
         userVoted,
         votedItemId,
         comparisonMetrics
-      });
+      };
+
+      // Cache the data
+      dataCache.set(cacheKey, newData);
+      setData(newData);
 
     } catch (err) {
       console.error('Error fetching comparison data:', err);
@@ -105,7 +119,14 @@ export const useComparisonAspectData = (aspectId, setId) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [aspectId, setId, user]);
+
+  // Clear cache when component unmounts
+  useEffect(() => {
+    return () => {
+      dataCache.clear();
+    };
+  }, []);
 
   const handleVote = async (itemId) => {
     if (!user || !aspectId) return false;
@@ -215,8 +236,12 @@ export const useComparisonAspectData = (aspectId, setId) => {
   };
 
   useEffect(() => {
-    fetchData();
-  }, [aspectId, setId, user]);
+    if (aspectId && setId) {
+      fetchData();
+    } else {
+      setLoading(false);
+    }
+  }, [aspectId, setId]);
 
   return {
     ...data,

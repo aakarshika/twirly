@@ -12,53 +12,55 @@ const AppearancesTab = ({ item, comparisonSets }) => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [selectedChart, setSelectedChart] = useState('radar');
+  const [userVotedSets, setUserVotedSets] = useState({});
+
+  useEffect(() => {
+    const fetchUserVotes = async () => {
+      if (!user || !comparisonSets) return;
+      
+      const votesMap = {};
+      for (const set of comparisonSets) {
+        const { data: userVoted, error: userVotedError } = await supabase
+          .from('votes')
+          .select('*')
+          .eq('user_id', user.id)
+          .in('set_id', set.comparison_set_aspects.map(aspect => aspect.id));
+        
+        if (!userVotedError) {
+          votesMap[set.id] = userVoted.length === set.comparison_set_aspects.length;
+        }
+      }
+      setUserVotedSets(votesMap);
+    };
+
+    fetchUserVotes();
+  }, [user, comparisonSets]);
 
   return (
     <div className="space-y-4" style={{color: currentTheme.colors.text}}>
       <div className="flex justify-end mb-4">
-
-      <div className="flex flex-row justify-end mb-4">
-        <h2 className="text-lg font-semibold mr-4">Visuals:</h2>
-        {['radar', 'line', 'bar'
-        // , 'pie', 'bubble', 'polar'
-      ].map((item) => (
-          <button
-            key={item}
-            onClick={() => setSelectedChart(item)}
-            style={{backgroundColor: selectedChart === item ? currentTheme.colors.primary : 'lightgray', color: selectedChart === item ? 'white' : 'black'}}
-            className={`px-4 py-2 rounded-md`}
-          >
-            {item}
-          </button>
-        ))}
+        <div className="flex flex-row justify-end mb-4">
+          <h2 className="text-lg font-semibold mr-4">Visuals:</h2>
+          {['radar', 'line', 'bar'].map((item) => (
+            <button
+              key={item}
+              onClick={() => setSelectedChart(item)}
+              style={{backgroundColor: selectedChart === item ? currentTheme.colors.primary : 'lightgray', color: selectedChart === item ? 'white' : 'black'}}
+              className={`px-4 py-2 rounded-md`}
+            >
+              {item}
+            </button>
+          ))}
+        </div>
       </div>
-      </div>
-      {comparisonSets?.map((set) => 
-      {
-        const [userVoted, setUserVoted] = useState(false);
-        // fetch user voted for this set
-        const fetchUserVoted = async () => {
-          const { data: userVoted, error: userVotedError } = await supabase
-            .from('votes')
-            .select('*')
-            .eq('user_id', user.id)
-            .in('set_id', set.comparison_set_aspects.map(aspect => aspect.id))
-            .select();
-          return userVoted;
-        };
-        fetchUserVoted().then(data => {
-          setUserVoted(data.length == set.comparison_set_aspects.length);
-        });
-        return (
+      {comparisonSets?.map((set) => (
         <div 
           key={set.id} 
           className="flex flex-col p-6 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors"
           style={{ backgroundColor: currentTheme.colors.card }}
           onClick={() => navigate(`/compare/${set.id}`)}
         >
-          <div className="flex flex-col items-start mb-4"
-          // onClick={() => navigate(`/compare/${set.id}`)}
-          >
+          <div className="flex flex-col items-start mb-4">
             <h3 className="font-semibold text-lg hover:text-blue-400 transition-colors"
               style={{ color: currentTheme.colors.text }}
             >
@@ -81,37 +83,40 @@ const AppearancesTab = ({ item, comparisonSets }) => {
             </div>
           </div>
 
-                {userVoted && (<div className="m-2 rounded-lg p-4"
-          style={{ backgroundColor: 'white' }}>
-                  <OtherChart 
-                    selectedChart={selectedChart}
-                    data={[{
-                      setTitle: set.title,
-                      aspects: set.comparison_set_aspects.map(aspect => ({
-                        name: aspect.metric_name,
-                        description: aspect.description
-                      })),
-                      items: set.allitems.map(item => ({
-                        id: item.items.id,
-                        name: item.items.name,
-                        item_color_string: item.items.item_color_string,
-                        metrics: set.comparison_set_aspects.reduce((acc, aspect) => {
-                          const totalVotes = aspect.votes.length;
-                          const itemVotes = aspect.votes.filter(vote => vote.item_id === item.items.id).length;
-                          acc[aspect.metric_name] = (itemVotes / totalVotes) * 100;
-                          return acc;
-                        }, {})
-                      }))
-                    }]}
-                  />
-                </div>)}
-                {!userVoted && (<div className="m-2 rounded-lg p-4 flex flex-row items-center"
-          style={{ backgroundColor: 'white', color: currentTheme.colors.primary }}>
-                  <p>Play all to unlock metrics</p>
-                  <Play size={24} />
-                </div>)}
+          {userVotedSets[set.id] && (
+            <div className="m-2 rounded-lg p-4">
+              <OtherChart 
+                selectedChart={selectedChart}
+                data={[{
+                  setTitle: set.title,
+                  aspects: set.comparison_set_aspects.map(aspect => ({
+                    name: aspect.metric_name,
+                    description: aspect.description
+                  })),
+                  items: set.allitems.map(item => ({
+                    id: item.items.id,
+                    name: item.items.name,
+                    item_color_string: item.items.item_color_string,
+                    metrics: set.comparison_set_aspects.reduce((acc, aspect) => {
+                      const totalVotes = aspect.votes.length;
+                      const itemVotes = aspect.votes.filter(vote => vote.item_id === item.items.id).length;
+                      acc[aspect.metric_name] = (itemVotes / totalVotes) * 100;
+                      return acc;
+                    }, {})
+                  }))
+                }]}
+              />
+            </div>
+          )}
+          {!userVotedSets[set.id] && (
+            <div className="m-2 rounded-lg p-4 flex flex-row items-center"
+              style={{ backgroundColor: 'white', color: currentTheme.colors.primary }}>
+              <p>Play all to unlock metrics</p>
+              <Play size={24} />
+            </div>
+          )}
         </div>
-      )})}
+      ))}
       {(!comparisonSets || comparisonSets.length === 0) && (
         <div className="text-center py-8">
           <p className="text-lg" style={{ color: currentTheme.colors.textSecondary }}>

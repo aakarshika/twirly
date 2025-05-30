@@ -2,7 +2,7 @@ import React from 'react';
 import LottieAnimation from './LottieAnimation';
 import loadingBarsAnimation from '../../assets/animations/loadingbars_lottie.json';
 const LoadingScreen = ({ 
-  message = 'Loading...', 
+  message = 'Loading User...', 
   showLogo = false,
   size = 'default' // 'small' | 'default' | 'large'
 }) => {
@@ -21,13 +21,13 @@ const LoadingScreen = ({
       }}
     >
       <div className="text-center animate-fade-in">
-        {showLogo && (
+        {/* {showLogo && (
           <img 
             src="/public_logo_transparent.png" 
             alt="logo" 
             className="h-24 w-24 mx-auto mb-4 transition-transform duration-300 hover:scale-105" 
           />
-        )}
+        )} */}
         <div className={sizeClasses[size]}>
           <LottieAnimation
             animationData={loadingBarsAnimation}

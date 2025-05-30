@@ -25,11 +25,8 @@ import FloatingFeedbackButton from './feedback/FloatingFeedbackButton';
 import FeedbackModal from './feedback/FeedbackModal';
 import FeedbackManagement from './feedback/feedback-page/FeedbackManagement';
 import CreateComparison from './user-dashboard-page/dashboard/tabs/CreateComparison';
-import { TrendingUp } from 'lucide-react';
 import ComparePage from './compare-page/ComparePage';
-import { LoadingProvider, useLoading } from '../contexts/LoadingContext';
-import LoadingScreen from '../components/common/LoadingScreen';
-import InitialLoadingScreen from '../components/common/InitialLoadingScreen';
+import { useLoading } from '../contexts/LoadingContext';
 import { useMediaQuery } from 'react-responsive';
 import { TrendingProvider, useTrending } from '../contexts/TrendingContext';
 import BackgroundImage from '../components/common/BackgroundImage';
@@ -137,7 +134,6 @@ const MainRoutingPage = () => {
   const location = useLocation();
   const { user } = useAuth();
   const { showPerformanceMonitor } = useBetaTesting();
-  const { setLoading } = useLoading();
 
   const shouldShowHeader = () => {
     if (!isMobile) return true; // Always show header on desktop
@@ -174,16 +170,17 @@ const MainRoutingPage = () => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen">
+      <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background }}>
         <ComparisonDraftProvider>
           <TrendingProvider>
             <BackgroundImage />
 
             <div 
-              className="relative flex flex-col min-h-screen mx-auto z-10" 
+              className="relative flex flex-col min-h-screen mx-auto" 
               style={{ 
                 paddingTop: shouldShowHeader() ? '64px' : '0px',
-                marginLeft: !isMobile && user ? '16rem' : '0'
+                marginLeft: !isMobile && user ? '16rem' : '0',
+                zIndex: 10
               }}
             >
               <Header />

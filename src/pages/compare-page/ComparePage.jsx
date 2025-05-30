@@ -15,6 +15,7 @@ import { useComparisonDetails } from '../../hooks/useComparisonDetails';
 import { SHOW_RESULTS_DURATION } from '../../lib/constants';
 import PullToRefresh from '../../components/common/PullToRefresh';
 import BackgroundImage from '../../components/common/BackgroundImage';
+import ComparePageSkeleton from '../../components/skeletons/ComparePageSkeleton';
 
 const ComparePage = () => {
   const { id } = useParams();
@@ -23,7 +24,6 @@ const ComparePage = () => {
   const { isHeaderVisible } = useHeader();
   const { user } = useAuth();
   const [comparisonMetrics, setComparisonMetrics] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userVotedAll, setUserVotedAll] = useState(false);
   const [showTrending, setShowTrending] = useState(false);
@@ -102,38 +102,36 @@ const ComparePage = () => {
         .eq('set_id', currentSetId);
 
       if (aspectsError) throw aspectsError;
-      if (!comparisonSetAspects || comparisonSetAspects.length === 0) {
-        console.log('No aspects found for set:', currentSetId);
-        setLoading(false);
-        return;
+
+      // Process aspects even if there are none
+      const processedAspects = (comparisonSetAspects || []).map(aspect => ({
+        ...aspect,
+        votes: [],
+        userVoted: false,
+        itemVoted: -1
+      }));
+
+      // If there are aspects, fetch their votes
+      if (processedAspects.length > 0) {
+        const { data: votes, error: votesError } = await supabase
+          .from('votes')
+          .select('*')
+          .in('set_id', processedAspects.map(aspect => aspect.id));
+
+        if (votesError) throw votesError;
+
+        // Update aspects with vote information
+        processedAspects.forEach(aspect => {
+          const aspectVotes = votes.filter(vote => vote.set_id === aspect.id);
+          aspect.votes = aspectVotes;
+          aspect.userVoted = aspectVotes.some(vote => vote.user_id === user.id);
+          aspect.itemVoted = aspectVotes.find(vote => vote.user_id === user.id)?.item_id || -1;
+        });
       }
-
-      // Then fetch all votes for these aspects
-      const { data: votes, error: votesError } = await supabase
-        .from('votes')
-        .select('*')
-        .in('set_id', comparisonSetAspects.map(aspect => aspect.id));
-
-      if (votesError) throw votesError;
-
-      console.log('Fetched aspects:', comparisonSetAspects);
-      console.log('Fetched votes:', votes);
-
-      // Process aspects with their votes
-      const processedAspects = comparisonSetAspects.map(aspect => {
-        const aspectVotes = votes.filter(vote => vote.set_id === aspect.id);
-        return {
-          ...aspect,
-          votes: aspectVotes,
-          userVoted: aspectVotes.some(vote => vote.user_id === user.id),
-          itemVoted: aspectVotes.find(vote => vote.user_id === user.id)?.item_id || -1
-        };
-      }).sort((a, b) => a.userVoted ? -1 : b.userVoted ? 1 : 0);
 
       console.log('Processed aspects:', processedAspects);
       setUserVotedAll(processedAspects.every(aspect => aspect.userVoted));
       setComparisonMetrics(processedAspects);
-      setLoading(false);
 
       // Handle initial navigation
       const firstUnvotedAspect = processedAspects.find(aspect => !aspect.userVoted);
@@ -149,7 +147,6 @@ const ComparePage = () => {
     } catch (err) {
       console.error('Error in fetchSetMetrics:', err);
       setError(err.message);
-      setLoading(false);
     }
   };
 
@@ -226,106 +223,119 @@ const ComparePage = () => {
   useEffect(() => {
     scrollTo(0, 0);
     fetchSetMetrics();
-  }, [currentSetId, user, items, currentSet]);
+  }, [currentSetId, user]);
 
   const handleRefresh = async () => {
     await fetchSetMetrics();
   };
 
-  if (loading || comparisonLoading) {
-    return null; // Loading screen is now handled by LoadingContext
+  // Show skeleton during loading
+  if (comparisonLoading ) {
+    return <ComparePageSkeleton />;
   }
 
+  // Show error state if either error exists
   if (error || comparisonError) {
-    return null; // Error screen is now handled by LoadingContext
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Something went wrong</h2>
+          <p className="text-gray-600 mb-4">{error || comparisonError}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
-    // <PullToRefresh onRefresh={handleRefresh}>
-      <div className="min-h-screen max-w-7xl mx-auto overflow-x-hidden">
-        <div className="relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="lg:py-4"></div>
-          <div className="">
-            <div className="w-full">
-              <motion.div
-                className="text-white"
-              >
-                <AspectsProgressBar
-                  items={items}
-                  comparisonMetrics={comparisonMetrics}
-                  onAspectClick={(aspect) => {
-                    if (aspect.id === 'results') {
+    <div className="min-h-screen max-w-7xl mx-auto overflow-x-hidden">
+      <div className="relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="lg:py-4"></div>
+        <div className="">
+          <div className="w-full">
+            <motion.div
+              className="text-white"
+            >
+              <AspectsProgressBar
+                items={items}
+                comparisonMetrics={comparisonMetrics}
+                onAspectClick={(aspect) => {
+                  if (aspect.id === 'results') {
+                    setCurrentAspect(null);
+                    setViewMode('results');
+                  } else {
+                    setCurrentAspect(aspect);
+                    setViewMode('aspect');
+                  }
+                }}
+                userVotedAll={userVotedAll}
+                currentSet={currentSet}
+                celebratingAspectId={celebratingAspectId}
+                currentAspect={currentAspect}
+              />
+            </motion.div>
+          </div>
+        </div>
+        
+        <div className="flex-grow md:px-60 lg:px-60">
+          {currentSet && (
+            <div className="flex-grow">
+              {viewMode === 'aspect' && currentAspect && (
+                <CompareAspectView 
+                  onVoteChange={handleVoteChange}
+                  onNextClick={() => {
+                    const next = getNextUnvotedAspect();
+                    if (next) {
+                      setCurrentAspect(next);
+                      setViewMode('aspect');
+                    } else {
                       setCurrentAspect(null);
                       setViewMode('results');
-                    } else {
-                      setCurrentAspect(aspect);
-                      setViewMode('aspect');
                     }
                   }}
-                  userVotedAll={userVotedAll}
-                  currentSet={currentSet}
                   celebratingAspectId={celebratingAspectId}
+                  isResultsPage={false}
                   currentAspect={currentAspect}
+                  nextUnvotedAspect={getNextUnvotedAspect()}
                 />
-              </motion.div>
+              )}
+              {viewMode === 'results' && (
+                <CompareResultsView 
+                  items={items} 
+                  currentSetId={currentSetId} 
+                  currentSet={currentSet} 
+                  celebratingResults={celebratingResults}
+                />
+              )}
             </div>
-          </div>
-          
-          <div className="flex-grow md:px-60 lg:px-60">
-            {currentSet && (
-              <div className="flex-grow">
-                {viewMode === 'aspect' && currentAspect && (
-                  <CompareAspectView 
-                    onVoteChange={handleVoteChange}
-                    onNextClick={() => {
-                      const next = getNextUnvotedAspect();
-                      if (next) {
-                        setCurrentAspect(next);
-                        setViewMode('aspect');
-                      } else {
-                        setCurrentAspect(null);
-                        setViewMode('results');
-                      }
-                    }}
-                    celebratingAspectId={celebratingAspectId}
-                    isResultsPage={false}
-                    currentAspect={currentAspect}
-                    nextUnvotedAspect={getNextUnvotedAspect()}
-                  />
-                )}
-                {viewMode === 'results' && (
-                  <CompareResultsView 
-                    items={items} 
-                    currentSetId={currentSetId} 
-                    currentSet={currentSet} 
-                    celebratingResults={celebratingResults}
-                  />
-                )}
-              </div>
-            )}
+          )}
 
-            {!currentAspect && viewMode === 'results' && (
-              <div className="relative w-full transition-all duration-150 ease-in-out">
-                <div className="w-full max-w-7xl mx-auto lg:px-8">
-                  <div className="flex justify-start py-4">
-                    <Globe2 size={24} className="mr-2" style={{ color: currentTheme.colors.primary }} />
-                    <h1 className="text-xl sm:text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
-                      Explore Similar
-                    </h1>
-                  </div>
-                  <ExploreSimilar currentSetId={currentSetId} />
+          {!currentAspect && viewMode === 'results' && (
+            <div className="relative w-full transition-all duration-150 ease-in-out">
+              <div className="w-full max-w-7xl mx-auto lg:px-8">
+                <div className="flex justify-start py-4">
+                  <Globe2 size={24} className="mr-2" style={{ color: currentTheme.colors.primary }} />
+                  <h1 className="text-xl sm:text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
+                    Explore Similar
+                  </h1>
                 </div>
+                <ExploreSimilar currentSetId={currentSetId} />
               </div>
-            )}
-          </div>
-          {showTrending && (
-            <div ref={trendingRef}>
-              <Trending />
             </div>
           )}
         </div>
+        {showTrending && (
+          <div ref={trendingRef}>
+            <Trending />
+          </div>
+        )}
       </div>
-    // </PullToRefresh>
+    </div>
   );
 };
 

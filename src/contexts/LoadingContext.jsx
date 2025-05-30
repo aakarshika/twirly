@@ -8,19 +8,19 @@ export const LoadingProvider = ({ children }) => {
   const [loadingStates, setLoadingStates] = useState({});
   const [errorStates, setErrorStates] = useState({});
   const [globalLoading, setGlobalLoading] = useState(true); // Start with true for initial load
-  const [globalLoadingMessage, setGlobalLoadingMessage] = useState('Loading...');
+  const [globalLoadingMessage, setGlobalLoadingMessage] = useState('Loading App...');
   const [globalError, setGlobalError] = useState(null);
   const [globalErrorRetry, setGlobalErrorRetry] = useState(null);
 
-  // Simulate minimum loading time for initial load
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setGlobalLoading(false);
-    }, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+  // // Simulate minimum loading time for initial load
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setGlobalLoading(false);
+  //   }, 1000);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
-  const setLoading = (key, isLoading, message = 'Loading...') => {
+  const setLoading = (key, isLoading, message = 'Loading Things...') => {
     setLoadingStates(prev => ({
       ...prev,
       [key]: isLoading

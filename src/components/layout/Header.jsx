@@ -224,7 +224,8 @@ const MobileTinyHeader = ({
       <div className="md:hidden px-2 header-content max-w-7xl mx-auto h-full flex items-center justify-between">
         <button 
           onClick={() => navigate(-1)} 
-          className="flex items-center transition-transform duration-200 hover:scale-105"
+          className="flex items-center transition-transform duration-200 hover:scale-105 "
+          style={{ padding: 'calc(var(--safe-area-inset-top))'}}
         >
           <div className="flex flex-col items-center">
             <ChevronLeft size={20} style={{ color: 'var(--color-text)' }} />
@@ -232,7 +233,8 @@ const MobileTinyHeader = ({
         </button>
         <button 
           onClick={handleDrawerClick} 
-          className="flex items-center transition-transform duration-200 hover:scale-105"
+          className="flex items-center transition-transform duration-200 hover:scale-105 "
+          style={{ padding: 'calc(var(--safe-area-inset-top))'}}
         >
           <div className="flex flex-col items-center">
             {isDrawerOpen ? <X size={24} /> : <Menu size={24} />}
@@ -745,7 +747,7 @@ const Header = () => {
   }
 
   return (
-    <div style={{ color: 'var(--color-text)' }}>
+    <div style={{ color: 'var(--color-text)'}}>
       {/* Side Panel for Web */}
       {!isMobile && user && (
         <SidePanel
@@ -761,11 +763,9 @@ const Header = () => {
       <header
         className={`fixed container mx-auto top-0 left-0 right-0 z-50 w-full transition-all duration-200 ease-in-out ${!isHeaderVisible ? 'hidden' : ''}`}
         style={{
-          paddingTop: 'calc(var(--safe-area-inset-top))',
           color: 'var(--color-text)',
-          height: showTinyHeader ? '40px' : 'auto',
           marginLeft: !isMobile && user ? '16rem' : '0',
-          backgroundImage: `linear-gradient(to bottom, ${currentTheme.colors.background}, transparent)`
+          // backgroundImage: `linear-gradient(to bottom, ${currentTheme.colors.background}, transparent)`
         }}
       >
         {showTinyHeader ? (
@@ -777,7 +777,8 @@ const Header = () => {
         ) : (
           <>
             {isMobile ? (
-              <div className="px-4 md:px-6 lg:px-8 header-content max-w-7xl mx-auto">
+              <div className="px-4 md:px-6 lg:px-8 header-content max-w-7xl mx-auto"
+                   style={{ paddingTop: 'calc(var(--safe-area-inset-top))'}}>
                 <div className="flex items-center justify-between h-full">
                   {/* Logo and Title */}
                   <div className="flex flex-row items-center">

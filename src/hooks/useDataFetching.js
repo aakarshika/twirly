@@ -5,7 +5,7 @@ export const useDataFetching = (key, fetchFunction, dependencies = [], options =
   const { setLoading, setError, clearError, clearLoading, isLoading, getError } = useLoading();
   const { 
     useGlobalLoading = false, 
-    loadingMessage = 'Loading...',
+    loadingMessage = 'Loading Comparison...',
     useGlobalError = false,
     retryFunction = null
   } = options;

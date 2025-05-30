@@ -15,10 +15,10 @@ import MainRoutingPage from './pages/MainRoutingPage';
  */
 const App = () => {
   return (
+    <LoadingProvider>
     <BrowserRouter>
       <AuthProvider>
         <ThemeProvider>
-          <LoadingProvider>
             <HeaderProvider>
               <FeedbackProvider>
                 <BetaTestingProvider>
@@ -26,10 +26,10 @@ const App = () => {
                 </BetaTestingProvider>
               </FeedbackProvider>
             </HeaderProvider>
-          </LoadingProvider>
-        </ThemeProvider>
-      </AuthProvider>
-    </BrowserRouter>
+          </ThemeProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </LoadingProvider>
   );
 };
 

@@ -81,7 +81,7 @@ const SearchBar = ({ searchComplete }) => {
     ].slice(0, 5); // Show top 5 results
 
     if (isLoading) {
-      return <div className="px-4 py-2 text-center">Loading...</div>;
+      return <div className="px-4 py-2 text-center">Loading searches...</div>;
     }
 
     if (allResults.length === 0) {
