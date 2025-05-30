@@ -29,7 +29,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['@heroicons/react', 'lucide-react'],
+          ui: ['@heroicons/react', 'lucide-react', 'lottie-react'],
           utils: ['clsx', 'tailwind-merge'],
         },
       },
@@ -49,6 +49,7 @@ export default defineConfig({
       'lucide-react',
       'clsx',
       'tailwind-merge',
+      'lottie-react',
     ],
   },
 });
