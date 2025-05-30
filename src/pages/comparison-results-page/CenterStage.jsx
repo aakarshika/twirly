@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { useHeader } from '../../contexts/HeaderContext';
 
 const CenterStage = ({ item, isMobile, comparison, winner, runnerUp, totalVotes }) => {
-    const {isHeaderVisible} = useHeader();
     return (
         <motion.div 
             className="relative w-50 h-50 flex items-center justify-center"

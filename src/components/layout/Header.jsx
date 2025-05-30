@@ -30,6 +30,11 @@ const SidePanel = ({ userData, navigate, location, settingsSectionExpanded, setS
     { id: 'help', label: 'Help', icon: '❓' }
   ];
 
+  const betaTestingTabs = [
+    { id: 'feedback', label: 'Beta Feedback', icon: '💬' },
+    { id: 'analytics', label: 'Analytics', icon: '📈' }
+  ];
+
   return (
     <div
       className="fixed left-0 top-0 h-full w-64 z-40 transition-all duration-200 ease-in-out"
@@ -40,7 +45,7 @@ const SidePanel = ({ userData, navigate, location, settingsSectionExpanded, setS
       }}
     >
       <div className="h-full flex flex-col">
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto scrollbar-hide">
           <div className="p-4" style={{ borderColor: 'var(--color-border)' }}>
             <div className="flex flex-col">
               <div className="flex justify-center">
@@ -175,6 +180,29 @@ const SidePanel = ({ userData, navigate, location, settingsSectionExpanded, setS
                     </button>
                   </div>
                 )}
+
+                  {/* Beta Testing Section */}
+                  <div className="mt-6 mb-4">
+                    <h3 className="px-4 text-sm font-semibold opacity-70" style={{ color: 'var(--color-text)' }}>Beta Testing</h3>
+                    {betaTestingTabs.map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => {
+                          navigate(`/beta/${tab.id}`);
+                          setIsDrawerOpen(false);
+                        }}
+                        className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2"
+                        style={{
+                          color: location.pathname === `/beta/${tab.id}` ? 'white' : 'var(--color-text)',
+                          backgroundColor: location.pathname === `/beta/${tab.id}` ? 'var(--color-primary)' : 'transparent'
+                        }}
+                      >
+                        <span className="text-lg">{tab.icon}</span>
+                        <span>{tab.label}</span>
+                      </button>
+                    ))}
+                  </div>
+
               </div>
             </div>
           </div>
@@ -347,6 +375,11 @@ const MobileSettingsDrawer = ({
     { id: 'help', label: 'Help', icon: '❓' }
   ];
 
+  const betaTestingTabs = [
+    { id: 'feedback', label: 'Beta Feedback', icon: '💬' },
+    { id: 'analytics', label: 'Analytics', icon: '📈' }
+  ];
+
   if (!isDrawerOpen) return null;
 
   return (
@@ -369,7 +402,7 @@ const MobileSettingsDrawer = ({
           <BackgroundImage />
         </div>
         <div className="relative z-10 h-full flex flex-col">
-          <div className="flex-1 overflow-y-auto" >
+          <div className="flex-1 overflow-y-auto scrollbar-hide" >
             <div className="p-4" style={{ borderColor: 'var(--color-border)' }}>
               <div className="flex flex-col">
                 <div className="flex justify-center">
@@ -422,7 +455,7 @@ const MobileSettingsDrawer = ({
             <div className="p-4" style={{ borderColor: 'var(--color-border)' }}>
               <div className="flex flex-col">
                 {/* Main Navigation */}
-                <div className="mb-6">
+                <div className="mb-6 pb-60">
                   {mainNavItems.map((item) => (
                     <button
                       key={item.name}
@@ -446,15 +479,15 @@ const MobileSettingsDrawer = ({
                       navigate('/new-comparison?load_draft=true');
                       setIsDrawerOpen(false);
                     }}
-                    className="w-full border-b px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2"
-                    style={{
-                      color: location.pathname === `/new-comparison` ? 'white' : 'var(--color-text)',
-                      backgroundColor: location.pathname === `/new-comparison` ? 'var(--color-primary)' : 'transparent'
-                    }}
-                  >
-                    <PencilIcon size={24} />
-                    <span className="text-sm rounded-md px-2 py-1" style={{backgroundColor: location.pathname === `/new-comparison` ? 'transparent':  'var(--color-background)' }}>Your Comparison</span>
-                  </button>
+                  className="w-full border-b px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2"
+                  style={{
+                    color: location.pathname === `/new-comparison` ? 'white' : 'var(--color-text)',
+                    backgroundColor: location.pathname === `/new-comparison` ? 'var(--color-primary)' : 'transparent'
+                  }}
+                >
+                  <PencilIcon size={24} />
+                    <span className="text-sm rounded-md px-2 py-1" style={{backgroundColor: location.pathname === `/new-comparison` ? 'var(--color-primary)' : 'var(--color-background)'}}>Your Comparison</span>
+                </button>
 
                   <button
                     onClick={() => {
@@ -514,7 +547,7 @@ const MobileSettingsDrawer = ({
                       {/* Logout Button */}
                       <button
                         onClick={handleLogout}
-                        className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2 pb-60"
+                        className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2 "
                         style={{
                           color: 'var(--color-text)',
                           backgroundColor: 'transparent'
@@ -525,6 +558,29 @@ const MobileSettingsDrawer = ({
                       </button>
                     </div>
                   )}
+
+                  {/* Beta Testing Section */}
+                  <div className="mt-6 mb-4">
+                    <h3 className="px-4 text-sm font-semibold opacity-70" style={{ color: 'var(--color-text)' }}>Beta Testing</h3>
+                    {betaTestingTabs.map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => {
+                          navigate(`/beta/${tab.id}`);
+                          setIsDrawerOpen(false);
+                        }}
+                        className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2"
+                        style={{
+                          color: location.pathname === `/beta/${tab.id}` ? 'white' : 'var(--color-text)',
+                          backgroundColor: location.pathname === `/beta/${tab.id}` ? 'var(--color-primary)' : 'transparent'
+                        }}
+                      >
+                        <span className="text-lg">{tab.icon}</span>
+                        <span>{tab.label}</span>
+                      </button>
+                    ))}
+                  </div>
+
                 </div>
               </div>
             </div>

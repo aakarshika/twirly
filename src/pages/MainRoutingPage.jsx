@@ -33,6 +33,14 @@ import InitialLoadingScreen from '../components/common/InitialLoadingScreen';
 import { useMediaQuery } from 'react-responsive';
 import { TrendingProvider, useTrending } from '../contexts/TrendingContext';
 import BackgroundImage from '../components/common/BackgroundImage';
+import { useBetaTesting } from '../contexts/BetaTestingContext';
+import PerformanceMonitor from '../components/PerformanceMonitor';
+import BetaTestingControls from '../components/beta/BetaTestingControls';
+import BetaPerformance from '../pages/beta/BetaPerformance';
+import BetaAnalytics from '../pages/beta/BetaAnalytics';
+import ErrorTest from '../components/ErrorTest';
+import ErrorBoundary from '../components/ErrorBoundary';
+import NotFoundPage from '../components/NotFoundPage';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -124,6 +132,7 @@ const MainRoutingPage = () => {
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const location = useLocation();
   const { user } = useAuth();
+  const { showPerformanceMonitor } = useBetaTesting();
 
   const shouldShowHeader = () => {
     if (!isMobile) return true; // Always show header on desktop
@@ -159,9 +168,9 @@ const MainRoutingPage = () => {
   }
 
   return (
-    <div className="min-h-screen">
-      <LoadingProvider>
-        <FeedbackProvider>
+    <ErrorBoundary>
+      <div className="min-h-screen">
+        <LoadingProvider>
           <ComparisonDraftProvider>
             <TrendingProvider>
               <BackgroundImage />
@@ -170,16 +179,22 @@ const MainRoutingPage = () => {
                 className="relative flex flex-col min-h-screen mx-auto z-10" 
                 style={{ 
                   paddingTop: shouldShowHeader() ? '64px' : '0px',
-                  marginLeft: !isMobile && user ? '16rem' : '0' // Add margin for side panel on web
+                  marginLeft: !isMobile && user ? '16rem' : '0'
                 }}
               >
                 <Header />
-                <main className="flex-1 overflow-x-auto" >
+                <main className="flex-1 overflow-x-auto">
                   <Routes>
                     {/* Protected Routes */}
                     <Route path="/onboarding" element={<ProtectedRoute><OnboardingFlow /></ProtectedRoute>}/>
                     <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>}/>
                     <Route path="/" element={<ProtectedRoute><Trending /></ProtectedRoute>}/>
+                    <Route path="/error-test" element={<ProtectedRoute><ErrorTest /></ProtectedRoute>}/>
+                    
+                    {/* Beta Testing Routes */}
+                    <Route path="/beta/performance" element={<ProtectedRoute><BetaPerformance /></ProtectedRoute>}/>
+                    <Route path="/beta/analytics" element={<ProtectedRoute><BetaAnalytics /></ProtectedRoute>}/>
+                    <Route path="beta/feedback" element={<ProtectedRoute><FeedbackManagement /></ProtectedRoute>} />
                     
                     {/* Compare routes */}
                     <Route path="/compare/:id/*" element={
@@ -209,7 +224,6 @@ const MainRoutingPage = () => {
                     <Route path="/dashboard/:tab" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>}/>
                     <Route path="/user/:username" element={<UserProfile />} />
                     <Route path="/user/:username/:tab" element={<UserProfile />} />
-                    <Route path="/feedback" element={<ProtectedRoute><FeedbackManagement /></ProtectedRoute>} />
 
                     {/* Waiting Verification Route */}
                     <Route path="/waiting-verification" element={<WaitingVerification />} />
@@ -221,15 +235,23 @@ const MainRoutingPage = () => {
                     <Route path="/forgot-password" element={<ForgotPassword />} />
                     <Route path="/auth/v1/callback" element={<Navigate to="/" replace />} />
                     <Route path="/auth/callback" element={<Navigate to="/" replace />} />
+                    
+                    {/* Catch-all route for 404 */}
+                    <Route path="*" element={<NotFoundPage />} />
                   </Routes>
                 </main>
                 <Footer />
+
+                {/* Beta Testing Components */}
+                <BetaTestingControls />
+                {showPerformanceMonitor && <PerformanceMonitor isVisible={true} />}
+                <FeedbackModal />
               </div>
             </TrendingProvider>
           </ComparisonDraftProvider>
-        </FeedbackProvider>
-      </LoadingProvider>
-    </div>
+        </LoadingProvider>
+      </div>
+    </ErrorBoundary>
   );
 };
 
