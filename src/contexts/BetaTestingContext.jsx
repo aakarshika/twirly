@@ -13,7 +13,8 @@ export const useBetaTesting = () => {
 };
 
 export const BetaTestingProvider = ({ children }) => {
-  const [isBetaMode, setIsBetaMode] = useState(process.env.NODE_ENV === 'development');
+  // const [isBetaMode, setIsBetaMode] = useState(process.env.NODE_ENV === 'development');
+  const [isBetaMode, setIsBetaMode] = useState(true);
   const [showPerformanceMonitor, setShowPerformanceMonitor] = useState(false);
   const { openFeedbackModal } = useFeedback();
 
