@@ -41,20 +41,20 @@ class ErrorBoundary extends React.Component {
   render() {
     if (this.state.hasError) {
       return (
-        <Card className="p-4 m-4">
+        <Card className="">
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Something went wrong</AlertTitle>
             <AlertDescription>
               <div className="mt-2">
                 <p className="font-semibold">Error Details:</p>
-                <pre className="mt-2 text-sm bg-gray-100 p-2 rounded overflow-auto">
+                <pre className="mt-2 text-sm bg-gray-100 text-gray-500 p-2 overflow-auto">
                   {this.state.error && this.state.error.toString()}
                 </pre>
                 {this.state.errorInfo && (
                   <div className="mt-2">
                     <p className="font-semibold">Component Stack:</p>
-                    <pre className="mt-2 text-sm bg-gray-100 p-2 rounded overflow-auto">
+                    <pre className="mt-2 text-sm bg-gray-100 text-gray-500 p-2 overflow-auto">
                       {this.state.errorInfo.componentStack}
                     </pre>
                   </div>

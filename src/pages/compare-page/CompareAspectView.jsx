@@ -34,8 +34,7 @@ const CompareAspectView = ({
     handleVote,
     handleRevertVote,
     loading,
-    error,
-    refetch
+    error
   } = useComparisonAspectData(currentAspect?.id, setId);
 
   // Use vote state from props instead of hook
@@ -51,30 +50,6 @@ const CompareAspectView = ({
     }
   }, [celebratingAspectId, currentAspect?.id]);
 
-  // Function to update user category preferences
-  const updateUserCategoryPreferences = async (categoryId) => {
-    try {
-      const preferences = await userService.getUserPreferences(user.id);
-      const categoryPreferences = await userService.getUserCategoryPreferences(user.id);
-      const notificationPreferences = await userService.getUserNotificationSettings(user.id);
-
-      const hasCategory = categoryPreferences.some(pref => pref.category_id === categoryId);
-      
-      if (!hasCategory) {
-        const updatedCategories = [...categoryPreferences.map(p => p.category_id), categoryId];
-        
-        await userService.saveUserPreferences(user.id, {
-          display_name: preferences?.display_name || '',
-          id: preferences?.id || null,
-          categories: updatedCategories,
-          notifications: notificationPreferences?.notifications || [],
-          notifId: notificationPreferences?.id || null,
-        });
-      }
-    } catch (error) {
-      console.error('Error updating category preferences:', error);
-    }
-  };
 
   // Wrap the vote handlers to notify parent
   const handleVoteWithUpdate = async (itemId) => {
@@ -85,10 +60,6 @@ const CompareAspectView = ({
       if (success) {
         console.log('CompareAspectView: calling onVoteChange with aspectId:', currentAspect?.id);
         onVoteChange(currentAspect?.id, true, itemId);
-        
-        if (currentSet?.category_id) {
-          await updateUserCategoryPreferences(currentSet.category_id);
-        }
       }
     } catch (error) {
       console.error('Error in handleVoteWithUpdate:', error);
