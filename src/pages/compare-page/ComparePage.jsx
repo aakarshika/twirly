@@ -30,6 +30,7 @@ const ComparePage = () => {
   const [celebratingAspectId, setCelebratingAspectId] = useState(null);
   const [currentAspect, setCurrentAspect] = useState(null);
   const [viewMode, setViewMode] = useState('aspect'); // 'aspect' or 'results'
+  const [aspectVotes, setAspectVotes] = useState({}); // New state to track votes for each aspect
   const trendingRef = useRef(null);
   const celebrationTimerRef = useRef(null);
   const navigate = useNavigate();
@@ -174,6 +175,15 @@ const ComparePage = () => {
       celebrationTimerRef.current = null;
     }
     
+    // Update aspect votes state
+    setAspectVotes(prev => ({
+      ...prev,
+      [aspectId]: {
+        userVoted: hasVoted,
+        votedItemId: hasVoted ? item_id : null
+      }
+    }));
+    
     setComparisonMetrics(prevMetrics => {
       const updatedMetrics = prevMetrics.map(metric => 
         metric.id === parseInt(aspectId)
@@ -197,6 +207,20 @@ const ComparePage = () => {
       return updatedMetrics;
     });
   };
+
+  // Initialize aspect votes from comparison metrics when they are loaded
+  useEffect(() => {
+    if (comparisonMetrics.length > 0) {
+      const initialVotes = {};
+      comparisonMetrics.forEach(metric => {
+        initialVotes[metric.id] = {
+          userVoted: metric.userVoted,
+          votedItemId: metric.itemVoted
+        };
+      });
+      setAspectVotes(initialVotes);
+    }
+  }, [comparisonMetrics]);
 
   useEffect(() => {
     const handleUserInteraction = () => {
@@ -303,6 +327,7 @@ const ComparePage = () => {
                     isResultsPage={false}
                     currentAspect={currentAspect}
                     nextUnvotedAspect={getNextUnvotedAspect()}
+                    aspectVotes={aspectVotes[currentAspect.id] || { userVoted: false, votedItemId: null }}
                   />
                 )}
                 {viewMode === 'results' && (

@@ -12,7 +12,15 @@ import { userService } from '../../services/userService';
 import { useAuth } from '../../contexts/AuthContext';
 import NotVotedCard from '../comparison-aspect-page/ComparisonItemCard/NotVotedCard';
 
-const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isResultsPage, currentAspect, nextUnvotedAspect }) => {
+const CompareAspectView = ({ 
+  onVoteChange, 
+  onNextClick, 
+  celebratingAspectId, 
+  isResultsPage, 
+  currentAspect, 
+  nextUnvotedAspect,
+  aspectVotes // New prop for vote state
+}) => {
   const { id: setId } = useParams();
   const { currentTheme } = useTheme();
   const { user } = useAuth();
@@ -23,14 +31,16 @@ const CompareAspectView = ({ onVoteChange, onNextClick, celebratingAspectId, isR
     currentAspectSet,
     items,
     totalVotes,
-    userVoted,
-    votedItemId,
     handleVote,
     handleRevertVote,
     loading,
     error,
     refetch
   } = useComparisonAspectData(currentAspect?.id, setId);
+
+  // Use vote state from props instead of hook
+  const userVoted = aspectVotes?.userVoted || false;
+  const votedItemId = aspectVotes?.votedItemId || null;
 
   // Effect to handle celebration state
   useEffect(() => {
