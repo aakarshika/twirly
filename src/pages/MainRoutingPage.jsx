@@ -47,17 +47,23 @@ const ProtectedRoute = ({ children }) => {
   const { setLoading, setError } = useLoading();
 
   useEffect(() => {
+    console.log('[ProtectedRoute] Mounted with user:', !!user);
     const checkOnboardingStatus = async () => {
-      if (!user) return;
+      if (!user) {
+        console.log('[ProtectedRoute] No user, skipping onboarding check');
+        return;
+      }
       try {
+        console.log('[ProtectedRoute] Starting onboarding check');
         setLoading('onboarding', true, 'Checking onboarding status...');
         const prefs = await userService.getUserPreferences(user.id);
         const cats = await userService.getUserCategoryPreferences(user.id);
         const notif = await userService.getUserNotificationSettings(user.id);
         const isComplete = prefs && prefs.display_name && cats.length > 0 && notif.created_at !== notif.updated_at;
+        console.log('[ProtectedRoute] Onboarding check complete:', { isComplete, prefs, cats, notif });
         setIsOnboardingComplete(isComplete);
       } catch (error) {
-        console.error('Error checking onboarding status:', error);
+        console.error('[ProtectedRoute] Error checking onboarding status:', error);
         setIsOnboardingComplete(false);
         setError('onboarding', 'Failed to check onboarding status. Please try again.', () => window.location.reload());
       } finally {
@@ -73,18 +79,30 @@ const ProtectedRoute = ({ children }) => {
     }
   }, [user]);
 
+  console.log('[ProtectedRoute] Render state:', { 
+    hasUser: !!user, 
+    loading, 
+    checkingOnboarding, 
+    isOnboardingComplete,
+    currentPath: location.pathname 
+  });
+
   if (!user) {
+    console.log('[ProtectedRoute] No user, redirecting to landing');
     return <Navigate to="/landing" />;
   }
 
   if (loading || checkingOnboarding) {
-    return null; // Loading screen is now handled by LoadingContext
+    console.log('[ProtectedRoute] Loading or checking onboarding, showing null');
+    return null;
   }
 
   if (!isOnboardingComplete && location.pathname !== '/onboarding') {
+    console.log('[ProtectedRoute] Onboarding incomplete, redirecting to onboarding');
     return <Navigate to="/onboarding" replace />;
   }
 
+  console.log('[ProtectedRoute] Rendering children');
   return children;
 };
 
@@ -127,52 +145,63 @@ const ScrollToTop = () => {
  * Main App component that wraps the application with necessary providers and routing
  */
 const MainRoutingPage = () => {
+  console.log('[MainRoutingPage] Component mounting');
   const { currentTheme } = useTheme();
-  const { loading } = useAuth();
+  const { loading, user } = useAuth();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const location = useLocation();
-  const { user } = useAuth();
   const { showPerformanceMonitor } = useBetaTesting();
 
+  useEffect(() => {
+    console.log('[MainRoutingPage] Auth state changed:', { 
+      loading, 
+      hasUser: !!user,
+      isInitialLoad,
+      currentPath: location.pathname,
+      isMobile
+    });
+  }, [loading, user, isInitialLoad, location.pathname, isMobile]);
+
   const shouldShowHeader = () => {
-    if (!isMobile) return true; // Always show header on desktop
-    
-    // Only show header on specific pages for mobile
-    const mobileHeaderPages = ['/', '/dashboard', '/settings', '/compare', '/user'];
-    const currentPath = location.pathname;
-    return mobileHeaderPages.some(path => currentPath === path || currentPath.startsWith(path + '/'));
+    const show = !isMobile || ['/', '/dashboard', '/settings', '/compare', '/user'].some(path => 
+      location.pathname === path || location.pathname.startsWith(path + '/')
+    );
+    console.log('[MainRoutingPage] Header visibility check:', { show, path: location.pathname, isMobile });
+    return show;
   };
 
   const isPublicRoute = () => {
-    const publicPaths = ['/login', '/landing', '/signup', '/forgot-password', '/auth/v1/callback', '/auth/callback'];
-    return publicPaths.some(path => location.pathname === path);
+    const isPublic = ['/login', '/landing', '/signup', '/forgot-password', '/auth/v1/callback', '/auth/callback']
+      .some(path => location.pathname === path);
+    console.log('[MainRoutingPage] Public route check:', { isPublic, path: location.pathname });
+    return isPublic;
   };
 
   useEffect(() => {
-    // Debug log for header visibility
-    console.log('Should show header:', shouldShowHeader());
-  }, [location.pathname, isMobile]);
-
-  useEffect(() => {
-    // Simulate minimum loading time to prevent flash
+    console.log('[MainRoutingPage] Setting up initial load timer');
     const timer = setTimeout(() => {
+      console.log('[MainRoutingPage] Initial load timer complete');
       setIsInitialLoad(false);
-    }, 500); // Reduced to 500ms for better UX
+    }, 500);
 
-    return () => clearTimeout(timer);
+    return () => {
+      console.log('[MainRoutingPage] Cleaning up initial load timer');
+      clearTimeout(timer);
+    };
   }, []);
 
-  // Show initial loading screen during first load
   if (isInitialLoad) {
-    return null; // Loading screen is now handled by LoadingContext
+    console.log('[MainRoutingPage] Showing initial loading screen');
+    return null;
   }
 
-  // Show regular loading screen for subsequent auth checks
   if (loading && user) {
-    return null; // Loading screen is now handled by LoadingContext
+    console.log('[MainRoutingPage] Showing auth loading screen');
+    return null;
   }
 
+  console.log('[MainRoutingPage] Rendering main content');
   return (
     <ErrorBoundary>
       <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background, color: currentTheme.colors.text }}>
