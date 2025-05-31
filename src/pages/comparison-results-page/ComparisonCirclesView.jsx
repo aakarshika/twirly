@@ -171,7 +171,7 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
                             Created by <span className="font-medium text-gray-900">{comparison.user?.display_name || 'Anonymous'}</span>
                         </span>
                         <span className="text-xs text-gray-500">
-                            {formatDistanceToNow(comparison.created_at && new Date(comparison.created_at).toLocaleDateString())}
+                            {formatDistanceToNow(comparison.created_at && new Date(comparison.created_at))}
                         </span>
                     </div>
                 </div>

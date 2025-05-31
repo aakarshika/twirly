@@ -72,7 +72,7 @@ const SupabaseTest = () => {
               <h3 className="text-xl font-semibold text-white">{item.name}</h3>
               <p className="text-gray-400">{item.description}</p>
               <p className="text-sm text-gray-500">
-                Created: {new Date(item.created_at).toLocaleString()}
+                Created: {new Date(item.created_at)}
               </p>
             </div>
           ))}

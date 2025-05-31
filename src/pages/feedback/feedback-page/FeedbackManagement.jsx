@@ -392,7 +392,7 @@ const FeedbackManagement = () => {
                   </select>
                 </td>
                 <td className="px-4 py-2 text-xs text-gray-500">
-                  {new Date(item.created_at).toLocaleString()}
+                  {new Date(item.created_at)}
                 </td>
                 <td className="px-4 py-2">{item.name}
                   {item.page_route ? (
