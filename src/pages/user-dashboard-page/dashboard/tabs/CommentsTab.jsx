@@ -101,14 +101,6 @@ const CommentsTab = ({ userId, isPublic }) => {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 
-          className="text-2xl font-bold"
-          style={{ color: currentTheme.colors.text }}
-        >
-          Your Comments
-        </h2>
-      </div>
 
       <div className="space-y-4">
         {comments.map((comment) => (

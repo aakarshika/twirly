@@ -175,7 +175,7 @@ const MainRoutingPage = () => {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background }}>
+      <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background, color: currentTheme.colors.text }}>
         <ComparisonDraftProvider>
           <TrendingProvider>
             <BackgroundImage />

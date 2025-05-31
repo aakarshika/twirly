@@ -31,11 +31,7 @@ const ProductsTab = ({ userId, isPublic }) => {
     >
       <div className="flex justify-between items-center mb-6" 
           style={{ color: currentTheme.colors.text,backgroundColor: currentTheme.colors.cardBackground }}>
-        <h2 
-          className="text-xl font-semibold"
-        >
-          {isPublic ? 'Products' : 'Your Products'}
-        </h2>
+        
         {(!isPublic && <button
           onClick={() => {
             setAddProductModalOpen(true);

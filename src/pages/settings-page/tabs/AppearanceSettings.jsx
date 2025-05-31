@@ -1,18 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { Palette, Sun, Moon, Monitor,  Layout, Save, Pencil } from 'lucide-react';
 import Button from '../../../components/common/Button';
 
 const AppearanceSettings = () => {
   const { currentTheme, changeTheme, themes } = useTheme();
+  const savedTheme = localStorage.getItem('theme');
+  console.log(savedTheme);
   const [appearanceSettings, setAppearanceSettings] = useState({
-    theme: 'dark',
+    theme: savedTheme ? JSON.parse(savedTheme).name : currentTheme.name,
     fontSize: 'medium',
     layout: 'default',
     animations: true,
     reduceMotion: false,
     highContrast: false
   });
+
+  // Update appearanceSettings when currentTheme changes
+  useEffect(() => {
+    setAppearanceSettings(prev => ({
+      ...prev,
+      theme: currentTheme.name
+    }));
+  }, [currentTheme]);
 
   const handleThemeChange = (theme) => {
     setAppearanceSettings(prev => ({
@@ -91,11 +101,11 @@ const AppearanceSettings = () => {
                 key={key}
                 onClick={() => handleThemeChange(key)}
                 className={`px-4 py-2 rounded-lg transition-colors ${
-                  appearanceSettings.theme === key ? 'bg-opacity-20' : 'hover:bg-opacity-5'
+                  currentTheme.name === theme.name ? 'bg-opacity-20' : 'hover:bg-opacity-5'
                 }`}
                 style={{ 
-                  backgroundColor: appearanceSettings.theme === key ? currentTheme.colors.primary : 'transparent',
-                  color: appearanceSettings.theme === key ? currentTheme.colors.background : currentTheme.colors.text
+                  backgroundColor: currentTheme.name === theme.name ? currentTheme.colors.primary : 'transparent',
+                  color: currentTheme.name === theme.name ? currentTheme.colors.background : currentTheme.colors.text
                 }}
               >
                 {theme.name}

@@ -8,6 +8,7 @@ import CommentHeader from '../../components/common/comments/CommentHeader';
 import LoadingOrError from '../../components/common/LoadingOrError';
 import { useNavigate } from 'react-router-dom';
 import { useComparisonSetAspectsComments } from '../../hooks/useComparisonSetAspectsComments';
+import { changeColorAlpha } from '../../lib/utils';
 
 const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet, handleLikeComparisonAspectSet }) => {
   const { currentTheme } = useTheme();
@@ -45,7 +46,7 @@ const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet, ha
 
   if (!isExpanded) {
     return (
-      <div className="cursor-pointer" onClick={() => setIsExpanded(true)}>
+      <div className="cursor-pointer" onClick={() => setIsExpanded(true)} style={{ opacity: 0.8, backgroundColor: changeColorAlpha(currentTheme.colors.background, 0.5) }}>
         <div className="rounded-lg p-1 hover:bg-gray-100 transition-colors">
 
         <div className='flex flex-row items-start justify-start'>

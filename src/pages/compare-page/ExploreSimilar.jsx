@@ -33,6 +33,9 @@ const ExploreSimilar = ({ currentSetId }) => {
             const { data: setDetails } = await supabase
               .from('comparison_sets')
               .select(`
+                comparison_set_aspects (
+                  metric_name
+                ),
                 user:user_preferences(*),
                 comparison_set_items (
                   items (

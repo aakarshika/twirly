@@ -94,7 +94,7 @@ const UserProfile = () => {
           activeTab={activeTab} 
           setActiveTab={setActiveTab}
           userId={userData.profile.user_id}
-          username={userData.profile.username}
+          username={userData.profile.display_name}
           isPublic={true}
         />
       </div>

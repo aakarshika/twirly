@@ -66,9 +66,6 @@ const ComparisonsTab = ({ userId, isPublic }) => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold" style={{ color: currentTheme.colors.text }}>
-          {isPublic ? 'Comparisons' : 'My Comparisons'}
-        </h2>
         {(!isPublic && <button
           onClick={() => navigate('/new-comparison')}
           className="flex items-center space-x-2 px-4 py-2 rounded-lg font-medium"

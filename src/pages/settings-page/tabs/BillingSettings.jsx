@@ -75,14 +75,16 @@ const BillingSettings = () => {
         >
           Billing Settings
         </h2>
-        <Button
+        {/* <Button
           onClick={handleSave}
           className="flex items-center space-x-2"
           style={{ backgroundColor: currentTheme.colors.primary }}
         >
           <Save size={16} />
           <span>Save Changes</span>
-        </Button>
+        </Button> */}
+            <span className="text-sm text-gray-500 pl-2">Coming soon...</span>
+
       </div>
 
       <div className="space-y-6">

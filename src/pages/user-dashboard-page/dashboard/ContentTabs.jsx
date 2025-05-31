@@ -66,13 +66,13 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
     },
     { 
       id: 'products', 
-      label: 'Products', 
+      label: 'Items', 
       icon: StarIcon,
       count: userData?.products_count || 0
     },
     { 
       id: 'comments', 
-      label: 'Reviews', 
+      label: 'Comments', 
       icon: ChatBubbleLeftRightIcon,
       count: userData?.reviews_count || 0
     },
@@ -91,13 +91,13 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
     },
     { 
       id: 'products', 
-      label: 'Products', 
+      label: 'Items', 
       icon: StarIcon,
       count: userData?.products_count || 0
     },
     { 
       id: 'comments', 
-      label: 'Reviews', 
+      label: 'Comments', 
       icon: ChatBubbleLeftRightIcon,
       count: userData?.reviews_count || 0
     },

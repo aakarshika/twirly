@@ -16,8 +16,22 @@ const TrendingCard = ({set, from}) => {
     const [userVoted, setUserVoted] = useState(false);
     const [votedItems, setVotedItems] = useState([]);
     const [imageErrors, setImageErrors] = useState({});
+    const [currentMetricIndex, setCurrentMetricIndex] = useState(0);
 
     const { currentTheme } = useTheme();
+
+    // Effect to cycle through metric names
+    useEffect(() => {
+        if (!set.comparison_set_aspects || set.comparison_set_aspects.length === 0) return;
+
+        const interval = setInterval(() => {
+            setCurrentMetricIndex(prevIndex => 
+                (prevIndex + 1) % set.comparison_set_aspects.length
+            );
+        }, 2500); // Change metric every 2 seconds
+
+        return () => clearInterval(interval);
+    }, [set.comparison_set_aspects]);
 
     const handleSetClick = async (set, event) => {
         try {
@@ -125,7 +139,7 @@ const TrendingCard = ({set, from}) => {
                                     <div
                                         className="absolute inset-0 flex text-center items-center justify-center text-lg font-bold pl-1 pr-1"
                                         style={{ 
-                                            color: 'black', 
+                                            color: currentTheme.colors.text, 
                                             backgroundColor: !userVoted ? currentTheme.colors.card : changeColorAlpha(item.item_color_string, 0.5) 
                                         }}
                                     >
@@ -137,7 +151,7 @@ const TrendingCard = ({set, from}) => {
                                         className="bg-black bg-opacity-50 p-1 flex items-center justify-center" 
                                         style={{ 
                                             backgroundColor: !userVoted ? currentTheme.colors.card : item.item_color_string, 
-                                            color: 'black' 
+                                            color: currentTheme.colors.text 
                                         }}
                                     >
                                         <p className="text-sm truncate text-center">{item.name}</p>
@@ -155,8 +169,29 @@ const TrendingCard = ({set, from}) => {
                         );
                     })}
                 </div>
-                <div className="flex items-center justify-between mt-4">
+                <div className="flex items-center justify-between mt-4" style={{ color: currentTheme.colors.text }}>
                     <div className="flex">
+                        <div className="items-start">
+                            <div className="flex flex-col">
+                                <div className="flex items-center">
+                                    <span className="text-xs mr-2" style={{ opacity: 0.9 }}>based on</span>
+                                <span 
+                                    className="text-sm rounded-md"
+                                    style={{textAlign: 'start', color: 'white', backgroundColor: currentTheme.colors.secondary, padding: '4px 8px', opacity: 0.8}}
+                                >
+                                    {set.comparison_set_aspects[currentMetricIndex] && 
+                                     splitAndJoin(set.comparison_set_aspects[currentMetricIndex].metric_name)}
+                                </span>
+                                </div>
+                                <div className="flex items-center">
+                                    <span className="text-xs ">
+                                        {formatDistanceToNow(new Date(set.created_at), { addSuffix: true })}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {/* <div className="flex">
                         <Avatar
                             profileImageUrl={set.user?.profile_image_url ? getPublicUrl(set.user?.profile_image_url) : null}
                             displayName={set.user?.display_name}
@@ -175,13 +210,13 @@ const TrendingCard = ({set, from}) => {
                                     {set.user?.display_name || 'Anonymous'}
                                 </span>
                                 <div className="flex items-center">
-                                    <span className="text-xs text-gray-400 dark:text-gray-300">
+                                    <span className="text-xs ">
                                         {formatDistanceToNow(new Date(set.created_at), { addSuffix: true })}
                                     </span>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
                     <div className="flex items-center space-x-4" style={{ color: currentTheme.colors.text }}>
                         {(set.total_comments || 0) > 0 && (

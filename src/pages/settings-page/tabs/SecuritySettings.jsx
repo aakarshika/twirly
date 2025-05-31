@@ -85,7 +85,9 @@ const SecuritySettings = () => {
         >
           Security Settings
         </h2>
-        <Button
+        <span className="text-sm text-gray-500 pl-2">Coming soon...</span>
+
+        {/* <Button
           onClick={handleUpdatePassword}
           className="flex items-center space-x-2"
           style={{ backgroundColor: currentTheme.colors.primary }}
@@ -93,7 +95,7 @@ const SecuritySettings = () => {
         >
           <Save size={16} />
           <span>Save Changes</span>
-        </Button>
+        </Button> */}
       </div>
 
       <div className="space-y-6">

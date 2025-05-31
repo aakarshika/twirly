@@ -10,7 +10,7 @@ import {
   Moon,
   Sun
 } from 'lucide-react';
-
+import { useTheme } from '../../contexts/ThemeContext';
 const BackgroundImage = () => {
   // Array of icons to display
   const icons = [
@@ -143,6 +143,7 @@ const BackgroundImage = () => {
     { Icon: Sun, color: 'rgba(230, 230, 230, 0.6)' },
   ];
 
+  const { currentTheme } = useTheme();
   // Calculate grid positions
   const generateGridIcons = () => {
     const numCols = 8; // Number of columns in the grid
@@ -166,7 +167,7 @@ const BackgroundImage = () => {
         <motion.div
           key={index}
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          animate={{ opacity: ['Light', 'Sunset', 'Ocean', 'Forest'].includes(currentTheme.name) ? 1 : 0.1 }}
           transition={{
             duration: 2,
             delay: Math.random() * 2,
@@ -195,7 +196,9 @@ const BackgroundImage = () => {
         left: 0,
         right: 0,
         bottom: 0,
-        background: 'linear-gradient(135deg,rgb(237, 237, 251) 0%,rgb(251, 253, 239) 50%,rgb(230, 251, 250) 100%)',
+        background:   ['Light', 'Sunset', 'Ocean', 'Forest'].includes(currentTheme.name) ? 
+        'linear-gradient(135deg,rgb(237, 237, 251) 0%,rgb(251, 253, 239) 50%,rgb(230, 251, 250) 100%)' 
+        : 'linear-gradient(135deg,rgb(47, 47, 81) 0%,rgb(26, 50, 89) 50%,rgb(86, 53, 127) 100%)',
         overflow: 'hidden',
         zIndex: 0, // Ensure background stays behind all content
       }}

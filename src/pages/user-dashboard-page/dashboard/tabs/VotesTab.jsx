@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../../contexts/ThemeContext';
 import { getUserVotes } from '../../../../services/votes';
 import { useAuth } from '../../../../contexts/AuthContext';
-import { splitAndJoin } from '../../../../lib/utils';
+import { changeColorAlpha, splitAndJoin } from '../../../../lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 const VoteCard = ({ vote }) => {
@@ -14,7 +14,7 @@ const VoteCard = ({ vote }) => {
             onClick={() => {
               navigate(`/compare/${vote.comparison_set_aspects?.set_id}`);
             }}
-      style={{ backgroundColor: currentTheme.colors.background }}
+      style={{ backgroundColor: changeColorAlpha(currentTheme.colors.background, 0.5) }}
     >
       <div className="p-4">
         <div className="flex justify-between items-start mb-4">
@@ -110,12 +110,6 @@ const VotesTab = ({ userId, isPublic }) => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 
-          className="text-2xl font-bold"
-          style={{ color: currentTheme.colors.text }}
-        >
-          Your Votes
-        </h2>
       </div>
 
       <div className="space-y-4">
