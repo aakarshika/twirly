@@ -41,7 +41,7 @@ const CommentCard = ({ comment }) => {
               className="text-sm"
               style={{ color: currentTheme.colors.text }}
             >
-              {formatDistanceToNow(new Date(comment.created_at).toLocaleDateString())}
+              {formatDistanceToNow(new Date(comment.created_at))}
             </span>
           </div>
         </div>

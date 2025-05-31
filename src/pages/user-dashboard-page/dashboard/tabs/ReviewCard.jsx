@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../../contexts/ThemeContext';
 import { getUserReviews } from '../../../../services/reviews';
+import { formatDistanceToNow } from 'date-fns';
 
 const ReviewCard = ({ review }) => {
   const { currentTheme } = useTheme();
@@ -56,7 +57,7 @@ const ReviewCard = ({ review }) => {
               className="text-sm"
               style={{ color: currentTheme.colors.textSecondary }}
             >
-              {new Date(review.created_at).toLocaleDateString()}
+              {formatDistanceToNow(new Date(review.created_at))}
             </span>
           </div>
           <div className="flex space-x-2">

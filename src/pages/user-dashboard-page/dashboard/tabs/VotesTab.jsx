@@ -39,7 +39,7 @@ const VoteCard = ({ vote }) => {
               className="text-sm"
               style={{ color: currentTheme.colors.text }}
             >
-              {formatDistanceToNow(new Date(vote.created_at).toLocaleDateString())}
+              {formatDistanceToNow(new Date(vote.created_at))}
             </span>
           </div>
         </div>
