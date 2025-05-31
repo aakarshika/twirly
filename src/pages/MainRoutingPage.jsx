@@ -50,7 +50,7 @@ const ProtectedRoute = ({ children }) => {
     const checkOnboardingStatus = async () => {
       if (!user) return;
       try {
-        setLoading('global', true, 'Checking onboarding status...');
+        setLoading('onboarding', true, 'Checking onboarding status...');
         const prefs = await userService.getUserPreferences(user.id);
         const cats = await userService.getUserCategoryPreferences(user.id);
         const notif = await userService.getUserNotificationSettings(user.id);
@@ -59,9 +59,9 @@ const ProtectedRoute = ({ children }) => {
       } catch (error) {
         console.error('Error checking onboarding status:', error);
         setIsOnboardingComplete(false);
-        setError('global', 'Failed to check onboarding status. Please try again.', () => window.location.reload());
+        setError('onboarding', 'Failed to check onboarding status. Please try again.', () => window.location.reload());
       } finally {
-        setLoading('global', false);
+        setLoading('onboarding', false);
         setCheckingOnboarding(false);
       }
     };
@@ -73,12 +73,12 @@ const ProtectedRoute = ({ children }) => {
     }
   }, [user]);
 
-  if (loading || checkingOnboarding) {
-    return null; // Loading screen is now handled by LoadingContext
-  }
-
   if (!user) {
     return <Navigate to="/landing" />;
+  }
+
+  if (loading || checkingOnboarding) {
+    return null; // Loading screen is now handled by LoadingContext
   }
 
   if (!isOnboardingComplete && location.pathname !== '/onboarding') {
@@ -144,6 +144,11 @@ const MainRoutingPage = () => {
     return mobileHeaderPages.some(path => currentPath === path || currentPath.startsWith(path + '/'));
   };
 
+  const isPublicRoute = () => {
+    const publicPaths = ['/login', '/landing', '/signup', '/forgot-password', '/auth/v1/callback', '/auth/callback'];
+    return publicPaths.some(path => location.pathname === path);
+  };
+
   useEffect(() => {
     // Debug log for header visibility
     console.log('Should show header:', shouldShowHeader());
@@ -153,7 +158,7 @@ const MainRoutingPage = () => {
     // Simulate minimum loading time to prevent flash
     const timer = setTimeout(() => {
       setIsInitialLoad(false);
-    }, 1000); // Minimum 1 second loading time
+    }, 500); // Reduced to 500ms for better UX
 
     return () => clearTimeout(timer);
   }, []);
@@ -164,7 +169,7 @@ const MainRoutingPage = () => {
   }
 
   // Show regular loading screen for subsequent auth checks
-  if (loading) {
+  if (loading && user) {
     return null; // Loading screen is now handled by LoadingContext
   }
 
@@ -178,14 +183,22 @@ const MainRoutingPage = () => {
             <div 
               className="relative flex flex-col min-h-screen mx-auto" 
               style={{ 
-                paddingTop: shouldShowHeader() ? '64px' : '0px',
+                paddingTop: shouldShowHeader() && !isPublicRoute() ? '64px' : '0px',
                 marginLeft: !isMobile && user ? '16rem' : '0',
                 zIndex: 10
               }}
             >
-              <Header />
+              {!isPublicRoute() && <Header />}
               <main className="flex-1 overflow-x-auto">
                 <Routes>
+                  {/* Public Routes */}
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/landing" element={<Landing />} />
+                  <Route path="/signup" element={<Signup />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/auth/v1/callback" element={<Navigate to="/" replace />} />
+                  <Route path="/auth/callback" element={<Navigate to="/" replace />} />
+                  
                   {/* Protected Routes */}
                   <Route path="/onboarding" element={<ProtectedRoute><OnboardingFlow /></ProtectedRoute>}/>
                   <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>}/>
@@ -228,14 +241,6 @@ const MainRoutingPage = () => {
 
                   {/* Waiting Verification Route */}
                   <Route path="/waiting-verification" element={<WaitingVerification />} />
-
-                  {/* Public Routes */}
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/landing" element={<Landing />} />
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/auth/v1/callback" element={<Navigate to="/" replace />} />
-                  <Route path="/auth/callback" element={<Navigate to="/" replace />} />
                   
                   {/* Catch-all route for 404 */}
                   <Route path="*" element={<NotFoundPage />} />

@@ -12,13 +12,13 @@ export const LoadingProvider = ({ children }) => {
   const [globalError, setGlobalError] = useState(null);
   const [globalErrorRetry, setGlobalErrorRetry] = useState(null);
 
-  // // Simulate minimum loading time for initial load
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setGlobalLoading(false);
-  //   }, 1000);
-  //   return () => clearTimeout(timer);
-  // }, []);
+  // Clear initial loading state after a short delay
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setGlobalLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const setLoading = (key, isLoading, message = 'Loading Things...') => {
     setLoadingStates(prev => ({
