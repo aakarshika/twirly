@@ -204,21 +204,25 @@ const MainRoutingPage = () => {
   console.log('[MainRoutingPage] Rendering main content');
   return (
     <ErrorBoundary>
-      <div className="min-h-screen" style={{ backgroundColor: currentTheme.colors.background, color: currentTheme.colors.text }}>
+      <div 
+        className="min-h-screen"  
+        style={{ 
+          color: currentTheme.colors.text
+        }}
+      >
         <ComparisonDraftProvider>
           <TrendingProvider>
             <BackgroundImage />
 
             <div 
-              className="relative flex flex-col min-h-screen mx-auto" 
+              className="relative flex flex-col min-h-screen" 
               style={{ 
-                paddingTop: shouldShowHeader() && !isPublicRoute() ? '64px' : '0px',
                 marginLeft: !isMobile && user ? '16rem' : '0',
                 zIndex: 10
               }}
             >
               {!isPublicRoute() && <Header />}
-              <main className="flex-1 overflow-x-auto">
+              <main className="flex-1" style={{ paddingTop: '64px' }}>
                 <Routes>
                   {/* Public Routes */}
                   <Route path="/login" element={<Login />} />

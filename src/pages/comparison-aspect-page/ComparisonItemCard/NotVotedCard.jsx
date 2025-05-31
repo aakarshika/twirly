@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNotVotedCard } from '../../../hooks/useNotVotedCard';
+import { useVotedCard } from '../../../hooks/useVotedCard';
 import './ComparisonItemCard.css';
 
 const NotVotedCard = ({
@@ -8,8 +8,9 @@ const NotVotedCard = ({
 }) => {
   const {
     titleRef,
-    itemImage
-  } = useNotVotedCard({
+    itemImage,
+    color
+  } = useVotedCard({
     item
   });
 

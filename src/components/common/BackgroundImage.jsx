@@ -197,7 +197,7 @@ const BackgroundImage = () => {
         right: 0,
         bottom: 0,
         background:   ['Light', 'Sunset', 'Ocean', 'Forest'].includes(currentTheme.name) ? 
-        'linear-gradient(135deg,rgb(237, 237, 251) 0%,rgb(251, 253, 239) 50%,rgb(230, 251, 250) 100%)' 
+        'linear-gradient(135deg,rgb(255, 255, 255) 0%,rgb(236, 246, 255) 50%,rgb(230, 251, 250) 100%)' 
         : 'linear-gradient(135deg,rgb(47, 47, 81) 0%,rgb(26, 50, 89) 50%,rgb(86, 53, 127) 100%)',
         overflow: 'hidden',
         zIndex: 0, // Ensure background stays behind all content

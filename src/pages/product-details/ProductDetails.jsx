@@ -184,10 +184,10 @@ const ProductDetails = () => {
   return (
     <PullToRefresh onRefresh={handleRefresh}>
       <div 
-        className="min-h-screen overflow-x-hidden relative"
+        className="min-h-screen overflow-x-hidden " style={{  color: currentTheme.colors.text }}
       >
-        <div className='max-w-7xl mx-auto w-full relative z-10'>
-          <div className='relative' >
+        <div className='max-w-7xl mx-auto w-full  z-10'>
+          <div className='' >
             <motion.div className="absolute inset-0 overflow-hidden pointer-events-none"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -209,7 +209,7 @@ const ProductDetails = () => {
                    transition={{ duration: 3, delay: 0, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}></motion.div>
             </motion.div>
           </div>
-          <div className="px-4 md:px-6 lg:px-8" style={{ paddingTop: '104px', backgroundColor: changeColorAlpha(item.item_color_string, 0.2), color: currentTheme.colors.text }}>
+          <div className="px-4 md:px-6 lg:px-8" >
             <div className="space-y-8">
               <QuickStats comparisonSets={comparisonSets} reviews={reviews} item={item} />
               

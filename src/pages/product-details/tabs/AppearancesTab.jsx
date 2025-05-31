@@ -40,13 +40,13 @@ const AppearancesTab = ({ item, comparisonSets }) => {
     <div className="space-y-4" style={{color: currentTheme.colors.text}}>
       <div className="flex justify-end mb-4">
         <div className="flex flex-row justify-end mb-4">
-          <h2 className="text-lg font-semibold mr-4">Visuals:</h2>
+          <h2 className="text-sm font-semibold mr-4">Visuals:</h2>
           {['radar', 'line', 'bar'].map((item) => (
             <button
               key={item}
               onClick={() => setSelectedChart(item)}
               style={{backgroundColor: selectedChart === item ? currentTheme.colors.primary : 'lightgray', color: selectedChart === item ? 'white' : 'black'}}
-              className={`px-4 py-2 rounded-md`}
+              className={`px-4 py-1 rounded-md text-sm`}
             >
               {item}
             </button>

@@ -62,40 +62,7 @@ const QuickStats = ({ comparisonSets, reviews, item }) => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Comparisons Card */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            whileHover={{ scale: 1.02, rotate: 1 }}
-            className="relative p-6 rounded-2xl backdrop-blur-md hover:shadow-2xl transition-all duration-300"
-            style={{ backgroundColor: currentTheme.colors.card + '80' }}
-            onHoverStart={() => setIsHovered(true)}
-            onHoverEnd={() => setIsHovered(false)}
-          >
-
-            <div className="flex items-center space-x-4">
-              <motion.div
-                whileHover={{ rotate: 15, scale: 1.1 }}
-                className="p-3 rounded-xl"
-                style={{ backgroundColor: currentTheme.colors.primary + '20' }}
-              >
-                <ChartBarSquareIcon className="w-8 h-8" style={{ color: currentTheme.colors.primary }} />
-              </motion.div>
-              <div>
-                <p className="text-lg font-medium mb-1" style={{ color: currentTheme.colors.textSecondary }}>
-                  Comparisons 🔥
-                </p>
-                <motion.p
-                  initial={{ scale: 0.5 }}
-                  animate={{ scale: 1 }}
-                  className="text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent"
-                >
-                  {animatedComparisons}
-                </motion.p>
-              </div>
-            </div>
-          </motion.div>
-
+          
           {/* Win Rate Card */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
@@ -120,14 +87,7 @@ const QuickStats = ({ comparisonSets, reviews, item }) => {
               <SparklesIcon className="w-6 h-6 text-white" />
             </motion.div>
 
-            <div className="flex items-center space-x-4">
-              <motion.div
-                whileHover={{ rotate: -15, scale: 1.1 }}
-                className="p-3 rounded-xl"
-                style={{ backgroundColor: currentTheme.colors.primary + '20' }}
-              >
-                <SparklesIcon className="w-8 h-8" style={{ color: currentTheme.colors.primary }} />
-              </motion.div>
+            <div className="flex items-center justify-center space-x-4">
               <div>
                 <p className="text-lg font-medium mb-1" style={{ color: currentTheme.colors.textSecondary }}>
                   Win Rate 💪
@@ -141,6 +101,18 @@ const QuickStats = ({ comparisonSets, reviews, item }) => {
                 </motion.p>
               </div>
             </div>
+            <div className='flex flex-row items-center justify-between'>
+                <p className="text-md font-semibold mb-1" style={{ color: currentTheme.colors.textSecondary }}>
+                  Comparisons 
+                </p>
+                <motion.p
+                  initial={{ scale: 0.5 }}
+                  animate={{ scale: 1 }}
+                  className="text-md font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent"
+                >
+                  {animatedComparisons}
+                </motion.p>
+              </div>
           </motion.div>
         </div>
       </div>

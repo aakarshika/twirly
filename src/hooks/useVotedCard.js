@@ -19,9 +19,9 @@ export const useVotedCard = ({
       const wordCount = item.name.trim().split(/\s+/).length;
       
       if (wordCount > 10) {
-        titleElement.style.fontSize = '0.875rem';
+        titleElement.style.fontSize = '0.6rem';
       } else {
-        titleElement.style.fontSize = '1.5rem';
+        titleElement.style.fontSize = '1rem';
       }
     }
   }, [item.name]);

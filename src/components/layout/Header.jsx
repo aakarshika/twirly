@@ -761,11 +761,11 @@ const Header = () => {
       )}
 
       <header
-        className={`fixed container mx-auto top-0 left-0 right-0 z-50 w-full transition-all duration-200 ease-in-out ${!isHeaderVisible ? 'hidden' : ''}`}
+        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-200 ease-in-out ${!isHeaderVisible ? 'hidden' : ''}`}
         style={{
           color: 'var(--color-text)',
           marginLeft: !isMobile && user ? '16rem' : '0',
-          // backgroundImage: `linear-gradient(to bottom, ${currentTheme.colors.background}, transparent)`
+          paddingTop: 'env(safe-area-inset-top)',
         }}
       >
         {showTinyHeader ? (

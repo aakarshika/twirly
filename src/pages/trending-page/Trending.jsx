@@ -126,9 +126,9 @@ const Trending = () => {
     <PullToRefresh onRefresh={handleRefresh}>
       <div 
         ref={containerRef}
-        className="min-h-screen w-full max-w-7xl mx-auto pt-8 sm:px-8 lg:px-8"
+        className="min-h-screen w-full max-w-7xl mx-auto"
       >
-        <div className="flex justify-center p-4 md:p-6 lg:p-8 transition-all duration-200">
+        <div className="flex p-4 md:p-6 lg:p-8 transition-all duration-200 mt-10">
           <TrendingUp size={24} className="mr-2 transition-colors duration-200" 
                      style={{ color: 'var(--color-primary)' }} />
           <p className="text-md font-semibold transition-colors duration-200" 
