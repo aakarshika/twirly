@@ -10,30 +10,30 @@ export const useDataFetching = (key, fetchFunction, dependencies = [], options =
     retryFunction = null
   } = options;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        if (useGlobalLoading) {
-          setLoading('global', true, loadingMessage);
-        } else {
-          setLoading(key, true);
-        }
-        clearError(key);
-        await fetchFunction();
-      } catch (error) {
-        if (useGlobalError) {
-          setError('global', error.message || 'An error occurred', retryFunction);
-        } else {
-          setError(key, error.message || 'An error occurred');
-        }
-      } finally {
-        if (useGlobalLoading) {
-          setLoading('global', false);
-        } else {
-          setLoading(key, false);
-        }
+  const fetchData = async () => {
+    try {
+      if (useGlobalLoading) {
+        setLoading('global', true, loadingMessage);
+      } else {
+        setLoading(key, true);
       }
-    };
+      clearError(key);
+      await fetchFunction();
+    } catch (error) {
+      if (useGlobalError) {
+        setError('global', error.message || 'An error occurred', retryFunction);
+      } else {
+        setError(key, error.message || 'An error occurred');
+      }
+    } finally {
+      if (useGlobalLoading) {
+        setLoading('global', false);
+      } else {
+        setLoading(key, false);
+      }
+    }
+  };
+  useEffect(() => {
 
     fetchData();
 
@@ -54,6 +54,7 @@ export const useDataFetching = (key, fetchFunction, dependencies = [], options =
 
   return {
     isLoading: useGlobalLoading ? isLoading('global') : isLoading(key),
-    error: useGlobalError ? getError('global') : getError(key)
+    error: useGlobalError ? getError('global') : getError(key),
+    fetchData
   };
 }; 

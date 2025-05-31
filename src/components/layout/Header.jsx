@@ -41,7 +41,7 @@ const SidePanel = ({ userData, navigate, location, settingsSectionExpanded, setS
       style={{ 
         // backgroundColor: 'var(--color-background)',
         borderRight: '1px solid var(--color-border)',
-        paddingTop: 'calc(var(--safe-area-inset-top) + 64px)'
+        paddingTop: '64px'
       }}
     >
       <div className="h-full flex flex-col">
@@ -225,7 +225,7 @@ const MobileTinyHeader = ({
         <button 
           onClick={() => navigate(-1)} 
           className="flex items-center transition-transform duration-200 hover:scale-105 "
-          style={{ padding: 'calc(var(--safe-area-inset-top))'}}
+          style={{ padding: '10px'}}
         >
           <div className="flex flex-col items-center">
             <ChevronLeft size={20} style={{ color: 'var(--color-text)' }} />
@@ -234,7 +234,7 @@ const MobileTinyHeader = ({
         <button 
           onClick={handleDrawerClick} 
           className="flex items-center transition-transform duration-200 hover:scale-105 "
-          style={{ padding: 'calc(var(--safe-area-inset-top))'}}
+          style={{ padding: '10px'}}
         >
           <div className="flex flex-col items-center">
             {isDrawerOpen ? <X size={24} /> : <Menu size={24} />}
@@ -777,8 +777,7 @@ const Header = () => {
         ) : (
           <>
             {isMobile ? (
-              <div className="px-4 md:px-6 lg:px-8 header-content max-w-7xl mx-auto"
-                   style={{ paddingTop: 'calc(var(--safe-area-inset-top))'}}>
+              <div className="px-4 md:px-6 lg:px-8 header-content max-w-7xl mx-auto">
                 <div className="flex items-center justify-between h-full">
                   {/* Logo and Title */}
                   <div className="flex flex-row items-center">

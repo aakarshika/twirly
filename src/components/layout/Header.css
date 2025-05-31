@@ -18,18 +18,14 @@
     }
 }
 
-/* Header specific styles */
-.header-safe-area {
-    padding-top: var(--safe-area-inset-top);
-}
 
 .header-content {
     height: 4rem;
 }
 
 .header-container {
-    padding-top: var(--safe-area-inset-top);
-    height: calc(64px + var(--safe-area-inset-top));
+    /* padding-top: var(--safe-area-inset-top); */
+    height: calc(64px );
     transition: transform 0.3s ease-in-out;
 }
 

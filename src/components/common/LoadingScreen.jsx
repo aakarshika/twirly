@@ -16,7 +16,7 @@ const LoadingScreen = ({
     <div 
       className="fixed inset-0 flex items-center justify-center transition-all duration-300 ease-in-out"
       style={{ 
-        backgroundColor: 'var(--color-background)',
+        backgroundColor: 'white',
         zIndex: 9999 // Ensure it's above everything
       }}
     >

@@ -253,89 +253,91 @@ const ComparePage = () => {
   }
 
   return (
-    <div className="min-h-screen max-w-7xl mx-auto overflow-x-hidden">
-      <div className="relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="lg:py-4"></div>
-        <div className="">
-          <div className="w-full">
-            <motion.div
-              className="text-white"
-            >
-              <AspectsProgressBar
-                items={items}
-                comparisonMetrics={comparisonMetrics}
-                onAspectClick={(aspect) => {
-                  if (aspect.id === 'results') {
-                    setCurrentAspect(null);
-                    setViewMode('results');
-                  } else {
-                    setCurrentAspect(aspect);
-                    setViewMode('aspect');
-                  }
-                }}
-                userVotedAll={userVotedAll}
-                currentSet={currentSet}
-                celebratingAspectId={celebratingAspectId}
-                currentAspect={currentAspect}
-              />
-            </motion.div>
-          </div>
-        </div>
-        
-        <div className="flex-grow md:px-60 lg:px-60">
-          {currentSet && (
-            <div className="flex-grow">
-              {viewMode === 'aspect' && currentAspect && (
-                <CompareAspectView 
-                  onVoteChange={handleVoteChange}
-                  onNextClick={() => {
-                    const next = getNextUnvotedAspect();
-                    if (next) {
-                      setCurrentAspect(next);
-                      setViewMode('aspect');
-                    } else {
+    <PullToRefresh onRefresh={handleRefresh}>
+      <div className="min-h-screen max-w-7xl mx-auto overflow-x-hidden">
+        <div className="relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="lg:py-4"></div>
+          <div className="">
+            <div className="w-full">
+              <motion.div
+                className="text-white"
+              >
+                <AspectsProgressBar
+                  items={items}
+                  comparisonMetrics={comparisonMetrics}
+                  onAspectClick={(aspect) => {
+                    if (aspect.id === 'results') {
                       setCurrentAspect(null);
                       setViewMode('results');
+                    } else {
+                      setCurrentAspect(aspect);
+                      setViewMode('aspect');
                     }
                   }}
+                  userVotedAll={userVotedAll}
+                  currentSet={currentSet}
                   celebratingAspectId={celebratingAspectId}
-                  isResultsPage={false}
                   currentAspect={currentAspect}
-                  nextUnvotedAspect={getNextUnvotedAspect()}
                 />
-              )}
-              {viewMode === 'results' && (
-                <CompareResultsView 
-                  items={items} 
-                  currentSetId={currentSetId} 
-                  currentSet={currentSet} 
-                  celebratingResults={celebratingResults}
-                />
-              )}
+              </motion.div>
             </div>
-          )}
-
-          {!currentAspect && viewMode === 'results' && (
-            <div className="relative w-full transition-all duration-150 ease-in-out">
-              <div className="w-full max-w-7xl mx-auto lg:px-8">
-                <div className="flex justify-start py-4">
-                  <Globe2 size={24} className="mr-2" style={{ color: currentTheme.colors.primary }} />
-                  <h1 className="text-xl sm:text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
-                    Explore Similar
-                  </h1>
-                </div>
-                <ExploreSimilar currentSetId={currentSetId} />
+          </div>
+          
+          <div className="flex-grow md:px-60 lg:px-60">
+            {currentSet && (
+              <div className="flex-grow">
+                {viewMode === 'aspect' && currentAspect && (
+                  <CompareAspectView 
+                    onVoteChange={handleVoteChange}
+                    onNextClick={() => {
+                      const next = getNextUnvotedAspect();
+                      if (next) {
+                        setCurrentAspect(next);
+                        setViewMode('aspect');
+                      } else {
+                        setCurrentAspect(null);
+                        setViewMode('results');
+                      }
+                    }}
+                    celebratingAspectId={celebratingAspectId}
+                    isResultsPage={false}
+                    currentAspect={currentAspect}
+                    nextUnvotedAspect={getNextUnvotedAspect()}
+                  />
+                )}
+                {viewMode === 'results' && (
+                  <CompareResultsView 
+                    items={items} 
+                    currentSetId={currentSetId} 
+                    currentSet={currentSet} 
+                    celebratingResults={celebratingResults}
+                  />
+                )}
               </div>
+            )}
+
+            {!currentAspect && viewMode === 'results' && (
+              <div className="relative w-full transition-all duration-150 ease-in-out">
+                <div className="w-full max-w-7xl mx-auto lg:px-8">
+                  <div className="flex justify-start py-4">
+                    <Globe2 size={24} className="mr-2" style={{ color: currentTheme.colors.primary }} />
+                    <h1 className="text-xl sm:text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
+                      Explore Similar
+                    </h1>
+                  </div>
+                  <ExploreSimilar currentSetId={currentSetId} />
+                </div>
+              </div>
+            )}
+          </div>
+          {showTrending && (
+            <div ref={trendingRef}>
+              <Trending />
             </div>
           )}
         </div>
-        {showTrending && (
-          <div ref={trendingRef}>
-            <Trending />
-          </div>
-        )}
       </div>
-    </div>
+    </PullToRefresh>
   );
 };
 

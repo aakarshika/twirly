@@ -9,6 +9,7 @@ import FirstTimeDashboard from './dashboard/FirstTimeDashboard';
 import { useDataFetching } from '../../hooks/useDataFetching';
 import LoadingScreen from '../../components/common/LoadingScreen';
 import ErrorScreen from '../../components/common/ErrorScreen';
+import PullToRefresh from '../../components/common/PullToRefresh';
 
 const UserDashboard = () => {
   const { currentTheme } = useTheme();
@@ -18,7 +19,7 @@ const UserDashboard = () => {
   const [userData, setUserData] = useState(null);
   const [showFirstTimeDashboard, setShowFirstTimeDashboard] = useState(false);
 
-  const { isLoading, error } = useDataFetching(
+  const { isLoading, error, fetchData } = useDataFetching(
     'userDashboard',
     async () => {
       if (!user) return;
@@ -37,6 +38,10 @@ const UserDashboard = () => {
       retryFunction: () => window.location.reload()
     }
   );
+
+  const handleRefresh = async () => {
+    await fetchData();
+  };
 
   const handleTourComplete = () => {
     localStorage.setItem('dashboard_tour_completed', 'true');
@@ -65,30 +70,32 @@ const UserDashboard = () => {
   }
 
   return (
-    <div 
-      className="min-h-screen overflow-x-hidden"
-      style={{ 
-        color: currentTheme.colors.text
-      }}
-    >
-      {showFirstTimeDashboard && (
-        <FirstTimeDashboard onComplete={handleTourComplete} />
-      )}
-      <main className="w-full" style={{ paddingTop: '20px', backgroundColor: currentTheme.colors.background + '20' }}>
-        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
-          <ProfileHeader userData={userData} isPublic={false} />
-          <div className="md:mt-4 lg:mt-8">
-            <ContentTabs 
-              activeTab={activeTab} 
-              setActiveTab={setActiveTab}
-              userId={user.id}
-              username={user.username}
-              isPublic={false}
-            />
+    <PullToRefresh onRefresh={handleRefresh}>
+      <div 
+        className="min-h-screen overflow-x-hidden"
+        style={{ 
+          color: currentTheme.colors.text
+        }}
+      >
+        {showFirstTimeDashboard && (
+          <FirstTimeDashboard onComplete={handleTourComplete} />
+        )}
+        <main className="w-full" style={{ paddingTop: '20px', backgroundColor: currentTheme.colors.background + '20' }}>
+          <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+            <ProfileHeader userData={userData} isPublic={false} />
+            <div className="md:mt-4 lg:mt-8">
+              <ContentTabs 
+                activeTab={activeTab} 
+                setActiveTab={setActiveTab}
+                userId={user.id}
+                username={user.username}
+                isPublic={false}
+              />
+            </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </PullToRefresh>
   );
 };
 

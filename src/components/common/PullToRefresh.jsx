@@ -62,7 +62,8 @@ const PullToRefresh = ({ onRefresh, children }) => {
         className="absolute left-0 right-0 flex items-center justify-center transition-transform duration-200"
         style={{
           transform: `translateY(${pullDistance}px)`,
-          top: '-60px'
+          top: '-60px',
+          zIndex: 50
         }}
       >
         <div className="flex items-center space-x-2">
@@ -79,7 +80,14 @@ const PullToRefresh = ({ onRefresh, children }) => {
           </span>
         </div>
       </div>
-      {children}
+      <div
+        className="transition-transform duration-200"
+        style={{
+          transform: `translateY(${pullDistance}px)`
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 };

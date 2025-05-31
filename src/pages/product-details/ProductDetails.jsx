@@ -12,6 +12,7 @@ import AppearancesTab from './tabs/AppearancesTab';
 import { changeColorAlpha } from '../../lib/utils';
 import { motion } from 'framer-motion';
 import { useLoading } from '../../contexts/LoadingContext';
+import PullToRefresh from '../../components/common/PullToRefresh';
 
 const ProductDetails = () => {
   const { itemId } = useParams();
@@ -33,90 +34,90 @@ const ProductDetails = () => {
   const [loadingMoreReviews, setLoadingMoreReviews] = useState(false);
   const REVIEWS_PER_PAGE = 3;
 
-  useEffect(() => {
-    const fetchProductDetails = async () => {
-      try {
-        setLoading('global', true, 'Loading product details...');
-        
-        // Fetch item details with company, category, and metrics
-        const { data: itemData, error: itemError } = await supabase
-          .from('items')
-          .select(`
-            *,
-            categories!item_categories (*),
-            item_metric_averages (*)
-          `)
-          .eq('id', itemId)
-          .single();
+  const fetchProductDetails = async () => {
+    try {
+      setLoading('global', true, 'Loading product details...');
+      
+      // Fetch item details with company, category, and metrics
+      const { data: itemData, error: itemError } = await supabase
+        .from('items')
+        .select(`
+          *,
+          categories!item_categories (*),
+          item_metric_averages (*)
+        `)
+        .eq('id', itemId)
+        .single();
 
-        if (itemError) throw itemError;
-        if (!itemData) {
-          setError('Item not found');
-          setGlobalError('global', 'Item not found', () => window.location.reload());
-          return;
-        }
-        setItem(itemData);
-
-        // Fetch initial reviews
-        await fetchReviews(1);
-
-        // Fetch comparison sets where this item appears
-        const { data: setsData, error: setsError } = await supabase
-          .from('comparison_sets')
-          .select(`
-            *,
-            currentitem:comparison_set_items!inner(items(*)),
-            allitems:comparison_set_items(items(*)),
-            comparison_set_aspects(
-                *,
-                comparison_set_comments(*),
-                votes(*)
-            )
-          `)
-          .eq('comparison_set_items.item_id', itemId);
-
-        if (setsError) throw setsError;
-        
-        const totalVotes = setsData.reduce((sum, set) => sum + (set.votes?.length || 0), 0);
-        // Fetch metrics for each set
-        const transformedSets = await Promise.all(setsData.map(async (set) => {
-          // First, get all reviews for this item
-          const { data: setReviews, error: reviewsError } = await supabase
-            .from('reviews')
-            .select(`
-              *
-            `)
-            .eq('item_id', itemId);
-
-          if (reviewsError) throw reviewsError;
-
-          // Get comment count from comparison_set_aspects
-          const { data: aspectsData, error: aspectsError } = await supabase
-            .from('comparison_set_aspects')
-            .select('*')
-            .eq('set_id', set.id)
-            .select();
-
-          if (aspectsError) throw aspectsError;
-
-          return {
-            totalVotes,
-            ...set,
-            reviews: setReviews,
-            aspects: aspectsData
-          };
-        }));
-
-        setComparisonSets(transformedSets);
-      } catch (err) {
-        console.error('Error fetching product details:', err);
-        setError(err.message);
-        setGlobalError('global', err.message, () => window.location.reload());
-      } finally {
-        setLoading('global', false);
+      if (itemError) throw itemError;
+      if (!itemData) {
+        setError('Item not found');
+        setGlobalError('global', 'Item not found', () => window.location.reload());
+        return;
       }
-    };
+      setItem(itemData);
 
+      // Fetch initial reviews
+      await fetchReviews(1);
+
+      // Fetch comparison sets where this item appears
+      const { data: setsData, error: setsError } = await supabase
+        .from('comparison_sets')
+        .select(`
+          *,
+          currentitem:comparison_set_items!inner(items(*)),
+          allitems:comparison_set_items(items(*)),
+          comparison_set_aspects(
+              *,
+              comparison_set_comments(*),
+              votes(*)
+          )
+        `)
+        .eq('comparison_set_items.item_id', itemId);
+
+      if (setsError) throw setsError;
+      
+      const totalVotes = setsData.reduce((sum, set) => sum + (set.votes?.length || 0), 0);
+      // Fetch metrics for each set
+      const transformedSets = await Promise.all(setsData.map(async (set) => {
+        // First, get all reviews for this item
+        const { data: setReviews, error: reviewsError } = await supabase
+          .from('reviews')
+          .select(`
+            *
+          `)
+          .eq('item_id', itemId);
+
+        if (reviewsError) throw reviewsError;
+
+        // Get comment count from comparison_set_aspects
+        const { data: aspectsData, error: aspectsError } = await supabase
+          .from('comparison_set_aspects')
+          .select('*')
+          .eq('set_id', set.id)
+          .select();
+
+        if (aspectsError) throw aspectsError;
+
+        return {
+          totalVotes,
+          ...set,
+          reviews: setReviews,
+          aspects: aspectsData
+        };
+      }));
+
+      setComparisonSets(transformedSets);
+    } catch (err) {
+      console.error('Error fetching product details:', err);
+      setError(err.message);
+      setGlobalError('global', err.message, () => window.location.reload());
+    } finally {
+      setLoading('global', false);
+    }
+  };
+
+  useEffect(() => {
     fetchProductDetails();
   }, [itemId]);
 
@@ -159,6 +160,10 @@ const ProductDetails = () => {
     }
   };
 
+  const handleRefresh = async () => {
+    await fetchProductDetails();
+  };
+
   if (error) {
     return null; // Error screen is now handled by LoadingContext
   }
@@ -177,56 +182,58 @@ const ProductDetails = () => {
   }
 
   return (
-    <div 
-      className="min-h-screen overflow-x-hidden relative"
-    >
-      <div className='max-w-7xl mx-auto w-full relative z-10'>
-      <div className='relative' >
-      <motion.div className="absolute inset-0 overflow-hidden pointer-events-none"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}>
-        <motion.div className="absolute -top-40 -right-40 w-80 h-80 rounded-full opacity-20"
-             style={{ backgroundColor: 'rgba(205, 170, 240, 0.35)' }}
-             initial={{ opacity: 0 }}
-             animate={{ opacity: 1, scale: 1.2, x: -100, y: -100 }}
-             transition={{ duration: 2, delay: 0.5, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}></motion.div>
-        <motion.div className="absolute left-0 bottom-0 w-80 h-80 rounded-full opacity-20"
-             style={{ backgroundColor: 'rgba(205, 226, 247, 0.35)' }}
-             initial={{ opacity: 1 }}
-             animate={{ opacity: 0, scale: 1.5, x: -100, y: -100 }}
-             transition={{ duration: 3, delay: 0, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}></motion.div>
-      <motion.div className="absolute left-0 top-0 w-60 h-60 rounded-full opacity-20"
-             style={{ backgroundColor: 'rgba(217, 205, 247, 0.42)' }}
-             initial={{ opacity: 1 }}
-             animate={{ opacity: 0, scale: 1.5, x: 100, y: 100 }}
-             transition={{ duration: 3, delay: 0, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}></motion.div>
-      </motion.div>
-      </div>
-      <div className="px-4 md:px-6 lg:px-8" style={{ paddingTop: '104px', backgroundColor: changeColorAlpha(item.item_color_string, 0.2), color: currentTheme.colors.text }}>
-        <div className="space-y-8">
-          <QuickStats comparisonSets={comparisonSets} reviews={reviews} item={item} />
-          
-          <div className="space-y-6">
-            <AppearancesTab
-              comparisonSets={comparisonSets}
-              item={item}
-            />
-            <div className="border-b transition-colors duration-200" style={{ borderColor: 'var(--color-border)' }}>
-              <h4 className="p-4 text-lg font-semibold transition-colors duration-200" 
-                  style={{ color: 'var(--color-text)' }}>
-                Review Mentions
-              </h4>
+    <PullToRefresh onRefresh={handleRefresh}>
+      <div 
+        className="min-h-screen overflow-x-hidden relative"
+      >
+        <div className='max-w-7xl mx-auto w-full relative z-10'>
+          <div className='relative' >
+            <motion.div className="absolute inset-0 overflow-hidden pointer-events-none"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1 }}>
+              <motion.div className="absolute -top-40 -right-40 w-80 h-80 rounded-full opacity-20"
+                   style={{ backgroundColor: 'rgba(205, 170, 240, 0.35)' }}
+                   initial={{ opacity: 0 }}
+                   animate={{ opacity: 1, scale: 1.2, x: -100, y: -100 }}
+                   transition={{ duration: 2, delay: 0.5, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}></motion.div>
+              <motion.div className="absolute left-0 bottom-0 w-80 h-80 rounded-full opacity-20"
+                   style={{ backgroundColor: 'rgba(205, 226, 247, 0.35)' }}
+                   initial={{ opacity: 1 }}
+                   animate={{ opacity: 0, scale: 1.5, x: -100, y: -100 }}
+                   transition={{ duration: 3, delay: 0, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}></motion.div>
+              <motion.div className="absolute left-0 top-0 w-60 h-60 rounded-full opacity-20"
+                   style={{ backgroundColor: 'rgba(217, 205, 247, 0.42)' }}
+                   initial={{ opacity: 1 }}
+                   animate={{ opacity: 0, scale: 1.5, x: 100, y: 100 }}
+                   transition={{ duration: 3, delay: 0, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}></motion.div>
+            </motion.div>
+          </div>
+          <div className="px-4 md:px-6 lg:px-8" style={{ paddingTop: '104px', backgroundColor: changeColorAlpha(item.item_color_string, 0.2), color: currentTheme.colors.text }}>
+            <div className="space-y-8">
+              <QuickStats comparisonSets={comparisonSets} reviews={reviews} item={item} />
+              
+              <div className="space-y-6">
+                <AppearancesTab
+                  comparisonSets={comparisonSets}
+                  item={item}
+                />
+                <div className="border-b transition-colors duration-200" style={{ borderColor: 'var(--color-border)' }}>
+                  <h4 className="p-4 text-lg font-semibold transition-colors duration-200" 
+                      style={{ color: 'var(--color-text)' }}>
+                    Review Mentions
+                  </h4>
+                </div>
+                <CommentAppearancesTab 
+                  comparisonSets={comparisonSets}
+                  item={item}
+                />
+              </div>
             </div>
-            <CommentAppearancesTab 
-              comparisonSets={comparisonSets}
-              item={item}
-            />
           </div>
         </div>
       </div>
-      </div>
-    </div>
+    </PullToRefresh>
   );
 };
 
