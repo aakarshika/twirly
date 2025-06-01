@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
-import { updateUserProfile } from '../services/users';
+import { authService } from '../services/authService';
 
 export const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -9,13 +8,21 @@ export const useAuth = () => {
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    const initializeAuth = async () => {
+      try {
+        const session = await authService.getSession();
+        setUser(session?.user ?? null);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeAuth();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = authService.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
     });
@@ -25,23 +32,8 @@ export const useAuth = () => {
 
   const signUp = async (email, password) => {
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-      if (error) throw error;
-
-      // Create user profile in our database
-      if (data.user) {
-        const username = email.split('@')[0]; // Use email prefix as default username
-        await updateUserProfile(data.user.id, {
-          username,
-          email,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        });
-      }
-
+      setError(null);
+      const data = await authService.signUp(email, password);
       return data;
     } catch (error) {
       setError(error.message);
@@ -51,11 +43,19 @@ export const useAuth = () => {
 
   const signIn = async (email, password) => {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw error;
+      setError(null);
+      const data = await authService.signIn(email, password);
+      return data;
+    } catch (error) {
+      setError(error.message);
+      throw error;
+    }
+  };
+
+  const signInWithGoogle = async () => {
+    try {
+      setError(null);
+      const data = await authService.signInWithGoogle();
       return data;
     } catch (error) {
       setError(error.message);
@@ -65,8 +65,8 @@ export const useAuth = () => {
 
   const signOut = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      setError(null);
+      await authService.signOut();
     } catch (error) {
       setError(error.message);
       throw error;
@@ -79,6 +79,7 @@ export const useAuth = () => {
     error,
     signUp,
     signIn,
+    signInWithGoogle,
     signOut,
   };
 }; 

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useAuthContext } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import Button from '../common/Button';
 
 const SignupForm = () => {
-  const { signUp, error: authError } = useAuthContext();
+  const { signUp, error: authError } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');

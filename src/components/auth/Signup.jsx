@@ -1,12 +1,15 @@
-import { useState } from 'react';
-import { useNavigate, Link, Navigate } from 'react-router-dom';
-import { authService } from '../../services/authService';
+import { useState, useEffect } from 'react';
+import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { User, Lock } from 'lucide-react';
 
 export default function Signup() {
-  const { user } = useAuth();
+  console.log('[Signup] Component rendering');
+  
+  const { user, signUp, signInWithGoogle, error: authError } = useAuth();
+  console.log('[Signup] Auth state:', { hasUser: !!user, authError });
+  
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -14,15 +17,24 @@ export default function Signup() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [verificationSent, setVerificationSent] = useState(false);
   const { currentTheme } = useTheme();
+
+  useEffect(() => {
+    console.log('[Signup] Component mounted');
+    return () => {
+      console.log('[Signup] Component unmounted');
+    };
+  }, []);
 
   // Redirect if user is already logged in
   if (user) {
-    return <Navigate to="/waiting-verification" replace />;
+    console.log('[Signup] User exists, redirecting to dashboard');
+    return <Navigate to="/dashboard" replace />;
   }
 
   const validateForm = () => {
+    console.log('[Signup] Validating form');
     if (!formData.email) {
       setError('Email is required');
       return false;
@@ -47,51 +59,121 @@ export default function Signup() {
       setError('Passwords do not match');
       return false;
     }
+    console.log('[Signup] Form validation passed');
     return true;
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    console.log('[Signup] Form field changed:', { name, value });
+    setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
+    if (error) setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('[Signup] Form submitted');
     setError('');
 
     if (!validateForm()) {
+      console.log('[Signup] Form validation failed');
       return;
     }
 
     setLoading(true);
+    console.log('[Signup] Starting signup process');
 
     try {
-      await authService.signUp(formData.email, formData.password);
-      navigate('/waiting-verification');
+      console.log('[Signup] Calling signUp with email:', formData.email);
+      await signUp(formData.email, formData.password);
+      setVerificationSent(true);
+      console.log('[Signup] Signup successful');
     } catch (error) {
+      console.error('[Signup] Signup error:', error);
       setError(error.message || 'Failed to create account. Please try again.');
     } finally {
       setLoading(false);
+      console.log('[Signup] Signup process completed');
     }
   };
 
   const handleSocialSignup = async (provider) => {
+    console.log('[Signup] Social signup initiated:', provider);
     setError('');
     setLoading(true);
+
     try {
       if (provider === 'google') {
-        await authService.signInWithGoogle();
+        console.log('[Signup] Starting Google signup');
+        await signInWithGoogle();
+        console.log('[Signup] Google signup successful');
       } else {
         throw new Error('Invalid provider');
       }
     } catch (error) {
+      console.error('[Signup] Social signup error:', error);
       setError(error.message || `Failed to sign up with ${provider}. Please try again.`);
+    } finally {
       setLoading(false);
+      console.log('[Signup] Social signup process completed');
     }
   };
+
+  if (verificationSent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <div>
+            <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+              Check your email
+            </h2>
+            <p className="mt-2 text-center text-sm text-gray-600">
+              We've sent a verification link to {formData.email}
+            </p>
+          </div>
+          <div className="mt-8 space-y-6">
+            <div className="rounded-md bg-blue-50 p-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-blue-800">
+                    Didn't receive the email?
+                  </h3>
+                  <div className="mt-2 text-sm text-blue-700">
+                    <p>
+                      Check your spam folder or{' '}
+                      <button
+                        onClick={handleSubmit}
+                        className="font-medium underline hover:text-blue-600"
+                        disabled={loading}
+                      >
+                        click here to resend
+                      </button>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="text-center">
+              <Link
+                to="/login"
+                className="font-medium text-blue-600 hover:text-blue-500"
+              >
+                Back to login
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
@@ -112,32 +194,33 @@ export default function Signup() {
           <div className="space-y-4 mb-6">
             <button
               onClick={() => handleSocialSignup('google')}
-              className="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium transition-all duration-300 hover:shadow-md hover:scale-[1.02]"
+              disabled={loading}
+              className="w-full flex items-center justify-center px-4 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium transition-all duration-300 hover:shadow-md hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 backgroundColor: '#fff',
                 color: '#757575',
                 borderColor: currentTheme.colors.border,
               }}
             >
-
-<svg className="w-6 h-6 mr-3" viewBox="0 0 24 24">
-                    <path
-                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                      style={{ fill: '#4285F4' }}
-                    />
-                    <path
-                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                      style={{ fill: '#34A853' }}
-                    />
-                    <path
-                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                      style={{ fill: '#FBBC05' }}
-                    />
-                    <path
-                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                      style={{ fill: '#EA4335' }}
-                    />
-                  </svg>              Continue with Google
+              <svg className="w-6 h-6 mr-3" viewBox="0 0 24 24">
+                <path
+                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  style={{ fill: '#4285F4' }}
+                />
+                <path
+                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  style={{ fill: '#34A853' }}
+                />
+                <path
+                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                  style={{ fill: '#FBBC05' }}
+                />
+                <path
+                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                  style={{ fill: '#EA4335' }}
+                />
+              </svg>
+              {loading ? 'Signing up...' : 'Continue with Google'}
             </button>
           </div>
 
@@ -169,7 +252,8 @@ export default function Signup() {
                     type="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className="pl-10 w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-offset-2 transition-colors"
+                    disabled={loading}
+                    className="pl-10 w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{
                       backgroundColor: currentTheme.colors.background,
                       borderColor: currentTheme.colors.border,
@@ -195,7 +279,8 @@ export default function Signup() {
                     type="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="pl-10 w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-offset-2 transition-colors"
+                    disabled={loading}
+                    className="pl-10 w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{
                       backgroundColor: currentTheme.colors.background,
                       borderColor: currentTheme.colors.border,
@@ -221,7 +306,8 @@ export default function Signup() {
                     type="password"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className="pl-10 w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-offset-2 transition-colors"
+                    disabled={loading}
+                    className="pl-10 w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     style={{
                       backgroundColor: currentTheme.colors.background,
                       borderColor: currentTheme.colors.border,
@@ -233,20 +319,19 @@ export default function Signup() {
               </div>
             </div>
 
-            {error && (
+            {(error || authError) && (
               <div className="text-red-500 text-sm text-center">
-                {error}
+                {error || authError}
               </div>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 rounded-lg font-medium transition-all duration-300 hover:shadow-md hover:scale-[1.02]"
+              className="w-full py-3 px-4 rounded-lg font-medium transition-all duration-300 hover:shadow-md hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 backgroundColor: currentTheme.colors.primary,
                 color: currentTheme.colors.buttonText,
-                opacity: loading ? 0.7 : 1
               }}
             >
               {loading ? 'Creating account...' : 'SIGN UP'}
