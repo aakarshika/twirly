@@ -2,7 +2,6 @@ import { supabase } from '../lib/supabase';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { App } from '@capacitor/app';
-import { updateUserProfile } from './users';
 import { getRedirectUrl, isNativePlatform } from '../config/auth';
 
 // Create a service role client for admin operations
@@ -43,6 +42,17 @@ export const authService = {
   async signUp(email, password) {
     try {
       const redirectTo = getRedirectUrl();
+      const isNative = isNativePlatform();
+
+      // Set up app URL open listener for handling the callback
+      if (isNative) {
+        App.addListener('appUrlOpen', async ({ url }) => {
+          if (url.includes('auth/callback')) {
+            await this.handleAuthCallback(url);
+          }
+        });
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -54,6 +64,27 @@ export const authService = {
       return data;
     } catch (error) {
       throw new AuthError(error.message, 'SIGNUP_ERROR');
+    }
+  },
+
+  // Handle auth callback from deep linking
+  async handleAuthCallback(url) {
+    try {
+      const params = new URLSearchParams(url.split('#')[1]);
+      const access_token = params.get('access_token');
+      const refresh_token = params.get('refresh_token');
+      
+      if (access_token && refresh_token) {
+        const { data: { session }, error } = await supabase.auth.setSession({
+          access_token,
+          refresh_token
+        });
+        
+        if (error) throw new AuthError(error.message, 'AUTH_CALLBACK_ERROR');
+        return session;
+      }
+    } catch (error) {
+      throw new AuthError(error.message, 'AUTH_CALLBACK_ERROR');
     }
   },
 
@@ -81,19 +112,7 @@ export const authService = {
       if (isNative) {
         App.addListener('appUrlOpen', async ({ url }) => {
           if (url.includes('auth/callback')) {
-            const params = new URLSearchParams(url.split('#')[1]);
-            const access_token = params.get('access_token');
-            const refresh_token = params.get('refresh_token');
-            
-            if (access_token && refresh_token) {
-              const { data: { session }, error } = await supabase.auth.setSession({
-                access_token,
-                refresh_token
-              });
-              
-              if (error) throw new AuthError(error.message, 'GOOGLE_SIGNIN_ERROR');
-              return session;
-            }
+            await this.handleAuthCallback(url);
           }
         });
       }

@@ -3,7 +3,7 @@ import { useNavigate, Link, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { User, Lock } from 'lucide-react';
-import { isNativePlatform } from '../../config/platform';
+import { isNativePlatform } from '../../config/auth';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -34,11 +34,13 @@ export default function Login() {
       // If we're in native app and have the email from state, try to auto-login
       if (isNativePlatform() && location.state?.email) {
         handleAutoLogin(location.state.email);
+        console.log("handleAutoLogin", "location.state.email", location.state.email);
       }
     }
-  }, [location]);
+  });
 
   const handleAutoLogin = async (email) => {
+    console.log("handleAutoLogin", "email", email, "handleeeeeee");
     setLoading(true);
     try {
       // Try to sign in with the email from signup

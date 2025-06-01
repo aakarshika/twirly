@@ -37,6 +37,8 @@ import BetaAnalytics from '../pages/beta/BetaAnalytics';
 import ErrorTest from '../components/ErrorTest';
 import ErrorBoundary from '../components/ErrorBoundary';
 import NotFoundPage from '../components/NotFoundPage';
+import { App } from '@capacitor/app';
+import { authService } from '../services/authService';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -147,7 +149,6 @@ const ScrollToTop = () => {
  * Main App component that wraps the application with necessary providers and routing
  */
 const MainRoutingPage = () => {
-  console.log('[MainRoutingPage] Component mounting');
   const { currentTheme } = useTheme();
   const { loading, user } = useAuth();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -156,54 +157,46 @@ const MainRoutingPage = () => {
   const { showPerformanceMonitor } = useBetaTesting();
 
   useEffect(() => {
-    console.log('[MainRoutingPage] Auth state changed:', { 
-      loading, 
-      hasUser: !!user,
-      isInitialLoad,
-      currentPath: location.pathname,
-      isMobile
-    });
-  }, [loading, user, isInitialLoad, location.pathname, isMobile]);
+    // Set up app URL open listener for handling auth callbacks
+    const setupAppUrlListener = async () => {
+      App.addListener('appUrlOpen', async ({ url }) => {
+        if (url.includes('auth/callback')) {
+          try {
+            await authService.handleAuthCallback(url);
+            window.location.reload();
+          } catch (error) {
+            console.error('Error handling auth callback:', error);
+          }
+        }
+      });
+    };
 
-  const shouldShowHeader = () => {
-    const show = !isMobile || ['/', '/dashboard', '/settings', '/compare', '/user'].some(path => 
-      location.pathname === path || location.pathname.startsWith(path + '/')
-    );
-    console.log('[MainRoutingPage] Header visibility check:', { show, path: location.pathname, isMobile });
-    return show;
-  };
-
-  const isPublicRoute = () => {
-    const isPublic = ['/login', '/landing', '/signup', '/forgot-password', '/auth/v1/callback', '/auth/callback']
-      .some(path => location.pathname === path);
-    console.log('[MainRoutingPage] Public route check:', { isPublic, path: location.pathname });
-    return isPublic;
-  };
+    setupAppUrlListener();
+  }, []);
 
   useEffect(() => {
-    console.log('[MainRoutingPage] Setting up initial load timer');
     const timer = setTimeout(() => {
-      console.log('[MainRoutingPage] Initial load timer complete');
       setIsInitialLoad(false);
     }, 500);
 
-    return () => {
-      console.log('[MainRoutingPage] Cleaning up initial load timer');
-      clearTimeout(timer);
-    };
+    return () => clearTimeout(timer);
   }, []);
 
-  if (isInitialLoad) {
-    console.log('[MainRoutingPage] Showing initial loading screen');
+  if (isInitialLoad || (loading && user)) {
     return null;
   }
 
-  if (loading && user) {
-    console.log('[MainRoutingPage] Showing auth loading screen');
-    return null;
-  }
+  const shouldShowHeader = () => {
+    return !isMobile || ['/', '/dashboard', '/settings', '/compare', '/user'].some(path => 
+      location.pathname === path || location.pathname.startsWith(path + '/')
+    );
+  };
 
-  console.log('[MainRoutingPage] Rendering main content');
+  const isPublicRoute = () => {
+    return ['/login', '/landing', '/signup', '/forgot-password', '/auth/v1/callback', '/auth/callback']
+      .some(path => location.pathname === path);
+  };
+
   return (
     <ErrorBoundary>
       <div 
@@ -280,7 +273,6 @@ const MainRoutingPage = () => {
               </main>
               <Footer />
 
-              {/* Beta Testing Components */}
               <BetaTestingControls />
               {showPerformanceMonitor && <PerformanceMonitor isVisible={true} />}
               <FeedbackModal />

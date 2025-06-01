@@ -97,7 +97,7 @@ export default function Signup() {
           message: 'Please check your email to verify your account. You can now log in once verified.',
           email: formData.email,
           password: formData.password
-        } 
+        }
       });
     } catch (error) {
       console.error('[Signup] Signup error:', error);

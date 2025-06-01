@@ -1,11 +1,8 @@
 import { Capacitor } from '@capacitor/core';
 
-const getPlatform = () => {
-  if (Capacitor.isNativePlatform()) {
-    return Capacitor.getPlatform();
-  }
-  return 'web';
-};
+export const isNativePlatform = () => Capacitor.isNativePlatform();
+
+export const getPlatform = () => Capacitor.getPlatform();
 
 const REDIRECT_URLS = {
   web: import.meta.env.VITE_WEB_REDIRECT_URL || 'http://localhost:3000/auth/callback',
@@ -16,6 +13,4 @@ const REDIRECT_URLS = {
 export const getRedirectUrl = () => {
   const platform = getPlatform();
   return REDIRECT_URLS[platform];
-};
-
-export const isNativePlatform = () => Capacitor.isNativePlatform(); 
+}; 
