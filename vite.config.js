@@ -8,11 +8,6 @@ export default defineConfig(({ mode }) => {
   // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
   const env = loadEnv(mode, process.cwd(), '');
   console.log('Vite Mode:', mode);
-  console.log('Environment Variables:', {
-    VITE_SUPABASE_URL: env.VITE_SUPABASE_URL ? 'Set' : 'Not Set',
-    VITE_SUPABASE_ANON_KEY: env.VITE_SUPABASE_ANON_KEY ? 'Set' : 'Not Set',
-    VITE_API_URL: env.VITE_API_URL ? 'Set' : 'Not Set',
-  });
 
   return {
     plugins: [react()],

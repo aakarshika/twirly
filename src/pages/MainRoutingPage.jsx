@@ -19,7 +19,6 @@ import OnboardingFlow from './onboarding/OnboardingFlow';
 import { userService } from '../services/userService';
 import SearchPage from './search/search-page/SearchPage';
 import UserProfile from './user-dashboard-page/UserProfile';
-import WaitingVerification from '../components/auth/WaitingVerification';
 import { FeedbackProvider } from '../contexts/FeedbackContext';
 import FloatingFeedbackButton from './feedback/FloatingFeedbackButton';
 import FeedbackModal from './feedback/FeedbackModal';
@@ -38,6 +37,8 @@ import BetaAnalytics from '../pages/beta/BetaAnalytics';
 import ErrorTest from '../components/ErrorTest';
 import ErrorBoundary from '../components/ErrorBoundary';
 import NotFoundPage from '../components/NotFoundPage';
+import { App } from '@capacitor/app';
+import { authService } from '../services/authService';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -47,62 +48,65 @@ const ProtectedRoute = ({ children }) => {
   const { setLoading, setError } = useLoading();
 
   useEffect(() => {
-    console.log('[ProtectedRoute] Mounted with user:', !!user);
+    let mounted = true;
+
     const checkOnboardingStatus = async () => {
       if (!user) {
-        console.log('[ProtectedRoute] No user, skipping onboarding check');
+        if (mounted) {
+          setCheckingOnboarding(false);
+        }
         return;
       }
+
       try {
-        console.log('[ProtectedRoute] Starting onboarding check');
         setLoading('onboarding', true, 'Checking onboarding status...');
-        const prefs = await userService.getUserPreferences(user.id);
-        const cats = await userService.getUserCategoryPreferences(user.id);
-        const notif = await userService.getUserNotificationSettings(user.id);
-        const isComplete = prefs && prefs.display_name && cats.length > 0 && notif.created_at !== notif.updated_at;
-        console.log('[ProtectedRoute] Onboarding check complete:', { isComplete, prefs, cats, notif });
-        setIsOnboardingComplete(isComplete);
+        const [prefs, cats, notif] = await Promise.all([
+          userService.getUserPreferences(user.id),
+          userService.getUserCategoryPreferences(user.id),
+          userService.getUserNotificationSettings(user.id)
+        ]);
+        
+        if (mounted) {
+          const isComplete = prefs && prefs.display_name && cats.length > 0 && notif.created_at !== notif.updated_at;
+          setIsOnboardingComplete(isComplete);
+          setCheckingOnboarding(false);
+        }
       } catch (error) {
         console.error('[ProtectedRoute] Error checking onboarding status:', error);
-        setIsOnboardingComplete(false);
-        setError('onboarding', 'Failed to check onboarding status. Please try again.', () => window.location.reload());
+        if (mounted) {
+          setIsOnboardingComplete(false);
+          setCheckingOnboarding(false);
+          setError('onboarding', 'Failed to check onboarding status. Please try again.', () => window.location.reload());
+        }
       } finally {
-        setLoading('onboarding', false);
-        setCheckingOnboarding(false);
+        if (mounted) {
+          setLoading('onboarding', false);
+        }
       }
     };
 
-    if (user) {
-      checkOnboardingStatus();
-    } else {
-      setCheckingOnboarding(false);
-    }
-  }, [user]);
+    checkOnboardingStatus();
 
-  console.log('[ProtectedRoute] Render state:', { 
-    hasUser: !!user, 
-    loading, 
-    checkingOnboarding, 
-    isOnboardingComplete,
-    currentPath: location.pathname 
-  });
-
-  if (!user) {
-    console.log('[ProtectedRoute] No user, redirecting to landing');
-    return <Navigate to="/landing" />;
-  }
+    return () => {
+      mounted = false;
+    };
+  }, [user?.id]); // Only depend on user.id, not the entire user object
 
   if (loading || checkingOnboarding) {
-    console.log('[ProtectedRoute] Loading or checking onboarding, showing null');
     return null;
   }
 
-  if (!isOnboardingComplete && location.pathname !== '/onboarding') {
-    console.log('[ProtectedRoute] Onboarding incomplete, redirecting to onboarding');
-    return <Navigate to="/onboarding" replace />;
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  console.log('[ProtectedRoute] Rendering children');
+  if (!isOnboardingComplete) {
+    if (location.pathname !== '/onboarding') {
+      return <Navigate to="/onboarding" replace />;
+    }
+    // If already on /onboarding, render children
+  }
+
   return children;
 };
 
@@ -145,7 +149,6 @@ const ScrollToTop = () => {
  * Main App component that wraps the application with necessary providers and routing
  */
 const MainRoutingPage = () => {
-  console.log('[MainRoutingPage] Component mounting');
   const { currentTheme } = useTheme();
   const { loading, user } = useAuth();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -154,54 +157,46 @@ const MainRoutingPage = () => {
   const { showPerformanceMonitor } = useBetaTesting();
 
   useEffect(() => {
-    console.log('[MainRoutingPage] Auth state changed:', { 
-      loading, 
-      hasUser: !!user,
-      isInitialLoad,
-      currentPath: location.pathname,
-      isMobile
-    });
-  }, [loading, user, isInitialLoad, location.pathname, isMobile]);
+    // Set up app URL open listener for handling auth callbacks
+    const setupAppUrlListener = async () => {
+      App.addListener('appUrlOpen', async ({ url }) => {
+        if (url.includes('auth/callback')) {
+          try {
+            await authService.handleAuthCallback(url);
+            window.location.reload();
+          } catch (error) {
+            console.error('Error handling auth callback:', error);
+          }
+        }
+      });
+    };
 
-  const shouldShowHeader = () => {
-    const show = !isMobile || ['/', '/dashboard', '/settings', '/compare', '/user'].some(path => 
-      location.pathname === path || location.pathname.startsWith(path + '/')
-    );
-    console.log('[MainRoutingPage] Header visibility check:', { show, path: location.pathname, isMobile });
-    return show;
-  };
-
-  const isPublicRoute = () => {
-    const isPublic = ['/login', '/landing', '/signup', '/forgot-password', '/auth/v1/callback', '/auth/callback']
-      .some(path => location.pathname === path);
-    console.log('[MainRoutingPage] Public route check:', { isPublic, path: location.pathname });
-    return isPublic;
-  };
+    setupAppUrlListener();
+  }, []);
 
   useEffect(() => {
-    console.log('[MainRoutingPage] Setting up initial load timer');
     const timer = setTimeout(() => {
-      console.log('[MainRoutingPage] Initial load timer complete');
       setIsInitialLoad(false);
     }, 500);
 
-    return () => {
-      console.log('[MainRoutingPage] Cleaning up initial load timer');
-      clearTimeout(timer);
-    };
+    return () => clearTimeout(timer);
   }, []);
 
-  if (isInitialLoad) {
-    console.log('[MainRoutingPage] Showing initial loading screen');
+  if (isInitialLoad || (loading && user)) {
     return null;
   }
 
-  if (loading && user) {
-    console.log('[MainRoutingPage] Showing auth loading screen');
-    return null;
-  }
+  const shouldShowHeader = () => {
+    return !isMobile || ['/', '/dashboard', '/settings', '/compare', '/user'].some(path => 
+      location.pathname === path || location.pathname.startsWith(path + '/')
+    );
+  };
 
-  console.log('[MainRoutingPage] Rendering main content');
+  const isPublicRoute = () => {
+    return ['/login', '/landing', '/signup', '/forgot-password', '/auth/v1/callback', '/auth/callback']
+      .some(path => location.pathname === path);
+  };
+
   return (
     <ErrorBoundary>
       <div 
@@ -229,8 +224,8 @@ const MainRoutingPage = () => {
                   <Route path="/landing" element={<Landing />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route path="/auth/v1/callback" element={<Navigate to="/" replace />} />
-                  <Route path="/auth/callback" element={<Navigate to="/" replace />} />
+                  <Route path="/auth/v1/callback" element={<Navigate to="/dashboard" replace />} />
+                  <Route path="/auth/callback" element={<Navigate to="/dashboard" replace />} />
                   
                   {/* Protected Routes */}
                   <Route path="/onboarding" element={<ProtectedRoute><OnboardingFlow /></ProtectedRoute>}/>
@@ -271,9 +266,6 @@ const MainRoutingPage = () => {
                   <Route path="/dashboard/:tab" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>}/>
                   <Route path="/user/:username" element={<UserProfile />} />
                   <Route path="/user/:username/:tab" element={<UserProfile />} />
-
-                  {/* Waiting Verification Route */}
-                  <Route path="/waiting-verification" element={<WaitingVerification />} />
                   
                   {/* Catch-all route for 404 */}
                   <Route path="*" element={<NotFoundPage />} />
@@ -281,7 +273,6 @@ const MainRoutingPage = () => {
               </main>
               <Footer />
 
-              {/* Beta Testing Components */}
               <BetaTestingControls />
               {showPerformanceMonitor && <PerformanceMonitor isVisible={true} />}
               <FeedbackModal />

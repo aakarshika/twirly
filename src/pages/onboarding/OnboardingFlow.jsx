@@ -43,6 +43,16 @@ const OnboardingFlow = () => {
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [allCategories, setAllCategories] = useState([]);
 
+  console.log('[OnboardingFlow] Render', {
+    user,
+    preferences,
+    notificationPreferences,
+    categoryPreferences,
+    currentStep,
+    onboardingComplete,
+    error
+  });
+
   const fetchPreferences = async () => {
     setLoading('global', true, 'Loading preferences...');
     try {
@@ -178,18 +188,23 @@ const OnboardingFlow = () => {
   };
 
   const renderStep = () => {
+    console.log('[OnboardingFlow] renderStep', { currentStep, username, selectedCategories, selectedNotifications });
     switch (currentStep) {
       case 1:
         return (
           <div className="text-center space-y-6">
-            <h2 className="text-3xl font-bold">Welcome to Twirly! 🎉</h2>
-            <p className="text-lg text-gray-600">
+            <h2 className="text-3xl font-bold" style={{ color: currentTheme.colors.text }}>Welcome to Twirly! 🎉</h2>
+            <p className="text-lg" style={{ color: currentTheme.colors.textSecondary }}>
               Let's help you discover amazing products through community comparisons.
             </p>
             <div className="mt-8">
               <button
                 onClick={handleNext}
-                className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                className="px-6 py-3 rounded-lg transition-all duration-300 hover:shadow-md hover:scale-[1.02]"
+                style={{
+                  backgroundColor: currentTheme.colors.primary,
+                  color: currentTheme.colors.buttonText,
+                }}
               >
                 Get Started
               </button>
@@ -200,7 +215,7 @@ const OnboardingFlow = () => {
       case 2:
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-center">Choose Your Username</h2>
+            <h2 className="text-2xl font-bold text-center" style={{ color: currentTheme.colors.text }}>Choose Your Username</h2>
             <div className="max-w-md mx-auto">
               <input
                 type="text"
@@ -212,9 +227,9 @@ const OnboardingFlow = () => {
                   borderColor: currentTheme.colors.border,
                   color: currentTheme.colors.text,
                 }}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-offset-2 transition-colors"
               />
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="mt-2 text-sm" style={{ color: currentTheme.colors.textSecondary }}>
                 This will be your unique identifier on Twirly
               </p>
             </div>
@@ -224,27 +239,33 @@ const OnboardingFlow = () => {
       case 3:
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-center">What interests you?</h2>
-            <p className="text-center text-gray-600">
+            <h2 className="text-2xl font-bold text-center" style={{ color: currentTheme.colors.text }}>What interests you?</h2>
+            <p className="text-center" style={{ color: currentTheme.colors.textSecondary }}>
               Select categories you're interested in to see relevant comparisons
             </p>
             <div className="grid grid-cols-2 gap-4">
-              {categoriesAll.map((category) => {
-                console.log(category, selectedCategories);
-                return (
+              {categoriesAll.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => handleCategoryToggle(category.id)}
-                  className={`p-4 rounded-lg border-2 transition-all ${
+                  className={`p-4 rounded-lg border-2 transition-all duration-300 hover:shadow-md hover:scale-[1.02] ${
                     selectedCategories.includes(category.id)
-                      ? 'border-indigo-500 bg-indigo-50'
+                      ? 'border-indigo-500'
                       : 'border-gray-200 hover:border-indigo-300'
                   }`}
+                  style={{
+                    backgroundColor: selectedCategories.includes(category.id) 
+                      ? currentTheme.colors.primary + '20' // 20% opacity
+                      : currentTheme.colors.card,
+                    borderColor: selectedCategories.includes(category.id)
+                      ? currentTheme.colors.primary
+                      : currentTheme.colors.border,
+                  }}
                 >
                   <span className="text-2xl">{category.icon}</span>
-                  <p className="mt-2 font-medium" style={{ color: currentTheme.colors.primary }}>{category.name}</p>
+                  <p className="mt-2 font-medium" style={{ color: currentTheme.colors.text }}>{category.name}</p>
                 </button>
-              )})}
+              ))}
             </div>
           </div>
         );
@@ -252,23 +273,30 @@ const OnboardingFlow = () => {
       case 4:
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-center">Notification Preferences</h2>
-            <p className="text-center text-gray-600">
+            <h2 className="text-2xl font-bold text-center" style={{ color: currentTheme.colors.text }}>Notification Preferences</h2>
+            <p className="text-center" style={{ color: currentTheme.colors.textSecondary }}>
               Choose what you'd like to be notified about
             </p>
             <div className="space-y-4">
               {notificationsAll.map((pref) => (
                 <label
                   key={pref.id}
-                  className="flex items-center space-x-3 p-4 border rounded-lg cursor-pointer hover:bg-gray-50"
+                  className="flex items-center space-x-3 p-4 border rounded-lg cursor-pointer transition-all duration-300 hover:shadow-md"
+                  style={{
+                    backgroundColor: currentTheme.colors.card,
+                    borderColor: currentTheme.colors.border,
+                  }}
                 >
                   <input
                     type="checkbox"
                     checked={selectedNotifications.includes(pref.id)}
                     onChange={() => handleNotificationToggle(pref.id)}
-                    className="h-5 w-5 text-indigo-600 rounded"
+                    className="h-5 w-5 rounded"
+                    style={{
+                      accentColor: currentTheme.colors.primary,
+                    }}
                   />
-                  <span style={{ color: currentTheme.colors.primary }}>{pref.name}</span>
+                  <span style={{ color: currentTheme.colors.text }}>{pref.name}</span>
                 </label>
               ))}
             </div>
@@ -279,36 +307,53 @@ const OnboardingFlow = () => {
         return null;
     }
   };
+
   if (error) {
-    return null; // Error screen is now handled by LoadingContext
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: currentTheme.colors.background }}>
+        <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-8">
+          <div className="text-center space-y-4">
+            <h2 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>Something went wrong</h2>
+            <p className="text-red-500">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: currentTheme.colors.background }}>
-      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-8">
+      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-8"
+           style={{ 
+             backgroundColor: currentTheme.colors.card,
+             borderColor: currentTheme.colors.border,
+           }}>
         {/* Progress bar */}
         <div className="mb-8">
           <div className="flex justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">
+            <span className="text-sm font-medium" style={{ color: currentTheme.colors.text }}>
               Step {currentStep} of {totalSteps}
             </span>
-            <span className="text-sm font-medium text-gray-700">
+            <span className="text-sm font-medium" style={{ color: currentTheme.colors.text }}>
               {Math.round((currentStep / totalSteps) * 100)}%
             </span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2.5">
             <div
-              className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300"
-              style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+              className="h-2.5 rounded-full transition-all duration-300"
+              style={{ 
+                width: `${(currentStep / totalSteps) * 100}%`,
+                backgroundColor: currentTheme.colors.primary 
+              }}
             ></div>
           </div>
         </div>
-
-        {/* Error message */}
-        {error && (
-          <div className="mb-4 p-4 bg-red-50 text-red-600 rounded-lg text-sm">
-            {error}
-          </div>
-        )}
 
         {/* Step content */}
         <div className="mb-8">{renderStep()}</div>
@@ -319,6 +364,7 @@ const OnboardingFlow = () => {
             <button
               onClick={() => setCurrentStep(currentStep - 1)}
               className="px-6 py-2 text-gray-600 hover:text-gray-800"
+              style={{ color: currentTheme.colors.textSecondary }}
             >
               Back
             </button>
@@ -329,11 +375,11 @@ const OnboardingFlow = () => {
               (currentStep === 2 && !username) ||
               (currentStep === 3 && selectedCategories.length === 0)
             }
-            className={`ml-auto px-6 py-2 rounded-lg ${
-              currentStep === totalSteps
-                ? 'bg-green-600 hover:bg-green-700'
-                : 'bg-indigo-600 hover:bg-indigo-700'
-            } text-white disabled:opacity-50 disabled:cursor-not-allowed`}
+            className={`ml-auto px-6 py-2 rounded-lg transition-all duration-300 hover:shadow-md hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed`}
+            style={{
+              backgroundColor: currentStep === totalSteps ? currentTheme.colors.success : currentTheme.colors.primary,
+              color: currentTheme.colors.buttonText,
+            }}
           >
             {currentStep === totalSteps ? 'Complete Setup' : 'Next'}
           </button>

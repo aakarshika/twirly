@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useAuthContext } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 import Button from '../common/Button';
 
 const LoginForm = () => {
-  const { signIn, error: authError } = useAuthContext();
+  const { signIn, error: authError } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');

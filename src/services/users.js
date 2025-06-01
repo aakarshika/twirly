@@ -1,5 +1,4 @@
 import { supabase } from '../lib/supabase';
-import { useAuth } from '../contexts/AuthContext';
 
 /**
  * Get user profile data
@@ -43,21 +42,23 @@ export const getUserProfile = async (userId) => {
 
 /**
  * Update user profile data
+ * @param {string} userId - The ID of the user
  * @param {Object} profileData - The profile data to update
  * @returns {Promise<Object>} The updated user profile
  */
-export const updateUserProfile = async (profileData) => {
-  const { user } = useAuth();
-
-  if (!user) {
-    throw new Error('User not authenticated');
+export const updateUserProfile = async (userId, profileData) => {
+  if (!userId) {
+    throw new Error('User ID is required');
   }
 
   try {
     const { data, error } = await supabase
       .from('user_preferences')
-      .update(profileData)
-      .eq('id', user.id)
+      .upsert({
+        user_id: userId,
+        ...profileData,
+        updated_at: new Date().toISOString()
+      })
       .select()
       .single();
 

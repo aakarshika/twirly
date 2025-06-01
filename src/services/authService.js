@@ -2,19 +2,89 @@ import { supabase } from '../lib/supabase';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { App } from '@capacitor/app';
+import { getRedirectUrl, isNativePlatform } from '../config/auth';
+
+// Create a service role client for admin operations
+const supabaseAdmin = supabase.auth.admin;
+
+class AuthError extends Error {
+  constructor(message, code) {
+    super(message);
+    this.name = 'AuthError';
+    this.code = code;
+  }
+}
 
 export const authService = {
+  // Get current session
+  async getSession() {
+    try {
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) throw new AuthError(error.message, 'SESSION_ERROR');
+      return session;
+    } catch (error) {
+      throw new AuthError(error.message, 'SESSION_ERROR');
+    }
+  },
+
+  // Get current user
+  async getCurrentUser() {
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (error) throw new AuthError(error.message, 'USER_ERROR');
+      return user;
+    } catch (error) {
+      throw new AuthError(error.message, 'USER_ERROR');
+    }
+  },
+
   // Sign up with email and password
   async signUp(email, password) {
     try {
+      const redirectTo = getRedirectUrl();
+      const isNative = isNativePlatform();
+
+      // Set up app URL open listener for handling the callback
+      if (isNative) {
+        App.addListener('appUrlOpen', async ({ url }) => {
+          if (url.includes('auth/callback')) {
+            await this.handleAuthCallback(url);
+          }
+        });
+      }
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: redirectTo
+        }
       });
-      if (error) throw error;
+      if (error) throw new AuthError(error.message, 'SIGNUP_ERROR');
       return data;
     } catch (error) {
-      throw error;
+      throw new AuthError(error.message, 'SIGNUP_ERROR');
+    }
+  },
+
+  // Handle auth callback from deep linking
+  async handleAuthCallback(url) {
+    try {
+      const params = new URLSearchParams(url.split('#')[1]);
+      const access_token = params.get('access_token');
+      const refresh_token = params.get('refresh_token');
+      
+      if (access_token && refresh_token) {
+        const { data: { session }, error } = await supabase.auth.setSession({
+          access_token,
+          refresh_token
+        });
+        
+        if (error) throw new AuthError(error.message, 'AUTH_CALLBACK_ERROR');
+        return session;
+      }
+    } catch (error) {
+      throw new AuthError(error.message, 'AUTH_CALLBACK_ERROR');
     }
   },
 
@@ -25,80 +95,42 @@ export const authService = {
         email,
         password,
       });
-      if (error) throw error;
+      if (error) throw new AuthError(error.message, 'SIGNIN_ERROR');
       return data;
     } catch (error) {
-      throw error;
+      throw new AuthError(error.message, 'SIGNIN_ERROR');
     }
   },
 
   // Sign in with Google
   async signInWithGoogle() {
     try {
-      console.log('Starting Google sign in...');
-      
-      // Check if we're running in a native app
-      const isNative = Capacitor.isNativePlatform();
-      console.log('Is native platform:', isNative);
-      console.log('Platform:', Capacitor.getPlatform());
-      
-      // Get the current URL for web fallback
-      const currentUrl = typeof window !== 'undefined' ? window.location.origin : '';
-      console.log('Current URL:', currentUrl);
+      const isNative = isNativePlatform();
+      const redirectTo = getRedirectUrl();
 
       // Set up app URL open listener for handling the callback
       if (isNative) {
         App.addListener('appUrlOpen', async ({ url }) => {
-          console.log('App URL opened:', url);
-          
           if (url.includes('auth/callback')) {
-            // Extract the tokens from the URL
-            const params = new URLSearchParams(url.split('#')[1]);
-            const access_token = params.get('access_token');
-            const refresh_token = params.get('refresh_token');
-            
-            if (access_token && refresh_token) {
-              console.log('Got tokens from URL, setting session...');
-              const { data: { session }, error } = await supabase.auth.setSession({
-                access_token,
-                refresh_token
-              });
-              
-              if (error) {
-                console.error('Error setting session:', error);
-                throw error;
-              }
-              
-              console.log('Session set successfully:', session);
-              return session;
-            }
+            await this.handleAuthCallback(url);
           }
         });
       }
       
-      // Configure OAuth options
       const options = {
         provider: 'google',
         options: {
-          redirectTo: isNative ? 'twirly://auth/callback' : `${currentUrl}/auth/callback`,
+          redirectTo,
           skipBrowserRedirect: isNative,
           flowType: 'pkce'
         }
       };
-      
-      console.log('OAuth options:', options);
 
-      // Start the OAuth flow
       const { data, error } = await supabase.auth.signInWithOAuth(options);
       
-      if (error) {
-        console.error('OAuth error:', error);
-        throw error;
-      }
+      if (error) throw new AuthError(error.message, 'GOOGLE_SIGNIN_ERROR');
 
       if (isNative && data?.url) {
-        console.log('Opening browser with URL:', data.url);
-        // Use window.open for iOS to open in system browser
         if (Capacitor.getPlatform() === 'ios') {
           window.open(data.url, '_system');
         } else {
@@ -111,8 +143,7 @@ export const authService = {
       
       return data;
     } catch (error) {
-      console.error('Google sign in error:', error);
-      throw error;
+      throw new AuthError(error.message, 'GOOGLE_SIGNIN_ERROR');
     }
   },
 
@@ -120,44 +151,41 @@ export const authService = {
   async signOut() {
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (error) throw new AuthError(error.message, 'SIGNOUT_ERROR');
     } catch (error) {
-      throw error;
-    }
-  },
-
-  // Get current user
-  async getCurrentUser() {
-    try {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (error) throw error;
-      return user;
-    } catch (error) {
-      throw error;
+      throw new AuthError(error.message, 'SIGNOUT_ERROR');
     }
   },
 
   // Reset password
   async resetPassword(email) {
     try {
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email);
-      if (error) throw error;
+      const redirectTo = getRedirectUrl();
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo
+      });
+      if (error) throw new AuthError(error.message, 'RESET_PASSWORD_ERROR');
       return data;
     } catch (error) {
-      throw error;
+      throw new AuthError(error.message, 'RESET_PASSWORD_ERROR');
     }
   },
 
   // Delete user account
   async deleteUser() {
     try {
-      const { error } = await supabase.auth.admin.deleteUser(
-        (await supabase.auth.getUser()).data.user.id,
-        false
-      );
-      if (error) throw error;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new AuthError('No user found', 'DELETE_USER_ERROR');
+      
+      const { error } = await supabase.auth.admin.deleteUser(user.id, false);
+      if (error) throw new AuthError(error.message, 'DELETE_USER_ERROR');
     } catch (error) {
-      throw error;
+      throw new AuthError(error.message, 'DELETE_USER_ERROR');
     }
   },
+
+  // Subscribe to auth state changes
+  onAuthStateChange(callback) {
+    return supabase.auth.onAuthStateChange(callback);
+  }
 }; 
