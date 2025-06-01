@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
-
+import { useAuth } from './AuthContext';
 const ComparisonDraftContext = createContext();
 
 export const useComparisonDraft = () => {
@@ -11,6 +11,7 @@ export const useComparisonDraft = () => {
 };
 
 export const ComparisonDraftProvider = ({ children }) => {
+  const { user } = useAuth();
   const [draft, setDraft] = useState({
     title: '',
     description: '',
@@ -19,6 +20,14 @@ export const ComparisonDraftProvider = ({ children }) => {
     aspects: [],
     isPublished: false
   });
+
+  const updateItem = (item) => {
+    item.user_id = user.id;
+    setDraft(prev => ({
+      ...prev,
+      items: prev.items.map(i => i.id === item.id ? item : i)
+    }));
+  };
 
   const addItem = (item) => {
     console.log(item);
@@ -91,6 +100,7 @@ export const ComparisonDraftProvider = ({ children }) => {
     removeItem,
     addAspect,
     removeAspect,
+    updateItem,
     updateDraft,
     clearDraft,
     updateAspect

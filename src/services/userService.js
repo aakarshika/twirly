@@ -13,12 +13,12 @@ export const userService = {
           id: preferences.id,
           display_name: preferences.display_name,
           is_onboarding_complete: true,
-          updated_at: new Date().toISOString(),
+          updated_at: new Date(),
         } : {
           user_id: userId,
           display_name: preferences.display_name,
           is_onboarding_complete: true,
-          updated_at: new Date().toISOString(),
+          updated_at: new Date(),
         });
 
       if (preferencesError) throw preferencesError;
@@ -71,7 +71,7 @@ export const userService = {
             push_notifications: preferences.notifications.includes('votes'),
             comment_notifications: preferences.notifications.includes('comments'),
             marketing_emails: preferences.notifications.includes('weekly-digest'),
-            updated_at: new Date().toISOString(),
+            updated_at: new Date(),
           } : {
             user_id: userId,
             email_notifications: preferences.notifications.includes('new-comparisons'),

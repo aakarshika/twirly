@@ -12,25 +12,6 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
-/**
- * Format a date as a string
- * 
- * @param {string|Date} date - Date to format
- * @param {Object} options - Intl.DateTimeFormat options
- * @returns {string} - Formatted date string
- */
-export function formatDate(date, options = {}) {
-  const defaultOptions = {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  };
-  
-  return new Intl.DateTimeFormat(
-    'en-US',
-    { ...defaultOptions, ...options }
-  ).format(new Date(date));
-}
 
 /**
  * Truncate a string to a specified length with ellipsis

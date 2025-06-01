@@ -125,13 +125,6 @@ const ProfileHeader = ({ userData, isPublic = false }) => {
     fetchKarmaPoints();
   }, [userData?.profile?.user_id]);
 
-  const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long'
-    });
-  };
 
   const isNewUser = () => {
     if (!userData?.profile?.created_at) return false;
@@ -200,7 +193,7 @@ const ProfileHeader = ({ userData, isPublic = false }) => {
                     className="text-xs"
                     style={{ color: currentTheme.colors.textSecondary }}
                   >
-                    Since {userData?.profile?.created_at ? formatDate(userData.profile.created_at) : 'Unknown'}
+                    Since {userData?.profile?.created_at}
                   </motion.p>
 
                 </div>

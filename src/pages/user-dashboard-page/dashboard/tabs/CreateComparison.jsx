@@ -20,6 +20,7 @@ const CreateComparison = () => {
   const {
     draft,
     addItem,
+    updateItem,
     addCategory,
     removeItem,
     addAspect,
@@ -46,6 +47,8 @@ const CreateComparison = () => {
   const [isSearchExpanded, setIsSearchExpanded] = useState(true);
   const [addItemModalOpen, setAddItemModalOpen] = useState(false);
   const [placeholderIndex, setPlaceholderIndex] = useState(0);
+  const [editItemModalOpen, setEditItemModalOpen] = useState(false);
+  const [editItem, setEditItem] = useState(null);
   const placeholders = [
     "Which phone should I buy",
     "What's the best laptop for coding",
@@ -183,6 +186,7 @@ const CreateComparison = () => {
           user_id: user.id,
           isPublished: false,
           items: draft.items.map(item => ({
+            user_id: user.id,
             id: item.id,
             name: item.name,
             description: item.description,
@@ -219,6 +223,7 @@ const CreateComparison = () => {
           isPublished: true,
           items: draft.items.map(item => ({
             id: item.id,
+            user_id: user.id,
             name: item.name,
             description: item.description,
             image_url: item.image_url,
@@ -382,13 +387,19 @@ const CreateComparison = () => {
 
           <div>
             <div className="grid grid-cols-2 gap-2">
-              {draft.items.map((item) => (
+              {draft.items.map((item) => {
+                console.log("item", item);
+                return (
                 <div key={item.id} className="relative">
                   <VotedCard item={item} />
                   <div className="absolute top-2 right-2 z-100 flex space-x-2">
                     {user && item.user_id === user.id && (
                       <button
-                        onClick={() => console.log("edit item", item)}
+                        onClick={() => {
+                          console.log("edit item", item);
+                          setEditItemModalOpen(true);
+                          setEditItem(item);
+                        }}
                         className="p-2 rounded-full"
                         style={{
                           backgroundColor: currentTheme.colors.primary + '10',
@@ -410,7 +421,7 @@ const CreateComparison = () => {
                     </button>
                   </div>
                 </div>
-              ))}
+              )})}
               {Array.from({ length: 4 - draft.items.length }).map((_, index) => (
                 <div className="flex flex-row  rounded-lg items-center justify-center" 
                 style={{ backgroundColor: currentTheme.colors.background, height: '100px'
@@ -541,16 +552,17 @@ const CreateComparison = () => {
           onCancel={() => setAddItemModalOpen(false)}
         />
       )}
-      {/* {editItemModalOpen && (
+      {editItemModalOpen && (
         <ItemCardEditable
           item={editItem}
           onSave={(item) => {
             console.log("saved item", item);
+            updateItem(item);
             setEditItemModalOpen(false);
           }}
           onCancel={() => setEditItemModalOpen(false)}
         />
-      )} */}
+      )}
     </div>
   );
 };

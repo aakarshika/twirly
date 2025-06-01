@@ -332,7 +332,6 @@ const ItemCardEditable = ({
                   <textarea 
                     type="text" 
                     className="w-full h-full text-fallback-title items-center text-center" 
-                    multiline
                     rows={3}
                     style={{
                       color: 'black',
