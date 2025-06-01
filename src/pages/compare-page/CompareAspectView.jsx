@@ -19,6 +19,7 @@ const CompareAspectView = ({
   isResultsPage, 
   currentAspect, 
   nextUnvotedAspect,
+  userVotedAll,
   aspectVotes // New prop for vote state
 }) => {
   const { id: setId } = useParams();
@@ -167,7 +168,7 @@ const CompareAspectView = ({
             }}
           >
             <h2 className='text-md p-1 text-center' style={{ color: 'rgb(255, 255, 255)' }}>
-              {celebratingAspectId ? 'Next Aspect...' : 'Next Aspect'}
+              {userVotedAll ? 'Results' : celebratingAspectId ? 'Next Aspect...' : 'Next Aspect'}
             </h2>
             {celebratingAspectId && (
               <motion.div

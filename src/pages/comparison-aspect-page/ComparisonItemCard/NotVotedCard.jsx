@@ -4,7 +4,7 @@ import './ComparisonItemCard.css';
 
 const NotVotedCard = ({
   item,
-  newHeight = '25vh'
+  newHeight = '20vh'
 }) => {
   const {
     titleRef,

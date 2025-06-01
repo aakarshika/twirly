@@ -137,14 +137,14 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
 
   return (
     <div className="w-full space-y-2">
-      <div className="flex flex-wrap justify-center gap-2 w-full">
+      <div className="flex flex-wrap justify-center gap-x-1 gap-y-2 w-full">
         {tabs.map(tab => (
           <motion.button
             key={tab.id}
             onClick={() => handleTabClick(tab.id)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className={`relative px-4 md:px-6 md:py-2 rounded-xl font-medium transition-all duration-300 flex-1 min-w-[120px] max-w-[200px] ${
+            className={`relative px-2 py-1.5 md:px-5 md:py-2 rounded-xl font-medium transition-all duration-300 min-w-[90px] max-w-[160px] md:min-w-[120px] md:max-w-[200px] text-xs md:text-base flex items-center justify-center ${
               activeTab === tab.id ? 'text-white' : 'text-gray-600'
             }`}
             style={{
@@ -153,15 +153,15 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
                 : currentTheme.colors.cardBackground
             }}
           >
-            <div className="flex items-center justify-center space-x-2">
+            <div className="flex items-center justify-center gap-1 md:gap-2">
               <TabIcon icon={tab.icon} isActive={activeTab === tab.id} theme={currentTheme} />
               <div className="flex items-center gap-1.5">
-                <span className="text-sm md:text-base">{tab.label}</span>
+                <span className="text-xs md:text-sm font-medium">{tab.label}</span>
                 {tab.count !== null && (
                   <motion.span
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="text-xs font-medium px-1.5 py-0.5 rounded-full"
+                    className="text-[10px] md:text-xs font-medium px-1.5 py-0.5 rounded-full"
                     style={{
                       backgroundColor: activeTab === tab.id 
                         ? currentTheme.colors.buttonText + '20'

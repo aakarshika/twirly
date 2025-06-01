@@ -6,6 +6,7 @@ import { getPublicUrl } from '../../../lib/utils';
 import Avatar from '../../../components/common/Avatar';
 import { karmaService } from '../../../services/karmaService';
 import { motion, AnimatePresence } from 'framer-motion';
+import { formatDate } from 'date-fns';
 
 const FloatingShape = ({ delay, children }) => (
   <motion.div
@@ -190,10 +191,10 @@ const ProfileHeader = ({ userData, isPublic = false }) => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.2 }}
-                    className="text-xs"
+                    className="text-xs font-bold"
                     style={{ color: currentTheme.colors.textSecondary }}
                   >
-                    Since {userData?.profile?.created_at}
+                    Since {formatDate(userData?.profile?.created_at, 'MMM d, yyyy')}
                   </motion.p>
 
                 </div>
