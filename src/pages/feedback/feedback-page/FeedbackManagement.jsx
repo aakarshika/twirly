@@ -6,7 +6,7 @@ import { Navigate } from 'react-router-dom';
 import { FiImage, FiTrash2, FiExternalLink, FiEdit2, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { supabase } from '../../../lib/supabase';
 import { useLoading } from '../../../contexts/LoadingContext';
-
+import { formatDistanceToNow } from 'date-fns';
 const ADMIN_EMAILS = ['aakarshika93@gmail.com', 'great.shivam19@gmail.com'];
 
 const FeedbackManagement = () => {
@@ -392,7 +392,7 @@ const FeedbackManagement = () => {
                   </select>
                 </td>
                 <td className="px-4 py-2 text-xs text-gray-500">
-                  {new Date(item.created_at)}
+                  {formatDistanceToNow(item.created_at)}
                 </td>
                 <td className="px-4 py-2">{item.name}
                   {item.page_route ? (

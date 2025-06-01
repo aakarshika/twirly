@@ -91,7 +91,7 @@ export const updateProduct = async (productId, productData, userId) => {
     // Clean up the data
     const cleanedData = {
       ...productData,
-      updated_at: new Date().toISOString(),
+      updated_at: new Date(),
       price: productData.price ? parseFloat(productData.price) : null
     };
 
@@ -128,7 +128,7 @@ export const updateProduct = async (productId, productData, userId) => {
         const categoryMappings = productData.category_ids.map(categoryId => ({
           item_id: productId,
           category_id: categoryId,
-          created_at: new Date().toISOString()
+          created_at: new Date()
         }));
 
         const { error: mappingError } = await supabase
@@ -183,8 +183,8 @@ export const createProduct = async (productData, userId) => {
     const cleanedData = {
       ...productData,
       user_id: userId,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      created_at: new Date(),
+      updated_at: new Date(),
       price: productData.price ? parseFloat(productData.price) : null
     };
 
@@ -207,7 +207,7 @@ export const createProduct = async (productData, userId) => {
       const categoryMappings = productData.category_ids.map(categoryId => ({
         item_id: product.id,
         category_id: categoryId,
-        created_at: new Date().toISOString()
+        created_at: new Date()
       }));
 
       const { error: mappingError } = await supabase

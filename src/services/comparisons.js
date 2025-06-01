@@ -144,12 +144,7 @@ export const getComparison = async (id, userId) => {
       *,
       comparison_set_items (
         item_id,
-        items (
-          id,
-          name,
-          description,
-          image_url,
-          item_color_string
+        items (*
         )
       ),
       comparison_set_aspects (

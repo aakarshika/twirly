@@ -8,7 +8,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import SearchBar from './search-bar/SearchBar';
 import './Header.css';
-import { formatDate, getPublicUrl } from '../../lib/utils';
+import { getPublicUrl } from '../../lib/utils';
 import { getUserProfile } from '../../services/users';
 import { useMediaQuery } from 'react-responsive';
 import BackgroundImage from '../common/BackgroundImage';
@@ -66,7 +66,7 @@ const SidePanel = ({ userData, navigate, location, settingsSectionExpanded, setS
                       className="text-sm mb-1"
                       style={{ color: 'var(--color-text-secondary)' }}
                     >
-                      Member since {userData?.profile?.created_at ? formatDate(userData.profile.created_at) : 'Unknown'}
+                      Member since {userData?.profile?.created_at}
                     </div>
                   </div>
               <div className="flex flex-row items-center justify-center">
@@ -446,7 +446,7 @@ const MobileSettingsDrawer = ({
                         className="text-sm mb-1"
                         style={{ color: 'var(--color-text-secondary)' }}
                       >
-                        Member since {userData?.profile?.created_at ? formatDate(userData.profile.created_at) : 'Unknown'}
+                        Member since {userData?.profile?.created_at }
                       </div>
                     </div>
                   </div>
