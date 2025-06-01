@@ -2,36 +2,10 @@
   --background-color: red; /* Change this to match your app's background color */
 }
 
-html {
+/* html {
   height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
   background-color: var(--background-color);
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  min-height: 100vh; /* Fallback */
-  min-height: calc(var(--vh, 1vh) * 100);
-  width: 100%;
-  background-color: var(--background-color);
-  /* iOS specific fixes */
-  padding-top: constant(safe-area-inset-top); /* iOS 11.0 */
-  padding-top: env(safe-area-inset-top); /* iOS 11.2+ */
-}
-
-#root {
-  position: relative;
-  min-height: 100vh; /* Fallback */
-  min-height: calc(var(--vh, 1vh) * 100);
-  width: 100%;
-  background-color: var(--background-color);
-  /* iOS specific fixes */
-  padding-top: constant(safe-area-inset-top); /* iOS 11.0 */
-  padding-top: env(safe-area-inset-top); /* iOS 11.2+ */
-  /* Prevent overscroll */
-  overscroll-behavior-y: none;
-  -webkit-overflow-scrolling: touch;
-} 
+} */

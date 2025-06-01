@@ -278,8 +278,8 @@ const ComparePage = () => {
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
-      <div className="min-h-screen max-w-7xl mx-auto overflow-x-hidden">
-        <div className="relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen max-w-7xl mx-auto overflow-x-hidden mt-10">
+        <div className="z-10 mx-auto px-4 sm:px-6 lg:px-8">
           <div className="lg:py-4"></div>
           <div className="">
             <div className="w-full">

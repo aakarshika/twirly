@@ -39,7 +39,6 @@ const SidePanel = ({ userData, navigate, location, settingsSectionExpanded, setS
     <div
       className="fixed left-0 top-0 h-full w-64 z-40 transition-all duration-200 ease-in-out"
       style={{ 
-        // backgroundColor: 'var(--color-background)',
         borderRight: '1px solid var(--color-border)',
         paddingTop: '64px'
       }}
@@ -761,13 +760,16 @@ const Header = () => {
       )}
 
       <header
-        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-200 ease-in-out ${!isHeaderVisible ? 'hidden' : ''}`}
+        className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-200 ease-in-out `}
         style={{
           color: 'var(--color-text)',
+          backgroundColor: currentTheme.colors.background,
+          // backgroundImage: 'linear-gradient(to bottom, ' + currentTheme.colors.background + ',' + currentTheme.colors.background + ', transparent)',
           marginLeft: !isMobile && user ? '16rem' : '0',
-          paddingTop: 'env(safe-area-inset-top)',
+          paddingTop: 'env(safe-area-inset-top)'
         }}
       >
+        <div className={`${!isHeaderVisible ? 'hidden' : ''}`}>
         {showTinyHeader ? (
           <MobileTinyHeader
             navigate={navigate}
@@ -855,6 +857,7 @@ const Header = () => {
             )}
           </>
         )}
+  </div>
 
         {/* Mobile Settings Drawer */}
         {isMobile && (

@@ -97,7 +97,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/landing" state={{ from: location }} replace />;
   }
 
   if (!isOnboardingComplete) {
@@ -193,6 +193,7 @@ const MainRoutingPage = () => {
   };
 
   const isPublicRoute = () => {
+    // return false;
     return ['/login', '/landing', '/signup', '/forgot-password', '/auth/v1/callback', '/auth/callback']
       .some(path => location.pathname === path);
   };
@@ -210,7 +211,7 @@ const MainRoutingPage = () => {
             <BackgroundImage />
 
             <div 
-              className="relative flex flex-col min-h-screen" 
+              className="relative flex flex-col " 
               style={{ 
                 marginLeft: !isMobile && user ? '16rem' : '0',
                 zIndex: 10
@@ -220,9 +221,9 @@ const MainRoutingPage = () => {
               <main className="flex-1" style={{ paddingTop: '64px' }}>
                 <Routes>
                   {/* Public Routes */}
-                  <Route path="/login" element={<Login />} />
+                  {/* <Route path="/login" element={<Login />} /> */}
                   <Route path="/landing" element={<Landing />} />
-                  <Route path="/signup" element={<Signup />} />
+                  {/* <Route path="/signup" element={<Signup />} /> */}
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/auth/v1/callback" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/auth/callback" element={<Navigate to="/dashboard" replace />} />
@@ -271,7 +272,7 @@ const MainRoutingPage = () => {
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </main>
-              <Footer />
+              {!isPublicRoute() && <Footer />}
 
               <BetaTestingControls />
               {showPerformanceMonitor && <PerformanceMonitor isVisible={true} />}
