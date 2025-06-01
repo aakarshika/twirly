@@ -8,6 +8,7 @@ import { App } from '@capacitor/app';
 import { supabase } from '../../lib/supabase';
 import { motion } from 'framer-motion';
 import { changeColorAlpha } from '../../lib/utils';
+import { config } from '../../config';
 
 export default function Landing() {
   const [error, setError] = useState('');
@@ -15,6 +16,11 @@ export default function Landing() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { currentTheme } = useTheme();
+
+  // Log environment on component mount
+  useEffect(() => {
+    console.log('Current Environment:', config.environment);
+  }, []);
 
   useEffect(() => {
     // Listen for auth state changes
@@ -58,6 +64,18 @@ export default function Landing() {
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden"
          style={{ backgroundColor: currentTheme.colors.background }}>
+      {/* Environment Indicator */}
+      <div 
+        className="absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-medium"
+        style={{ 
+          backgroundColor: config.environment === 'development' ? '#4CAF50' : 
+                         config.environment === 'staging' ? '#FFA726' : '#F44336',
+          color: 'white'
+        }}
+      >
+        {config.environment.toUpperCase()}
+      </div>
+
       {/* Background decorative elements */}
       <motion.div className="absolute inset-0 overflow-hidden pointer-events-none"
         initial={{ opacity: 0 }}

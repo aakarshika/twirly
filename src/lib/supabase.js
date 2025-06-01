@@ -1,7 +1,14 @@
 import { createClient } from '@supabase/supabase-js';
+import { config } from '../config';
+
+export const supabase = createClient(
+  config.supabaseUrl,
+  config.supabaseAnonKey
+);
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
 export const fetchUserSettings = async (userId) => {
   try {
     const { data: preferences, error: preferencesError } = await supabase
@@ -46,6 +53,4 @@ try {
   new URL(supabaseUrl);
 } catch (error) {
   throw new Error(`Invalid Supabase URL: ${supabaseUrl}`);
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey); 
+} 
