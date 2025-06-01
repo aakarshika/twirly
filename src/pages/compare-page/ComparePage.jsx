@@ -326,6 +326,7 @@ const ComparePage = () => {
                     celebratingAspectId={celebratingAspectId}
                     isResultsPage={false}
                     currentAspect={currentAspect}
+                    userVotedAll={userVotedAll}
                     nextUnvotedAspect={getNextUnvotedAspect()}
                     aspectVotes={aspectVotes[currentAspect.id] || { userVoted: false, votedItemId: null }}
                   />
