@@ -15,7 +15,7 @@ def capacitor_pods
   pod 'CapacitorBrowser', :path => '../../node_modules/@capacitor/browser'
 end
 
-target 'App' do
+target 'Twirly' do
   capacitor_pods
   # Add your Pods here
 end
