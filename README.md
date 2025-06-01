@@ -1,6 +1,6 @@
 # Twirly - Comparison Platform
 
-A modern web application for creating and managing comparisons between different items, products, or concepts.
+A modern web application for creating and managing comparisons between different items, products, or concepts
 
 ## 🚀 Features
 
