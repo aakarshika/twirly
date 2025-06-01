@@ -31,7 +31,7 @@ const OnboardingFlow = () => {
   const { setLoading, setError: setGlobalError } = useLoading();
   const navigate = useNavigate();
   const { currentTheme } = useTheme();
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const totalSteps = 4;
   const [preferences, setPreferences] = useState(null);
   const [categoryPreferences, setCategoryPreferences] = useState(null);
@@ -197,18 +197,6 @@ const OnboardingFlow = () => {
             <p className="text-lg" style={{ color: currentTheme.colors.textSecondary }}>
               Let's help you discover amazing products through community comparisons.
             </p>
-            <div className="mt-8">
-              <button
-                onClick={handleNext}
-                className="px-6 py-3 rounded-lg transition-all duration-300 hover:shadow-md hover:scale-[1.02]"
-                style={{
-                  backgroundColor: currentTheme.colors.primary,
-                  color: currentTheme.colors.buttonText,
-                }}
-              >
-                Get Started
-              </button>
-            </div>
           </div>
         );
 
@@ -328,12 +316,8 @@ const OnboardingFlow = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4" style={{ backgroundColor: currentTheme.colors.background }}>
-      <div className="max-w-2xl w-full bg-white rounded-2xl shadow-xl p-8"
-           style={{ 
-             backgroundColor: currentTheme.colors.card,
-             borderColor: currentTheme.colors.border,
-           }}>
+    <div className="flex mt-24 items-center justify-center p-4" >
+      <div className="p-8">
         {/* Progress bar */}
         <div className="mb-8">
           <div className="flex justify-between mb-2">
@@ -369,6 +353,18 @@ const OnboardingFlow = () => {
               Back
             </button>
           )}
+          {currentStep === 1 && (
+            <button
+              onClick={() => {
+                signOut();
+                navigate('/landing');
+              }}
+              className="px-6 py-2 text-gray-600 hover:text-gray-800"
+              style={{ color: currentTheme.colors.textSecondary }}
+            >
+              Logout
+            </button>
+          )}
           <button
             onClick={handleNext}
             disabled={
@@ -381,7 +377,7 @@ const OnboardingFlow = () => {
               color: currentTheme.colors.buttonText,
             }}
           >
-            {currentStep === totalSteps ? 'Complete Setup' : 'Next'}
+            {currentStep === 1 ? 'Get Started' : currentStep === totalSteps ? 'Complete Setup' : 'Next'}
           </button>
         </div>
       </div>

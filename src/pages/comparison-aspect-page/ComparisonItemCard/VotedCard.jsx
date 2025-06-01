@@ -56,7 +56,7 @@ const VotedCard = ({
         className={`comparison-item-card rounded-lg `}
         style={{ 
           aspectRatio: '1/1',
-          height: itemImage ? '30vh': '25vh' ,
+          height: itemImage ? '25vh': '20vh' ,
           backgroundImage: isVotedItem ? `linear-gradient(to bottom, ${color}, ${changeColorAlpha(color, 0.8)} , ${changeColorAlpha(color, 0.2)}` : `linear-gradient(to bottom, ${changeColorAlpha(color, 0.2)}, ${changeColorAlpha(color, 0.2)} , ${changeColorAlpha(color, 0.2)}`
         }}
       >

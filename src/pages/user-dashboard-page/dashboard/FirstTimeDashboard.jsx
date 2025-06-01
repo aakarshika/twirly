@@ -57,9 +57,11 @@ const FirstTimeDashboard = ({ onComplete }) => {
   const currentStepData = steps[currentStep];
 
   return (
+    <div className='fixed h-full w-full z-50 '
+    style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)' }}
+    >
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-      style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+      className="flex min-h-screen items-center justify-center"
     >
       <div 
         className="relative max-w-md w-full mx-4 p-6 rounded-xl shadow-2xl transform transition-all duration-300"
@@ -110,6 +112,7 @@ const FirstTimeDashboard = ({ onComplete }) => {
           </button>
         </div>
       </div>
+    </div>
     </div>
   );
 };

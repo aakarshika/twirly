@@ -194,7 +194,7 @@ const MainRoutingPage = () => {
 
   const isPublicRoute = () => {
     // return false;
-    return ['/login', '/landing', '/signup', '/forgot-password', '/auth/v1/callback', '/auth/callback']
+    return ['/landing', '/forgot-password', '/onboarding', '/auth/v1/callback', '/auth/callback']
       .some(path => location.pathname === path);
   };
 
@@ -213,7 +213,6 @@ const MainRoutingPage = () => {
             <div 
               className="relative flex flex-col " 
               style={{ 
-                marginLeft: !isMobile && user ? '16rem' : '0',
                 zIndex: 10
               }}
             >

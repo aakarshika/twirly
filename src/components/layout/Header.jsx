@@ -13,6 +13,7 @@ import { getUserProfile } from '../../services/users';
 import { useMediaQuery } from 'react-responsive';
 import BackgroundImage from '../common/BackgroundImage';
 import Avatar from '../common/Avatar';
+import { formatDate, formatDistanceToNow } from 'date-fns';
 
 // Side Panel Component for Web
 const SidePanel = ({ userData, navigate, location, settingsSectionExpanded, setSettingsSectionExpanded, handleLogout }) => {
@@ -47,25 +48,18 @@ const SidePanel = ({ userData, navigate, location, settingsSectionExpanded, setS
         <div className="flex-1 overflow-y-auto scrollbar-hide">
           <div className="p-4" style={{ borderColor: 'var(--color-border)' }}>
             <div className="flex flex-col">
-              <div className="flex justify-center">
-                <img src='/public_logo_transparent.png' alt="Twirly Logo" className="w-10 h-10 rounded-full" />
-              </div>
-              <div className="flex justify-center">
-                <h4 className="text-sm items-center" style={{ color: 'var(--color-text-secondary)', borderBottom: `1px solid var(--color-border)` }}>Your opinion matters here!</h4>
-              </div>
-
               <div className="flex flex-col pt-1">
                     <h3
-                      className="font-semibold text-lg mt-4 mb-4"
+                      className="font-semibold text-center text-lg mt-4 mb-1"
                       style={{ color: 'var(--color-text)' }}
                     >
                       @{userData?.profile?.display_name || 'Some Person'}
                     </h3>
                     <div
-                      className="text-sm mb-1"
+                      className="text-sm text-center mb-2"
                       style={{ color: 'var(--color-text-secondary)' }}
                     >
-                      Member since {userData?.profile?.created_at}
+                      Member since {formatDate(userData?.profile?.created_at, 'MMM d, yyyy')}
                     </div>
                   </div>
               <div className="flex flex-row items-center justify-center">
@@ -82,6 +76,10 @@ const SidePanel = ({ userData, navigate, location, settingsSectionExpanded, setS
                     className = '' 
                   />
                 </div>
+              </div>
+
+              <div className="flex justify-center">
+                <h4 className="text-sm items-center" style={{ color: 'var(--color-text-secondary)', borderBottom: `1px solid var(--color-border)` }}>Your opinion matters here!</h4>
               </div>
             </div>
           </div>
@@ -259,7 +257,7 @@ const WebHeader = ({
 
   const { currentTheme } = useTheme();
   return (
-    <div className="hidden md:block px-4 md:px-6 lg:px-8 header-content max-w-7xl mx-auto"
+    <div className="hidden md:block py-4 px-4 md:px-6 lg:px-8 header-content max-w-7xl mx-auto"
     >
       <div className="flex items-center justify-between h-full">
         {/* Logo and Title */}
@@ -445,7 +443,7 @@ const MobileSettingsDrawer = ({
                         className="text-sm mb-1"
                         style={{ color: 'var(--color-text-secondary)' }}
                       >
-                        Member since {userData?.profile?.created_at }
+                        Member since {formatDate(userData?.profile?.created_at, 'MMM d, yyyy')}
                       </div>
                     </div>
                   </div>
@@ -765,7 +763,6 @@ const Header = () => {
           color: 'var(--color-text)',
           backgroundColor: currentTheme.colors.background,
           // backgroundImage: 'linear-gradient(to bottom, ' + currentTheme.colors.background + ',' + currentTheme.colors.background + ', transparent)',
-          marginLeft: !isMobile && user ? '16rem' : '0',
           paddingTop: 'env(safe-area-inset-top)'
         }}
       >
