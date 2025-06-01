@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { useNavigate, Link, Navigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Link, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { User, Lock } from 'lucide-react';
+import { isNativePlatform } from '../../config/platform';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -11,8 +12,46 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, signIn, signInWithGoogle, error: authError } = useAuth();
   const { currentTheme } = useTheme();
+
+  // Get verification message from navigation state or URL parameters
+  const verificationMessage = location.state?.message;
+  const [verificationStatus, setVerificationStatus] = useState(null);
+
+  useEffect(() => {
+    // Check if we're coming back from email verification
+    const searchParams = new URLSearchParams(location.search);
+    const type = searchParams.get('type');
+    const token = searchParams.get('token');
+
+    if (type === 'signup' && token) {
+      setVerificationStatus('success');
+      // Clear the URL parameters without refreshing the page
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      // If we're in native app and have the email from state, try to auto-login
+      if (isNativePlatform() && location.state?.email) {
+        handleAutoLogin(location.state.email);
+      }
+    }
+  }, [location]);
+
+  const handleAutoLogin = async (email) => {
+    setLoading(true);
+    try {
+      // Try to sign in with the email from signup
+      await signIn(email, location.state?.password || '');
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Auto-login failed:', error);
+      // If auto-login fails, we'll just show the success message and let user login manually
+      setError('Please log in with your credentials');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const validateForm = () => {
     if (!email) {
@@ -89,6 +128,16 @@ export default function Login() {
                 style={{ color: currentTheme.colors.text }}>
               LOGIN
             </h2>
+            {verificationStatus === 'success' && (
+              <div className="mt-4 p-4 rounded-lg bg-green-50 text-green-700 text-sm text-center">
+                Your email has been verified successfully! You can now log in.
+              </div>
+            )}
+            {verificationMessage && !verificationStatus && (
+              <div className="mt-4 p-4 rounded-lg bg-blue-50 text-blue-700 text-sm text-center">
+                {verificationMessage}
+              </div>
+            )}
           </div>
 
           <div className="space-y-4 mb-6">

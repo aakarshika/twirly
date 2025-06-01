@@ -3,6 +3,7 @@ import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { App } from '@capacitor/app';
 import { updateUserProfile } from './users';
+import { getRedirectUrl, isNativePlatform } from '../config/auth';
 
 // Create a service role client for admin operations
 const supabaseAdmin = supabase.auth.admin;
@@ -41,9 +42,13 @@ export const authService = {
   // Sign up with email and password
   async signUp(email, password) {
     try {
+      const redirectTo = getRedirectUrl();
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: redirectTo
+        }
       });
       if (error) throw new AuthError(error.message, 'SIGNUP_ERROR');
       return data;
@@ -69,8 +74,8 @@ export const authService = {
   // Sign in with Google
   async signInWithGoogle() {
     try {
-      const isNative = Capacitor.isNativePlatform();
-      const currentUrl = typeof window !== 'undefined' ? window.location.origin : '';
+      const isNative = isNativePlatform();
+      const redirectTo = getRedirectUrl();
 
       // Set up app URL open listener for handling the callback
       if (isNative) {
@@ -96,7 +101,7 @@ export const authService = {
       const options = {
         provider: 'google',
         options: {
-          redirectTo: isNative ? 'twirly://auth/callback' : `${currentUrl}/auth/callback`,
+          redirectTo,
           skipBrowserRedirect: isNative,
           flowType: 'pkce'
         }
@@ -136,7 +141,10 @@ export const authService = {
   // Reset password
   async resetPassword(email) {
     try {
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email);
+      const redirectTo = getRedirectUrl();
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo
+      });
       if (error) throw new AuthError(error.message, 'RESET_PASSWORD_ERROR');
       return data;
     } catch (error) {
