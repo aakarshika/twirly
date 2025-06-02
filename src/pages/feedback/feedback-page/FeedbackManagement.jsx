@@ -200,7 +200,7 @@ const FeedbackManagement = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8" style={{ backgroundColor: currentTheme.colors.background, paddingTop: '104px' }}>
+    <div className="container max-w-6xl mx-auto px-4 py-8" style={{ backgroundColor: currentTheme.colors.background, paddingTop: '104px' }}>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold" style={{ color: currentTheme.colors.text }}>
           Feedback Management
@@ -375,7 +375,8 @@ const FeedbackManagement = () => {
                       handleStatusChange(item.id, newStatus);
                       // If status is changed to resolved or closed, switch to resolved view
                       if ((newStatus === 'resolved' || newStatus === 'closed') && !showResolved) {
-                        setShowResolved(true);
+                        // setShowResolved(true);
+                        console.log('Thanks!')
                       }
                     }}
                     className="p-1 rounded border"
