@@ -1,5 +1,5 @@
-import { Heart, Share, ThumbsUp } from 'lucide-react';
-import React from 'react';
+import { Heart, Share, Share2Icon, ThumbsUp } from 'lucide-react';
+import React, { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { changeColorAlpha } from '../../lib/utils';
 
@@ -7,6 +7,29 @@ const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet }) => {
   const { currentTheme } = useTheme();
   const hasLiked = setData.hasLiked;
   const hasVoted = setData.hasVoted;
+  const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
+
+  const handleShare = async () => {
+    const shareData = {
+      title: 'Check out this poll!',
+      text: 'I found this interesting comparison on Twirly.',
+      url: window.location.href
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Enhanced fallback for desktop browsers
+        await navigator.clipboard.writeText(window.location.href);
+        setShowCopiedTooltip(true);
+        setTimeout(() => setShowCopiedTooltip(false), 2000);
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+    }
+  };
+
   return (
   <div className="flex text-sm flex-row justify-between gap-2 p-2 bg-white">
     <div className="flex rounded-full px-4 py-2 bg-gray-100 gap-2" 
@@ -26,9 +49,19 @@ const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet }) => {
        /></span>
       <span className="font-semibold">{totalVotes} Votes</span>
     </div>
-    <div className="flex rounded-full px-4 py-2 bg-gray-100 gap-2">
-      <span className=" inline-block mr-2" ><Share size={20} /></span>
-      <span className="font-semibold">Share</span>
+    <div className="relative">
+      <div className="flex rounded-full px-4 py-2 bg-gray-100 gap-2"
+      onClick={handleShare}
+      style={{ cursor: 'pointer' }}
+      >
+        <span className=" inline-block mr-2" ><Share2Icon color={'gray'} size={20} /></span>
+        <span className="font-semibold">Share</span>
+      </div>
+      {showCopiedTooltip && (
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-800 text-white text-sm rounded-lg">
+          Link copied to clipboard!
+        </div>
+      )}
     </div>
   </div>
   );
