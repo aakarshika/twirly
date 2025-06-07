@@ -14,7 +14,7 @@ const TikTokScroll = () => {
   const { id: currentId } = useParams();
   const navigate = useNavigate();
   const [isDragging, setIsDragging] = useState(false);
-  const [commentsCollapsed, setCommentsCollapsed] = useState(true);
+  const [commentsCollapsedMap, setCommentsCollapsedMap] = useState({});
   const [isHorizontalDrag, setIsHorizontalDrag] = useState(false);
   const containerRef = useRef(null);
   const lastScrollTime = useRef(Date.now());
@@ -41,15 +41,34 @@ const TikTokScroll = () => {
   }, []);
 
   const {   
-    items, 
+    comparisonSets, 
     currentIndex, 
     setCurrentIndex,
-    hasVoted,
-    selectedItemId,
     handleVote,
-    handleReset
+    handleReset,
+    handleLikeComparisonSet
   } = useComparisonSets(parseInt(currentId) || 0);
   const [previousIndex, setPreviousIndex] = useState(currentIndex);
+
+  useEffect(() => {
+    if (comparisonSets.length > 0) {
+      setCommentsCollapsedMap(prev => {
+        const updated = { ...prev };
+        comparisonSets.forEach(item => {
+          if (updated[item.id] === undefined) {
+            updated[item.id] = true; // or false, depending on your desired default
+          }
+        });
+        return updated;
+      });
+    }
+  }, [comparisonSets]);
+
+  // Helper to get/set per-set collapsed state
+  const isCommentsCollapsed = (setId) => commentsCollapsedMap[setId] ?? true;
+  const setCommentsCollapsed = (setId, value) => {
+    setCommentsCollapsedMap(prev => ({ ...prev, [setId]: value }));
+  };
 
   const handleDragStart = () => {
     setIsDragging(true);
@@ -58,7 +77,7 @@ const TikTokScroll = () => {
 
   const handleDrag = (event, info) => {
     // Only check for horizontal drag if comments are collapsed
-    if (commentsCollapsed && Math.abs(info.offset.x) > Math.abs(info.offset.y)) {
+    if (isCommentsCollapsed(comparisonSets[currentIndex].id) && Math.abs(info.offset.x) > Math.abs(info.offset.y)) {
       setIsHorizontalDrag(true);
     }
   };
@@ -71,7 +90,7 @@ const TikTokScroll = () => {
     }
     lastScrollTime.current = now;
 
-    if (isHorizontalDrag && commentsCollapsed) {
+    if (isHorizontalDrag && isCommentsCollapsed(comparisonSets[currentIndex].id)) {
       // Handle horizontal swipe
       const horizontalThreshold = 50;
       const horizontalVelocity = info.velocity.x;
@@ -94,15 +113,15 @@ const TikTokScroll = () => {
         if (info.offset.y > 0 && currentIndex > 0) {
           // Swipe down - go to previous
           setCurrentIndex(previousIndex);
-          if (items[previousIndex]) {
-            navigate(`/compare/${items[previousIndex].id}`, { replace: true });
+          if (comparisonSets[previousIndex]) {
+            navigate(`/compare/${comparisonSets[previousIndex].id}`, { replace: true });
           }
-        } else if (info.offset.y < 0 && currentIndex < items.length - 1) {
+        } else if (info.offset.y < 0 && currentIndex < comparisonSets.length - 1) {
           // Swipe up - go to next
           setPreviousIndex(currentIndex);
           setCurrentIndex(currentIndex + 1);
-          if (items[currentIndex + 1]) {
-            navigate(`/compare/${items[currentIndex + 1].id}`, { replace: true });
+          if (comparisonSets[currentIndex + 1]) {
+            navigate(`/compare/${comparisonSets[currentIndex + 1].id}`, { replace: true });
           }
         }
       }
@@ -114,67 +133,80 @@ const TikTokScroll = () => {
 
   const renderSet = (setData, index, users, userPreferences) => {
     return (
-    <motion.div
-      key={`set-${setData.id}-${index}`}
-      className="h-screen w-full flex flex-col"
-      style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: '100vh',
-        width: '100%',
-        y: (index - currentIndex) * window.innerHeight
-      }}
-      initial={false}
-      animate={{ y: (index - currentIndex) * window.innerHeight }}
-      transition={{
-        type: "spring",
-        stiffness: 300,
-        damping: 30
-      }}
-    >
-      <div className="flex-none">
-        <Heading setData={setData} />
-      </div>
-      <div className={`${commentsCollapsed ? 'flex-1' : 'h-[12vh]'}`}>
-        <Grid 
-          gridCollapsed={!commentsCollapsed} 
-          totalVotes={setData.totalVotes} 
-          localOptions={setData.set_items}
-          hasVoted={hasVoted}
-          handleVote={handleVote}
-          selectedItemId={selectedItemId}
-          handleReset={handleReset}
-        />
-      </div>
-      {commentsCollapsed ? (
+      <motion.div
+        key={`set-${setData.id}-${index}`}
+        className="h-screen w-full flex flex-col"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          height: '100vh',
+          width: '100%',
+          y: (index - currentIndex) * window.innerHeight
+        }}
+        initial={false}
+        animate={{ y: (index - currentIndex) * window.innerHeight }}
+        transition={{
+          type: "spring",
+          stiffness: 300,
+          damping: 30
+        }}
+      >
         <div className="flex-none">
-          <div className="flex flex-col gap-0">
-            <CompareButtons totalVotes={setData.totalVotes} />
-            <AllComments setId={setData.id} commentsCollapsed={commentsCollapsed} setCommentsCollapsed={setCommentsCollapsed} 
-            items={setData.set_items}
-            users={users}
-            userPreferences={userPreferences}
-            />
-          </div>
+          <Heading setData={setData} />
         </div>
-      ) : (
-        <div
-          className="flex-1 overflow-y-auto"
-          style={{
-            scrollbarWidth: 'none'
-          }}
-        >
-          <AllComments setId={setData.id} commentsCollapsed={commentsCollapsed} setCommentsCollapsed={setCommentsCollapsed} 
-          items={setData.set_items}
-          users={users}
-          userPreferences={userPreferences}
+        <div className={`${isCommentsCollapsed(setData.id) ? 'flex-1' : 'h-[12vh]'}`}>
+          <Grid 
+            gridCollapsed={!isCommentsCollapsed(setData.id)} 
+            setData={setData}
+            localOptions={setData.set_items}
+            handleVote={handleVote}
+            handleReset={handleReset}
           />
         </div>
-      )}
-    </motion.div>
-  )};
+        {isCommentsCollapsed(setData.id) ? (
+          <div className="flex-none">
+            <div className="flex flex-col gap-0">
+              <CompareButtons 
+                totalVotes={setData.totalVotes} 
+                setData={setData} 
+                handleLikeComparisonSet={handleLikeComparisonSet} 
+              />
+              {index === currentIndex && (
+                <AllComments 
+                  setId={setData.id} 
+                  commentsCollapsed={isCommentsCollapsed(setData.id)} 
+                  setCommentsCollapsed={(value) => setCommentsCollapsed(setData.id, value)} 
+                  items={setData.set_items}
+                  users={users}
+                  userPreferences={userPreferences}
+                />
+              )}
+            </div>
+          </div>
+        ) : (
+          <div
+            className="flex-1 overflow-y-auto"
+            style={{
+              scrollbarWidth: 'none'
+            }}
+          >
+            {index === currentIndex && (
+              <AllComments 
+                setId={setData.id} 
+                commentsCollapsed={isCommentsCollapsed(setData.id)} 
+                setCommentsCollapsed={(value) => setCommentsCollapsed(setData.id, value)} 
+                items={setData.set_items}
+                users={users}
+                userPreferences={userPreferences}
+              />
+            )}
+          </div>
+        )}
+      </motion.div>
+    );
+  };
 
   return (
     <div className="h-screen w-full overflow-hidden bg-white">
@@ -200,7 +232,7 @@ const TikTokScroll = () => {
         }}
       >
         <AnimatePresence>
-          {items.map((item, index) => renderSet(item, index, users, userPreferences))}
+          {comparisonSets.map((item, index) => renderSet(item, index, users, userPreferences))}
         </AnimatePresence>
       </motion.div>
     </div>

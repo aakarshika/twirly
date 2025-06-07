@@ -117,8 +117,7 @@ begin
     or v_user_id not in (
       select v.user_id 
       from votes v 
-      join comparison_set_aspects csa on v.set_id = csa.id 
-      where csa.set_id = category_boosted_sets.set_id
+      where v.set_id = category_boosted_sets.set_id
     )
   order by popularity_score desc;
 end;

@@ -3,6 +3,7 @@ import { comparisonSetService } from '../services/comparisonSetService';
 import { userActivityService, ACTIVITY_TYPES, ENTITY_TYPES } from '../services/userActivityService';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabase';
 
 export const useComments = (setId) => {
   const [comments, setComments] = useState([]);
@@ -15,9 +16,11 @@ export const useComments = (setId) => {
   const { user } = useAuth();
 
   const fetchComments = async () => {
+    if (!setId) return;
+    
     try {
       setLoading(true);
-      const data = await comparisonSetService.fetchComments(setId, user.id, page);
+      const data = await comparisonSetService.fetchComments(setId, user?.id, page);
       setComments(prev => page === 1 ? data.comments : [...prev, ...data.comments]);
       setHasMore(data.hasMore);
     } catch (err) {
@@ -26,20 +29,23 @@ export const useComments = (setId) => {
       setLoading(false);
     }
   };
-  // Fetch initial comments
-  useEffect(() => {
 
-    fetchComments();
+  // Reset comments when setId changes
+  useEffect(() => {
+    setComments([]);
+    setPage(1);
+    setHasMore(true);
+    setError(null);
   }, [setId]);
 
+  // Fetch comments only when page changes or setId changes
+  useEffect(() => {
+    fetchComments();
+  }, [setId, page]);
 
   const loadMore = async () => {
-    console.log('loadMore', hasMore, loading);
     if (!hasMore || loading) return;
-    console.log('loadMore', hasMore, loading);
     setPage(prev => prev + 1);
-    console.log('loadMore', hasMore, loading);
-    await fetchComments();
   };
 
   const handleSubmitComment = async (text) => {
@@ -75,30 +81,121 @@ export const useComments = (setId) => {
   };
 
   const handleLikeComment = async (commentId) => {
-    if (!user.id) return;
+    if (!user?.id) return;
     try {
-      // TODO: Replace with actual API call
-      // await fetch(`/api/comments/${commentId}/like`, { method: 'POST' });
-      
-      setComments(prevComments => 
-        prevComments.map(comment => 
-          comment.id === commentId 
-            ? { ...comment, likes: comment.likes + 1 }
-            : comment
-        )
-      );
+      const comment = comments.find(c => c.id === commentId);
+      const hasLiked = comment?.reactions?.find(r => r.user_id === user.id)?.reaction_type === 'like';
 
-      // Log the activity
-      await userActivityService.logActivity({
-        userId: user.id,
-        activityType: ACTIVITY_TYPES.LIKE_COMMENT,
-        entityType: ENTITY_TYPES.COMMENT,
-        entityId: 1,
-        pageName: location.pathname,
-        metadata: { comparisonSetId: setId }
-      });
+      if (hasLiked) {
+        await supabase
+          .from('comparison_set_comment_reactions')
+          .delete()
+          .eq('comment_id', commentId)
+          .eq('user_id', user.id);
+
+        // Log the unlike activity
+        await userActivityService.logActivity({
+          userId: user.id,
+          activityType: ACTIVITY_TYPES.UNLIKE_COMMENT,
+          entityType: ENTITY_TYPES.COMMENT,
+          entityId: commentId,
+          pageName: location.pathname,
+          metadata: { comparisonSetId: setId }
+        });
+      } else {
+        await supabase
+          .from('comparison_set_comment_reactions')
+          .insert([{ comment_id: commentId, user_id: user.id, reaction_type: 'like' }]);
+
+        // Log the like activity
+        await userActivityService.logActivity({
+          userId: user.id,
+          activityType: ACTIVITY_TYPES.LIKE_COMMENT,
+          entityType: ENTITY_TYPES.COMMENT,
+          entityId: commentId,
+          pageName: location.pathname,
+          metadata: { comparisonSetId: setId }
+        });
+      }
+
+      // Update local state
+      setComments(prevComments => 
+        prevComments.map(comment => {
+          if (comment.id === commentId) {
+            return {
+              ...comment,
+              reactions: hasLiked
+                ? comment.reactions.filter(r => r.user_id !== user.id)
+                : [...(comment.reactions || []), { user_id: user.id, reaction_type: 'like' }]
+            };
+          }
+          return comment;
+        })
+      );
     } catch (err) {
-      console.error('Error liking comment:', err);
+      console.error('Error toggling comment like:', err);
+      setError(err.message);
+    }
+  };
+
+  const handleLikeReply = async (replyId) => {
+    if (!user?.id) return;
+    try {
+      const reply = comments.flatMap(c => c.replies || []).find(r => r.id === replyId);
+      const hasLiked = reply?.reactions?.find(r => r.user_id === user.id)?.reaction_type === 'like';
+
+      if (hasLiked) {
+        await supabase
+          .from('comparison_set_comment_reactions')
+          .delete()
+          .eq('reply_id', replyId)
+          .eq('user_id', user.id);
+
+        // Log the unlike activity
+        await userActivityService.logActivity({
+          userId: user.id,
+          activityType: ACTIVITY_TYPES.UNLIKE_REPLY,
+          entityType: ENTITY_TYPES.REPLY,
+          entityId: replyId,
+          pageName: location.pathname,
+          metadata: { comparisonSetId: setId }
+        });
+      } else {
+        await supabase
+          .from('comparison_set_comment_reactions')
+          .insert([{ reply_id: replyId, user_id: user.id, reaction_type: 'like' }]);
+
+        // Log the like activity
+        await userActivityService.logActivity({
+          userId: user.id,
+          activityType: ACTIVITY_TYPES.LIKE_REPLY,
+          entityType: ENTITY_TYPES.REPLY,
+          entityId: replyId,
+          pageName: location.pathname,
+          metadata: { comparisonSetId: setId }
+        });
+      }
+
+      // Update local state
+      setComments(prevComments => 
+        prevComments.map(comment => ({
+          ...comment,
+          replies: (comment.replies || []).map(reply => {
+            if (reply.id === replyId) {
+              return {
+                ...reply,
+                reactions: hasLiked
+                  ? reply.reactions.filter(r => r.user_id !== user.id)
+                  : [...(reply.reactions || []), { user_id: user.id, reaction_type: 'like' }]
+              };
+            }
+            return reply;
+          })
+        }))
+      );
+    } catch (err) {
+      console.error('Error toggling reply like:', err);
+      setError(err.message);
     }
   };
 
@@ -156,6 +253,7 @@ export const useComments = (setId) => {
     setCommentVisibility,
     handleSubmitComment,
     handleLikeComment,
+    handleLikeReply,
     handleReply,
     loadMore,
     setLoading,

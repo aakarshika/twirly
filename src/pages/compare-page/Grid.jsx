@@ -7,7 +7,8 @@ import VotingAnimation from '../comparison-aspect-page/ComparisonItemCard/Voting
 
 
 
-const Grid = ({ layout = '2x2', userVoted = false, gridCollapsed = false , localOptions ,hasVoted, totalVotes, handleVote, handleReset, selectedItemId }) => {
+const Grid = ({ layout = '2x2',  gridCollapsed = false , localOptions ,setData, handleVote, handleReset }) => {
+  const hasVoted = setData.hasVoted;
   const { currentTheme } = useTheme();
   return (
     // flex th =e grid tpo take up all the space
@@ -20,17 +21,17 @@ const Grid = ({ layout = '2x2', userVoted = false, gridCollapsed = false , local
       {localOptions && localOptions.map((opt, i) => (
         <motion.div
           key={opt.name + i}
-          className={`relative flex h-full items-center justify-center border rounded-xl h-16 text-md font-semibold ${opt.id === selectedItemId ? 'text-blue-600' : ''}`}
+          className={`relative flex h-full items-center justify-center border rounded-xl h-16 text-md font-semibold ${opt.id === setData.votedItemId ? 'text-blue-600' : ''}`}
           initial={{
             backgroundColor: currentTheme.colors.background,
-            boxShadow: opt.winner && userVoted ? `0 0 15px ${changeColorAlpha(opt.color, 0.5)}` : 'none'
+            boxShadow: opt.winner && hasVoted ? `0 0 15px ${changeColorAlpha(opt.item_color_string, 0.5)}` : 'none'
           }}
           animate={{
             scale: opt.winner && hasVoted? [1, 1.02, 1] : 1,
             boxShadow: opt.winner && hasVoted ? [
-              `0 0 15px ${changeColorAlpha(opt.color, 0.5)}`,
-              `0 0 25px ${changeColorAlpha(opt.color, 0.7)}`,
-              `0 0 15px ${changeColorAlpha(opt.color, 0.5)}`
+              `0 0 15px ${changeColorAlpha(opt.item_color_string, 0.5)}`,
+              `0 0 25px ${changeColorAlpha(opt.item_color_string, 0.7)}`,
+              `0 0 15px ${changeColorAlpha(opt.item_color_string, 0.5)}`
             ] : 'none'
           }}
           transition={{
@@ -40,7 +41,7 @@ const Grid = ({ layout = '2x2', userVoted = false, gridCollapsed = false , local
           }}
         >
           <div className='absolute w-full h-full m-2'>
-            <div className='w-full h-full rounded-xl' style={{ backgroundColor: changeColorAlpha(opt.color, 0.03) }}></div>
+            <div className='w-full h-full rounded-xl' style={{ backgroundColor: changeColorAlpha(opt.item_color_string, 0.05) }}></div>
           </div>
 
           {hasVoted && (
@@ -49,11 +50,11 @@ const Grid = ({ layout = '2x2', userVoted = false, gridCollapsed = false , local
                 <div className=''></div>
                 <motion.div className='rounded-xl'
                   initial={{
-                    backgroundColor: changeColorAlpha(currentTheme.colors.primary, 0.2),
+                    backgroundColor: changeColorAlpha(opt.item_color_string, 0.4),
                     height: '0%', width: '100%'
                   }}
                   animate={{
-                    backgroundColor: changeColorAlpha(currentTheme.colors.primary, 0.2),
+                    backgroundColor: changeColorAlpha(opt.item_color_string, 0.4),
                     height: `${opt.votesPercentage}%`
                   }}
                   transition={{
@@ -68,11 +69,11 @@ const Grid = ({ layout = '2x2', userVoted = false, gridCollapsed = false , local
                 <div className=''></div>
                 <motion.div className='rounded-xl'
                   initial={{
-                    backgroundColor: changeColorAlpha(currentTheme.colors.primary, 0.2),
+                    backgroundColor: changeColorAlpha(opt.item_color_string, 0.4),
                     width: '0%', height: '100%'
                   }}
                   animate={{
-                    backgroundColor: changeColorAlpha(currentTheme.colors.primary, 0.2),
+                    backgroundColor: changeColorAlpha(opt.item_color_string, 0.4),
                     width: `${opt.votesPercentage}%`
                   }}
                   transition={{
@@ -85,7 +86,7 @@ const Grid = ({ layout = '2x2', userVoted = false, gridCollapsed = false , local
               </div>)
           )}
 
-          {hasVoted && selectedItemId === opt.id && (
+          {hasVoted && setData.votedItemId === opt.id && (
             <motion.div 
               className='absolute top-0 left-0 m-2'
               animate={{
@@ -99,25 +100,27 @@ const Grid = ({ layout = '2x2', userVoted = false, gridCollapsed = false , local
               }}
               onClick={handleReset}
             >
-              <ThumbsUp className='text-blue-600' />
+              <ThumbsUp className='text-blue-600' color={hasVoted ? currentTheme.colors.primary : 'gray'} 
+              fill={hasVoted ? changeColorAlpha(currentTheme.colors.primary, 0.5) : 'none'} 
+              size={gridCollapsed ? 16 : 24} />
             </motion.div>
           )}
           
           
           <div className={`flex items-center justify-center ${!gridCollapsed ? 'flex-col' : 'flex-row'}`}>
             <motion.span 
-              className='text-lg text-center'
+              className={`text-center ${gridCollapsed ? 'text-sm line-clamp-1 ml-4' : 'text-lg'}`}
               initial={{ opacity: 1, y: 0 }}
-              animate={{ opacity: 1, y: 0, scale: opt.id === selectedItemId ? [1.3, 1] : 1 }}
+              animate={{ opacity: 1, y: 0, scale: opt.id === setData.votedItemId ? [1.3, 1] : 1 }}
               transition={{ delay: 1 +  0.2 }}
             >
               {opt.name} 
             </motion.span>
             {hasVoted && (
               <motion.span 
-                className='text-lg ml-2'
+                className={`text-lg ${gridCollapsed ? 'text-sm' : 'text-lg ml-2 '}`}
                 initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0, scale: opt.id === selectedItemId ? [1, 1.2, 1] : 1 }}
+                animate={{ opacity: 1, y: 0, scale: opt.id === setData.votedItemId ? [1, 1.2, 1] : 1 }}
                 transition={{ delay: 1 +  0.2 }}
               >
                 {opt.votesPercentage.toFixed(0)}%

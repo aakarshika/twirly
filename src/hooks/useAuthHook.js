@@ -33,6 +33,7 @@ export const useAuthHook = () => {
 
   useEffect(() => {
     const fetchUserPreferences = async () => {
+      if (!user) return;
       const userPreferences = await authService.getUserPreferences(user?.id);
       setUserPreferences(userPreferences);
     };

@@ -8,10 +8,11 @@ import { Heart } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { renderTextWithMentions } from '../../lib/commentUtils';
 
-const Comment = ({ comment, onReply, onLike, users, items, userPreferences }) => {
+const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, userPreferences }) => {
   const [showReplies, setShowReplies] = useState(false);
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyText, setReplyText] = useState('');
+  const { user } = useAuth();
 
   const handleSubmitReply = () => {
     if (replyText.trim()) {
@@ -19,6 +20,14 @@ const Comment = ({ comment, onReply, onLike, users, items, userPreferences }) =>
       setReplyText('');
       setShowReplyInput(false);
     }
+  };
+
+  const isLiked = (reactions) => {
+    return reactions?.find(r => r.user_id === user?.id)?.reaction_type === 'like';
+  };
+
+  const getLikeCount = (reactions) => {
+    return reactions?.filter(r => r.reaction_type === 'like').length || 0;
   };
 
   return (
@@ -42,11 +51,11 @@ const Comment = ({ comment, onReply, onLike, users, items, userPreferences }) =>
       </div>
       <div className="ml-6 flex items-center gap-4 mt-2">
         <button 
-          onClick={() => onLike(comment.id)}
-          className="flex items-center gap-1 text-gray-500 hover:text-blue-500"
+          onClick={() => onLikeComment(comment.id)}
+          className={`flex items-center gap-1 ${isLiked(comment.reactions) ? 'text-blue-500' : 'text-gray-500 hover:text-blue-500'}`}
         >
-          <Heart className="w-4 h-4 inline-block" />
-          <span className="text-xs">{comment.likes}</span>
+          <Heart className={`w-4 h-4 inline-block ${isLiked(comment.reactions) ? 'fill-current' : ''}`} />
+          <span className="text-xs">{getLikeCount(comment.reactions)}</span>
         </button>
         <button 
           onClick={() => setShowReplyInput(!showReplyInput)}
@@ -98,11 +107,11 @@ const Comment = ({ comment, onReply, onLike, users, items, userPreferences }) =>
               </div>
               <div className="ml-6 flex items-center gap-4 mt-2">
                 <button 
-                  onClick={() => onLike(reply.id)}
-                  className="flex items-center gap-1 text-gray-500 hover:text-blue-500"
+                  onClick={() => onLikeReply(reply.id)}
+                  className={`flex items-center gap-1 ${isLiked(reply.reactions) ? 'text-blue-500' : 'text-gray-500 hover:text-blue-500'}`}
                 >
-                  <Heart className="w-4 h-4 inline-block" />
-                  <span className="text-xs">{reply.likes}</span>
+                  <Heart className={`w-4 h-4 inline-block ${isLiked(reply.reactions) ? 'fill-current' : ''}`} />
+                  <span className="text-xs">{getLikeCount(reply.reactions)}</span>
                 </button>
               </div>
             </div>
@@ -161,16 +170,29 @@ const TopComment = ({ commentsCollapsed, setCommentsCollapsed, comments, items }
             <span dangerouslySetInnerHTML={{ __html: renderTextWithMentions(topComment.text, items) }} />
           </p>
         </div>
-        <div className="ml-6 text-xs text-gray-500 mt-1">
-          {topComment.replies.length} replies
-        </div>
+        
+      <div className="ml-6 flex items-center gap-4 mt-2">
+        <button 
+          className={`flex items-center gap-1 ${ 'text-gray-500 hover:text-blue-500'}`}
+        >
+          <Heart className={`w-4 h-4 inline-block `} />
+          <span className="text-xs">{topComment.reactions?.length || 0}</span>
+        </button>
+        {topComment.replies && topComment.replies.length > 0 && (
+          <button 
+            className="text-gray-500 hover:text-blue-500 text-xs"
+          >
+            {`${topComment.replies.length} Replies`}
+          </button>
+        )}
+      </div>
       </div>
     </div>
   );
 };
 
 const AllComments = ({ commentsCollapsed, setCommentsCollapsed, setId, items, users, userPreferences }) => {
-  const [showNewCommentInput, setShowNewCommentInput] = useState(true);
+  const [showNewCommentInput, setShowNewCommentInput] = useState(false);
   const [newComment, setNewComment] = useState('');
   
   const {
@@ -178,6 +200,7 @@ const AllComments = ({ commentsCollapsed, setCommentsCollapsed, setId, items, us
     loading,
     error,
     handleLikeComment,
+    handleLikeReply,
     handleSubmitComment,
     handleReply
   } = useComments(setId);
@@ -215,15 +238,14 @@ const AllComments = ({ commentsCollapsed, setCommentsCollapsed, setId, items, us
             newComment={newComment}
             setNewComment={setNewComment}
             handleSubmitComment={() => {
-              console.log('newComment', newComment);
               handleSubmitComment(newComment);
               setNewComment('');
               setShowNewCommentInput(false);
             }}
             type="Comment"
-              users={users}
-              items={items}
-              userPreferences={userPreferences}
+            users={users}
+            items={items}
+            userPreferences={userPreferences}
           />
         ) : (
           <button
@@ -241,7 +263,8 @@ const AllComments = ({ commentsCollapsed, setCommentsCollapsed, setId, items, us
             key={comment.id}
             comment={comment}
             onReply={handleReply}
-            onLike={handleLikeComment}
+            onLikeComment={handleLikeComment}
+            onLikeReply={handleLikeReply}
             users={users}
             items={items}
             userPreferences={userPreferences}
