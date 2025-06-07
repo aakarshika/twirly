@@ -3,6 +3,7 @@ import { authService } from '../services/authService';
 
 export const useAuthHook = () => {
   const [user, setUser] = useState(null);
+  const [userPreferences, setUserPreferences] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -29,6 +30,14 @@ export const useAuthHook = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    const fetchUserPreferences = async () => {
+      const userPreferences = await authService.getUserPreferences(user?.id);
+      setUserPreferences(userPreferences);
+    };
+    fetchUserPreferences();
+  }, [user]);
 
   const signUp = async (email, password) => {
     try {
@@ -75,6 +84,7 @@ export const useAuthHook = () => {
 
   return {
     user,
+    userPreferences,
     loading,
     error,
     signUp,

@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import './VotingAnimation.css';
+import { ThumbsUp } from 'lucide-react';
 
 const VotingAnimation = ({ onVote }) => {
   const tapCountRef = useRef(0);

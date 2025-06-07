@@ -1,33 +1,40 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { RefreshCw } from 'lucide-react';
 
-const PullToRefresh = ({ onRefresh, children }) => {
+const PullToRefresh = ({ onRefresh, children, scrollableRef }) => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [pullDistance, setPullDistance] = useState(0);
   const startY = useRef(0);
   const containerRef = useRef(null);
   const THRESHOLD = 100; // Distance needed to trigger refresh
 
+  const isAtTop = () => {
+    if (scrollableRef && scrollableRef.current) {
+      const el = scrollableRef.current;
+      // Only check scrollTop if the element is actually scrollable
+      if (el.scrollHeight > el.clientHeight) {
+        return el.scrollTop === 0;
+      }
+    }
+    return window.scrollY === 0;
+  };
+
   const handleTouchStart = useCallback((e) => {
-    // Only start tracking if we're at the top of the page
-    if (window.scrollY === 0) {
+    if (isAtTop()) {
       startY.current = e.touches[0].clientY;
     }
-  }, []);
+  }, [scrollableRef]);
 
   const handleTouchMove = useCallback((e) => {
-    // Only handle pull-to-refresh if we're at the top of the page
-    if (window.scrollY === 0 && startY.current > 0) {
+    if (isAtTop() && startY.current > 0) {
       const currentY = e.touches[0].clientY;
       const distance = currentY - startY.current;
-      
       if (distance > 0) {
-        // Only prevent default if we're actually pulling down
         e.preventDefault();
         setPullDistance(distance * 0.5);
       }
     }
-  }, []);
+  }, [scrollableRef]);
 
   const handleTouchEnd = useCallback(async () => {
     if (pullDistance >= THRESHOLD) {
@@ -49,7 +56,6 @@ const PullToRefresh = ({ onRefresh, children }) => {
       container.addEventListener('touchmove', handleTouchMove, { passive: false });
       container.addEventListener('touchend', handleTouchEnd);
     }
-
     return () => {
       if (container) {
         container.removeEventListener('touchstart', handleTouchStart);

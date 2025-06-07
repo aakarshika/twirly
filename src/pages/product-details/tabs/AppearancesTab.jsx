@@ -24,10 +24,10 @@ const AppearancesTab = ({ item, comparisonSets }) => {
           .from('votes')
           .select('*')
           .eq('user_id', user.id)
-          .in('set_id', set.comparison_set_aspects.map(aspect => aspect.id));
+          .eq('set_id', set.id);
         
         if (!userVotedError) {
-          votesMap[set.id] = userVoted.length === set.comparison_set_aspects.length;
+          votesMap[set.id] = userVoted?.length === set.votes?.length;
         }
       }
       setUserVotedSets(votesMap);
@@ -71,19 +71,19 @@ const AppearancesTab = ({ item, comparisonSets }) => {
                 <UserGroupIcon className="h-4 w-4 mr-1.5 opacity-60" />
                 <div className="flex items-baseline">
                   <span className="text-base font-semibold mr-1">
-                    {set.comparison_set_aspects.reduce((acc, aspect) => acc + aspect.votes.length, 0)}
+                    {set.votes?.length}
                   </span>
                   <span className="text-xs opacity-60">votes</span>
                 </div>
               </div>
               <div className="flex items-center" style={{ color: currentTheme.colors.textSecondary }}>
                 <ChatBubbleOvalLeftIcon className="h-4 w-4 mr-1.5" />
-                <span className="text-sm">{set.comparison_set_aspects.reduce((acc, aspect) => acc + aspect.comparison_set_comments.length, 0)} </span>
+                <span className="text-sm">{set.comparison_set_comments?.length} </span>
               </div>
             </div>
           </div>
 
-          {userVotedSets[set.id] && (
+          {/* {userVotedSets[set.id] && (
             <div className="m-2 rounded-lg p-4">
               <OtherChart 
                 selectedChart={selectedChart}
@@ -98,8 +98,8 @@ const AppearancesTab = ({ item, comparisonSets }) => {
                     name: item.items.name,
                     item_color_string: item.items.item_color_string,
                     metrics: set.comparison_set_aspects.reduce((acc, aspect) => {
-                      const totalVotes = aspect.votes.length;
-                      const itemVotes = aspect.votes.filter(vote => vote.item_id === item.items.id).length;
+                      const totalVotes = aspect.votes?.length;
+                      const itemVotes = aspect.votes.filter(vote => vote.item_id === item.items.id)?.length;
                       acc[aspect.metric_name] = (itemVotes / totalVotes) * 100;
                       return acc;
                     }, {})
@@ -114,10 +114,10 @@ const AppearancesTab = ({ item, comparisonSets }) => {
               <p>Play all to unlock metrics</p>
               <Play size={24} />
             </div>
-          )}
+          )} */}
         </div>
       ))}
-      {(!comparisonSets || comparisonSets.length === 0) && (
+      {(!comparisonSets || comparisonSets?.length === 0) && (
         <div className="text-center py-8">
           <p className="text-lg" style={{ color: currentTheme.colors.textSecondary }}>
             No comparison history available

@@ -52,13 +52,11 @@ const ProductDetails = () => {
       if (itemError) throw itemError;
       if (!itemData) {
         setError('Item not found');
-        setGlobalError('global', 'Item not found', () => window.location.reload());
+        setGlobalError('global', 'Item not found');
         return;
       }
       setItem(itemData);
 
-      // Fetch initial reviews
-      await fetchReviews(1);
 
       // Fetch comparison sets where this item appears
       const { data: setsData, error: setsError } = await supabase
@@ -67,51 +65,18 @@ const ProductDetails = () => {
           *,
           currentitem:comparison_set_items!inner(items(*)),
           allitems:comparison_set_items(items(*)),
-          comparison_set_aspects(
-              *,
-              comparison_set_comments(*),
-              votes(*)
-          )
+          comparison_set_comments(*)
         `)
         .eq('comparison_set_items.item_id', itemId);
 
       if (setsError) throw setsError;
       
-      const totalVotes = setsData.reduce((sum, set) => sum + (set.votes?.length || 0), 0);
-      // Fetch metrics for each set
-      const transformedSets = await Promise.all(setsData.map(async (set) => {
-        // First, get all reviews for this item
-        const { data: setReviews, error: reviewsError } = await supabase
-          .from('reviews')
-          .select(`
-            *
-          `)
-          .eq('item_id', itemId);
 
-        if (reviewsError) throw reviewsError;
-
-        // Get comment count from comparison_set_aspects
-        const { data: aspectsData, error: aspectsError } = await supabase
-          .from('comparison_set_aspects')
-          .select('*')
-          .eq('set_id', set.id)
-          .select();
-
-        if (aspectsError) throw aspectsError;
-
-        return {
-          totalVotes,
-          ...set,
-          reviews: setReviews,
-          aspects: aspectsData
-        };
-      }));
-
-      setComparisonSets(transformedSets);
+      setComparisonSets(setsData);
     } catch (err) {
       console.error('Error fetching product details:', err);
       setError(err.message);
-      setGlobalError('global', err.message, () => window.location.reload());
+      setGlobalError('global', err.message);
     } finally {
       setLoading('global', false);
     }
@@ -120,45 +85,6 @@ const ProductDetails = () => {
   useEffect(() => {
     fetchProductDetails();
   }, [itemId]);
-
-  const fetchReviews = async (page) => {
-    try {
-      setLoadingMoreReviews(true);
-      const { data: reviewsData, error: reviewsError, count } = await supabase
-        .from('reviews')
-        .select(`
-          *,
-          user_preferences (*),
-          review_likes (*)
-        `, { count: 'exact' })
-        .eq('item_id', itemId)
-        .order('created_at', { ascending: false })
-        .range((page - 1) * REVIEWS_PER_PAGE, page * REVIEWS_PER_PAGE - 1);
-
-      if (reviewsError) throw reviewsError;
-
-      if (page === 1) {
-        setReviews(reviewsData);
-      } else {
-        setReviews(prev => [...prev, ...reviewsData]);
-      }
-
-      setHasMoreReviews(reviewsData.length === REVIEWS_PER_PAGE);
-    } catch (error) {
-      console.error('Error fetching reviews:', error);
-      setGlobalError('global', 'Failed to load reviews. Please try again.', () => window.location.reload());
-    } finally {
-      setLoadingMoreReviews(false);
-    }
-  };
-
-  const loadMoreReviews = () => {
-    if (!loadingMoreReviews && hasMoreReviews) {
-      const nextPage = currentPage + 1;
-      setCurrentPage(nextPage);
-      fetchReviews(nextPage);
-    }
-  };
 
   const handleRefresh = async () => {
     await fetchProductDetails();

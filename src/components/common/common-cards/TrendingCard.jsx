@@ -20,18 +20,6 @@ const TrendingCard = ({set, from}) => {
 
     const { currentTheme } = useTheme();
 
-    // Effect to cycle through metric names
-    useEffect(() => {
-        if (!set.comparison_set_aspects || set.comparison_set_aspects.length === 0) return;
-
-        const interval = setInterval(() => {
-            setCurrentMetricIndex(prevIndex => 
-                (prevIndex + 1) % set.comparison_set_aspects.length
-            );
-        }, 2500); // Change metric every 2 seconds
-
-        return () => clearInterval(interval);
-    }, [set.comparison_set_aspects]);
 
     const handleSetClick = async (set, event) => {
         try {
@@ -71,11 +59,10 @@ const TrendingCard = ({set, from}) => {
                 const { data, error } = await supabase
                     .from('votes')
                     .select(`
-                        comparison_set_aspects!inner(id),
                         *
                     `)
                     .eq('user_id', user.id)
-                    .eq('comparison_set_aspects.set_id', set.set_id);
+                    .eq('set_id', set.set_id);
 
                 if (error) {
                     throw error;
@@ -171,27 +158,6 @@ const TrendingCard = ({set, from}) => {
                 </div>
                 <div className="flex items-center justify-between mt-4" style={{ color: currentTheme.colors.text }}>
                     <div className="flex">
-                        <div className="items-start">
-                            <div className="flex flex-col">
-                                <div className="flex items-center">
-                                    <span className="text-xs mr-2" style={{ opacity: 0.9 }}>based on</span>
-                                <span 
-                                    className="text-sm rounded-md"
-                                    style={{textAlign: 'start', color: 'white', backgroundColor: currentTheme.colors.secondary, padding: '4px 8px', opacity: 0.8}}
-                                >
-                                    {set.comparison_set_aspects[currentMetricIndex] && 
-                                     splitAndJoin(set.comparison_set_aspects[currentMetricIndex].metric_name)}
-                                </span>
-                                </div>
-                                <div className="flex items-center">
-                                    <span className="text-xs ">
-                                        {formatDistanceToNow(new Date(set.created_at), { addSuffix: true })}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    {/* <div className="flex">
                         <Avatar
                             profileImageUrl={set.user?.profile_image_url ? getPublicUrl(set.user?.profile_image_url) : null}
                             displayName={set.user?.display_name}
@@ -216,7 +182,7 @@ const TrendingCard = ({set, from}) => {
                                 </div>
                             </div>
                         </div>
-                    </div> */}
+                    </div>
 
                     <div className="flex items-center space-x-4" style={{ color: currentTheme.colors.text }}>
                         {(set.total_comments || 0) > 0 && (

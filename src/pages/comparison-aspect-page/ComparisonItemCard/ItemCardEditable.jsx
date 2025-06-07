@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Check, Circle, Pencil, ThumbsUp, Upload, X, Plus, Search, Info } from 'lucide-react';
+import { HexColorPicker } from 'react-colorful';
 import VoteStats from './VoteStats/VoteStats';
 import './ComparisonItemCard.css';
 import { useTheme } from '../../../contexts/ThemeContext';
@@ -31,6 +32,7 @@ const ItemCardEditable = ({
   const [categoryResults, setCategoryResults] = useState([]);
   const [showCategorySearch, setShowCategorySearch] = useState(false);
   const [allCategories, setAllCategories] = useState([]);
+  const [showColorPicker, setShowColorPicker] = useState(false);
 
   // Convert RGB to hex
   const rgbToHex = (rgb) => {
@@ -213,9 +215,7 @@ const ItemCardEditable = ({
   };
 
   const handleColorClick = () => {
-    if (colorInputRef.current) {
-      colorInputRef.current.click();
-    }
+    setShowColorPicker(!showColorPicker);
   };
 
   const handleSave = async () => {
@@ -407,24 +407,27 @@ const ItemCardEditable = ({
             <Circle size={16} fill={color} />
             Change 
           </div>
-          <input
-            type="color"
-            ref={colorInputRef}
-            value={rgbToHex(itemData.item_color_string)}
-            onChange={handleColorChange}
-            className="absolute left-0 top-full mt-2 w-8 h-8 opacity-0 cursor-pointer"
-            style={{ 
-              position: 'absolute',
-              left: '0',
-              top: '100%',
-              marginTop: '0.5rem',
-              width: '2rem',
-              height: '2rem',
-              opacity: '0',
-              cursor: 'pointer',
-              zIndex: '1000'
-            }}
-          />
+          {showColorPicker && (
+            <div 
+              className="absolute left-0 top-full mt-2 z-50"
+              style={{
+                backgroundColor: 'white',
+                padding: '10px',
+                borderRadius: '8px',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+              }}
+            >
+              <HexColorPicker
+                color={rgbToHex(itemData.item_color_string)}
+                onChange={(newColor) => {
+                  setItemData(prev => ({
+                    ...prev,
+                    item_color_string: newColor
+                  }));
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
 

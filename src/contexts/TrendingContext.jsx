@@ -30,9 +30,6 @@ export const TrendingProvider = ({ children }) => {
         .select(`
           *,
           user:user_preferences(*),
-          comparison_set_aspects (
-            metric_name
-          ),
           comparison_set_items (
             items (
               id,

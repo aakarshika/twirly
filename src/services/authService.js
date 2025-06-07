@@ -187,5 +187,16 @@ export const authService = {
   // Subscribe to auth state changes
   onAuthStateChange(callback) {
     return supabase.auth.onAuthStateChange(callback);
+  },
+
+  async getUserPreferences(userId) {
+    const { data, error } = await supabase
+      .from('user_preferences')
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    if (error) throw error;
+    return data;
   }
 }; 

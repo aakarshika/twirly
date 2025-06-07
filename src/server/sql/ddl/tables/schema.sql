@@ -85,7 +85,7 @@ CREATE TABLE votes (
     id SERIAL PRIMARY KEY,
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     item_id INTEGER REFERENCES items(id) ON DELETE CASCADE,
-    set_id INTEGER REFERENCES comparison_set_aspects(id) ON DELETE CASCADE,
+    set_id INTEGER REFERENCES comparison_sets(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 

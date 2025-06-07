@@ -12,7 +12,7 @@ const VoteCard = ({ vote }) => {
     <div 
       className="rounded-lg overflow-hidden "
             onClick={() => {
-              navigate(`/compare/${vote.comparison_set_aspects?.set_id}`);
+              navigate(`/compare/${vote.comparison_sets?.id}`);
             }}
       style={{ backgroundColor: changeColorAlpha(currentTheme.colors.background, 0.5) }}
     >
@@ -24,15 +24,9 @@ const VoteCard = ({ vote }) => {
               className="font-semibold text-lg"
               style={{ color: currentTheme.colors.text }}
             >
-              {vote.comparison_set_aspects?.comparison_sets?.name}
+              {vote.comparison_sets?.name}
             </h3>
 
-            <h4 
-              className="text-sm rounded-md px-2 py-1"
-              style={{ color: 'white', backgroundColor: currentTheme.colors.secondary}}
-            >
-              Based on: {splitAndJoin(vote.comparison_set_aspects?.metric_name)}
-            </h4>
           </div>
           <div className="flex items-center space-x-2">
             <span 

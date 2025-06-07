@@ -24,7 +24,6 @@ import FloatingFeedbackButton from './feedback/FloatingFeedbackButton';
 import FeedbackModal from './feedback/FeedbackModal';
 import FeedbackManagement from './feedback/feedback-page/FeedbackManagement';
 import CreateComparison from './user-dashboard-page/dashboard/tabs/CreateComparison';
-import ComparePage from './compare-page/ComparePage';
 import { useLoading } from '../contexts/LoadingContext';
 import { useMediaQuery } from 'react-responsive';
 import { TrendingProvider, useTrending } from '../contexts/TrendingContext';
@@ -39,6 +38,7 @@ import ErrorBoundary from '../components/ErrorBoundary';
 import NotFoundPage from '../components/NotFoundPage';
 import { App } from '@capacitor/app';
 import { authService } from '../services/authService';
+import TikTokScroll from '../components/TikTokScroll';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -173,6 +173,18 @@ const MainRoutingPage = () => {
 
     setupAppUrlListener();
   }, []);
+  const shouldShowHeader = () => {
+    const show = !isMobile || ['/', '/dashboard', '/settings', '/compare', '/user'].some(path => 
+      location.pathname === path || location.pathname.startsWith(path + '/')
+    );
+    return show;
+  };
+
+  const isPublicRoute = () => {
+    const isPublic = ['/login','/compare/', '/landing', '/signup', '/forgot-password', '/auth/v1/callback', '/auth/callback']
+      .some(path => location.pathname.includes(path));
+    return isPublic;
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -185,19 +197,6 @@ const MainRoutingPage = () => {
   if (isInitialLoad || (loading && user)) {
     return null;
   }
-
-  const shouldShowHeader = () => {
-    return !isMobile || ['/', '/dashboard', '/settings', '/compare', '/user'].some(path => 
-      location.pathname === path || location.pathname.startsWith(path + '/')
-    );
-  };
-
-  const isPublicRoute = () => {
-    // return false;
-    return ['/landing', '/forgot-password', '/onboarding', '/auth/v1/callback', '/auth/callback']
-      .some(path => location.pathname === path);
-  };
-
   return (
     <ErrorBoundary>
       <div 
@@ -217,7 +216,7 @@ const MainRoutingPage = () => {
               }}
             >
               {!isPublicRoute() && <Header />}
-              <main className="flex-1" style={{ paddingTop: '64px' }}>
+              <main className="flex-1" style={{ paddingTop: isPublicRoute() ? '0' : '64px' }}>
                 <Routes>
                   {/* Public Routes */}
                   {/* <Route path="/login" element={<Login />} /> */}
@@ -241,7 +240,7 @@ const MainRoutingPage = () => {
                   {/* Compare routes */}
                   <Route path="/compare/:id/*" element={
                     <ProtectedRoute>
-                      <ComparePage />
+                      <TikTokScroll />
                     </ProtectedRoute>
                   }/>
                   
