@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabaseClient';
+import { getCurrentPath } from '../lib/urlUtils';
 
 const FEEDBACK_BUCKET = 'feedback-images';
 
@@ -36,7 +37,7 @@ export const feedbackService = {
         message: feedback.message,
         image_url,
         status: 'pending',
-        page_route: feedback.page_route || window.location.pathname,
+        page_route: feedback.page_route || getCurrentPath(),
         created_at: new Date()
       }]);
 
