@@ -14,8 +14,7 @@ export const comparisonSetService = {
       `, { count: 'exact' })
       .eq('set_id', setId)
       .order('created_at', { ascending: false, referencedTable: 'comparison_set_comment_replies' })
-      .order('created_at', { ascending: false })
-      .range(offset, offset + limit - 1);
+      .order('created_at', { ascending: false });
 
     if (error) throw error;
 

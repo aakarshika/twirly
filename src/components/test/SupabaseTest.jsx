@@ -9,14 +9,14 @@ const SupabaseTest = () => {
   useEffect(() => {
     const fetchItems = async () => {
       try {
-        console.log('Attempting to fetch items from Supabase...');
+        // console.log('Attempting to fetch items from Supabase...');
         
         const { data, error } = await supabase
           .from('test_items')
           .select('*')
           .order('created_at', { ascending: false });
 
-        console.log('Supabase response:', { data, error });
+        // console.log('Supabase response:', { data, error });
 
         if (error) {
           console.error('Supabase error:', error);

@@ -10,7 +10,7 @@ import { useHeader } from '../../contexts/HeaderContext';
 import CommentAppearancesTab from './tabs/CommentAppearancesTab';
 import AppearancesTab from './tabs/AppearancesTab';
 import { changeColorAlpha } from '../../lib/utils';
-import { motion } from 'framer-motion';
+import { motion, useAnimation } from 'framer-motion';
 import { useLoading } from '../../contexts/LoadingContext';
 import PullToRefresh from '../../components/common/PullToRefresh';
 
@@ -27,6 +27,7 @@ const ProductDetails = () => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const { isHeaderVisible } = useHeader();
   const { setLoading, setError: setGlobalError } = useLoading();
+  const controls = useAnimation();
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,13 +53,11 @@ const ProductDetails = () => {
       if (itemError) throw itemError;
       if (!itemData) {
         setError('Item not found');
-        setGlobalError('global', 'Item not found', () => window.location.reload());
+        setGlobalError('global', 'Item not found');
         return;
       }
       setItem(itemData);
 
-      // Fetch initial reviews
-      await fetchReviews(1);
 
       // Fetch comparison sets where this item appears
       const { data: setsData, error: setsError } = await supabase
@@ -67,51 +66,18 @@ const ProductDetails = () => {
           *,
           currentitem:comparison_set_items!inner(items(*)),
           allitems:comparison_set_items(items(*)),
-          comparison_set_aspects(
-              *,
-              comparison_set_comments(*),
-              votes(*)
-          )
+          comparison_set_comments(*)
         `)
         .eq('comparison_set_items.item_id', itemId);
 
       if (setsError) throw setsError;
       
-      const totalVotes = setsData.reduce((sum, set) => sum + (set.votes?.length || 0), 0);
-      // Fetch metrics for each set
-      const transformedSets = await Promise.all(setsData.map(async (set) => {
-        // First, get all reviews for this item
-        const { data: setReviews, error: reviewsError } = await supabase
-          .from('reviews')
-          .select(`
-            *
-          `)
-          .eq('item_id', itemId);
 
-        if (reviewsError) throw reviewsError;
-
-        // Get comment count from comparison_set_aspects
-        const { data: aspectsData, error: aspectsError } = await supabase
-          .from('comparison_set_aspects')
-          .select('*')
-          .eq('set_id', set.id)
-          .select();
-
-        if (aspectsError) throw aspectsError;
-
-        return {
-          totalVotes,
-          ...set,
-          reviews: setReviews,
-          aspects: aspectsData
-        };
-      }));
-
-      setComparisonSets(transformedSets);
+      setComparisonSets(setsData);
     } catch (err) {
       console.error('Error fetching product details:', err);
       setError(err.message);
-      setGlobalError('global', err.message, () => window.location.reload());
+      setGlobalError('global', err.message);
     } finally {
       setLoading('global', false);
     }
@@ -121,47 +87,17 @@ const ProductDetails = () => {
     fetchProductDetails();
   }, [itemId]);
 
-  const fetchReviews = async (page) => {
-    try {
-      setLoadingMoreReviews(true);
-      const { data: reviewsData, error: reviewsError, count } = await supabase
-        .from('reviews')
-        .select(`
-          *,
-          user_preferences (*),
-          review_likes (*)
-        `, { count: 'exact' })
-        .eq('item_id', itemId)
-        .order('created_at', { ascending: false })
-        .range((page - 1) * REVIEWS_PER_PAGE, page * REVIEWS_PER_PAGE - 1);
-
-      if (reviewsError) throw reviewsError;
-
-      if (page === 1) {
-        setReviews(reviewsData);
-      } else {
-        setReviews(prev => [...prev, ...reviewsData]);
-      }
-
-      setHasMoreReviews(reviewsData.length === REVIEWS_PER_PAGE);
-    } catch (error) {
-      console.error('Error fetching reviews:', error);
-      setGlobalError('global', 'Failed to load reviews. Please try again.', () => window.location.reload());
-    } finally {
-      setLoadingMoreReviews(false);
-    }
-  };
-
-  const loadMoreReviews = () => {
-    if (!loadingMoreReviews && hasMoreReviews) {
-      const nextPage = currentPage + 1;
-      setCurrentPage(nextPage);
-      fetchReviews(nextPage);
-    }
-  };
-
   const handleRefresh = async () => {
     await fetchProductDetails();
+  };
+
+  const handleSwipeRight = async (event, info) => {
+    if (info.offset.x > 100) { // Only trigger if swiped more than 100px
+      await controls.start({ x: '100%', transition: { duration: 0.3 } });
+      navigate(-1);
+    } else {
+      controls.start({ x: 0, transition: { duration: 0.3 } });
+    }
   };
 
   if (error) {
@@ -183,8 +119,13 @@ const ProductDetails = () => {
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
-      <div 
-        className="min-h-screen overflow-x-hidden " style={{  color: currentTheme.colors.text }}
+      <motion.div 
+        className="min-h-screen overflow-x-hidden" 
+        style={{ color: currentTheme.colors.text }}
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        onDragEnd={handleSwipeRight}
+        animate={controls}
       >
         <div className='max-w-7xl mx-auto w-full  z-10'>
           <div className='' >
@@ -232,7 +173,7 @@ const ProductDetails = () => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </PullToRefresh>
   );
 };

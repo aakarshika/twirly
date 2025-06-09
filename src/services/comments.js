@@ -19,13 +19,10 @@ export const getUserComments = async (userId, page = 1, limit = 10) => {
         user:user_preferences(*),
         reactions:comparison_set_comment_reactions(reaction_type, user_id),
         replies:comparison_set_comment_replies(*,user:user_preferences(*)),
-        comparison_set_aspects(
-          *,
           comparison_sets(
             *,
             category:categories(name)
           )
-        )
       `, { count: 'exact' })
       .eq('user_id', userId)
       .order('created_at', { ascending: false })

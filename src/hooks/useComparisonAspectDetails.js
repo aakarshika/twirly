@@ -22,7 +22,7 @@ export const useComparisonAspectDetails = (id) => {
   const fetchComparisonDetails = async () => {
     try {
       setLoading(true);
-      console.log('id fetchComparisonDetails', id);
+      // console.log('id fetchComparisonDetails', id);
       const comparisonId = parseInt(id);
       if (isNaN(comparisonId)) {
         throw new Error('Invalid comparison aspect set ID');
@@ -34,7 +34,7 @@ export const useComparisonAspectDetails = (id) => {
         design: 3.5,
         performance: 3.5
       };
-      console.log('comparisonId', comparisonId);
+      // console.log('comparisonId', comparisonId);
       const { data, error } = await supabase
         .from('comparison_set_aspects')
         .select(`
@@ -135,7 +135,7 @@ export const useComparisonAspectDetails = (id) => {
         }
       });
 
-      console.log('Vote inserted:', data);  
+      // console.log('Vote inserted:', data);  
     } catch (error) {
       console.error('Error voting:', error);
     } finally {
@@ -205,7 +205,7 @@ export const useComparisonAspectDetails = (id) => {
     });
   };
   const handleRevertVote = async () => {
-    console.log('revert vote ------??');
+    // console.log('revert vote ------??');
     try {
       const { data, error } = await supabase
         .from('votes')
@@ -230,7 +230,7 @@ export const useComparisonAspectDetails = (id) => {
         }
       });
 
-      console.log('Vote reverted:', data);
+      // console.log('Vote reverted:', data);
     } catch (error) {
       console.error('Error reverting vote:', error);
     } finally {

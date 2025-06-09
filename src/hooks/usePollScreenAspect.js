@@ -38,7 +38,7 @@ export const usePollScreenAspect = (id) => {
   useEffect(() => {
     const loadNextCard = async () => {
       const remainingAspects = await fetchRemainingAspects(id);
-      console.log('remainingAspects', remainingAspects);
+      // console.log('remainingAspects', remainingAspects);
       if (remainingAspects.length > 0) {
         const nextId = remainingAspects[0].id;
         const nextCompData = await fetchComparison(nextId);
@@ -96,11 +96,11 @@ export const usePollScreenAspect = (id) => {
     setShowEndAnimation(true);
     
     setTimeout(async () => {
-      console.log('nextCardData', nextCardData);
+      // console.log('nextCardData', nextCardData);
       if (nextCardData) {
         // Update state with nextCardData if needed
         navigate('/comparison-aspect-page/' + nextCardData.id);
-        console.log('nextCardData', nextCardData);
+        // console.log('nextCardData', nextCardData);
       }
       else {
         navigate('/comparison/' + currentSet.id);

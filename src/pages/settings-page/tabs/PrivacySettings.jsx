@@ -45,7 +45,7 @@ const PrivacySettings = () => {
 
   const handleSave = () => {
     // TODO: Implement save functionality with Supabase
-    console.log('Saving privacy settings:', privacySettings);
+    // console.log('Saving privacy settings:', privacySettings);
   };
 
   return (

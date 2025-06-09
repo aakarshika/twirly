@@ -30,14 +30,14 @@ export const ComparisonDraftProvider = ({ children }) => {
   };
 
   const addItem = (item) => {
-    console.log(item);
+    // console.log(item);
     if (!draft.items.find(i => i.id === item.id)) {
       setDraft(prev => ({
         ...prev,
         items: [...prev.items, item]
       }));
     }
-    console.log(draft.items);
+    // console.log(draft.items);
   };
 
   const addCategory = (category) => {

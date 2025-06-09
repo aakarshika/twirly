@@ -31,10 +31,6 @@ const OtherChart = ({ data, selectedChart }) => {
   if (!data || !data[0]) return null;
 
   const { aspects, items } = data[0];
-  console.log('Aspects:', aspects);
-  console.log('Items:', items);
-  console.log('aaaaaaa',items[0].item_color_string.substring(0, items[0].item_color_string.length - 1));
-  
   const chartDataRadar = {
     labels: aspects.map(aspect => (aspect.name).split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')),
     datasets: items.map((item, index) => ({

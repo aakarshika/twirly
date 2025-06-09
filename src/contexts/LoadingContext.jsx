@@ -5,7 +5,7 @@ import ErrorScreen from '../components/common/ErrorScreen';
 const LoadingContext = createContext();
 
 export const LoadingProvider = ({ children }) => {
-  console.log('[LoadingContext] Provider mounting');
+  // console.log('[LoadingContext] Provider mounting');
   const [loadingStates, setLoadingStates] = useState({});
   const [errorStates, setErrorStates] = useState({});
   const [globalLoading, setGlobalLoading] = useState(true); // Start with true for initial load
@@ -15,16 +15,16 @@ export const LoadingProvider = ({ children }) => {
 
   // Clear initial loading state after a short delay
   useEffect(() => {
-    console.log('[LoadingContext] Initial loading state:', { globalLoading, loadingStates });
+    // console.log('[LoadingContext] Initial loading state:', { globalLoading, loadingStates });
     const timer = setTimeout(() => {
-      console.log('[LoadingContext] Clearing initial loading state');
+      // console.log('[LoadingContext] Clearing initial loading state');
       setGlobalLoading(false);
     }, 500);
     return () => clearTimeout(timer);
   }, []);
 
   const setLoading = (key, isLoading, message = 'Loading Things...') => {
-    console.log('[LoadingContext] Setting loading state:', { key, isLoading, message });
+    // console.log('[LoadingContext] Setting loading state:', { key, isLoading, message });
     setLoadingStates(prev => ({
       ...prev,
       [key]: isLoading
@@ -32,7 +32,7 @@ export const LoadingProvider = ({ children }) => {
     
     // If this is a global loading state, update the global loading
     if (key === 'global') {
-      console.log('[LoadingContext] Setting global loading:', { isLoading, message });
+      // console.log('[LoadingContext] Setting global loading:', { isLoading, message });
       setGlobalLoading(isLoading);
       setGlobalLoadingMessage(message);
       // Clear any global error when starting to load
@@ -44,7 +44,7 @@ export const LoadingProvider = ({ children }) => {
   };
 
   const setError = (key, error, retryFunction = null) => {
-    console.log('[LoadingContext] Setting error state:', { key, error });
+    // console.log('[LoadingContext] Setting error state:', { key, error });
     setErrorStates(prev => ({
       ...prev,
       [key]: error
@@ -52,14 +52,14 @@ export const LoadingProvider = ({ children }) => {
     
     // If this is a global error state, update the global error
     if (key === 'global') {
-      console.log('[LoadingContext] Setting global error:', { error });
+      // console.log('[LoadingContext] Setting global error:', { error });
       setGlobalError(error);
       setGlobalErrorRetry(retryFunction);
     }
   };
 
   const clearError = (key) => {
-    console.log('[LoadingContext] Clearing error state:', { key });
+    // console.log('[LoadingContext] Clearing error state:', { key });
     setErrorStates(prev => {
       const newState = { ...prev };
       delete newState[key];
@@ -68,14 +68,14 @@ export const LoadingProvider = ({ children }) => {
     
     // If this is a global error state, clear it
     if (key === 'global') {
-      console.log('[LoadingContext] Clearing global error');
+      // console.log('[LoadingContext] Clearing global error');
       setGlobalError(null);
       setGlobalErrorRetry(null);
     }
   };
 
   const clearLoading = (key) => {
-    console.log('[LoadingContext] Clearing loading state:', { key });
+    // console.log('[LoadingContext] Clearing loading state:', { key });
     setLoadingStates(prev => {
       const newState = { ...prev };
       delete newState[key];

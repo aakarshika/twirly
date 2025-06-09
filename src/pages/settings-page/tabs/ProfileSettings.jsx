@@ -109,7 +109,7 @@ const ProfileSettings = () => {
       const fileName = `${Date.now()}.${fileExt}`;
       // Create path with user ID (UUID) as folder name
       const filePath = `${user.id}/${fileName}`;
-      console.log('Uploading file to path:', filePath);
+      // console.log('Uploading file to path:', filePath);
 
       // Upload the file to Supabase Storage
       const { error: uploadError } = await supabase.storage
@@ -125,7 +125,7 @@ const ProfileSettings = () => {
       const { data: { publicUrl } } = supabase.storage
         .from('profile-pics')
         .getPublicUrl(filePath);
-      console.log('Generated public URL after upload:', publicUrl);
+      // console.log('Generated public URL after upload:', publicUrl);
 
       // Update both the file path and the avatar preview
       setProfileData(prev => ({

@@ -40,18 +40,19 @@ const OnboardingFlow = () => {
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedNotifications, setSelectedNotifications] = useState([]);
   const [username, setUsername] = useState('');
+  const [usernameError, setUsernameError] = useState('');
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [allCategories, setAllCategories] = useState([]);
 
-  console.log('[OnboardingFlow] Render', {
-    user,
-    preferences,
-    notificationPreferences,
-    categoryPreferences,
-    currentStep,
-    onboardingComplete,
-    error
-  });
+  // console.log('[OnboardingFlow] Render', {
+  //   user,
+  //   preferences,
+  //   notificationPreferences,
+  //   categoryPreferences,
+  //   currentStep,
+  //   onboardingComplete,
+  //   error
+  // });
 
   const fetchPreferences = async () => {
     setLoading('global', true, 'Loading preferences...');
@@ -89,7 +90,7 @@ const OnboardingFlow = () => {
 
   useEffect(() => {
     if (onboardingComplete) {
-      console.log('onboardingComplete');
+      // console.log('onboardingComplete');
       window.location.href = '/dashboard';
     }
   }, [onboardingComplete]);
@@ -119,29 +120,41 @@ const OnboardingFlow = () => {
     );
   };
 
+  const validateUsernameInput = (value) => {
+    if (!value) {
+      setUsernameError('Username is required');
+      return false;
+    }
+    if (value.length < 3) {
+      setUsernameError('Username must be at least 3 characters long');
+      return false;
+    }
+    if (!/^[a-z0-9_]+$/.test(value)) {
+      setUsernameError('Username can only contain lowercase letters, numbers, and underscores');
+      return false;
+    }
+    if (value.includes(' ')) {
+      setUsernameError('Username cannot contain spaces');
+      return false;
+    }
+    setUsernameError('');
+    return true;
+  };
+
   const validateUsername = async () => {
-    if (!username) {
-      setError('Username is required');
-      return false;
-    }
-    if (username.length < 3) {
-      setError('Username must be at least 3 characters long');
-      return false;
-    }
-    if (!/^[a-zA-Z0-9_]+$/.test(username)) {
-      setError('Username can only contain letters, numbers, and underscores');
+    if (!validateUsernameInput(username)) {
       return false;
     }
 
     try {
       const isAvailable = await userService.checkUsernameAvailability(username);
       if (!isAvailable) {
-        setError('Username is already taken');
+        setUsernameError('Username is already taken');
         return false;
       }
       return true;
     } catch (error) {
-      setError('Error checking username availability');
+      setUsernameError('Error checking username availability');
       return false;
     }
   };
@@ -188,7 +201,7 @@ const OnboardingFlow = () => {
   };
 
   const renderStep = () => {
-    console.log('[OnboardingFlow] renderStep', { currentStep, username, selectedCategories, selectedNotifications });
+    // console.log('[OnboardingFlow] renderStep', { currentStep, username, selectedCategories, selectedNotifications });
     switch (currentStep) {
       case 1:
         return (
@@ -208,15 +221,22 @@ const OnboardingFlow = () => {
               <input
                 type="text"
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value.toLowerCase();
+                  setUsername(value);
+                  validateUsernameInput(value);
+                }}
                 placeholder="Enter your username"
                 style={{
                   backgroundColor: currentTheme.colors.background,
-                  borderColor: currentTheme.colors.border,
+                  borderColor: usernameError ? currentTheme.colors.error : currentTheme.colors.border,
                   color: currentTheme.colors.text,
                 }}
                 className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-offset-2 transition-colors"
               />
+              {usernameError && (
+                <p className="mt-2 text-sm text-red-500">{usernameError}</p>
+              )}
               <p className="mt-2 text-sm" style={{ color: currentTheme.colors.textSecondary }}>
                 This will be your unique identifier on Twirly
               </p>

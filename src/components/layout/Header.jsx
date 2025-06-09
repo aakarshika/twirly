@@ -383,7 +383,7 @@ const MobileSettingsDrawer = ({
 
   return (
     <div
-      className="fixed z-[60] settings-drawer transition-all duration-200 ease-in-out"
+      className="fixed z-[100] settings-drawer transition-all duration-200 ease-in-out"
       style={{ 
         right: '0',
         height: '100vh',
@@ -672,12 +672,12 @@ const Header = () => {
   }, [isDrawerOpen]);
 
   const handleLogout = async () => {
-    console.log('Logging out');
+    // console.log('Logging out');
     try {
       await signOut();
       window.location.href = '/landing';
       setIsDrawerOpen(false);
-      console.log('Logged out');
+      // console.log('Logged out');
     } catch (error) {
       console.error('Error logging out:', error);
     }

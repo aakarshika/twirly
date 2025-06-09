@@ -8,7 +8,7 @@ import { formatDistanceToNow } from 'date-fns';
 
 const CommentCard = ({ comment }) => {
   const { currentTheme } = useTheme();
-  console.log(comment);
+  // console.log(comment);
   return (
     <div 
       className="rounded-lg overflow-hidden"
@@ -19,22 +19,16 @@ const CommentCard = ({ comment }) => {
       <div className="flex justify-between items-start mb-4">
           <div
             onClick={() => {
-              navigate(`/compare/${comment.comparison_set_aspects?.set_id}`);
+              navigate(`/compare/${comment?.comparison_sets?.id}`);
             }}
           >
             <h3 
               className="font-semibold text-lg"
               style={{ color: currentTheme.colors.text }}
             >
-              {comment.comparison_set_aspects?.comparison_sets?.name}
+              {comment?.comparison_sets?.name}
             </h3>
 
-            <h4 
-              className="text-sm rounded-md px-2 py-1"
-              style={{ color: 'white', backgroundColor: currentTheme.colors.secondary}}
-            >
-              Based on: {splitAndJoin(comment.comparison_set_aspects?.metric_name)}
-            </h4>
           </div>
           <div className="flex items-center space-x-2">
             <span 
@@ -70,7 +64,7 @@ const CommentsTab = ({ userId, isPublic }) => {
 
       try {
         const data = await getUserComments(userId);
-        console.log(data);
+        // console.log(data);
         setComments(data.comments);
       } catch (err) {
         setError('Failed to fetch comments');

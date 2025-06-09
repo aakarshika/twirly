@@ -60,7 +60,7 @@ const LanguageSettings = () => {
 
   const handleSave = () => {
     // TODO: Implement save functionality with Supabase
-    console.log('Saving language settings:', languageSettings);
+    // console.log('Saving language settings:', languageSettings);
   };
 
   return (

@@ -71,7 +71,7 @@ const CreateComparison = () => {
         if (id) {
           // Load existing comparison for editing
           comparisonData = await getComparison(id, user.id);
-          console.log(comparisonData, 'comparisonData', id);
+          // console.log(comparisonData, 'comparisonData', id);
           setExistingComparisonId(id);
         } else if (window.location.search.includes('load_draft=true')) {
           // Only load unpublished comparison if explicitly requested
@@ -388,7 +388,7 @@ const CreateComparison = () => {
           <div>
             <div className="grid grid-cols-2 gap-2">
               {draft.items.map((item) => {
-                console.log("item", item);
+                // console.log("item", item);
                 return (
                 <div key={item.id} className="relative">
                   <VotedCard item={item} />
@@ -396,7 +396,7 @@ const CreateComparison = () => {
                     {user && item.user_id === user.id && (
                       <button
                         onClick={() => {
-                          console.log("edit item", item);
+                          // console.log("edit item", item);
                           setEditItemModalOpen(true);
                           setEditItem(item);
                         }}
@@ -492,7 +492,7 @@ const CreateComparison = () => {
             {searchResults.length > 0 && (
               <div className="mt-1 border rounded-lg" style={{ backgroundColor: currentTheme.colors.background }}>
                 {searchResults.map((product) =>{
-                  console.log("result product", product);
+                  // console.log("result product", product);
                   return (
                   <div
                     key={product.id}
@@ -503,7 +503,7 @@ const CreateComparison = () => {
                       borderBottom: `1px solid ${currentTheme.colors.border}`
                     }}
                     onClick={() => {
-                      console.log("added product", product);
+                      // console.log("added product", product);
                       addItem(product);
                       setSearchQuery('');
                     }}
@@ -545,7 +545,7 @@ const CreateComparison = () => {
             name: searchQuery
           }}
           onSave={(item) => {
-            console.log("saved item", item);
+            // console.log("saved item", item);
             addItem(item);
             setAddItemModalOpen(false);
           }}
@@ -556,7 +556,7 @@ const CreateComparison = () => {
         <ItemCardEditable
           item={editItem}
           onSave={(item) => {
-            console.log("saved item", item);
+            // console.log("saved item", item);
             updateItem(item);
             setEditItemModalOpen(false);
           }}

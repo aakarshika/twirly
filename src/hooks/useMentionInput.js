@@ -13,9 +13,9 @@ const useMentionInput = (users, products) => {
     const words = text.split(' ');
     const processedText = words.map(word => {
       if (word.startsWith('@') && word.length > 1) {
-        console.log('word', word);
+        // console.log('word', word);
         const matchSplit = word.split(/(@\(user\(([A-Za-z0-9_#]+)\)\[([0-9]+)\]\))+/g);
-        console.log('matchSplit', matchSplit);
+        // console.log('matchSplit', matchSplit);
         const userName = unescapeMentionName(matchSplit[2]);
   
         return `<span class="highlighted-mention-user">${word}</span>`;
@@ -43,9 +43,9 @@ const handleReplySubmit = (e) => {
   }, [text]);
   useEffect(() => {
     if (contentEditableRef.current) {
-      console.log("rendered:", contentEditableRef.current.innerHTML);
-      console.log("innerText:", contentEditableRef.current.innerText);
-      console.log("triggerPosition:", triggerPosition);
+      // console.log("rendered:", contentEditableRef.current.innerHTML);
+      // console.log("innerText:", contentEditableRef.current.innerText);
+      // console.log("triggerPosition:", triggerPosition);
     }
   }, [text]);
   const moveCursorToEnd = () => {
@@ -91,7 +91,7 @@ const handleReplySubmit = (e) => {
   
   const insertMention = (mention) => {
     const aa = escapeMentionName(mention.items.name);
-    console.log('insertMention escaped', aa);
+    // console.log('insertMention escaped', aa);
     const mentionText = mode === 'mentionUser' ? `@(user(${aa})[${mention.items.id}]) ` : `#(product(${aa})[${mention.items.id}]) `;
 
     if (triggerPosition !== -1) {

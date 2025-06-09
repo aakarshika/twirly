@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../../lib/supabase';
 import { OtherChart } from './OtherChart';
 import { useAuth } from '../../../contexts/AuthContext';
-import { Play } from 'lucide-react';
+import { MessageSquare, Play, ThumbsUp } from 'lucide-react';
 
 const AppearancesTab = ({ item, comparisonSets }) => {
   const { currentTheme } = useTheme();
@@ -24,12 +24,13 @@ const AppearancesTab = ({ item, comparisonSets }) => {
           .from('votes')
           .select('*')
           .eq('user_id', user.id)
-          .in('set_id', set.comparison_set_aspects.map(aspect => aspect.id));
+          .eq('set_id', set.id);
         
         if (!userVotedError) {
-          votesMap[set.id] = userVoted.length === set.comparison_set_aspects.length;
+          votesMap[set.id] = userVoted?.length > 0;
         }
       }
+      // console.log('votesMap', votesMap);
       setUserVotedSets(votesMap);
     };
 
@@ -38,7 +39,7 @@ const AppearancesTab = ({ item, comparisonSets }) => {
 
   return (
     <div className="space-y-4" style={{color: currentTheme.colors.text}}>
-      <div className="flex justify-end mb-4">
+      {/* <div className="flex justify-end mb-4">
         <div className="flex flex-row justify-end mb-4">
           <h2 className="text-sm font-semibold mr-4">Visuals:</h2>
           {['radar', 'line', 'bar'].map((item) => (
@@ -52,7 +53,7 @@ const AppearancesTab = ({ item, comparisonSets }) => {
             </button>
           ))}
         </div>
-      </div>
+      </div> */}
       {comparisonSets?.map((set) => (
         <div 
           key={set.id} 
@@ -68,17 +69,17 @@ const AppearancesTab = ({ item, comparisonSets }) => {
             </h3>
             <div className="flex items-center space-x-4">
               <div className="flex items-center">
-                <UserGroupIcon className="h-4 w-4 mr-1.5 opacity-60" />
+                <ThumbsUp className="h-4 w-4 mr-1.5 opacity-60" />
                 <div className="flex items-baseline">
                   <span className="text-base font-semibold mr-1">
-                    {set.comparison_set_aspects.reduce((acc, aspect) => acc + aspect.votes.length, 0)}
+                    {set.votes?.length}
                   </span>
                   <span className="text-xs opacity-60">votes</span>
                 </div>
               </div>
               <div className="flex items-center" style={{ color: currentTheme.colors.textSecondary }}>
-                <ChatBubbleOvalLeftIcon className="h-4 w-4 mr-1.5" />
-                <span className="text-sm">{set.comparison_set_aspects.reduce((acc, aspect) => acc + aspect.comparison_set_comments.length, 0)} </span>
+                <MessageSquare className="h-4 w-4 mr-1.5" />
+                <span className="text-sm">{set.comparison_set_comments?.length} </span>
               </div>
             </div>
           </div>
@@ -89,20 +90,20 @@ const AppearancesTab = ({ item, comparisonSets }) => {
                 selectedChart={selectedChart}
                 data={[{
                   setTitle: set.title,
-                  aspects: set.comparison_set_aspects.map(aspect => ({
-                    name: aspect.metric_name,
-                    description: aspect.description
-                  })),
+                  aspects: [{name: set.name, description: set.description}],
                   items: set.allitems.map(item => ({
                     id: item.items.id,
                     name: item.items.name,
                     item_color_string: item.items.item_color_string,
-                    metrics: set.comparison_set_aspects.reduce((acc, aspect) => {
-                      const totalVotes = aspect.votes.length;
-                      const itemVotes = aspect.votes.filter(vote => vote.item_id === item.items.id).length;
-                      acc[aspect.metric_name] = (itemVotes / totalVotes) * 100;
-                      return acc;
-                    }, {})
+                    metrics: {
+                      [set.name]: item.items.votes?.length / set.votes?.length * 100
+                    }
+                    // metrics: set.comparison_set_aspects.reduce((acc, aspect) => {
+                    //   const totalVotes = aspect.votes?.length;
+                    //   const itemVotes = aspect.votes.filter(vote => vote.item_id === item.items.id)?.length;
+                    //   acc[aspect.metric_name] = (itemVotes / totalVotes) * 100;
+                    //   return acc;
+                    // }, {})
                   }))
                 }]}
               />
@@ -111,13 +112,13 @@ const AppearancesTab = ({ item, comparisonSets }) => {
           {!userVotedSets[set.id] && (
             <div className="m-2 rounded-lg p-4 flex flex-row items-center"
               style={{ backgroundColor: 'white', color: currentTheme.colors.primary }}>
-              <p>Play all to unlock metrics</p>
+              <p>Play to unlock</p>
               <Play size={24} />
             </div>
           )}
         </div>
       ))}
-      {(!comparisonSets || comparisonSets.length === 0) && (
+      {(!comparisonSets || comparisonSets?.length === 0) && (
         <div className="text-center py-8">
           <p className="text-lg" style={{ color: currentTheme.colors.textSecondary }}>
             No comparison history available

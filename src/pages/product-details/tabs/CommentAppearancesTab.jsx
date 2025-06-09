@@ -6,6 +6,7 @@ import { Heart, MessageSquare } from 'lucide-react';
 import Button from '../../../components/common/Button';
 import { getPublicUrl } from '../../../lib/utils';
 import { renderTextWithMentions } from '../../../lib/commentUtils';
+import Avatar from '../../../components/common/Avatar';
 
 const CommentAppearancesTab = ({ comparisonSets, item }) => {
   const { user } = useAuth();
@@ -22,8 +23,8 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
       fetchComments();
     }
   }, [comparisonSets]);
-  console.log("comparisonSets",comparisonSets);
-  console.log("item",item);
+  // console.log("comparisonSets",comparisonSets);
+  // console.log("item",item);
 
   const fetchComments = async () => {
     try {
@@ -39,14 +40,12 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
           user:user_preferences(*),
           reactions:comparison_set_comment_reactions(reaction_type, user_id),
           replies:comparison_set_comment_replies(*,user:user_preferences(*)),
-          set:comparison_set_aspects(
-            *,comparison_sets(
+          comparison_sets(
             id,
             name,
             items:comparison_set_items(
               item:items(*)
             )
-          )
           )
         `, { count: 'exact' })
         .like('replies.text', `%(${item.id})%`)
@@ -54,14 +53,14 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
         .range(offset, offset + limit - 1);
 
       if (error) throw error;
-      console.log("data",data);
+      // console.log("data",data);
       const filteredComments = data;
-      console.log("filteredComments",filteredComments);
+      // console.log("filteredComments",filteredComments);
 
       setComments(prev => page === 1 ? filteredComments : [...prev, ...filteredComments]);
       const itemCoding = [];
       data.forEach(c => {
-        c.set.comparison_sets.items.forEach(i => {
+        c.comparison_sets.items.forEach(i => {
             itemCoding.push(i.item);
           });
       });
@@ -83,41 +82,6 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
     await fetchComments();
   };
 
-  const handleLikeComment = async (commentId) => {
-    if (!user) return;
-
-    try {
-      const comment = comments.find(c => c.id === commentId);
-      const hasLiked = comment.reactions?.some(r => r.user_id === user.id && r.reaction_type === 'like');
-
-      if (hasLiked) {
-        await supabase
-          .from('comparison_set_comment_reactions')
-          .delete()
-          .eq('comment_id', commentId)
-          .eq('user_id', user.id);
-      } else {
-        await supabase
-          .from('comparison_set_comment_reactions')
-          .insert([{ comment_id: commentId, user_id: user.id, reaction_type: 'like' }]);
-      }
-
-      // Update local state
-      setComments(prev => prev.map(c => {
-        if (c.id === commentId) {
-          return {
-            ...c,
-            reactions: hasLiked
-              ? c.reactions.filter(r => r.user_id !== user.id)
-              : [...c.reactions, { user_id: user.id, reaction_type: 'like' }]
-          };
-        }
-        return c;
-      }));
-    } catch (err) {
-      setError(err.message);
-    }
-  };
 
   if (loading && page === 1) {
     return (
@@ -153,17 +117,17 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
         <div key={comment.id} className="rounded-lg p-4 shadow">
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-2">
-              <img
-                src={getPublicUrl(comment.user?.profile_image_url || '/default-avatar.png')}
-                alt={comment.user?.display_name || 'User'}
-                className="w-8 h-8 rounded-full"
+              <Avatar
+                profileImageUrl={comment.user?.profile_image_url}
+                displayName={comment.user?.display_name}
+                size={'sm'}
               />
               <div>
                 <p className="font-medium text-gray-900 dark:text-gray-100">
                   {comment.user?.display_name || 'Anonymous'}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  @ '{comment.set.comparison_sets.name}'
+                  @ '{comment.comparison_sets.name}'
                 </p>
               </div>
             </div>
@@ -193,11 +157,12 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
               {comment.replies.map((reply) => (
                 <div key={reply.id} className="ml-8 bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
                   <div className="flex items-center space-x-2">
-                    <img
-                      src={getPublicUrl( reply.user?.profile_image_url || '/default-avatar.png')}
-                      alt={reply.user?.display_name || 'User'}
-                      className="w-6 h-6 rounded-full"
+                    <Avatar
+                      profileImageUrl={reply.user?.profile_image_url}
+                      displayName={reply.user?.display_name}
+                      size={'xs'}
                     />
+
                     <p className="font-medium text-gray-900 dark:text-gray-100">
                       {reply.user?.display_name || 'Anonymous'}
                     </p>

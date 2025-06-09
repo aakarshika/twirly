@@ -50,6 +50,7 @@ SELECT
     cs.user_id,
     cs.name,
     cs.created_at,
+    cs.end_date,
     cs.category_id,
     (
         select concat((select string_agg(csa.metric_name, ' ') 
@@ -107,6 +108,7 @@ begin
     user_id,
     name,
     created_at,
+    end_date,
     category_id,
     all_stuff_names,
     total_votes,
@@ -117,8 +119,7 @@ begin
     or v_user_id not in (
       select v.user_id 
       from votes v 
-      join comparison_set_aspects csa on v.set_id = csa.id 
-      where csa.set_id = category_boosted_sets.set_id
+      where v.set_id = category_boosted_sets.set_id
     )
   order by popularity_score desc;
 end;

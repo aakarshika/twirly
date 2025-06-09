@@ -85,7 +85,7 @@ CREATE TABLE votes (
     id SERIAL PRIMARY KEY,
     user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
     item_id INTEGER REFERENCES items(id) ON DELETE CASCADE,
-    set_id INTEGER REFERENCES comparison_set_aspects(id) ON DELETE CASCADE,
+    set_id INTEGER REFERENCES comparison_sets(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -352,3 +352,10 @@ END $$;
 -- These indexes improve query performance for dashboard operations
 CREATE INDEX IF NOT EXISTS idx_items_user_id ON items(user_id);
 CREATE INDEX IF NOT EXISTS idx_items_created_at ON items(created_at);
+
+
+
+
+
+alter table comparison_sets add column end_date timestamp with time zone;
+alter table comparison_sets add column start_date timestamp with time zone;

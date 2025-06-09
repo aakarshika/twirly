@@ -10,7 +10,7 @@ const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPre
 
   const user = userPreferences;
   const onSubmitComment = () => {
-    console.log('onSubmitReply', newComment, comment.id);
+    // console.log('onSubmitReply', newComment, comment.id);
     handleReply(comment.id, newComment);
     setNewComment('');
     setIsReplying(false);
@@ -44,7 +44,7 @@ const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPre
               newComment={newComment}
               setNewComment={setNewComment}
               handleSubmitComment={() => {
-                console.log('handleSubmitComment', newComment);
+                // console.log('handleSubmitComment', newComment);
                 onSubmitComment();
               }}
               users={users}
@@ -61,7 +61,7 @@ const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPre
           reply={reply} 
           onLike={onLike}
           onReply={(r) => {
-            console.log('onReply', r, newComment);
+            // console.log('onReply', r, newComment);
             setNewComment(newComment + ' @[' + r.user.display_name + '](' + r.user.user_id + ') ');
           }}
           items={items}

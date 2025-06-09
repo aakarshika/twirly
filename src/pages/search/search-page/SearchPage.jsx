@@ -173,8 +173,7 @@ const SearchPage = () => {
     <div 
       className="min-h-screen overflow-x-hidden"
       style={{ 
-        color: currentTheme.colors.text,
-        paddingTop: '64px' 
+        color: currentTheme.colors.text
       }}
     >
       {/* Search Header */}

@@ -105,7 +105,7 @@ export const likeReview = async (reviewId, userId) => {
  */
 export const getItemReviews = async (itemId, page = 1, limit = 3) => {
   try {
-    console.log('Fetching reviews for item:', itemId, 'page:', page);
+    // console.log('Fetching reviews for item:', itemId, 'page:', page);
     
     // Calculate offset
     const offset = (page - 1) * limit;
@@ -126,7 +126,7 @@ export const getItemReviews = async (itemId, page = 1, limit = 3) => {
       .range(offset, offset + limit - 1);
 
     if (reviewsError) throw reviewsError;
-    console.log('Fetched reviews:', reviews);
+    // console.log('Fetched reviews:', reviews);
 
     // Transform reviews to include username
     const reviewsWithUsername = reviews.map(review => ({

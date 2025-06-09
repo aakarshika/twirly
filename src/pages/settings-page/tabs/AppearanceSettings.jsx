@@ -6,7 +6,7 @@ import Button from '../../../components/common/Button';
 const AppearanceSettings = () => {
   const { currentTheme, changeTheme, themes } = useTheme();
   const savedTheme = localStorage.getItem('theme');
-  console.log(savedTheme);
+  // console.log(savedTheme);
   const [appearanceSettings, setAppearanceSettings] = useState({
     theme: savedTheme ? JSON.parse(savedTheme).name : currentTheme.name,
     fontSize: 'medium',
@@ -57,7 +57,7 @@ const AppearanceSettings = () => {
 
   const handleSave = () => {
     // TODO: Implement save functionality with Supabase
-    console.log('Saving appearance settings:', appearanceSettings);
+    // console.log('Saving appearance settings:', appearanceSettings);
   };
 
   return (

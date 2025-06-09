@@ -79,7 +79,7 @@ const ComparisonCommentsInshort = ({ aspectSetId, items, aspectSet }) => {
   }, []);
 
   const onSubmitComment = () => {
-    console.log('onSubmitComment', newComment);
+    // console.log('onSubmitComment', newComment);
     handleSubmitComment(newComment);
     setNewComment('');
   };

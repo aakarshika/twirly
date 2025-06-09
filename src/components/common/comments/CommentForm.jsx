@@ -20,7 +20,7 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
       description: itemData.description
     };
   }) || [];
-  const display_name_clipped = userPreferences?.display_name ? userPreferences?.display_name.slice(0, 25) : 'Anonymous';
+  const display_name_clipped = userPreferences?.display_name ? userPreferences?.display_name.slice(0, 25).toLowerCase() : 'Anonymous';
   const mentionStyles = {
     input: {
       fontSize: '16px',
@@ -83,6 +83,7 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
             <div className="w-full rounded-md border border-gray-200 focus-within:border-amber-400 transition-colors" style={{color: 'black'}}>
               <MentionsInput
                 value={newComment}
+                autoFocus={true}
                 onChange={(e) => setNewComment(e.target.value)}
                 style={mentionStyles}
                 placeholder={focus ? `Type # to tag items` : `Add ${type}...`}
