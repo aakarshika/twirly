@@ -20,7 +20,7 @@ const TikTokScroll = () => {
   const lastScrollTime = useRef(Date.now());
   const { userPreferences } = useAuth();
   const [users, setUsers] = useState([]);
-
+  const [metricsSectionExpanded, setMetricsSectionExpanded] = useState(false);
   useEffect(() => {
     const fetchUsers = async () => {
 
@@ -172,6 +172,11 @@ const TikTokScroll = () => {
                 totalVotes={setData.totalVotes} 
                 setData={setData} 
                 handleLikeComparisonSet={handleLikeComparisonSet} 
+                voteButtonClicked={(setId) => {
+                  // console.log('voteButtonClicked', setId);
+                  setMetricsSectionExpanded(!metricsSectionExpanded);
+                }
+                }
               />
               {index === currentIndex && (
                 <AllComments 

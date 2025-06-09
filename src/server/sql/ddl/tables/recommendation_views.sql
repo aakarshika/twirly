@@ -50,6 +50,7 @@ SELECT
     cs.user_id,
     cs.name,
     cs.created_at,
+    cs.end_date,
     cs.category_id,
     (
         select concat((select string_agg(csa.metric_name, ' ') 
@@ -107,6 +108,7 @@ begin
     user_id,
     name,
     created_at,
+    end_date,
     category_id,
     all_stuff_names,
     total_votes,

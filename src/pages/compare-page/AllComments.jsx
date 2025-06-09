@@ -127,8 +127,7 @@ const TopComment = ({ commentsCollapsed, setCommentsCollapsed, comments, items }
   if (!comments.length) return (
     <div className="p-3 pb-24 min-h-40">
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-lg">💬</span>
-        <span className="font-semibold">0 comments</span>
+        <span className="font-semibold">Comments <span className='text-gray-500 text-sm'>{comments.length}</span></span>
       </div>
       <div className="rounded-lg bg-gray-50 text-gray-500 p-3" onClick={() => setCommentsCollapsed(false)}>
         <div className="flex items-center gap-2">

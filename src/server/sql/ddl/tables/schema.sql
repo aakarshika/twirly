@@ -352,3 +352,10 @@ END $$;
 -- These indexes improve query performance for dashboard operations
 CREATE INDEX IF NOT EXISTS idx_items_user_id ON items(user_id);
 CREATE INDEX IF NOT EXISTS idx_items_created_at ON items(created_at);
+
+
+
+
+
+alter table comparison_sets add column end_date timestamp with time zone;
+alter table comparison_sets add column start_date timestamp with time zone;
