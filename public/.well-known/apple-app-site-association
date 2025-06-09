@@ -1,0 +1,11 @@
+{
+    "applinks": {
+        "apps": [],
+        "details": [
+            {
+                "appID": "W6NYJ5ZT4D.com.twirly.app",
+                "paths": ["*"]
+            }
+        ]
+    }
+}

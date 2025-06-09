@@ -12,15 +12,15 @@ const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, voteButt
   const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
 
   const handleShare = async () => {
-    // Convert capacitor:// to twirly:// and ensure URL is properly formatted
+    // Convert any protocol to https://
     const currentUrl = window.location.href;
-    const formattedUrl = currentUrl.replace('capacitor://', 'twirly://');
+    const formattedUrl = currentUrl.replace(/^.*?:\/\//, 'https://');
     
     try {
       // Try Capacitor Share API first
       await Share.share({
         title: 'Check out this poll!',
-        text: `I found this interesting comparison on Twirly. `,
+        text: 'I found this interesting comparison on Twirly.',
         url: formattedUrl,
       });
     } catch (error) {
@@ -30,7 +30,7 @@ const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, voteButt
         if (navigator.share) {
           await navigator.share({
             title: 'Check out this poll!',
-            text: `I found this interesting comparison on Twirly. `,
+            text: 'I found this interesting comparison on Twirly.',
             url: formattedUrl
           });
         } else {

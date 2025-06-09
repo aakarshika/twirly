@@ -27,7 +27,6 @@
 			<string>com.twirly.app</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>com.twirly.app</string>
 				<string>twirly</string>
 			</array>
 		</dict>
@@ -69,5 +68,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>applinks:twirlyapp.com</string>
+	</array>
 </dict>
 </plist>
