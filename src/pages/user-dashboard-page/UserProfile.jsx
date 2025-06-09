@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import ProfileHeader from './dashboard/ProfileHeader';
 import ContentTabs from './dashboard/ContentTabs';
 import { useHeader } from '../../contexts/HeaderContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useLoading } from '../../contexts/LoadingContext';
+import { motion, useAnimation } from 'framer-motion';
 
 const UserProfile = () => {
   const { username } = useParams();
+  const navigate = useNavigate();
   const { currentTheme } = useTheme();
   const { isHeaderVisible } = useHeader();
   const [activeTab, setActiveTab] = useState('overview');
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState(null);
   const { setLoading, setError: setGlobalError } = useLoading();
+  const controls = useAnimation();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -60,6 +63,15 @@ const UserProfile = () => {
     fetchUserData();
   }, [username]);
 
+  const handleDragEnd = async (event, info) => {
+    if (info.offset.x > 100) { // Only trigger if swiped more than 100px
+      await controls.start({ x: '100%', transition: { duration: 0.3 } });
+      navigate(-1);
+    } else {
+      controls.start({ x: 0, transition: { duration: 0.3 } });
+    }
+  };
+
   if (error) {
     return null; // Error screen is now handled by LoadingContext
   }
@@ -81,12 +93,16 @@ const UserProfile = () => {
   }
 
   return (
-    <div 
+    <motion.div 
       className="min-h-screen p-4 md:p-8"
       style={{ 
         position: 'relative',
         top: isHeaderVisible ? '64px' : '0px',
       }}
+      drag="x"
+      dragConstraints={{ left: 0, right: 0 }}
+      onDragEnd={handleDragEnd}
+      animate={controls}
     >
       <ProfileHeader userData={userData} isPublic={true} />
       <div className="mt-8">
@@ -98,7 +114,7 @@ const UserProfile = () => {
           isPublic={true}
         />
       </div>
-    </div>
+    </motion.div>
   );
 };
 

@@ -10,7 +10,7 @@ import { useHeader } from '../../contexts/HeaderContext';
 import CommentAppearancesTab from './tabs/CommentAppearancesTab';
 import AppearancesTab from './tabs/AppearancesTab';
 import { changeColorAlpha } from '../../lib/utils';
-import { motion } from 'framer-motion';
+import { motion, useAnimation } from 'framer-motion';
 import { useLoading } from '../../contexts/LoadingContext';
 import PullToRefresh from '../../components/common/PullToRefresh';
 
@@ -27,6 +27,7 @@ const ProductDetails = () => {
   const [showReviewForm, setShowReviewForm] = useState(false);
   const { isHeaderVisible } = useHeader();
   const { setLoading, setError: setGlobalError } = useLoading();
+  const controls = useAnimation();
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -90,6 +91,15 @@ const ProductDetails = () => {
     await fetchProductDetails();
   };
 
+  const handleSwipeRight = async (event, info) => {
+    if (info.offset.x > 100) { // Only trigger if swiped more than 100px
+      await controls.start({ x: '100%', transition: { duration: 0.3 } });
+      navigate(-1);
+    } else {
+      controls.start({ x: 0, transition: { duration: 0.3 } });
+    }
+  };
+
   if (error) {
     return null; // Error screen is now handled by LoadingContext
   }
@@ -109,8 +119,13 @@ const ProductDetails = () => {
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
-      <div 
-        className="min-h-screen overflow-x-hidden " style={{  color: currentTheme.colors.text }}
+      <motion.div 
+        className="min-h-screen overflow-x-hidden" 
+        style={{ color: currentTheme.colors.text }}
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        onDragEnd={handleSwipeRight}
+        animate={controls}
       >
         <div className='max-w-7xl mx-auto w-full  z-10'>
           <div className='' >
@@ -158,7 +173,7 @@ const ProductDetails = () => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </PullToRefresh>
   );
 };

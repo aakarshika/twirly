@@ -10,14 +10,18 @@ import { useDataFetching } from '../../hooks/useDataFetching';
 import LoadingScreen from '../../components/common/LoadingScreen';
 import ErrorScreen from '../../components/common/ErrorScreen';
 import PullToRefresh from '../../components/common/PullToRefresh';
+import { motion, useAnimation } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const UserDashboard = () => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
   const { isHeaderVisible } = useHeader();
   const [userData, setUserData] = useState(null);
   const [showFirstTimeDashboard, setShowFirstTimeDashboard] = useState(false);
+  const controls = useAnimation();
 
   const { isLoading, error, fetchData } = useDataFetching(
     'userDashboard',
@@ -48,6 +52,15 @@ const UserDashboard = () => {
     setShowFirstTimeDashboard(false);
   };
 
+  const handleDragEnd = async (event, info) => {
+    if (info.offset.x > 100) { // Only trigger if swiped more than 100px
+      await controls.start({ x: '100%', transition: { duration: 0.3 } });
+      navigate(-1);
+    } else {
+      controls.start({ x: 0, transition: { duration: 0.3 } });
+    }
+  };
+
   if (isLoading) {
     return null; // Loading screen is now handled by LoadingContext
   }
@@ -71,11 +84,15 @@ const UserDashboard = () => {
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
-      <div 
+      <motion.div 
         className="min-h-screen overflow-x-hidden"
         style={{ 
           color: currentTheme.colors.text
         }}
+        drag="x"
+        dragConstraints={{ left: 0, right: 0 }}
+        onDragEnd={handleDragEnd}
+        animate={controls}
       >
         {showFirstTimeDashboard && (
           <FirstTimeDashboard onComplete={handleTourComplete} />
@@ -94,7 +111,7 @@ const UserDashboard = () => {
             </div>
           </div>
         </main>
-      </div>
+      </motion.div>
     </PullToRefresh>
   );
 };

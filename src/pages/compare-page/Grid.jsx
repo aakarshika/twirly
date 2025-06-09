@@ -1,14 +1,16 @@
-import { ThumbsUp } from 'lucide-react';
+import { Maximize2, Send, ThumbsUp } from 'lucide-react';
 import React, { useState } from 'react';
 import { changeColorAlpha } from '../../lib/utils';
 import { useTheme } from '../../contexts/ThemeContext';
 import { motion } from 'framer-motion';
 import VotingAnimation from '../comparison-aspect-page/ComparisonItemCard/VotingAnimation/VotingAnimation';
+import { useNavigate } from 'react-router-dom';
 
 
 
 const Grid = ({ layout = '2x2',  gridCollapsed = false , localOptions ,setData, handleVote, handleReset }) => {
   const hasVoted = setData.hasVoted;
+  const navigate = useNavigate();
   const { currentTheme } = useTheme();
   return (
     // flex th =e grid tpo take up all the space
@@ -103,6 +105,22 @@ const Grid = ({ layout = '2x2',  gridCollapsed = false , localOptions ,setData, 
               <ThumbsUp className='text-blue-600' color={hasVoted ? currentTheme.colors.primary : 'gray'} 
               fill={hasVoted ? changeColorAlpha(currentTheme.colors.primary, 0.5) : 'none'} 
               size={gridCollapsed ? 16 : 24} />
+            </motion.div>
+          )}
+          
+
+          {(
+            <motion.div 
+              className='absolute bottom-0 right-0 m-1 z-50 p-2 rounded-full bg-white/50'
+              onClick={
+                () => {
+                  navigate(`/item/${opt.id}`);
+                }
+              }
+            >
+              <Maximize2 className='text-blue-600' color={'lightgray'} 
+              fill={'none'} 
+              size={gridCollapsed ? 8 : 12} />
             </motion.div>
           )}
           

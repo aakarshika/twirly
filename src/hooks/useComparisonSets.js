@@ -8,7 +8,7 @@ const BATCH_SIZE = 5;
 export const useComparisonSets = (initialId) => {
   const { user } = useAuth();
   const [comparisonSets, setComparisonSets] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(-1);
   const [lastLoadedIndex, setLastLoadedIndex] = useState(0);
   const currentSetIdRef = useRef(null);
   const loadedSetsRef = useRef(new Set());
@@ -65,8 +65,12 @@ export const useComparisonSets = (initialId) => {
 
   const loadVotesAndLikes = async (setId) => {
     // console.log('🎯 Loading votes and likes for set:', setId);
-    if (!setId || setId === currentSetIdRef.current) {
-      // console.log('⏭️ Skipping votes/likes load - already loaded or invalid ID');
+    if (!setId) {
+      // console.log('⏭️ Skipping votes/likes load - invalid ID');
+      return;
+    }
+    if (setId === currentSetIdRef.current) {
+      // console.log('⏭️ Skipping votes/likes load - already loaded');
       return;
     }
     currentSetIdRef.current = setId;
@@ -216,7 +220,6 @@ export const useComparisonSets = (initialId) => {
         
         // Set current index to 0 since this is the initial set
         setCurrentIndex(0);
-        currentSetIdRef.current = initialId;
         isInitialLoadDone.current = true;
         // console.log('🎯 Set current index to 0 and current set ID to:', initialId);
       } catch (err) {

@@ -2,12 +2,14 @@ import React from 'react';
 import { getPublicUrl } from '../../lib/utils';
 import Avatar from '../../components/common/Avatar';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 
 const Heading = ({ setData }) => {
+  const navigate = useNavigate(); 
   const question = (setData?.name).endsWith('?') ? setData?.name.slice(0, -1) : setData?.name;
   return (
   <div className="flex flex-col gap-2 p-4">
-    <div className="flex gap-2">
+    <div className="flex gap-2"  onClick={() => navigate(`/user/${setData?.user_name}`)}>
       {/* <span className="w-4 h-4 rounded-full bg-green-300 inline-block" /> */}
       <Avatar
                             profileImageUrl={setData?.user_profile_image_url ? getPublicUrl(setData?.user_profile_image_url) : null}

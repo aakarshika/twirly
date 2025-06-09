@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useAnimation } from 'framer-motion';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useComparisonSets } from '../hooks/useComparisonSets';
 import Heading from '../pages/compare-page/Heading';
@@ -21,6 +21,8 @@ const TikTokScroll = () => {
   const { userPreferences } = useAuth();
   const [users, setUsers] = useState([]);
   const [metricsSectionExpanded, setMetricsSectionExpanded] = useState(false);
+  const controls = useAnimation();
+
   useEffect(() => {
     const fetchUsers = async () => {
 
@@ -97,12 +99,17 @@ const TikTokScroll = () => {
 
       if (Math.abs(info.offset.x) > horizontalThreshold || Math.abs(horizontalVelocity) > 500) {
         if (info.offset.x > 0 || horizontalVelocity > 0) {
-          // Swipe right - go to home
-          navigate('/');
+          // Swipe right - go to home with animation
+          controls.start({ x: '100%', transition: { duration: 0.3 } })
+            .then(() => navigate('/'));
         } else {
           // Swipe left - prevent default and do nothing
           event?.preventDefault();
+          controls.start({ x: 0, transition: { duration: 0.3 } });
         }
+      } else {
+        // Reset position if threshold not met
+        controls.start({ x: 0, transition: { duration: 0.3 } });
       }
     } else {
       // Handle vertical swipe
@@ -230,6 +237,7 @@ const TikTokScroll = () => {
         onDrag={handleDrag}
         onDragEnd={handleDragEnd}
         dragDirectionLock
+        animate={controls}
         style={{
           position: 'relative',
           height: '100%',
