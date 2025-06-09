@@ -43,12 +43,12 @@ const BillingSettings = () => {
 
   const handleAddPaymentMethod = () => {
     // TODO: Implement payment method addition
-    console.log('Adding new payment method');
+    // console.log('Adding new payment method');
   };
 
   const handleRemovePaymentMethod = (id) => {
     // TODO: Implement payment method removal
-    console.log('Removing payment method:', id);
+    // console.log('Removing payment method:', id);
   };
 
   const handleSetDefaultPaymentMethod = (id) => {
@@ -63,7 +63,7 @@ const BillingSettings = () => {
 
   const handleSave = () => {
     // TODO: Implement save functionality with Supabase
-    console.log('Saving billing settings:', billingSettings);
+    // console.log('Saving billing settings:', billingSettings);
   };
 
   return (

@@ -15,7 +15,7 @@ const Reply = ({ reply, onLike, onReply, appendText, items }) => {
           comment={reply}
           onLike={onLike}
           replyClicked={() => {
-            console.log('replyClicked');
+            // console.log('replyClicked');
             onReply(reply);
           }}
           profile_image_url={reply.user?.profile_image_url}

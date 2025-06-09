@@ -16,7 +16,7 @@ export const useComparisonData = (setId, aspectId = null) => {
   const [votedItemId, setVotedItemId] = useState(null);
   const [aspectVotes, setAspectVotes] = useState({});
 
-  console.log('useComparisonData - Initial params:', { setId, aspectId });
+  // console.log('useComparisonData - Initial params:', { setId, aspectId });
 
   const fetchAllComparisonData = async () => {
     if (!setId) {
@@ -28,7 +28,7 @@ export const useComparisonData = (setId, aspectId = null) => {
     try {
       setLoading(true);
       setError(null);
-      console.log('useComparisonData - Fetching data with params:', { setId, aspectId });
+      // console.log('useComparisonData - Fetching data with params:', { setId, aspectId });
 
       let setData;
       let votesData = [];
@@ -36,7 +36,7 @@ export const useComparisonData = (setId, aspectId = null) => {
 
       // If we're on an aspect page, fetch that specific aspect first
       if (aspectId) {
-        console.log('useComparisonData - Fetching specific aspect:', aspectId);
+        // console.log('useComparisonData - Fetching specific aspect:', aspectId);
         const { data: aspectData, error: aspectError } = await supabase
           .from('comparison_set_aspects')
           .select(`
@@ -67,7 +67,7 @@ export const useComparisonData = (setId, aspectId = null) => {
           throw new Error('Aspect not found');
         }
 
-        console.log('useComparisonData - aspectData:', aspectData);
+        // console.log('useComparisonData - aspectData:', aspectData);
         setData = aspectData.comparison_sets;
         
         // Fetch votes for this aspect

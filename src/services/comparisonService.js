@@ -4,9 +4,9 @@
 
 // Calculate processed items
 export const calculateProcessedItems = (items, comparisonMetrics) => {
-  console.log('calculateProcessedItems');
-  console.log(items, 'items');
-  console.log(comparisonMetrics, 'comparisonMetrics');
+  // console.log('calculateProcessedItems');
+  // console.log(items, 'items');
+  // console.log(comparisonMetrics, 'comparisonMetrics');
   return calculateLeadingMetrics(
     calculateMetricVotes(
       calculateVotePercentages(items),

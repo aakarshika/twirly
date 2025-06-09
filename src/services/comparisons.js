@@ -158,7 +158,7 @@ export const getComparison = async (id, userId) => {
     .eq('id', id)
       .single();
     if (error) throw error;
-    console.log(data, 'data', id);
+    // console.log(data, 'data', id);
     return data;
   } catch (error) {
     console.error('Error fetching comparisons:', error);
@@ -293,9 +293,9 @@ export const updateComparison = async (setId, comparisonData) => {
     }));
 
 
-  console.log(aspectsToDelete, 'aspectsToDelete');
-  console.log(aspectsToAdd, 'aspectsToAdd');
-  console.log(aspectsToUpdate, 'aspectsToUpdate');
+  // console.log(aspectsToDelete, 'aspectsToDelete');
+  // console.log(aspectsToAdd, 'aspectsToAdd');
+  // console.log(aspectsToUpdate, 'aspectsToUpdate');
   if (aspectsToDelete.length > 0) {
     const { error: deleteAspectsError } = await supabase
       .from('comparison_set_aspects')

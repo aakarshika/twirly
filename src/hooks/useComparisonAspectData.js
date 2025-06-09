@@ -19,14 +19,14 @@ export const useComparisonAspectData = (aspectId, setId) => {
 
   const fetchData = async () => {
     if (!aspectId || !setId || !user) {
-      console.log('Missing required data:', { aspectId, setId, user });
+      // console.log('Missing required data:', { aspectId, setId, user });
       setLoading(false);
       return;
     }
     
     try {
       setLoading(true);
-      console.log('Fetching data for aspect:', aspectId, 'set:', setId);
+      // console.log('Fetching data for aspect:', aspectId, 'set:', setId);
       
       // First get the comparison set data
       const { data: comparisonSetData, error: setError } = await supabase

@@ -155,7 +155,7 @@ const ComparisonCard = ({ comparison, onDelete, isPublic }) => {
 
         <div className="space-y-3">
           {comparison?.items?.map((setItem) => {
-            console.log(setItem, comparison.id + "_" + setItem.item_id);
+            // console.log(setItem, comparison.id + "_" + setItem.item_id);
             return (
             <ComparisonItem
               key={comparison.id + "_" + setItem.id}

@@ -672,12 +672,12 @@ const Header = () => {
   }, [isDrawerOpen]);
 
   const handleLogout = async () => {
-    console.log('Logging out');
+    // console.log('Logging out');
     try {
       await signOut();
       window.location.href = '/landing';
       setIsDrawerOpen(false);
-      console.log('Logged out');
+      // console.log('Logged out');
     } catch (error) {
       console.error('Error logging out:', error);
     }

@@ -8,7 +8,7 @@ import { formatDistanceToNow } from 'date-fns';
 
 const CommentCard = ({ comment }) => {
   const { currentTheme } = useTheme();
-  console.log(comment);
+  // console.log(comment);
   return (
     <div 
       className="rounded-lg overflow-hidden"
@@ -64,7 +64,7 @@ const CommentsTab = ({ userId, isPublic }) => {
 
       try {
         const data = await getUserComments(userId);
-        console.log(data);
+        // console.log(data);
         setComments(data.comments);
       } catch (err) {
         setError('Failed to fetch comments');

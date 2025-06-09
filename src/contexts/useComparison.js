@@ -46,7 +46,7 @@ export const useComparison = (id) => {
       const storedSetId = localStorage.getItem('currentSetId');
       if (storedComparison) {
         const comparison = JSON.parse(storedComparison);
-        console.log("comparisonnnnnnnn",comparison);
+        // console.log("comparisonnnnnnnn",comparison);
         setItems(comparison.items);
         localStorage.removeItem('currentComparison');
       }

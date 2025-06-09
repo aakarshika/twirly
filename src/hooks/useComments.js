@@ -49,7 +49,7 @@ export const useComments = (setId) => {
   };
 
   const handleSubmitComment = async (text) => {
-    console.log('handleSubmitComment', text);
+    // console.log('handleSubmitComment', text);
     if (!text.trim() || !user.id) return;
 
     try {

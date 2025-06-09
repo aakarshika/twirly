@@ -171,13 +171,13 @@ export default function Landing() {
       // If we're in native app and have the email from state, try to auto-login
       if (isNativePlatform() && location.state?.email) {
         handleAutoLogin(location.state.email);
-        console.log("handleAutoLogin", "location.state.email", location.state.email);
+        // console.log("handleAutoLogin", "location.state.email", location.state.email);
       }
     }
   });
 
   const handleAutoLogin = async (email) => {
-    console.log("handleAutoLogin", "email", email, "handleeeeeee");
+    // console.log("handleAutoLogin", "email", email, "handleeeeeee");
     setLoading(true);
     try {
       // Try to sign in with the email from signup

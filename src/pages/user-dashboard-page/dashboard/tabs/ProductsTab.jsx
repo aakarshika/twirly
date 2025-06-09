@@ -11,17 +11,17 @@ const ProductsTab = ({ userId, isPublic }) => {
   const [addProductModalOpen, setAddProductModalOpen] = useState(false);
 
   const handleProductUpdate = (updatedProduct) => {
-    console.log('updatedProduct', updatedProduct);
+    // console.log('updatedProduct', updatedProduct);
     setProducts(products.map(product => 
       product.id === updatedProduct.id ? updatedProduct : product
     ));
-    console.log('products', products);
+    // console.log('products', products);
   };
 
   const handleProductDelete = (productId) => {
-    console.log('productId', productId);
+    // console.log('productId', productId);
     setProducts(products.filter(product => product.id !== productId));
-    console.log('products', products);
+    // console.log('products', products);
   };
 
   return (

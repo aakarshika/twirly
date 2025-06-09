@@ -41,7 +41,7 @@ const NotificationsSettings = () => {
 
   const handleSave = () => {
     // TODO: Implement save functionality with Supabase
-    console.log('Saving notification preferences:', notificationPreferences);
+    // console.log('Saving notification preferences:', notificationPreferences);
   };
 
   const notificationTypes = [

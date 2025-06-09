@@ -238,7 +238,7 @@ const ItemCardEditable = ({
         }
       } else {
         const itemNew = await createProduct(productData, user.id);
-        console.log("created product", itemNew);
+        // console.log("created product", itemNew);
         if (onSave) {
             onSave(itemNew);
         }

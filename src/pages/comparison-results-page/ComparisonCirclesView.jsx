@@ -99,9 +99,9 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
     const winner = userVotedAll ? findWinner(displayItems) : null;
     const runnerUp = userVotedAll ? findRunnerUp(displayItems) : null;
     const totalVotes = userVotedAll ? countTotalVotes(comparisonMetrics) : null;
-    console.log(totalVotes, 'totalVotes');
-    console.log(displayItems, 'displayItems');
-    console.log(comparisonMetrics, 'comparisonMetrics');
+    // console.log(totalVotes, 'totalVotes');
+    // console.log(displayItems, 'displayItems');
+    // console.log(comparisonMetrics, 'comparisonMetrics');
     const {isHeaderVisible} = useHeader();
     const [scale, setScale] = useState(1);
     const [lastScrollY, setLastScrollY] = useState(0);

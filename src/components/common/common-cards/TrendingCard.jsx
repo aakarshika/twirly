@@ -175,11 +175,11 @@ const TrendingCard = ({set, from}) => {
                                 >
                                     {set.user?.display_name || 'Anonymous'}
                                 </span>
-                                <div className="flex items-center">
+                                {set.end_date && (<div className="flex items-center">
                                     <span className="text-xs ">
-                                        {formatDistanceToNow(new Date(set.created_at), { addSuffix: true })}
+                                        {'Ends '} <span className='font-semibold'>{formatDistanceToNow(new Date(set.end_date), { addSuffix: true })}</span>
                                     </span>
-                                </div>
+                                </div>)}
                             </div>
                         </div>
                     </div>

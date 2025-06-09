@@ -70,12 +70,12 @@ const HelpSettings = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     // TODO: Implement search functionality
-    console.log('Searching for:', searchQuery);
+    // console.log('Searching for:', searchQuery);
   };
 
   const handleSave = () => {
     // TODO: Implement save functionality with Supabase
-    console.log('Saving help settings:', helpSettings);
+    // console.log('Saving help settings:', helpSettings);
   };
 
   return (

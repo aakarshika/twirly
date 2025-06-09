@@ -43,15 +43,15 @@ const OnboardingFlow = () => {
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [allCategories, setAllCategories] = useState([]);
 
-  console.log('[OnboardingFlow] Render', {
-    user,
-    preferences,
-    notificationPreferences,
-    categoryPreferences,
-    currentStep,
-    onboardingComplete,
-    error
-  });
+  // console.log('[OnboardingFlow] Render', {
+  //   user,
+  //   preferences,
+  //   notificationPreferences,
+  //   categoryPreferences,
+  //   currentStep,
+  //   onboardingComplete,
+  //   error
+  // });
 
   const fetchPreferences = async () => {
     setLoading('global', true, 'Loading preferences...');
@@ -89,7 +89,7 @@ const OnboardingFlow = () => {
 
   useEffect(() => {
     if (onboardingComplete) {
-      console.log('onboardingComplete');
+      // console.log('onboardingComplete');
       window.location.href = '/dashboard';
     }
   }, [onboardingComplete]);
@@ -188,7 +188,7 @@ const OnboardingFlow = () => {
   };
 
   const renderStep = () => {
-    console.log('[OnboardingFlow] renderStep', { currentStep, username, selectedCategories, selectedNotifications });
+    // console.log('[OnboardingFlow] renderStep', { currentStep, username, selectedCategories, selectedNotifications });
     switch (currentStep) {
       case 1:
         return (

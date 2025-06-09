@@ -55,11 +55,11 @@ const CompareAspectView = ({
   // Wrap the vote handlers to notify parent
   const handleVoteWithUpdate = async (itemId) => {
     try {
-      console.log('CompareAspectView: handleVoteWithUpdate called with itemId:', itemId);
+      // console.log('CompareAspectView: handleVoteWithUpdate called with itemId:', itemId);
       const success = await handleVote(itemId);
-      console.log('CompareAspectView: handleVote success:', success);
+      // console.log('CompareAspectView: handleVote success:', success);
       if (success) {
-        console.log('CompareAspectView: calling onVoteChange with aspectId:', currentAspect?.id);
+        // console.log('CompareAspectView: calling onVoteChange with aspectId:', currentAspect?.id);
         onVoteChange(currentAspect?.id, true, itemId);
       }
     } catch (error) {
@@ -69,11 +69,11 @@ const CompareAspectView = ({
 
   const handleRevertVoteWithUpdate = async () => {
     try {
-      console.log('CompareAspectView: handleRevertVoteWithUpdate called');
+      // console.log('CompareAspectView: handleRevertVoteWithUpdate called');
       const success = await handleRevertVote();
-      console.log('CompareAspectView: handleRevertVote success:', success);
+      // console.log('CompareAspectView: handleRevertVote success:', success);
       if (success) {
-        console.log('CompareAspectView: calling onVoteChange with aspectId:', currentAspect?.id);
+        // console.log('CompareAspectView: calling onVoteChange with aspectId:', currentAspect?.id);
         onVoteChange(currentAspect?.id, false);
       }
     } catch (error) {

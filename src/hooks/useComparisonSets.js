@@ -28,7 +28,7 @@ export const useComparisonSets = (initialId) => {
   };
 
   const fetchSetDetails = async (setId) => {
-    console.log('🔍 Fetching set details for ID:', setId);
+    // console.log('🔍 Fetching set details for ID:', setId);
     try {
       const { data, error } = await supabase
         .from('comparison_sets')
@@ -37,7 +37,7 @@ export const useComparisonSets = (initialId) => {
         .single();
       
       if (data) {
-        console.log('✅ Successfully fetched set:', setId);
+        // console.log('✅ Successfully fetched set:', setId);
         return {
           ...data,
           user_name: data.user_preferences.display_name,
@@ -55,7 +55,7 @@ export const useComparisonSets = (initialId) => {
           totalVotes: 0
         };
       }
-      console.log('❌ No data found for set:', setId);
+      // console.log('❌ No data found for set:', setId);
       return null;
     } catch (err) {
       console.error('❌ Error fetching set:', setId, err);
@@ -64,9 +64,9 @@ export const useComparisonSets = (initialId) => {
   };
 
   const loadVotesAndLikes = async (setId) => {
-    console.log('🎯 Loading votes and likes for set:', setId);
+    // console.log('🎯 Loading votes and likes for set:', setId);
     if (!setId || setId === currentSetIdRef.current) {
-      console.log('⏭️ Skipping votes/likes load - already loaded or invalid ID');
+      // console.log('⏭️ Skipping votes/likes load - already loaded or invalid ID');
       return;
     }
     currentSetIdRef.current = setId;
@@ -80,11 +80,11 @@ export const useComparisonSets = (initialId) => {
         .single();
 
       if (!setData) {
-        console.log('❌ No set data found for votes/likes:', setId);
+        // console.log('❌ No set data found for votes/likes:', setId);
         return;
       }
 
-      console.log('📊 Fetching votes for set:', setId);
+      // console.log('📊 Fetching votes for set:', setId);
       const votesPromises = setData.comparison_set_items.map(async (item) => {
         const { count } = await supabase
           .from('votes')
@@ -96,7 +96,7 @@ export const useComparisonSets = (initialId) => {
 
       const itemsWithVotes = await Promise.all(votesPromises);
       const totalVotes = itemsWithVotes.reduce((acc, item) => acc + item.votes, 0) || 0;
-      console.log('✅ Votes loaded for set:', setId, 'Total votes:', totalVotes);
+      // console.log('✅ Votes loaded for set:', setId, 'Total votes:', totalVotes);
 
       // Check if current user has voted
       let hasVoted = false;
@@ -111,7 +111,7 @@ export const useComparisonSets = (initialId) => {
 
         hasVoted = !!userVote;
         votedItemId = userVote?.item_id || null;
-        console.log('👤 User vote status:', { hasVoted, votedItemId });
+        // console.log('👤 User vote status:', { hasVoted, votedItemId });
       }
 
       // Fetch likes
@@ -131,7 +131,7 @@ export const useComparisonSets = (initialId) => {
           .single();
         hasLiked = !!userLike;
       }
-      console.log('❤️ Likes loaded:', { likeCount, hasLiked });
+      // console.log('❤️ Likes loaded:', { likeCount, hasLiked });
 
       // Update the set with votes and likes
       setComparisonSets(prev => prev.map(set => {
@@ -156,27 +156,27 @@ export const useComparisonSets = (initialId) => {
         }
         return set;
       }));
-      console.log('✅ Updated set with votes and likes:', setId);
+      // console.log('✅ Updated set with votes and likes:', setId);
     } catch (err) {
       console.error('❌ Error loading votes and likes:', setId, err);
     }
   };
 
   const loadSetIfNeeded = async (setId) => {
-    console.log('🔍 Checking if set needs to be loaded:', setId);
+    // console.log('🔍 Checking if set needs to be loaded:', setId);
     if (loadedSetsRef.current.has(setId)) {
-      console.log('⏭️ Set already loaded:', setId);
+      // console.log('⏭️ Set already loaded:', setId);
       return;
     }
 
     try {
       const setData = await fetchSetDetails(setId);
       if (setData) {
-        console.log('📥 Adding new set to state:', setId);
+        // console.log('📥 Adding new set to state:', setId);
         setComparisonSets(prev => [...prev, setData]);
         loadedSetsRef.current.add(setId);
         setLastLoadedIndex(Math.max(lastLoadedIndex, setId));
-        console.log('✅ Set loaded and added to state:', setId);
+        // console.log('✅ Set loaded and added to state:', setId);
       }
     } catch (err) {
       console.error('❌ Error loading set:', setId, err);
@@ -185,40 +185,40 @@ export const useComparisonSets = (initialId) => {
 
   // Initial load - only runs once when the component mounts
   useEffect(() => {
-    console.log('🚀 Initial load with ID:', initialId);
+    // console.log('🚀 Initial load with ID:', initialId);
     if (!initialId || isInitialLoadDone.current) return;
 
     const loadInitialData = async () => {
       try {
         // Load the initial set
-        console.log('📥 Loading initial set:', initialId);
+        // console.log('📥 Loading initial set:', initialId);
         const initialSet = await fetchSetDetails(initialId);
         if (!initialSet) return;
 
         // Load the next 4 sets
-        console.log('📥 Loading next 4 sets starting from:', initialId + 1);
+        // console.log('📥 Loading next 4 sets starting from:', initialId + 1);
         const nextSetPromises = Array.from({ length: BATCH_SIZE - 1 }, (_, i) => 
           fetchSetDetails(initialId + i + 1)
         );
         
         const nextSets = (await Promise.all(nextSetPromises)).filter(Boolean);
-        console.log('✅ Loaded next sets:', nextSets.map(s => s.id));
+        // console.log('✅ Loaded next sets:', nextSets.map(s => s.id));
         
         // Combine all sets
         const allSets = [initialSet, ...nextSets];
-        console.log('📦 All sets loaded:', allSets.map(s => s.id));
+        // console.log('📦 All sets loaded:', allSets.map(s => s.id));
         setComparisonSets(allSets);
         setLastLoadedIndex(initialId + nextSets.length);
         
         // Mark all sets as loaded
         allSets.forEach(set => loadedSetsRef.current.add(set.id));
-        console.log('📝 Marked sets as loaded:', Array.from(loadedSetsRef.current));
+        // console.log('📝 Marked sets as loaded:', Array.from(loadedSetsRef.current));
         
         // Set current index to 0 since this is the initial set
         setCurrentIndex(0);
         currentSetIdRef.current = initialId;
         isInitialLoadDone.current = true;
-        console.log('🎯 Set current index to 0 and current set ID to:', initialId);
+        // console.log('🎯 Set current index to 0 and current set ID to:', initialId);
       } catch (err) {
         console.error('❌ Error loading initial data:', err);
       }
@@ -229,33 +229,33 @@ export const useComparisonSets = (initialId) => {
 
   // Load votes and likes for current set
   useEffect(() => {
-    console.log('🔄 Current index changed to:', currentIndex);
+    // console.log('🔄 Current index changed to:', currentIndex);
     if (comparisonSets[currentIndex]) {
-      console.log('📊 Loading votes/likes for current set:', comparisonSets[currentIndex].id);
+      // console.log('📊 Loading votes/likes for current set:', comparisonSets[currentIndex].id);
       loadVotesAndLikes(comparisonSets[currentIndex].id);
     }
   }, [currentIndex]);
 
   // Load next set if needed
   useEffect(() => {
-    console.log('🔍 Checking if next set needs to be loaded');
+    // console.log('🔍 Checking if next set needs to be loaded');
     if (!isInitialLoadDone.current) {
-      console.log('⏭️ Skipping - initial load not done');
+      // console.log('⏭️ Skipping - initial load not done');
       return;
     }
 
     const currentSet = comparisonSets[currentIndex];
     if (!currentSet) {
-      console.log('❌ No current set found');
+      // console.log('❌ No current set found');
       return;
     }
 
     // If we're at the last set of our loaded sets, load the next one
     if (currentIndex === comparisonSets.length - 1) {
-      console.log('📥 Loading next set:', currentSet.id + 1);
+      // console.log('📥 Loading next set:', currentSet.id + 1);
       loadSetIfNeeded(currentSet.id + 1);
     } else {
-      console.log('⏭️ Not at last set, skipping next set load');
+      // console.log('⏭️ Not at last set, skipping next set load');
     }
   }, [currentIndex, comparisonSets]);
 
@@ -359,7 +359,7 @@ export const useComparisonSets = (initialId) => {
 
   const handleLikeComparisonSet = async (setId) => {
     if (!user) return;
-    console.log('handleLikeComparisonSet', setId);
+    // console.log('handleLikeComparisonSet', setId);
     try {
       const currentSet = comparisonSets[currentIndex];
       const newHasLiked = !currentSet.hasLiked;

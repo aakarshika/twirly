@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 export const userService = {
   // Save user preferences
   async saveUserPreferences(userId, preferences) {
-    console.log("saving preferences", preferences);
+    // console.log("saving preferences", preferences);
     try {
       // First, save the user preferences
       const { data: preferencesData, error: preferencesError } = await supabase
@@ -31,8 +31,8 @@ export const userService = {
           .from('user_category_preferences')
           .delete()
           .eq('user_id', userId);
-        console.log("deleteData", deleteData);
-        console.log("deleteError", deleteError);
+        // console.log("deleteData", deleteData);
+        // console.log("deleteError", deleteError);
 
         if (deleteError) throw deleteError;
 
