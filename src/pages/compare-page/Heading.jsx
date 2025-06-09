@@ -8,7 +8,7 @@ const Heading = ({ setData }) => {
   const navigate = useNavigate(); 
   const question = (setData?.name).endsWith('?') ? setData?.name.slice(0, -1) : setData?.name;
   return (
-  <div className="flex flex-col gap-2 p-4">
+  <div className="flex flex-col mt-8 gap-2 p-4">
     <div className="flex gap-2"  onClick={() => navigate(`/user/${setData?.user_name}`)}>
       {/* <span className="w-4 h-4 rounded-full bg-green-300 inline-block" /> */}
       <Avatar

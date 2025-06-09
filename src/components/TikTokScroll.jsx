@@ -23,6 +23,11 @@ const TikTokScroll = () => {
   const [metricsSectionExpanded, setMetricsSectionExpanded] = useState(false);
   const controls = useAnimation();
 
+  // Ensure page scrolls to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   useEffect(() => {
     const fetchUsers = async () => {
 
@@ -79,8 +84,10 @@ const TikTokScroll = () => {
 
   const handleDrag = (event, info) => {
     // Only check for horizontal drag if comments are collapsed
-    if (isCommentsCollapsed(comparisonSets[currentIndex].id) && Math.abs(info.offset.x) > Math.abs(info.offset.y)) {
-      setIsHorizontalDrag(true);
+    if (isCommentsCollapsed(comparisonSets[currentIndex].id)) {
+      if (Math.abs(info.offset.x) > Math.abs(info.offset.y)) {
+        setIsHorizontalDrag(true);
+      }
     }
   };
 
@@ -92,7 +99,33 @@ const TikTokScroll = () => {
     }
     lastScrollTime.current = now;
 
-    if (isHorizontalDrag && isCommentsCollapsed(comparisonSets[currentIndex].id)) {
+    // If comments are expanded, only allow horizontal swipe to go back
+    if (!isCommentsCollapsed(comparisonSets[currentIndex].id)) {
+      if (isHorizontalDrag) {
+        const horizontalThreshold = 50;
+        const horizontalVelocity = info.velocity.x;
+
+        if (Math.abs(info.offset.x) > horizontalThreshold || Math.abs(horizontalVelocity) > 500) {
+          if (info.offset.x > 0 || horizontalVelocity > 0) {
+            // Swipe right - go to home with animation
+            controls.start({ x: '100%', transition: { duration: 0.3 } })
+              .then(() => navigate('/'));
+          } else {
+            // Swipe left - prevent default and do nothing
+            event?.preventDefault();
+            controls.start({ x: 0, transition: { duration: 0.3 } });
+          }
+        } else {
+          // Reset position if threshold not met
+          controls.start({ x: 0, transition: { duration: 0.3 } });
+        }
+      }
+      setIsDragging(false);
+      setIsHorizontalDrag(false);
+      return;
+    }
+
+    if (isHorizontalDrag) {
       // Handle horizontal swipe
       const horizontalThreshold = 50;
       const horizontalVelocity = info.velocity.x;
@@ -112,7 +145,7 @@ const TikTokScroll = () => {
         controls.start({ x: 0, transition: { duration: 0.3 } });
       }
     } else {
-      // Handle vertical swipe
+      // Handle vertical swipe only when comments are collapsed
       const threshold = window.innerHeight * 0.3;
       const velocity = info.velocity.y;
 
@@ -221,7 +254,7 @@ const TikTokScroll = () => {
   };
 
   return (
-    <div className="h-screen w-full overflow-hidden bg-white">
+    <div className="h-screen w-full overflow-hidden bg-white fixed top-0 left-0 right-0 bottom-0">
       <motion.div
         ref={containerRef}
         className="h-full w-full"
@@ -241,7 +274,8 @@ const TikTokScroll = () => {
         style={{
           position: 'relative',
           height: '100%',
-          width: '100%'
+          width: '100%',
+          overflow: 'hidden'
         }}
       >
         <AnimatePresence>

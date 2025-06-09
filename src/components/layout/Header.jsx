@@ -383,7 +383,7 @@ const MobileSettingsDrawer = ({
 
   return (
     <div
-      className="fixed z-[60] settings-drawer transition-all duration-200 ease-in-out"
+      className="fixed z-[100] settings-drawer transition-all duration-200 ease-in-out"
       style={{ 
         right: '0',
         height: '100vh',

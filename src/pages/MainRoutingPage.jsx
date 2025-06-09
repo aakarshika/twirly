@@ -181,7 +181,7 @@ const MainRoutingPage = () => {
   };
 
   const isPublicRoute = () => {
-    const isPublic = ['/login','/compare/', '/landing', '/signup', '/forgot-password', '/auth/v1/callback', '/auth/callback']
+    const isPublic = ['/login', '/landing', '/signup', '/forgot-password', '/auth/v1/callback', '/auth/callback']
       .some(path => location.pathname.includes(path));
     return isPublic;
   };

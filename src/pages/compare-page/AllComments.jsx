@@ -7,6 +7,7 @@ import Avatar from '../../components/common/Avatar';
 import { Heart } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { renderTextWithMentions } from '../../lib/commentUtils';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, userPreferences }) => {
   const [showReplies, setShowReplies] = useState(false);
@@ -148,8 +149,7 @@ const TopComment = ({ commentsCollapsed, setCommentsCollapsed, comments, items }
   return (
     <div className="p-3 pb-24 min-h-40">
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-lg">💬</span>
-        <span className="font-semibold">{comments.length} comments</span>
+        <span className="font-semibold">Comments <span className='text-gray-500 text-sm'>{comments.length}</span></span>
       </div>
       <div className="rounded-lg bg-gray-50 p-3" onClick={() => setCommentsCollapsed(false)}>
         <div className="flex items-center gap-2">
@@ -193,7 +193,7 @@ const TopComment = ({ commentsCollapsed, setCommentsCollapsed, comments, items }
 const AllComments = ({ commentsCollapsed, setCommentsCollapsed, setId, items, users, userPreferences }) => {
   const [showNewCommentInput, setShowNewCommentInput] = useState(false);
   const [newComment, setNewComment] = useState('');
-  
+  const { currentTheme } = useTheme();
   const {
     comments,
     loading,
@@ -224,14 +224,13 @@ const AllComments = ({ commentsCollapsed, setCommentsCollapsed, setId, items, us
   }
 
   return (
-    <div className="p-3 min-h-full">
-      <div className="flex items-center gap-2 mb-2">
-        <span className="text-lg">💬</span>
-        <span className="font-semibold">{comments.length} comments</span>
-        <button onClick={() => setCommentsCollapsed(true)} className="ml-auto text-2xl">×</button>
+    <div className="min-h-full">
+      <div className="fixed flex w-full items-center justify-between px-4 py-1 z-20" style={{ backgroundColor: currentTheme.colors.background }}>
+      <span className="font-semibold">Comments <span className='text-gray-500 text-sm'>{comments.length}</span></span>
+      <button onClick={() => setCommentsCollapsed(true)} className="ml-auto text-2xl">×</button>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-4 p-3 pt-12">
         {showNewCommentInput ? (
           <CommentForm
             newComment={newComment}
@@ -256,7 +255,7 @@ const AllComments = ({ commentsCollapsed, setCommentsCollapsed, setId, items, us
         )}
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-3 p-3 pb-32">
         {comments.map((comment) => (
           <Comment
             key={comment.id}
@@ -270,6 +269,7 @@ const AllComments = ({ commentsCollapsed, setCommentsCollapsed, setId, items, us
           />
         ))}
       </div>
+      <div className="flex justify-center items-center h-10 mb-10"> . . . </div>
     </div>
   );
 };
