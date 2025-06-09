@@ -4,6 +4,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { changeColorAlpha } from '../../lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { Share } from '@capacitor/share';
+import { getCurrentUrl } from '../../lib/urlUtils';
 
 const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, voteButtonClicked }) => {
   const { currentTheme } = useTheme();
@@ -12,16 +13,15 @@ const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, voteButt
   const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
 
   const handleShare = async () => {
-    // Convert any protocol to https://
-    const currentUrl = window.location.href;
-    const formattedUrl = currentUrl.replace(/^.*?:\/\//, 'https://');
+    // Get the current URL using our utility function
+    const currentUrl = getCurrentUrl();
     
     try {
       // Try Capacitor Share API first
       await Share.share({
         title: 'Check out this poll!',
         text: 'I found this interesting comparison on Twirly.',
-        url: formattedUrl,
+        url: currentUrl,
       });
     } catch (error) {
       console.error('Error sharing:', error);
@@ -31,18 +31,18 @@ const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, voteButt
           await navigator.share({
             title: 'Check out this poll!',
             text: 'I found this interesting comparison on Twirly.',
-            url: formattedUrl
+            url: currentUrl
           });
         } else {
           // Final fallback to clipboard
-          await navigator.clipboard.writeText(formattedUrl);
+          await navigator.clipboard.writeText(currentUrl);
           setShowCopiedTooltip(true);
           setTimeout(() => setShowCopiedTooltip(false), 2000);
         }
       } catch (fallbackError) {
         console.error('Fallback sharing error:', fallbackError);
         // Last resort fallback to clipboard
-        await navigator.clipboard.writeText(formattedUrl);
+        await navigator.clipboard.writeText(currentUrl);
         setShowCopiedTooltip(true);
         setTimeout(() => setShowCopiedTooltip(false), 2000);
       }

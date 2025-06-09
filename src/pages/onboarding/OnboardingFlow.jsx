@@ -90,10 +90,9 @@ const OnboardingFlow = () => {
 
   useEffect(() => {
     if (onboardingComplete) {
-      // console.log('onboardingComplete');
-      window.location.href = '/dashboard';
+      navigate('/dashboard');
     }
-  }, [onboardingComplete]);
+  }, [onboardingComplete, navigate]);
 
   const fetchAllCategories = async () => {
     const cats = await userService.getAllCategories();
