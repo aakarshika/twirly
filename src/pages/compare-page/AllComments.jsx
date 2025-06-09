@@ -8,13 +8,14 @@ import { Heart } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { renderTextWithMentions } from '../../lib/commentUtils';
 import { useTheme } from '../../contexts/ThemeContext';
+import { useNavigate } from 'react-router-dom';
 
 const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, userPreferences }) => {
   const [showReplies, setShowReplies] = useState(false);
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyText, setReplyText] = useState('');
   const { user } = useAuth();
-
+  const navigate = useNavigate();
   const handleSubmitReply = () => {
     if (replyText.trim()) {
       onReply(comment.id, replyText);
@@ -33,7 +34,7 @@ const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, u
 
   return (
     <div className="bg-gray-50 rounded-lg p-3 shadow-sm">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2" onClick={() => navigate(`/user/${comment.user?.display_name}`)}>
         <Avatar
           size="sm"
           className="w-4 h-4"
@@ -92,7 +93,7 @@ const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, u
         <div className="ml-6 mt-3 space-y-3">
           {comment.replies.map((reply) => (
             <div key={reply.id} className="bg-white rounded-lg p-2">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2" onClick={() => navigate(`/user/${reply.user?.display_name}`)}>
                 <Avatar
                   size="xs"
                   className="w-4 h-4"

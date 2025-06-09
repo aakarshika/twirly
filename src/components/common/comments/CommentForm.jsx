@@ -20,7 +20,7 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
       description: itemData.description
     };
   }) || [];
-  const display_name_clipped = userPreferences?.display_name ? userPreferences?.display_name.slice(0, 25) : 'Anonymous';
+  const display_name_clipped = userPreferences?.display_name ? userPreferences?.display_name.slice(0, 25).toLowerCase() : 'Anonymous';
   const mentionStyles = {
     input: {
       fontSize: '16px',

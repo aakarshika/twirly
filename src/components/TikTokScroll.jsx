@@ -258,7 +258,7 @@ const TikTokScroll = () => {
       <motion.div
         ref={containerRef}
         className="h-full w-full"
-        drag
+        drag={isCommentsCollapsed(comparisonSets[currentIndex]?.id)}
         dragConstraints={{ 
           top: 0, 
           bottom: 0, 
