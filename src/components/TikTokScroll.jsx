@@ -175,14 +175,11 @@ const TikTokScroll = () => {
     return (
       <motion.div
         key={`set-${setData.id}-${index}`}
-        className="h-screen w-full flex flex-col"
+        className="h-screen flex flex-col "
         style={{
           position: 'absolute',
           top: 0,
-          left: 0,
-          right: 0,
           height: '100vh',
-          width: '100%',
           y: (index - currentIndex) * window.innerHeight
         }}
         initial={false}
@@ -254,10 +251,10 @@ const TikTokScroll = () => {
   };
 
   return (
-    <div className="h-screen w-full overflow-hidden bg-white fixed top-0 left-0 right-0 bottom-0">
+    <div className="h-screen w-full overflow-hidden bg-white fixed top-0 left-0 right-0 bottom-0 md:pl-60 lg:pl-60" style={{ paddingTop: 'calc(64px + env(safe-area-inset-top))' }}>
       <motion.div
         ref={containerRef}
-        className="h-full w-full"
+        className="h-full w-full flex justify-center items-center"
         drag={isCommentsCollapsed(comparisonSets[currentIndex]?.id)}
         dragConstraints={{ 
           top: 0, 

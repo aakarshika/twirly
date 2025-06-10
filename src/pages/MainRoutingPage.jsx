@@ -216,7 +216,7 @@ const MainRoutingPage = () => {
               }}
             >
               {!isPublicRoute() && <Header />}
-              <main className="flex-1" style={{ paddingTop: isPublicRoute() ? '0' : '64px' }}>
+              <main className="flex-1 md:pl-60 lg:pl-60" style={{ paddingTop: isPublicRoute() ? '0' : '64px' }}>
                 <Routes>
                   {/* Public Routes */}
                   {/* <Route path="/login" element={<Login />} /> */}
