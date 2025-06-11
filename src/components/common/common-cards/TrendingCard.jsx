@@ -108,9 +108,7 @@ const TrendingCard = ({set, from}) => {
                         return (
                             <div
                                 key={item.id}
-                                className={`relative rounded-lg overflow-hidden text-black ${
-                                    userVoted ? '' : index >= 2 ? 'blur-sm' : ''
-                                }`}
+                                className={`relative rounded-lg overflow-hidden text-black `}
                             >
                                 {itemImage && !hasImageError ? (
                                     <img
