@@ -57,6 +57,23 @@ const TikTokScroll = () => {
   } = useComparisonSets(parseInt(currentId) || 0);
   const [previousIndex, setPreviousIndex] = useState(currentIndex);
 
+  // Add effect to handle automatic navigation after voting
+  useEffect(() => {
+    if (comparisonSets[currentIndex]?.hasVoted) {
+      const timer = setTimeout(() => {
+        if (currentIndex < comparisonSets.length - 1) {
+          setPreviousIndex(currentIndex);
+          setCurrentIndex(currentIndex + 1);
+          if (comparisonSets[currentIndex + 1]) {
+            navigate(`/compare/${comparisonSets[currentIndex + 1].id}`, { replace: true });
+          }
+        }
+      }, 3000); // 3 seconds delay
+
+      return () => clearTimeout(timer);
+    }
+  }, [comparisonSets[currentIndex]?.hasVoted, currentIndex, comparisonSets, navigate]);
+
   useEffect(() => {
     if (comparisonSets.length > 0) {
       setCommentsCollapsedMap(prev => {
