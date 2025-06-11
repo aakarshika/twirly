@@ -260,10 +260,10 @@ const CreateComparison = () => {
     //   setError('At least 2 items are required');
     //   return false;
     // }
-    if (draft.aspects.length === 0) {
-      setError('At least one aspect is required');
-      return false;
-    }
+    // if (draft.aspects.length === 0) {
+    //   setError('At least one aspect is required');
+    //   return false;
+    // }
     return true;
   };
 
@@ -348,43 +348,6 @@ const CreateComparison = () => {
               placeholder={placeholders[placeholderIndex]}
             />
           </div>
-          <div className="text-sm text-gray-500">
-            Users will vote <span className="font-bold">based on</span>
-          </div>
-          {draft.aspects.length > 0 && draft.aspects.map((aspect) => (
-            <div key={aspect.id}>
-              <AspectForm
-                aspect={aspect}
-                isEditing={editAspectExpanded === aspect.id}
-                onUpdate={(aspect) => {
-                  setEditAspectExpanded(aspect.id);
-                  setEditingAspect(aspect);
-                  setNewAspectExpanded(false);
-                }}
-                onDelete={removeAspect}
-                onCancel={() => {
-                  setEditAspectExpanded(null);
-                  setEditingAspect({ metric_name: '', description: '', weight: 1, id: null });
-                }}
-                onSave={handleUpdateAspect}
-                aspectData={editingAspect}
-                setAspectData={setEditingAspect}
-              />
-            </div>
-          ))}
-          {newAspectExpanded && (
-            <AspectForm
-              aspect={{ id: null }}
-              isEditing={true}
-              onUpdate={() => {}}
-              onDelete={() => {}}
-              onCancel={() => setNewAspectExpanded(false)}
-              onSave={handleAddAspect}
-              aspectData={newAspect}
-              setAspectData={setNewAspect}
-            />
-          )}
-
           <div>
             <div className="grid grid-cols-2 gap-2">
               {draft.items.map((item) => {
