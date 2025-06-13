@@ -293,6 +293,9 @@ const TikTokScroll = () => {
         }
         setIsDragging(false);
         setDragY(0);
+      } else {
+        setIsDragging(false);
+        setDragY(0);
       }
     }
 
