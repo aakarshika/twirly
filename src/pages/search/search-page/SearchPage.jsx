@@ -183,6 +183,7 @@ const SearchPage = () => {
         <form onSubmit={handleSearch} className="relative max-w-2xl mx-auto">
           <input
             type="text"
+            autoFocus
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             className="w-full px-4 py-3 pl-12 rounded-lg border"

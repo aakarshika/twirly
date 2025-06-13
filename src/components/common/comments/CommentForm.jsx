@@ -7,6 +7,7 @@ import './Comment.css';
 import { useTheme } from '../../../contexts/ThemeContext';
 
 const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, items, userPreferences, type }) => {
+  console.log('userPreferences', userPreferences);
   const inputRef = useRef(null);
   const [focus, setFocus] = useState(false);
   const { currentTheme } = useTheme();

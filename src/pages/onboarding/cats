@@ -1,0 +1,9 @@
+
+  { id: '1', name: 'Technology', icon: '💻' },
+  { id: '2', name: 'Fashion', icon: '👗' },
+  { id: '3', name: 'Home & Living', icon: '🏠' },
+  { id: '4', name: 'Beauty', icon: '💄' },
+  { id: '5', name: 'Food & Beverages', icon: '🍽️' },
+  { id: '6', name: 'Sports', icon: '⚽' },
+  { id: '7', name: 'Books', icon: '📚' },
+  { id: '8', name: 'Gaming', icon: '🎮' },

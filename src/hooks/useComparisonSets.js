@@ -4,17 +4,19 @@ import { useAuth } from '../contexts/AuthContext';
 import { userActivityService, ACTIVITY_TYPES, ENTITY_TYPES } from '../services/userActivityService';
 
 const BATCH_SIZE = 5;
+const MAX_CACHED_SETS = 20; // Maximum number of sets to keep in memory
 
-export const useComparisonSets = (initialId) => {
-  const { user } = useAuth();
+export const useComparisonSets = (paramId) => {
+  const { user, userPreferences } = useAuth();
+  const [userCategoryPreferences, setUserCategoryPreferences] = useState([]);
+  const [allImportantCategories, setAllImportantCategories] = useState([]);
+  const [allCategories, setAllCategories] = useState([]);
   const [comparisonSets, setComparisonSets] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
-  const [lastLoadedIndex, setLastLoadedIndex] = useState(0);
-  const currentSetIdRef = useRef(null);
-  const loadedSetsRef = useRef(new Set());
-  const isInitialLoadDone = useRef(false);
-
-  const isPreloading = useRef(false);
+  const [selectedTag, setSelectedTag] = useState('home');
+  const [categoryId, setCategoryId] = useState(null);
+  const [categoryIds, setCategoryIds] = useState(null);
+  const isInitialLoad = useRef(true);
 
   const getPercentAndWinner = (comparisonSets, totalVotes) => {
     comparisonSets.forEach(opt => {
@@ -32,28 +34,81 @@ export const useComparisonSets = (initialId) => {
     try {
       const { data, error } = await supabase
         .from('comparison_sets')
-        .select('*, comparison_set_items!inner(items(*)), user_preferences(*)')
+        .select(`
+          *,
+          comparison_set_items!inner(items(*)),
+          user_preferences(*),
+          votes(item_id),
+          comparison_set_comment_reactions(count)
+        `)
         .eq('id', setId)
         .single();
       
       if (data) {
+        // Get total votes for all items
+        const totalVotes = data.votes?.length || 0;
+        
+        // Check if current user has voted
+        let hasVoted = false;
+        let votedItemId = null;
+        try{if (user) {
+          const { data: userVote } = await supabase
+            .from('votes')
+            .select('item_id')
+            .eq('set_id', setId)
+            .eq('user_id', user.id)
+            .select();
+
+          hasVoted = userVote.length > 0;
+          votedItemId = userVote.length > 0 ? userVote[0].item_id : null;
+        }}
+        catch (err) {
+          // console.error('Error fetching user vote:', err);
+        }
+
+        // Check if user has liked
+        let hasLiked = false;
+        try{if (user) {
+          const { data: userLike } = await supabase
+            .from('comparison_set_comment_reactions')
+            .select('*')
+            .eq('set_id', setId)
+            .eq('user_id', user.id)
+            .select();
+          hasLiked = !!userLike;
+        }}
+        catch (err) {
+          // console.error('Error fetching user like:', err);
+        }
+
+        var winningItemId = data.comparison_set_items[0].items.id;
         // console.log('✅ Successfully fetched set:', setId);
-        return {
+        const set =  {
           ...data,
           user_name: data.user_preferences.display_name,
           user_profile_image_url: data.user_preferences.profile_image_url,
-          set_items: data.comparison_set_items.map(item => ({
+          set_items: data.comparison_set_items.map(item => 
+            {
+              const votes = data.votes.filter(vote => vote.item_id === item.items.id).length;
+              const votesPercentage = (votes / totalVotes) * 100;
+              if (votesPercentage > winningItemId.votesPercentage) {
+                winningItemId = item.items.id;
+              }
+              return ({
             ...item.items,
-            votes: 0,
-            votesPercentage: 0,
-            winner: false
-          })),
-          hasVoted: false,
-          votedItemId: null,
-          hasLiked: false,
-          likeCount: 0,
-          totalVotes: 0
+            votes: votes,
+            votesPercentage: votesPercentage
+          })}),
+          hasVoted,
+          votedItemId,
+          hasLiked,
+          likeCount: data.comparison_set_comment_reactions?.length || 0,
+          totalVotes
         };
+        set.set_items.forEach(item => {
+          item.winner = item.id === winningItemId;
+        });
+        return set;
       }
       // console.log('❌ No data found for set:', setId);
       return null;
@@ -63,204 +118,150 @@ export const useComparisonSets = (initialId) => {
     }
   };
 
-  const loadVotesAndLikes = async (setId) => {
-    // console.log('🎯 Loading votes and likes for set:', setId);
-    if (!setId) {
-      // console.log('⏭️ Skipping votes/likes load - invalid ID');
-      return;
+  const fetchFilteredSets = async () => {
+    let filterType = null;
+
+    if (selectedTag) {
+      if (selectedTag === 'trending') {
+        filterType = 'trending';
+      } else if (selectedTag === 'home') {
+        filterType = 'home';
+      } else if (selectedTag === 'controversial') {
+        filterType = 'controversial';
+      } else if (selectedTag === 'new') {
+        filterType = 'new';
+      } else {
+        filterType = 'single_category';
+      }
     }
-    if (setId === currentSetIdRef.current) {
-      // console.log('⏭️ Skipping votes/likes load - already loaded');
-      return;
-    }
-    currentSetIdRef.current = setId;
-    
     try {
-      // Fetch votes for all items in parallel
-      const { data: setData } = await supabase
-        .from('comparison_sets')
-        .select('comparison_set_items!inner(items(id))')
-        .eq('id', setId)
-        .single();
+      const { data, error } = await supabase
+        .rpc('get_filtered_sets', {
+          _user_id: user?.id,
+          _filter_type: filterType,
+          _category_id: categoryId,
+          _category_ids: null,
+          _limit: BATCH_SIZE
+        })
+        .select(`
+            *
+        `);
 
-      if (!setData) {
-        // console.log('❌ No set data found for votes/likes:', setId);
-        return;
-      }
+      if (error) throw error;
+      if (!data || data.length === 0) return [];
 
-      // console.log('📊 Fetching votes for set:', setId);
-      const votesPromises = setData.comparison_set_items.map(async (item) => {
-        const { count } = await supabase
-          .from('votes')
-          .select('*', { count: 'exact' })
-          .eq('set_id', setId)
-          .eq('item_id', item.items.id);
-        return { itemId: item.items.id, votes: count || 0 };
-      });
+      // Fetch full details for each set
+      const setDetailsPromises = data.map(set => fetchSetDetails(set.set_id));
+      const setDetails = await Promise.all(setDetailsPromises);
+      
 
-      const itemsWithVotes = await Promise.all(votesPromises);
-      const totalVotes = itemsWithVotes.reduce((acc, item) => acc + item.votes, 0) || 0;
-      // console.log('✅ Votes loaded for set:', setId, 'Total votes:', totalVotes);
-
-      // Check if current user has voted
-      let hasVoted = false;
-      let votedItemId = null;
-      if (user) {
-        const { data: userVote } = await supabase
-          .from('votes')
-          .select('item_id')
-          .eq('set_id', setId)
-          .eq('user_id', user.id)
-          .single();
-
-        hasVoted = !!userVote;
-        votedItemId = userVote?.item_id || null;
-        // console.log('👤 User vote status:', { hasVoted, votedItemId });
-      }
-
-      // Fetch likes
-      const { count: likeCount } = await supabase
-        .from('comparison_set_comment_reactions')
-        .select('reaction_type', { count: 'exact' })
-        .eq('set_id', setId);
-
-      // Check if user has liked
-      let hasLiked = false;
-      if (user) {
-        const { data: userLike } = await supabase
-          .from('comparison_set_comment_reactions')
-          .select('*')
-          .eq('set_id', setId)
-          .eq('user_id', user.id)
-          .single();
-        hasLiked = !!userLike;
-      }
-      // console.log('❤️ Likes loaded:', { likeCount, hasLiked });
-
-      // Update the set with votes and likes
-      setComparisonSets(prev => prev.map(set => {
-        if (set.id === setId) {
-          const updatedItems = set.set_items.map(item => {
-            const voteData = itemsWithVotes.find(v => v.itemId === item.id);
-            return {
-              ...item,
-              votes: voteData?.votes || 0
-            };
-          });
-
-          return {
-            ...set,
-            set_items: getPercentAndWinner(updatedItems, totalVotes),
-            hasVoted,
-            votedItemId,
-            hasLiked,
-            likeCount: likeCount || 0,
-            totalVotes
-          };
-        }
-        return set;
-      }));
-      // console.log('✅ Updated set with votes and likes:', setId);
+      return setDetails.filter(Boolean);
+      // return data;
     } catch (err) {
-      console.error('❌ Error loading votes and likes:', setId, err);
+      console.error('Error fetching filtered sets:', err);
+      return [];
     }
   };
-
-  const loadSetIfNeeded = async (setId) => {
-    // console.log('🔍 Checking if set needs to be loaded:', setId);
-    if (loadedSetsRef.current.has(setId)) {
-      // console.log('⏭️ Set already loaded:', setId);
-      return;
-    }
-
-    try {
-      const setData = await fetchSetDetails(setId);
-      if (setData) {
-        // console.log('📥 Adding new set to state:', setId);
-        setComparisonSets(prev => [...prev, setData]);
-        loadedSetsRef.current.add(setId);
-        setLastLoadedIndex(Math.max(lastLoadedIndex, setId));
-        // console.log('✅ Set loaded and added to state:', setId);
-      }
-    } catch (err) {
-      console.error('❌ Error loading set:', setId, err);
-    }
-  };
-
-  // Initial load - only runs once when the component mounts
   useEffect(() => {
-    // console.log('🚀 Initial load with ID:', initialId);
-    if (!initialId || isInitialLoadDone.current) return;
+    console.log('🔍 comparisonSets', comparisonSets);
+  }, [comparisonSets]);
+
+  // Effect for initial load
+  useEffect(() => {
+    if (!user || !isInitialLoad.current) return;
 
     const loadInitialData = async () => {
       try {
-        // Load the initial set
-        // console.log('📥 Loading initial set:', initialId);
-        const initialSet = await fetchSetDetails(initialId);
-        if (!initialSet) return;
+        const initialSets = [];
+        
+        // If we have a paramId, load that set first
+        if (paramId) {
+          const initialSet = await fetchSetDetails(paramId);
+          if (initialSet) {
+            initialSets.push(initialSet);
+          }
+        }
 
-        // Load the next 4 sets
-        // console.log('📥 Loading next 4 sets starting from:', initialId + 1);
-        const nextSetPromises = Array.from({ length: BATCH_SIZE - 1 }, (_, i) => 
-          fetchSetDetails(initialId + i + 1)
-        );
-        
-        const nextSets = (await Promise.all(nextSetPromises)).filter(Boolean);
-        // console.log('✅ Loaded next sets:', nextSets.map(s => s.id));
-        
-        // Combine all sets
-        const allSets = [initialSet, ...nextSets];
-        // console.log('📦 All sets loaded:', allSets.map(s => s.id));
-        setComparisonSets(allSets);
-        setLastLoadedIndex(initialId + nextSets.length);
-        
-        // Mark all sets as loaded
-        allSets.forEach(set => loadedSetsRef.current.add(set.id));
-        // console.log('📝 Marked sets as loaded:', Array.from(loadedSetsRef.current));
-        
-        // Set current index to 0 since this is the initial set
-        setCurrentIndex(0);
-        isInitialLoadDone.current = true;
-        // console.log('🎯 Set current index to 0 and current set ID to:', initialId);
+        // Load the first batch of sets
+        const firstBatch = await fetchFilteredSets();
+        if (firstBatch.length > 0) {
+          initialSets.push(...firstBatch.filter(set => set.id !== paramId));
+        }
+
+        if (initialSets.length > 0) {
+          setComparisonSets(initialSets);
+          setCurrentIndex(0);
+        }
+
+        isInitialLoad.current = false;
       } catch (err) {
-        console.error('❌ Error loading initial data:', err);
+        console.error('Error loading initial data:', err);
       }
     };
 
     loadInitialData();
-  }, [initialId]);
+  }, [user, paramId]);
 
-  // Load votes and likes for current set
+  // Effect for loading more sets when reaching the end
   useEffect(() => {
-    // console.log('🔄 Current index changed to:', currentIndex);
-    if (comparisonSets[currentIndex]) {
-      // console.log('📊 Loading votes/likes for current set:', comparisonSets[currentIndex].id);
-      loadVotesAndLikes(comparisonSets[currentIndex].id);
-    }
-  }, [currentIndex]);
+    if (currentIndex === -1 || !user) return;
 
-  // Load next set if needed
+    const loadNextBatch = async () => {
+      if (currentIndex >= comparisonSets.length - 2) {
+        const newSets = await fetchFilteredSets();
+        if (newSets.length > 0) {
+          setComparisonSets(prev => [...prev, ...newSets]);
+        }
+      }
+    };
+
+    loadNextBatch();
+  }, [currentIndex, user]);
+
+  // Effect for handling tag changes
   useEffect(() => {
-    // console.log('🔍 Checking if next set needs to be loaded');
-    if (!isInitialLoadDone.current) {
-      // console.log('⏭️ Skipping - initial load not done');
-      return;
-    }
+    if (!user || isInitialLoad.current) return;
 
-    const currentSet = comparisonSets[currentIndex];
-    if (!currentSet) {
-      // console.log('❌ No current set found');
-      return;
-    }
+    const loadTaggedBatch = async () => {
+      const sets = await fetchFilteredSets();
+      if (sets.length > 0) {
+        setComparisonSets(sets);
+        setCurrentIndex(0);
+      } else {
+        setComparisonSets([]);
+        setCurrentIndex(-1);
+      }
+    };
 
-    // If we're at the last set of our loaded sets, load the next one
-    if (currentIndex === comparisonSets.length - 1) {
-      // console.log('📥 Loading next set:', currentSet.id + 1);
-      loadSetIfNeeded(currentSet.id + 1);
-    } else {
-      // console.log('⏭️ Not at last set, skipping next set load');
-    }
-  }, [currentIndex, comparisonSets]);
+    loadTaggedBatch();
+  }, [selectedTag, user]);
+
+  // Effect for fetching categories
+  useEffect(() => {
+    if (!user) return;
+    
+    const fetchCategories = async () => {
+      const { data: userCategoryPreferences } = await supabase
+        .from('user_category_preferences')
+        .select('*, categories(*)')
+        .eq('user_id', user?.id);
+      
+      const { data: allImportantCategories } = await supabase
+        .from('categories')
+        .select('*')
+        .order('id', { ascending: true })
+        .limit(5);
+
+      setUserCategoryPreferences(userCategoryPreferences);
+      const allImportantCategoriesFiltered = allImportantCategories.filter(
+        category => !userCategoryPreferences.some(item => item.categories.name === category.name)
+      );
+      setAllImportantCategories(allImportantCategoriesFiltered);
+      setAllCategories([...allImportantCategoriesFiltered, ...userCategoryPreferences.map(item => item.categories)]);
+    };
+
+    fetchCategories();
+  }, [user]);
 
   const updateSetVotes = (set, votedItemId, isAdding) => {
     const updatedItems = set.set_items.map(item => ({
@@ -413,19 +414,18 @@ export const useComparisonSets = (initialId) => {
     }
   };
 
-  const handleSetCurrentIndex = (newIndex) => {
-    if (newIndex >= 0 && newIndex < comparisonSets.length) {
-      setCurrentIndex(newIndex);
-    }
-  };
 
   return {
     comparisonSets,
     currentIndex,
-    setCurrentIndex: handleSetCurrentIndex,
-    lastLoadedIndex,
+    setCurrentIndex,
     handleVote,
     handleReset,
-    handleLikeComparisonSet
+    handleLikeComparisonSet,
+    setCategoryId,
+    setCategoryIds,
+    setSelectedTag,
+    userPreferences,
+    allCategories
   };
 }; 

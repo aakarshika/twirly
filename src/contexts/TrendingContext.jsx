@@ -15,6 +15,7 @@ export const useTrending = () => {
 
 export const TrendingProvider = ({ children }) => {
   const [trendingSets, setTrendingSets] = useState([]);
+  const [myFeedSets, setMyFeedSets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { user } = useAuth();
@@ -51,11 +52,34 @@ export const TrendingProvider = ({ children }) => {
     }
   };
 
+  const fetchMyFeedSets  = async () => {
+    try {
+      const { data, error } = await supabase
+        .rpc('get_filtered_sets', {
+          _user_id: user?.id,
+          _filter_type: 'home',
+          _category_id: null,
+          _category_ids: null,
+          _limit: 2
+        });
+
+      if (error) throw error;
+      if (!data || data.length === 0) return [];
+
+      setMyFeedSets(data);
+    } catch (err) {
+      console.error('Error fetching filtered sets:', err);
+    }
+  };
+
   const value = {
     trendingSets,
+    user,
     loading,
     error,
-    fetchTrendingSets
+    fetchTrendingSets,
+    fetchMyFeedSets,
+    myFeedSets
   };
 
   return (

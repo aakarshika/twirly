@@ -9,6 +9,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { renderTextWithMentions } from '../../lib/commentUtils';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useNavigate } from 'react-router-dom';
+import { getPublicUrl } from '../../lib/utils';
 
 const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, userPreferences }) => {
   const [showReplies, setShowReplies] = useState(false);
@@ -124,8 +125,8 @@ const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, u
   );
 };
 
-const TopComment = ({ commentsCollapsed, setCommentsCollapsed, comments, items }) => {
-  const { userPreferences } = useAuth();
+const TopComment = ({ commentsCollapsed, setCommentsCollapsed, comments, items, userPreferences }) => {
+  console.log('userPreferences', userPreferences);
   if (!comments.length) return (
     <div className="p-3" >
       <div className="flex items-center gap-2 mb-2">
@@ -136,7 +137,7 @@ const TopComment = ({ commentsCollapsed, setCommentsCollapsed, comments, items }
           <Avatar
             size="sm"
             className="w-4 h-4"
-            profileImageUrl={userPreferences?.profile_image_url}
+            profileImageUrl={getPublicUrl(userPreferences?.profile_image_url)}
             displayName={userPreferences?.display_name}
           />
           <span className="font-semibold text-xs"> {userPreferences?.display_name}</span>
@@ -220,6 +221,7 @@ const AllComments = ({ commentsCollapsed, setCommentsCollapsed, setId, items, us
         setCommentsCollapsed={setCommentsCollapsed}
         comments={comments}
         items={items}
+        userPreferences={userPreferences}
       />
     );
   }

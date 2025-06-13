@@ -1,7 +1,7 @@
 // File: src/components/layout/Header.jsx
 
 import React, { useState, useEffect } from 'react';
-import { Sparkles, RefreshCw, PlusCircle, Menu, X, Sun, Moon, Home, BarChart2, Settings, User, Building2, ArrowLeft, ChevronDown, ChevronUp, ChevronRight, Settings2, Plus, File, Search, ChevronLeft, PencilIcon, ThumbsUp } from 'lucide-react';
+import { Sparkles, RefreshCw, PlusCircle, Menu, X, Sun, Moon, Home, BarChart2, Settings, User, Building2, ArrowLeft, ChevronDown, ChevronUp, ChevronRight, Settings2, Plus, File, Search, ChevronLeft, PencilIcon, ThumbsUp, LucidePlus } from 'lucide-react';
 import { useHeader } from '../../contexts/HeaderContext';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -39,7 +39,7 @@ const SidePanel = ({ userData, navigate, location, settingsSectionExpanded, setS
   return (
     <div
       className="fixed left-0 top-0 h-full w-64 z-40 transition-all duration-200 ease-in-out"
-      style={{ 
+      style={{
         borderRight: '1px solid var(--color-border)',
         paddingTop: '64px'
       }}
@@ -49,31 +49,31 @@ const SidePanel = ({ userData, navigate, location, settingsSectionExpanded, setS
           <div className="p-4" style={{ borderColor: 'var(--color-border)' }}>
             <div className="flex flex-col">
               <div className="flex flex-col pt-1">
-                    <h3
-                      className="font-semibold text-center text-lg mt-4 mb-1"
-                      style={{ color: 'var(--color-text)' }}
-                    >
-                      @{userData?.profile?.display_name || 'Some Person'}
-                    </h3>
-                    <div
-                      className="text-sm text-center mb-2"
-                      style={{ color: 'var(--color-text-secondary)' }}
-                    >
-                      Member since {formatDate(userData?.profile?.created_at, 'MMM d, yyyy')}
-                    </div>
-                  </div>
+                <h3
+                  className="font-semibold text-center text-lg mt-4 mb-1"
+                  style={{ color: 'var(--color-text)' }}
+                >
+                  @{userData?.profile?.display_name || 'Some Person'}
+                </h3>
+                <div
+                  className="text-sm text-center mb-2"
+                  style={{ color: 'var(--color-text-secondary)' }}
+                >
+                  Member since {formatDate(userData?.profile?.created_at, 'MMM d, yyyy')}
+                </div>
+              </div>
               <div className="flex flex-row items-center justify-center">
                 <div
                   className="flex flex-col items-center justify-center"
                   onClick={() => navigate('/dashboard')}
                 >
-                  <Avatar 
-                    profileImageUrl={getPublicUrl(userData?.profile?.profile_image_url)} 
-                    displayName={userData?.profile?.display_name} 
-                    username={userData?.profile?.username} 
-                    size = 'md'
-                    onAvatarChange={() => {}}
-                    className = '' 
+                  <Avatar
+                    profileImageUrl={getPublicUrl(userData?.profile?.profile_image_url)}
+                    displayName={userData?.profile?.display_name}
+                    username={userData?.profile?.username}
+                    size='md'
+                    onAvatarChange={() => { }}
+                    className=''
                   />
                 </div>
               </div>
@@ -112,7 +112,7 @@ const SidePanel = ({ userData, navigate, location, settingsSectionExpanded, setS
                   }}
                 >
                   <PencilIcon size={24} />
-                  <span className="text-sm rounded-md px-2 py-1" style={{backgroundColor: location.pathname === `/new-comparison` ? 'var(--color-primary)' : 'var(--color-background)'}}>Your Comparison</span>
+                  <span className="text-sm rounded-md px-2 py-1" style={{ backgroundColor: location.pathname === `/new-comparison` ? 'var(--color-primary)' : 'var(--color-background)' }}>Your Comparison</span>
                 </button>
 
                 <button
@@ -121,7 +121,7 @@ const SidePanel = ({ userData, navigate, location, settingsSectionExpanded, setS
                   style={{
                     color: location.pathname === `/dashboard/votes` ? 'white' : 'var(--color-text)',
                     backgroundColor: location.pathname === `/dashboard/votes` ? 'var(--color-primary)' : 'transparent'
-                  
+
                   }}
                 >
                   <ThumbsUp size={24} />
@@ -178,27 +178,27 @@ const SidePanel = ({ userData, navigate, location, settingsSectionExpanded, setS
                   </div>
                 )}
 
-                  {/* Beta Testing Section */}
-                  <div className="mt-6 mb-4">
-                    <h3 className="px-4 text-sm font-semibold opacity-70" style={{ color: 'var(--color-text)' }}>Beta Testing</h3>
-                    {betaTestingTabs.map((tab) => (
-                      <button
-                        key={tab.id}
-                        onClick={() => {
-                          navigate(`/beta/${tab.id}`);
-                          setIsDrawerOpen(false);
-                        }}
-                        className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2"
-                        style={{
-                          color: location.pathname === `/beta/${tab.id}` ? 'white' : 'var(--color-text)',
-                          backgroundColor: location.pathname === `/beta/${tab.id}` ? 'var(--color-primary)' : 'transparent'
-                        }}
-                      >
-                        <span className="text-lg">{tab.icon}</span>
-                        <span>{tab.label}</span>
-                      </button>
-                    ))}
-                  </div>
+                {/* Beta Testing Section */}
+                <div className="mt-6 mb-4">
+                  <h3 className="px-4 text-sm font-semibold opacity-70" style={{ color: 'var(--color-text)' }}>Beta Testing</h3>
+                  {betaTestingTabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => {
+                        navigate(`/beta/${tab.id}`);
+                        setIsDrawerOpen(false);
+                      }}
+                      className="w-full px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2"
+                      style={{
+                        color: location.pathname === `/beta/${tab.id}` ? 'white' : 'var(--color-text)',
+                        backgroundColor: location.pathname === `/beta/${tab.id}` ? 'var(--color-primary)' : 'transparent'
+                      }}
+                    >
+                      <span className="text-lg">{tab.icon}</span>
+                      <span>{tab.label}</span>
+                    </button>
+                  ))}
+                </div>
 
               </div>
             </div>
@@ -210,8 +210,8 @@ const SidePanel = ({ userData, navigate, location, settingsSectionExpanded, setS
 };
 
 // Mobile Header Component
-const MobileTinyHeader = ({ 
-  navigate, 
+const MobileTinyHeader = ({
+  navigate,
   handleDrawerClick,
   isDrawerOpen
 }) => {
@@ -219,19 +219,19 @@ const MobileTinyHeader = ({
     <>
       {/* Mobile compact header */}
       <div className="md:hidden px-2 header-content max-w-7xl mx-auto h-full flex items-center justify-between">
-        <button 
-          onClick={() => navigate(-1)} 
+        <button
+          onClick={() => navigate(-1)}
           className="flex items-center transition-transform duration-200 hover:scale-105 "
-          style={{ padding: '10px'}}
+          style={{ padding: '10px' }}
         >
           <div className="flex flex-col items-center">
             <ChevronLeft size={20} style={{ color: 'var(--color-text)' }} />
           </div>
         </button>
-        <button 
-          onClick={handleDrawerClick} 
+        <button
+          onClick={handleDrawerClick}
           className="flex items-center transition-transform duration-200 hover:scale-105 "
-          style={{ padding: '10px'}}
+          style={{ padding: '10px' }}
         >
           <div className="flex flex-col items-center">
             {isDrawerOpen ? <X size={24} /> : <Menu size={24} />}
@@ -243,12 +243,12 @@ const MobileTinyHeader = ({
 };
 
 // Web Header Component
-const WebHeader = ({ 
-  navigate, 
-  location, 
-  user, 
-  isSearchExpanded, 
-  pageName 
+const WebHeader = ({
+  navigate,
+  location,
+  user,
+  isSearchExpanded,
+  pageName
 }) => {
   const mainNavItems = [
     { name: 'Trending Comparisons', icon: <Home size={20} />, path: '/' },
@@ -263,8 +263,8 @@ const WebHeader = ({
         {/* Logo and Title */}
         <div className="flex flex-row items-center">
           {location.pathname !== '/' && (
-            <button 
-              onClick={() => navigate(-1)} 
+            <button
+              onClick={() => navigate(-1)}
               className="flex items-center transition-transform duration-200 hover:scale-105"
             >
               <div className="flex flex-col items-center">
@@ -286,8 +286,8 @@ const WebHeader = ({
         {user && (
           <div className="hidden md:block flex-1 max-w-xl mx-8 mr-4">
             <div className="flex items-center space-x-4">
-              <SearchBar searchComplete={() => {}} />
-              <button 
+              <SearchBar searchComplete={() => { }} />
+              <button
                 onClick={() => navigate('/new-comparison/')}
                 className="flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 hover:scale-105"
                 style={{
@@ -384,7 +384,7 @@ const MobileSettingsDrawer = ({
   return (
     <div
       className="fixed z-[100] settings-drawer transition-all duration-200 ease-in-out"
-      style={{ 
+      style={{
         right: '0',
         height: '100vh',
         width: '100%',
@@ -393,7 +393,7 @@ const MobileSettingsDrawer = ({
     >
       <div
         className="h-full w-full transform transition-transform duration-300 ease-in-out relative"
-        style={{ 
+        style={{
           borderLeft: '1px solid var(--color-border)'
         }}
       >
@@ -478,15 +478,15 @@ const MobileSettingsDrawer = ({
                       navigate('/new-comparison?load_draft=true');
                       setIsDrawerOpen(false);
                     }}
-                  className="w-full border-b px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2"
-                  style={{
-                    color: location.pathname === `/new-comparison` ? 'white' : 'var(--color-text)',
-                    backgroundColor: location.pathname === `/new-comparison` ? 'var(--color-primary)' : 'transparent'
-                  }}
-                >
-                  <PencilIcon size={24} />
-                    <span className="text-sm rounded-md px-2 py-1" style={{backgroundColor: location.pathname === `/new-comparison` ? 'var(--color-primary)' : 'var(--color-background)'}}>Your Comparison</span>
-                </button>
+                    className="w-full border-b px-4 py-3 text-left flex items-center space-x-3 transition-colors hover:bg-opacity-5 rounded-lg mb-2"
+                    style={{
+                      color: location.pathname === `/new-comparison` ? 'white' : 'var(--color-text)',
+                      backgroundColor: location.pathname === `/new-comparison` ? 'var(--color-primary)' : 'transparent'
+                    }}
+                  >
+                    <PencilIcon size={24} />
+                    <span className="text-sm rounded-md px-2 py-1" style={{ backgroundColor: location.pathname === `/new-comparison` ? 'var(--color-primary)' : 'var(--color-background)' }}>Your Comparison</span>
+                  </button>
 
                   <button
                     onClick={() => {
@@ -692,21 +692,21 @@ const Header = () => {
         window.requestAnimationFrame(() => {
           const currentScrollY = window.scrollY;
           const scrollDelta = currentScrollY - lastScrollY;
-          
+
           if (Math.abs(scrollDelta) > 10 && !document.querySelector('.tab-scrolling') && !isDrawerOpen) {
             if (currentScrollY < lastScrollY || currentScrollY < 10) {
               setIsHeaderVisible(true);
-            } 
+            }
             else if (currentScrollY > lastScrollY && currentScrollY > 10) {
               setIsHeaderVisible(false);
             }
-            
+
             lastScrollY = currentScrollY;
           }
-          
+
           ticking = false;
         });
-        
+
         ticking = true;
       }
     };
@@ -717,13 +717,13 @@ const Header = () => {
 
   if (loading) {
     return (
-      <div 
+      <div
         className="min-h-screen flex flex-col items-center justify-center transition-all duration-300 ease-in-out"
         style={{ backgroundColor: 'var(--color-background)' }}
       >
         <div className="text-center animate-fade-in">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto transition-transform duration-300" 
-               style={{ borderColor: 'var(--color-primary)' }}></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 mx-auto transition-transform duration-300"
+            style={{ borderColor: 'var(--color-primary)' }}></div>
         </div>
       </div>
     );
@@ -731,7 +731,7 @@ const Header = () => {
 
   if (error) {
     return (
-      <div 
+      <div
         className="min-h-screen flex flex-col items-center justify-center transition-all duration-300 ease-in-out"
       >
         <div className="text-center animate-fade-in">
@@ -742,7 +742,7 @@ const Header = () => {
   }
 
   return (
-    <div style={{ color: 'var(--color-text)'}}>
+    <div style={{ color: 'var(--color-text)' }}>
       {/* Side Panel for Web */}
       {!isMobile && user && (
         <SidePanel
@@ -765,94 +765,17 @@ const Header = () => {
         }}
       >
         <div className={`${!isHeaderVisible ? 'hidden' : ''}`}>
-        {showTinyHeader ? (
-          <MobileTinyHeader
-            navigate={navigate}
-            handleDrawerClick={handleDrawerClick}
-            isDrawerOpen={isDrawerOpen}
-          />
-        ) : (
-          <>
-            {isMobile ? (
-              <div className="px-4 md:px-6 lg:px-8 header-content max-w-7xl mx-auto">
-                <div className="flex items-center justify-between h-full">
-                  {/* Logo and Title */}
-                  <div className="flex flex-row items-center">
-                    {location.pathname !== '/' && (
-                      <button 
-                        onClick={() => navigate(-1)} 
-                        className="flex items-center transition-transform duration-200 hover:scale-105"
-                      >
-                        <div className="flex flex-col items-center">
-                          <ChevronLeft size={24} style={{ color: 'var(--color-text)' }} />
-                        </div>
-                      </button>
-                    )}
-                    <Link to="/" className="flex items-center transition-transform duration-200 hover:scale-105">
-                      <div className="flex flex-col items-center">
-                        <img src="/public_logo_transparent.png" alt="Twirly Logo" className="w-10 h-10 mr-2 transition-transform duration-200" />
-                      </div>
-                      {!isSearchExpanded && (
-                        <h1 className="ml-2 text-lg font-bold transition-colors duration-200" style={{ color: 'var(--color-text)' }}>{pageName}</h1>
-                      )}
-                    </Link>
-                  </div>
 
-                  {/* Mobile Search and menu */}
-                  {user && (
-                    <div className="flex flex-row items-center space-x-4 transition-colors duration-200"
-                         style={{ color: 'var(--color-text)' }}>
-                      {location.pathname !== '/search' && (
-                        <div>
-                          <div className="flex flex-row items-center md:hidden transition-all duration-300 ease-in-out">
-                            {isSearchExpanded && (
-                              <SearchBar 
-                                searchComplete={() => {
-                                  setIsDrawerOpen(false);
-                                  setIsSearchExpanded(false);
-                                }} 
-                              />
-                            )}
-                            {!isSearchExpanded ? (
-                              <>
-                                <Search size={24} onClick={() => setIsSearchExpanded(true)} />
-                                <button 
-                                  onClick={() => navigate('/new-comparison/')}
-                                  className="ml-2 p-1 rounded-md hover:bg-opacity-10"
-                                >
-                                  <Plus size={24} />
-                                </button>
-                              </>
-                            ) : (
-                              <X size={24} onClick={() => setIsSearchExpanded(false)} />
-                            )}
-                          </div>
-                        </div>
-                      )}
-                      <button
-                        onClick={handleDrawerClick}
-                        className="p-2 rounded-md drawer-button transition-transform duration-200 hover:scale-105"
-                        style={{ color: 'var(--color-text)' }}
-                        aria-label="Open settings"
-                      >
-                        {isDrawerOpen ? <X size={24} /> : <Menu size={24} />}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <WebHeader
-                navigate={navigate}
-                location={location}
-                user={user}
-                isSearchExpanded={isSearchExpanded}
-                pageName={pageName}
-              />
-            )}
-          </>
-        )}
-  </div>
+          {!isMobile && (
+            <WebHeader
+              navigate={navigate}
+              location={location}
+              user={user}
+              isSearchExpanded={isSearchExpanded}
+              pageName={pageName}
+            />
+          )}
+        </div>
 
         {/* Mobile Settings Drawer */}
         {isMobile && (
@@ -866,6 +789,81 @@ const Header = () => {
             setSettingsSectionExpanded={setSettingsSectionExpanded}
             handleLogout={handleLogout}
           />
+        )}
+      </header>
+
+      <header
+        className={`fixed bottom-0 left-0 right-0 z-50 w-full transition-all duration-200 ease-in-out `}
+        style={{
+          color: 'var(--color-text)',
+          backgroundColor: currentTheme.colors.background,
+          // backgroundImage: 'linear-gradient(to bottom, ' + currentTheme.colors.background + ',' + currentTheme.colors.background + ', transparent)',
+          paddingTop: 'env(safe-area-inset-top)'
+        }}
+      >
+
+        {/* Mobile Settings Drawer */}
+        {isMobile && (
+
+          <div className="h-auto  rounded-t-sm "
+            style={{
+              paddingBottom: 'calc(env(safe-area-inset-bottom))'
+            }}
+          >
+            <div className='w-full h-full max-w-3xl flex flex-row justify-between px-4 bg-gray-100'>
+              <div className='flex p-4 bg-gray-100 '
+              style={{
+                fontWeight: location.pathname.includes('/compare') ? 'bold' : 'normal',
+                color: location.pathname.includes('/compare') ? 'var(--color-primary)' : 'var(--color-text)',
+              }}
+                onClick={() => {
+                  navigate('/');
+                  console.log('home button clicked');
+                }}
+              >
+                <Home size={20} />
+              </div>
+              <div className='flex p-4 bg-gray-100 ' style={{
+                fontWeight: location.pathname.includes('/search') ? 'bold' : 'normal',
+                color: location.pathname.includes('/search') ? 'var(--color-primary)' : 'var(--color-text)',
+              }}
+                onClick={() => {
+                  navigate('/search');
+                }}>
+                <Search size={20} />
+              </div>
+              <div className='flex p-4 bg-gray-100 ' style={{
+                fontWeight: location.pathname.includes('/new-comparison') ? 'bold' : 'normal',
+                color: location.pathname.includes('/new-comparison') ? 'var(--color-primary)' : 'var(--color-text)',
+              }}
+                onClick={() => {
+                  navigate('/new-comparison?load_draft=true');
+                }}>
+                <LucidePlus size={20} />
+              </div>
+
+              <div className='flex p-4 bg-gray-100 ' style={{
+                fontWeight: location.pathname.includes('/dashboard') ? 'bold' : 'normal',
+                color: location.pathname.includes('/dashboard') ? 'var(--color-primary)' : 'var(--color-text)',
+              }}
+                onClick={() => {
+                  navigate('/dashboard');
+                }}
+              >
+                <User size={20} />
+              </div>
+              <div className='flex p-4 bg-gray-100 ' style={{
+                fontWeight: location.pathname.includes('/settings') || isDrawerOpen ? 'bold' : 'normal',
+                color: location.pathname.includes('/settings') || isDrawerOpen ? 'var(--color-primary)' : 'var(--color-text)',
+              }}
+                onClick={(e) => {
+                  handleDrawerClick(e);
+                }}
+              >
+                <Menu size={20} />
+              </div>
+            </div>
+          </div>
         )}
       </header>
     </div>

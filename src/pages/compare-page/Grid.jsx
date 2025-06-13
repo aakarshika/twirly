@@ -111,7 +111,7 @@ const Grid = ({ layout = '2x2',  gridCollapsed = false , localOptions ,setData, 
 
           {(
             <motion.div 
-              className='absolute bottom-0 right-0 z-50 p-2 rounded-full bg-white/50'
+              className='absolute bottom-0 right-0 z-12 p-2 rounded-full bg-white/50'
               onClick={
                 () => {
                   navigate(`/item/${opt.id}`);

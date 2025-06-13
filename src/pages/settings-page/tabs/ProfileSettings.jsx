@@ -81,12 +81,72 @@ const ProfileSettings = () => {
     fetchProfileData();
   }, [user]);
 
-  const handleInputChange = (e) => {
+  const validateUsernameInput = (value) => {
+    if (!value) {
+      setUsernameError('Username is required');
+      return false;
+    }
+    if (value.length < 3) {
+      setUsernameError('Username must be at least 3 characters long');
+      return false;
+    }
+    if (!/^[a-z0-9_]+$/.test(value)) {
+      setUsernameError('Username can only contain lowercase letters, numbers, and underscores');
+      return false;
+    }
+    if (value.includes(' ')) {
+      setUsernameError('Username cannot contain spaces');
+      return false;
+    }
+    setUsernameError('');
+    return true;
+  };
+
+  const validateUsername = async (value) => {
+    if (!validateUsernameInput(value)) {
+      return false;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('user_preferences')
+        .select('id')
+        .eq('display_name', value)
+        .neq('user_id', user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned" error
+        throw error;
+      }
+
+      if (data) {
+        setUsernameError('Username is already taken');
+        return false;
+      }
+      return true;
+    } catch (error) {
+      console.error('Error checking username availability:', error);
+      setUsernameError('Error checking username availability');
+      return false;
+    }
+  };
+
+  const handleInputChange = async (e) => {
     const { name, value } = e.target;
-    setProfileData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    if (name === 'display_name') {
+      const lowercaseValue = value.toLowerCase().replace(/ /g, '');
+      setProfileData(prev => ({
+        ...prev,
+        [name]: lowercaseValue
+      }));
+      await validateUsername(lowercaseValue);
+    } else {
+      setProfileData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
   const handleSocialLinkChange = (platform, value) => {
@@ -282,11 +342,13 @@ const ProfileSettings = () => {
                 style={{ 
                   backgroundColor: currentTheme.colors.background,
                   color: currentTheme.colors.text,
-                  border: `1px solid ${currentTheme.colors.border}`
+                  border: `1px solid ${usernameError ? currentTheme.colors.error : currentTheme.colors.border}`
                 }}
               />
             </div>
-            {usernameError && <p className="text-red-500 text-sm">{usernameError}</p>}
+            {usernameError && (
+              <p className="text-sm text-red-500 mt-1">{usernameError}</p>
+            )}
             <div className="flex items-center space-x-3">
               <Mail size={20} style={{ color: currentTheme.colors.text }} />
               <input
