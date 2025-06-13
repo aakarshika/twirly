@@ -248,7 +248,7 @@ export const useComparisonSets = (paramId) => {
       
       const { data: allImportantCategories } = await supabase
         .from('categories')
-        .select('*')
+        .select('*, set_categories!inner(*)')
         .order('id', { ascending: true })
         .limit(5);
 
@@ -257,7 +257,7 @@ export const useComparisonSets = (paramId) => {
         category => !userCategoryPreferences.some(item => item.categories.name === category.name)
       );
       setAllImportantCategories(allImportantCategoriesFiltered);
-      setAllCategories([...allImportantCategoriesFiltered, ...userCategoryPreferences.map(item => item.categories)]);
+      setAllCategories([ ...userCategoryPreferences.map(item => item.categories), ...allImportantCategoriesFiltered]);
     };
 
     fetchCategories();

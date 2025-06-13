@@ -126,7 +126,6 @@ const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, u
 };
 
 const TopComment = ({ commentsCollapsed, setCommentsCollapsed, comments, items, userPreferences }) => {
-  console.log('userPreferences', userPreferences);
   if (!comments.length) return (
     <div className="p-3" >
       <div className="flex items-center gap-2 mb-2">
