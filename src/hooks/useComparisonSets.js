@@ -75,7 +75,7 @@ export const useComparisonSets = (paramId) => {
             .eq('set_id', setId)
             .eq('user_id', user.id)
             .select();
-          hasLiked = !!userLike;
+          hasLiked = userLike.length > 0;
         }}
         catch (err) {
           // console.error('Error fetching user like:', err);
@@ -102,7 +102,7 @@ export const useComparisonSets = (paramId) => {
           hasVoted,
           votedItemId,
           hasLiked,
-          likeCount: data.comparison_set_comment_reactions?.length || 0,
+          likeCount: data.comparison_set_comment_reactions?.length  > 0 ? data.comparison_set_comment_reactions[0].count  : 0,
           totalVotes
         };
         set.set_items.forEach(item => {
