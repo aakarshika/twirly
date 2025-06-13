@@ -9,6 +9,7 @@ import CompareButtons from '../pages/compare-page/CompareButtons';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
 import { Home, LucidePlus, Menu, PlusCircle, PlusSquareIcon, Search, Settings, SquarePlus, SquarePlusIcon, TrendingUp, User, User2, UserCircle } from 'lucide-react';
+import { splitAndJoin } from '../lib/utils';
 
 
 const TikTokScroll = () => {
@@ -24,7 +25,7 @@ const TikTokScroll = () => {
   const [metricsSectionExpanded, setMetricsSectionExpanded] = useState(false);
   const controls = useAnimation();
   const [dragY, setDragY] = useState(0);
-  const [currentSelectedTag, setCurrentSelectedTag] = useState('home');
+  const [currentSelectedTag, setCurrentSelectedTag] = useState('user_home_feed_91819');
   const [dragX, setDragX] = useState(0);
   const [opacity, setOpacity] = useState(1);
   const {
@@ -130,15 +131,20 @@ const TikTokScroll = () => {
   }, [currentIndex, comparisonSets]);
 
   // Effect to handle tag changes
-  useEffect(() => {
-    if (currentSelectedTag) {
-      const categoryId = allCategories.find(category => category.name === currentSelectedTag)?.id;
-      const categoryIds = allCategories.filter(category => category.name === currentSelectedTag).map(category => category.id);
-      setCategoryId(categoryId);
-      setCategoryIds(categoryIds);
-      setSelectedTag(currentSelectedTag);
-    }
-  }, [currentSelectedTag, allCategories]);
+  // useEffect(() => {
+  //   if (currentSelectedTag) {
+  //     const cat = allCategories.find(category => (category.name).toLowerCase().trim() === currentSelectedTag.toLowerCase().trim());
+  //     const categoryId =  cat && cat.userCat ? cat?.id : null;
+  //     const categoryIds =  cat && !cat.userCat ? cat?.included_categories : null;
+  //     console.log('🔍 cat', cat, currentSelectedTag, 
+  //       categoryId,
+  //       categoryIds
+  //     );
+  //     setCategoryId(categoryId);
+  //     setCategoryIds(categoryIds);
+  //     setSelectedTag(currentSelectedTag);
+  //   }
+  // }, [currentSelectedTag, allCategories]);
 
   const goToNextSet = () => {
     if (currentIndex < comparisonSets.length - 1) {
@@ -158,8 +164,9 @@ const TikTokScroll = () => {
   };
 
   const loadNewBatchByCategory = async (tag) => {
-    const categoryId = allCategories.find(category => category.name === tag)?.id;
-    const categoryIds = allCategories.filter(category => category.name === tag).map(category => category.id);
+    const cat = allCategories.find(category => (category.name).toLowerCase().trim() === tag.toLowerCase().trim());
+    const categoryId =  cat && cat.userCat ? cat?.id : null;
+    const categoryIds =  cat && !cat.userCat ? cat?.included_categories : null;
     setCategoryId(categoryId);
     setCategoryIds(categoryIds);
     setSelectedTag(tag);
@@ -214,8 +221,8 @@ const TikTokScroll = () => {
       if (Math.abs(info.offset.x) > horizontalThreshold || Math.abs(horizontalVelocity) > 500) {
         if (info.offset.x > 0) {
           // Swipe right - go to previous tag
-          // Don't allow swipe right if we're on home
-          if (currentSelectedTag === 'home') {
+          // Don't allow swipe right if we're on user_home_feed_91819
+          if (currentSelectedTag === 'user_home_feed_91819') {
             setDragX(0);
             setIsHorizontalDrag(false);
             setIsDragging(false);
@@ -246,7 +253,7 @@ const TikTokScroll = () => {
         } else {
           // Swipe left - go to next tag
           // Don't allow swipe left if we're on the last category
-          const list = ['home', 'trending', ...allCategories.map(category => category.name)];
+          const list = ['user_home_feed_91819', 'trending', ...allCategories.map(category => category.name)];
           const isLastCategory = currentSelectedTag === list[list.length - 1];
           
           if (isLastCategory) {
@@ -310,21 +317,21 @@ const TikTokScroll = () => {
   }, [dragX]);
 
   const prevTag = () => {
-    const list = ['home', 'trending', ...allCategories.map(category => category.name)];
+    const list = ['user_home_feed_91819', 'trending', ...allCategories.map(category => category.name)];
     const index = list.findIndex(category => category === currentSelectedTag);
     if (index > 0) {
       setCurrentSelectedTag(list[index - 1]);
     } else if (currentSelectedTag === 'trending') {
-      setCurrentSelectedTag('home');
+      setCurrentSelectedTag('user_home_feed_91819');
     }
   };
 
   const nextTag = () => {
-    const list = ['home', 'trending', ...allCategories.map(category => category.name)];
+    const list = ['user_home_feed_91819', 'trending', ...allCategories.map(category => category.name)];
     const index = list.findIndex(category => category === currentSelectedTag);
     if (index < list.length - 1) {
       setCurrentSelectedTag(list[index + 1]);
-    } else if (currentSelectedTag === 'home') {
+    } else if (currentSelectedTag === 'user_home_feed_91819') {
       setCurrentSelectedTag('trending');
     }
   };
@@ -360,7 +367,7 @@ const TikTokScroll = () => {
         // }}
         >
           <div className="flex-none">
-            <Heading setData={setData} gridCollapsed={!isCommentsCollapsed} />
+            <Heading setData={setData} gridCollapsed={!isCommentsCollapsed}  />
           </div>
           <motion.div
   animate={{
@@ -438,10 +445,10 @@ const TikTokScroll = () => {
         <div className="w-full overflow-x-auto scrollbar-hide">
           <div className="flex flex-row min-w-max px-2">
             <div
-              ref={currentSelectedTag === 'home' ? selectedTagRef : null}
-              className={`flex flex-row p-2 items-center gap-1 ${currentSelectedTag === 'home' ? 'font-semibold' : ''}`}
-              style={{ color: currentSelectedTag === 'home' ? 'rgba(116, 101, 204, 0.87)' : '', cursor: 'pointer' }}
-              onClick={() => setCurrentSelectedTag('home')}
+              ref={currentSelectedTag === 'user_home_feed_91819' ? selectedTagRef : null}
+              className={`flex flex-row p-2 items-center gap-1 ${currentSelectedTag === 'user_home_feed_91819' ? 'font-semibold' : ''}`}
+              style={{ color: currentSelectedTag === 'user_home_feed_91819' ? 'rgba(116, 101, 204, 0.87)' : '', cursor: 'pointer' }}
+              onClick={() => setCurrentSelectedTag('user_home_feed_91819')}
             >
               <Home className='inline-block' size={14} /> <span>Feed</span>
             </div>
@@ -455,7 +462,7 @@ const TikTokScroll = () => {
               <TrendingUp className='inline-block' size={16} /> <span>Trending</span>
             </div>
 
-            {allCategories.slice(0, 3).map((category) => (
+            {allCategories.filter(category => category.userCat).slice(0, 3).map((category) => (
               <div
                 key={category.name}
                 ref={currentSelectedTag === category.name ? selectedTagRef : null}
@@ -467,7 +474,7 @@ const TikTokScroll = () => {
               </div>
             ))}
 
-            {allCategories.slice(3).map((category) => (
+            {allCategories.filter(category => !category.userCat).map((category) => (
               <div
                 key={category.name}
                 ref={currentSelectedTag === category.name ? selectedTagRef : null}
@@ -480,7 +487,7 @@ const TikTokScroll = () => {
                 }}
                 onClick={() => setCurrentSelectedTag(category.name)}
               >
-                <span className='whitespace-nowrap'>{category.name}</span>
+                <span className='whitespace-nowrap'>{splitAndJoin(category.name)}</span>
               </div>
             ))}
           </div>

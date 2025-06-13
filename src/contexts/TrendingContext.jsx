@@ -57,7 +57,7 @@ export const TrendingProvider = ({ children }) => {
       const { data, error } = await supabase
         .rpc('get_filtered_sets', {
           _user_id: user?.id,
-          _filter_type: 'home',
+          _filter_type: 'user_home_feed_91819',
           _category_id: null,
           _category_ids: null,
           _limit: 2

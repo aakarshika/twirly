@@ -8,12 +8,10 @@ const MAX_CACHED_SETS = 20; // Maximum number of sets to keep in memory
 
 export const useComparisonSets = (paramId) => {
   const { user, userPreferences } = useAuth();
-  const [userCategoryPreferences, setUserCategoryPreferences] = useState([]);
-  const [allImportantCategories, setAllImportantCategories] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
   const [comparisonSets, setComparisonSets] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
-  const [selectedTag, setSelectedTag] = useState('home');
+  const [selectedTag, setSelectedTag] = useState('user_home_feed_91819');
   const [categoryId, setCategoryId] = useState(null);
   const [categoryIds, setCategoryIds] = useState(null);
   const isInitialLoad = useRef(true);
@@ -39,7 +37,8 @@ export const useComparisonSets = (paramId) => {
           comparison_set_items!inner(items(*)),
           user_preferences(*),
           votes(item_id),
-          comparison_set_comment_reactions(count)
+          comparison_set_comment_reactions(count),
+          set_categories(categories(*))
         `)
         .eq('id', setId)
         .single();
@@ -119,17 +118,21 @@ export const useComparisonSets = (paramId) => {
   };
 
   const fetchFilteredSets = async () => {
+
+    console.log('🔍 categoryIds', categoryIds);
+    console.log('🔍 categoryId', categoryId);
+    console.log('🔍 selectedTag', selectedTag);
     let filterType = null;
 
     if (selectedTag) {
       if (selectedTag === 'trending') {
         filterType = 'trending';
-      } else if (selectedTag === 'home') {
-        filterType = 'home';
+      } else if (selectedTag === 'user_home_feed_91819') {
+        filterType = 'user_home_feed_91819';
       } else if (selectedTag === 'controversial') {
         filterType = 'controversial';
-      } else if (selectedTag === 'new') {
-        filterType = 'new';
+      } else if (categoryIds && categoryIds.length > 0) {
+        filterType = 'multiple_categories';
       } else {
         filterType = 'single_category';
       }
@@ -139,8 +142,8 @@ export const useComparisonSets = (paramId) => {
         .rpc('get_filtered_sets', {
           _user_id: user?.id,
           _filter_type: filterType,
-          _category_id: categoryId,
-          _category_ids: null,
+          _category_id:  filterType === 'single_category' ? categoryId : null,
+          _category_ids: filterType === 'multiple_categories' ? categoryIds : null,
           _limit: BATCH_SIZE
         })
         .select(`
@@ -247,17 +250,25 @@ export const useComparisonSets = (paramId) => {
         .eq('user_id', user?.id);
       
       const { data: allImportantCategories } = await supabase
-        .from('categories')
+        .from('top_category_groups')
         .select('*')
-        .order('id', { ascending: true })
-        .limit(5);
+        .order('set_count', { ascending: false })
+        .limit(10);
 
-      setUserCategoryPreferences(userCategoryPreferences);
       const allImportantCategoriesFiltered = allImportantCategories.filter(
-        category => !userCategoryPreferences.some(item => item.categories.name === category.name)
+        category => !userCategoryPreferences.some(item => (item.categories.name).toLowerCase().trim() === (category.category_group).toLowerCase().trim())
       );
-      setAllImportantCategories(allImportantCategoriesFiltered);
-      setAllCategories([ ...userCategoryPreferences.map(item => item.categories), ...allImportantCategoriesFiltered]);
+      setAllCategories([ ...userCategoryPreferences.map(item => ({
+        ...item.categories,
+        userCat: true
+      })),
+      ...allImportantCategoriesFiltered.map(category => ({
+        ...category,
+        name: category.category_group,
+        included_categories: category.included_categories,
+        userCat: false
+      }))
+      ]);
     };
 
     fetchCategories();

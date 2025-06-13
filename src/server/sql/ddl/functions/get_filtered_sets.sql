@@ -1,7 +1,7 @@
 DROP FUNCTION IF EXISTS get_filtered_sets;
 CREATE OR REPLACE FUNCTION get_filtered_sets(
   _user_id UUID,
-  _filter_type TEXT, -- 'home', 'trending', 'single_category', 'group', 'controversial'
+  _filter_type TEXT, -- 'user_home_feed_91819', 'trending', 'single_category', 'group', 'controversial'
   _category_id INTEGER DEFAULT NULL,
   _category_ids INTEGER[] DEFAULT NULL,
   _limit INTEGER DEFAULT 5
@@ -40,17 +40,18 @@ BEGIN
     WHERE 
       uv.set_id IS NULL AND v.set_id is null-- Only get sets the user hasn't viewed
       AND CASE _filter_type
-        WHEN 'home' THEN
+        WHEN 'user_home_feed_91819' THEN
           -- Home feed: viral sets from user's categories or super viral sets
-          (cs.category_id IN (SELECT ucp.category_id FROM user_categories ucp) OR cs.viral_score > 0.8)
+          (cs.category_id IN (SELECT ucp.category_id FROM user_categories ucp) OR cs.viral_score > 0.1)
         WHEN 'trending' THEN
           -- Trending: all highly viral sets
           cs.viral_score > 0.0
         WHEN 'single_category' THEN
           -- Single category: viral sets from specific category
           cs.category_id = _category_id
-        WHEN 'group' THEN
+        WHEN 'multiple_categories' THEN
           -- Group: viral sets from selected categories
+          -- _category_ids is in format [1,2,3]
           cs.category_id = ANY(_category_ids)
         WHEN 'controversial' THEN
           -- Controversial: sets with high engagement ratios

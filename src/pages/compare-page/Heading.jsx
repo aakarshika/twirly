@@ -13,14 +13,23 @@ const Heading = ({ setData, gridCollapsed }) => {
   >
     <div className="flex gap-2"  >
       {/* <span className="w-4 h-4 rounded-full bg-green-300 inline-block" /> */}
-      <Avatar
-                            profileImageUrl={setData?.user_profile_image_url ? getPublicUrl(setData?.user_profile_image_url) : null}
-                            displayName={setData?.user_name}
-                            size="sm"
-                            className="w-4 h-4 rounded-full bg-green-300 inline-block mr-2"
-                            onClick={() => navigate(`/user/${setData?.user_name}`)}
-                        />
-      <span className="font-semibold" onClick={() => navigate(`/user/${setData?.user_name}`)}>{setData?.user_name}</span>
+      <div className="flex items-center justify-between gap-2">
+        <Avatar
+                              profileImageUrl={setData?.user_profile_image_url ? getPublicUrl(setData?.user_profile_image_url) : null}
+                              displayName={setData?.user_name}
+                              size="sm"
+                              className="w-4 h-4 rounded-full bg-green-300 inline-block mr-2"
+                              onClick={() => navigate(`/user/${setData?.user_name}`)}
+                          />
+        <span className="font-semibold" onClick={() => navigate(`/user/${setData?.user_name}`)}>{setData?.user_name}</span>
+        <div className="flex items-center justify-end gap-2">
+        {setData?.set_categories && setData?.set_categories.map((cat, index) => (
+          <span key={index + cat?.categories?.name + cat?.categories?.id} className="text-sm text-gray-500 rounded-full bg-gray-100 px-2 py-1">
+            {cat?.categories?.name}
+          </span>
+        ))}
+        </div>
+      </div>
     </div>
     <div className="flex items-center gap-2">
       <motion.span initial={{ opacity: 0, scale: 0, rotate: 180 }} animate={{ opacity: 1, scale: 1, rotate: 0 }} 
