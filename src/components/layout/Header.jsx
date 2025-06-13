@@ -388,22 +388,24 @@ const MobileSettingsDrawer = ({
         right: '0',
         height: '100vh',
         width: '100%',
+    paddingTop: 'calc(env(safe-area-inset-top))',
         maxWidth: '320px'
       }}
     >
       <div
         className="h-full w-full transform transition-transform duration-300 ease-in-out relative"
         style={{
+          backgroundColor: 'var(--color-background)',
           borderLeft: '1px solid var(--color-border)'
         }}
       >
-        <div className="absolute inset-0 z-0">
-          <BackgroundImage />
-        </div>
         <div className="relative z-10 h-full flex flex-col">
           <div className="flex-1 overflow-y-auto scrollbar-hide" >
             <div className="p-4" style={{ borderColor: 'var(--color-border)' }}>
               <div className="flex flex-col">
+                <button className='flex justify-end' onClick={() => setIsDrawerOpen(false)}>
+                  <X size={24} />
+                </button>
                 <div className="flex justify-center">
                   <h4 className="text-sm items-center" style={{ color: 'var(--color-text-secondary)', borderBottom: `1px solid var(--color-border)` }}>Your opinion matters here!</h4>
                 </div>
@@ -775,15 +777,6 @@ const Header = () => {
 
         </div>
 
-        {isMobile && !location.pathname.includes('/compare') && (
-            <div className='' style={{
-              height: 'calc(10px + env(safe-area-inset-top))',
-              // height: '40px',
-              backdropFilter: 'blur(5px)',
-              backgroundImage: 'linear-gradient(to bottom, ' + currentTheme.colors.background + ',' + changeColorAlpha(currentTheme.colors.background, 0.8) + ', transparent)',
-            }}>
-              </div>
-          )}
         {/* Mobile Settings Drawer */}
         {isMobile && (
           <MobileSettingsDrawer
@@ -797,6 +790,27 @@ const Header = () => {
             handleLogout={handleLogout}
           />
         )}
+        {isMobile && !location.pathname.includes('/compare') && (
+            <div className='' style={{
+              height: 'calc(10px + env(safe-area-inset-top))',
+              // height: '40px',
+              backdropFilter: 'blur(5px)',
+              backgroundImage: 'linear-gradient(to bottom, ' + currentTheme.colors.background + ',' + changeColorAlpha(currentTheme.colors.background, 0.8) + ', transparent)',
+            }}>
+              </div>
+          )}
+
+
+{isMobile && location.pathname.includes('/dashboard') && (
+  <div className='flex p-4 items-center justify-end z-50' style={{
+                fontWeight:  isDrawerOpen ? 'bold' : 'normal',
+                color:  isDrawerOpen ? 'var(--color-primary)' : 'var(--color-text)',
+              }}
+                onClick={(e) => {
+                  handleDrawerClick(e);
+                }}
+              ><Menu size={20} />
+              </div>)}
       </header>
 
       <header
@@ -856,16 +870,6 @@ const Header = () => {
                 }}
               >
                 <User size={20} />
-              </div>
-              <div className='flex p-4 bg-gray-100 ' style={{
-                fontWeight: location.pathname.includes('/settings') || isDrawerOpen ? 'bold' : 'normal',
-                color: location.pathname.includes('/settings') || isDrawerOpen ? 'var(--color-primary)' : 'var(--color-text)',
-              }}
-                onClick={(e) => {
-                  handleDrawerClick(e);
-                }}
-              >
-                <Menu size={20} />
               </div>
             </div>
           </div>

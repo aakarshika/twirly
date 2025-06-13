@@ -277,6 +277,9 @@ const TikTokScroll = () => {
           };
           animateDragX();
         }
+      } else {
+        setIsDragging(false);
+        setDragX(0);
       }
     } else {
       // Handle vertical swipe only when comments are collapsed
@@ -351,16 +354,19 @@ const TikTokScroll = () => {
         <motion.div className='bb w-full h-full max-w-3xl flex flex-col rounded-lg  '
           style={{
             backgroundColor: isDragging && currentIndex !== index ? 'rgba(0, 0, 0, ' + (1 - 0.5 - (Math.abs(dragY) / window.innerHeight)) + ')' : 'transparent',
-            paddingTop: '20px'
           }}
         // animate={{
         //   x: isDragging && isHorizontalDrag ? dragX : 0,
         // }}
         >
           <div className="flex-none">
-            <Heading setData={setData} />
+            <Heading setData={setData} gridCollapsed={!isCommentsCollapsed} />
           </div>
-          <div className={`${isCommentsCollapsed ? 'flex-1' : 'h-[12vh]'}`}>
+          <motion.div
+  animate={{
+    height: isCommentsCollapsed ? '100%' : '12vh',
+  }}
+>
             <Grid
               gridCollapsed={!isCommentsCollapsed}
               setData={setData}
@@ -371,7 +377,7 @@ const TikTokScroll = () => {
               }}
               handleReset={handleReset}
             />
-          </div>
+          </motion.div>
           {isCommentsCollapsed ? (
             <div className="flex-none">
               <div className="flex flex-col gap-0">

@@ -4,11 +4,13 @@ import Avatar from '../../components/common/Avatar';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
-const Heading = ({ setData }) => {
+const Heading = ({ setData, gridCollapsed }) => {
   const navigate = useNavigate(); 
   const question = (setData?.name).endsWith('?') ? setData?.name.slice(0, -1) : setData?.name;
   return (
-  <div className="flex flex-col px-4" >
+  <motion.div className="flex flex-col px-4 pt-4" 
+  animate={{backgroundColor: gridCollapsed ?  'rgba(0, 0, 0, 0.05)' : 'transparent'}}
+  >
     <div className="flex gap-2"  >
       {/* <span className="w-4 h-4 rounded-full bg-green-300 inline-block" /> */}
       <Avatar
@@ -25,7 +27,7 @@ const Heading = ({ setData }) => {
       transition={{ duration: 0.5 }} className="ml-2 text-2xl">?</motion.span>
       <span className="ml-2 font-medium">{question}</span>
       </div>
-  </div>
+  </motion.div>
 )};
 
 export default Heading; 
