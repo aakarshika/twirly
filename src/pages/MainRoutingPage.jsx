@@ -216,7 +216,7 @@ const MainRoutingPage = () => {
               }}
             >
               {!isPublicRoute() && <Header />}
-              <main className="flex-1 md:pl-60 lg:pl-60" >
+              <main className="flex-1 md:pl-60 lg:pl-60" style={{ paddingTop: isPublicRoute() ? '0' : location.pathname.includes('/compare') ? '0' : 'calc(env(safe-area-inset-top))' }}>
                 <Routes>
                   {/* Public Routes */}
                   {/* <Route path="/login" element={<Login />} /> */}
@@ -270,7 +270,7 @@ const MainRoutingPage = () => {
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </main>
-              {!isPublicRoute() && <Footer />}
+              {!(isPublicRoute() || location.pathname.includes('/compare')) && <Footer />}
 
               <BetaTestingControls />
               {showPerformanceMonitor && <PerformanceMonitor isVisible={true} />}

@@ -8,7 +8,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
 import SearchBar from './search-bar/SearchBar';
 import './Header.css';
-import { getPublicUrl } from '../../lib/utils';
+import { changeColorAlpha, getPublicUrl } from '../../lib/utils';
 import { getUserProfile } from '../../services/users';
 import { useMediaQuery } from 'react-responsive';
 import BackgroundImage from '../common/BackgroundImage';
@@ -758,10 +758,7 @@ const Header = () => {
       <header
         className={`fixed top-0 left-0 right-0 z-50 w-full transition-all duration-200 ease-in-out `}
         style={{
-          color: 'var(--color-text)',
-          backgroundColor: currentTheme.colors.background,
-          // backgroundImage: 'linear-gradient(to bottom, ' + currentTheme.colors.background + ',' + currentTheme.colors.background + ', transparent)',
-          paddingTop: 'env(safe-area-inset-top)'
+          color: 'var(--color-text)'
         }}
       >
         <div className={`${!isHeaderVisible ? 'hidden' : ''}`}>
@@ -775,8 +772,18 @@ const Header = () => {
               pageName={pageName}
             />
           )}
+
         </div>
 
+        {isMobile && !location.pathname.includes('/compare') && (
+            <div className='' style={{
+              height: 'calc(10px + env(safe-area-inset-top))',
+              // height: '40px',
+              backdropFilter: 'blur(5px)',
+              backgroundImage: 'linear-gradient(to bottom, ' + currentTheme.colors.background + ',' + changeColorAlpha(currentTheme.colors.background, 0.8) + ', transparent)',
+            }}>
+              </div>
+          )}
         {/* Mobile Settings Drawer */}
         {isMobile && (
           <MobileSettingsDrawer
@@ -797,20 +804,18 @@ const Header = () => {
         style={{
           color: 'var(--color-text)',
           backgroundColor: currentTheme.colors.background,
-          // backgroundImage: 'linear-gradient(to bottom, ' + currentTheme.colors.background + ',' + currentTheme.colors.background + ', transparent)',
-          paddingTop: 'env(safe-area-inset-top)'
         }}
       >
 
         {/* Mobile Settings Drawer */}
         {isMobile && (
 
-          <div className="h-auto  rounded-t-sm "
+          <div className="h-auto  rounded-t-sm bg-gray-100"
             style={{
               paddingBottom: 'calc(env(safe-area-inset-bottom))'
             }}
           >
-            <div className='w-full h-full max-w-3xl flex flex-row justify-between px-4 bg-gray-100'>
+            <div className='w-full h-full max-w-3xl flex flex-row justify-between px-4 '>
               <div className='flex p-4 bg-gray-100 '
               style={{
                 fontWeight: location.pathname.includes('/compare') ? 'bold' : 'normal',

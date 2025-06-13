@@ -85,7 +85,7 @@ const UserDashboard = () => {
   return (
     <PullToRefresh onRefresh={handleRefresh}>
       <motion.div 
-        className="min-h-screen overflow-x-hidden"
+        className=""
         style={{ 
           color: currentTheme.colors.text
         }}
