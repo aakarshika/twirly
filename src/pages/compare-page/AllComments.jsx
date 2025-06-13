@@ -4,11 +4,12 @@ import { useComments } from '../../hooks/useComments';
 import LoadingOrError from '../../components/common/LoadingOrError';
 import { useAuth } from '../../contexts/AuthContext';
 import Avatar from '../../components/common/Avatar';
-import { Heart } from 'lucide-react';
+import { Heart, MessageSquare } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { renderTextWithMentions } from '../../lib/commentUtils';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useNavigate } from 'react-router-dom';
+import { getPublicUrl } from '../../lib/utils';
 
 const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, userPreferences }) => {
   const [showReplies, setShowReplies] = useState(false);
@@ -38,7 +39,7 @@ const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, u
         <Avatar
           size="sm"
           className="w-4 h-4"
-          profileImageUrl={comment.user?.profile_image_url}
+          profileImageUrl={getPublicUrl(comment.user?.profile_image_url)}
           displayName={comment.user?.display_name}
         />
         <span className="font-semibold text-xs">{comment.user?.display_name}</span>
@@ -47,7 +48,7 @@ const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, u
         </span>
       </div>
       <div className="ml-6 text-sm mt-1">
-        <p className="text-sm mt-1 text-gray-700 dark:text-gray-300 text-left">
+        <p className="text-sm mt-1 text-black text-left">
           <span dangerouslySetInnerHTML={{ __html: renderTextWithMentions(comment.text, items) }} />
         </p>
       </div>
@@ -63,8 +64,8 @@ const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, u
           onClick={() => setShowReplyInput(!showReplyInput)}
           className="text-gray-500 hover:text-blue-500 text-xs"
         >
-          Reply
-        </button>
+          <MessageSquare className={`w-4 h-4 inline-block  }`} />
+          </button>
         {comment.replies && comment.replies.length > 0 && (
           <button 
             onClick={() => setShowReplies(!showReplies)}
@@ -97,7 +98,7 @@ const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, u
                 <Avatar
                   size="xs"
                   className="w-4 h-4"
-                  profileImageUrl={reply.user?.profile_image_url}
+                  profileImageUrl={getPublicUrl(reply.user?.profile_image_url)}
                   displayName={reply.user?.display_name}
                 />
                 <span className="font-semibold text-xs">{reply.user?.display_name}</span>
@@ -124,19 +125,18 @@ const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, u
   );
 };
 
-const TopComment = ({ commentsCollapsed, setCommentsCollapsed, comments, items }) => {
-  const { userPreferences } = useAuth();
+const TopComment = ({ commentsCollapsed, setCommentsCollapsed, comments, items, userPreferences }) => {
   if (!comments.length) return (
-    <div className="p-3" >
+    <div className="p-3 pb-8" >
       <div className="flex items-center gap-2 mb-2">
-        <span className="font-semibold">Comments <span className='text-gray-500 text-sm'>{comments.length}</span></span>
+        <span className="font-normal text-sm text-gray-700" >Comments <span className='text-gray-500 text-sm'>{comments.length}</span></span>
       </div>
       <div className="rounded-lg bg-gray-50 text-gray-500 p-3" onClick={() => setCommentsCollapsed(false)}>
         <div className="flex items-center gap-2">
           <Avatar
             size="sm"
             className="w-4 h-4"
-            profileImageUrl={userPreferences?.profile_image_url}
+            profileImageUrl={getPublicUrl(userPreferences?.profile_image_url)}
             displayName={userPreferences?.display_name}
           />
           <span className="font-semibold text-xs"> {userPreferences?.display_name}</span>
@@ -148,16 +148,16 @@ const TopComment = ({ commentsCollapsed, setCommentsCollapsed, comments, items }
   
   const topComment = comments[0];
   return (
-    <div className="p-3 min-h-40" >
+    <div className="p-3 min-h-36" >
       <div className="flex items-center gap-2 mb-2">
-        <span className="font-semibold">Comments <span className='text-gray-500 text-sm'>{comments.length}</span></span>
+        <span className="font-normal text-sm text-gray-700" >Comments <span className='text-gray-500 text-sm'>{comments.length}</span></span>
       </div>
       <div className="rounded-lg bg-gray-50 p-3" onClick={() => setCommentsCollapsed(false)}>
         <div className="flex items-center gap-2">
           <Avatar
             size="xs"
             className="w-4 h-4"
-            profileImageUrl={topComment.user?.profile_image_url}
+            profileImageUrl={getPublicUrl(topComment.user?.profile_image_url)}
             displayName={topComment.user?.display_name}
           />
           <span className="font-semibold text-xs">{topComment.user?.display_name}</span>
@@ -171,7 +171,7 @@ const TopComment = ({ commentsCollapsed, setCommentsCollapsed, comments, items }
           </p>
         </div>
         
-      <div className="ml-6 flex items-center gap-4 mt-2">
+      {/* <div className="ml-6 flex items-center mt-2">
         <button 
           className={`flex items-center gap-1 ${ 'text-gray-500 hover:text-blue-500'}`}
         >
@@ -180,19 +180,18 @@ const TopComment = ({ commentsCollapsed, setCommentsCollapsed, comments, items }
         </button>
         {topComment.replies && topComment.replies.length > 0 && (
           <button 
-            className="text-gray-500 hover:text-blue-500 text-xs"
+            className="text-gray-500 hover:text-blue-500 text-xs pl-2"
           >
-            {`${topComment.replies.length} Replies`}
+            {` Replies ${topComment.replies.length}`}
           </button>
         )}
-      </div>
+      </div> */}
       </div>
     </div>
   );
 };
 
 const AllComments = ({ commentsCollapsed, setCommentsCollapsed, setId, items, users, userPreferences }) => {
-  const [showNewCommentInput, setShowNewCommentInput] = useState(false);
   const [newComment, setNewComment] = useState('');
   const { currentTheme } = useTheme();
   const {
@@ -220,43 +219,37 @@ const AllComments = ({ commentsCollapsed, setCommentsCollapsed, setId, items, us
         setCommentsCollapsed={setCommentsCollapsed}
         comments={comments}
         items={items}
+        userPreferences={userPreferences}
       />
     );
   }
 
   return (
     <div className="min-h-full">
-      <div className="fixed flex w-full items-center justify-between px-4 py-1 z-20" style={{ backgroundColor: currentTheme.colors.background }}>
-      <span className="font-semibold">Comments <span className='text-gray-500 text-sm'>{comments.length}</span></span>
+      <div className="sticky top-0 flex w-full items-center justify-between px-4 py-1 z-20" style={{ backgroundColor: currentTheme.colors.background }}>
+      <span className="font-normal text-sm text-gray-700" >Comments <span className='text-gray-500 text-sm'>{comments.length}</span></span>
       <button onClick={() => setCommentsCollapsed(true)} className="ml-auto text-2xl">×</button>
       </div>
 
-      <div className="mb-4 p-3 pt-12">
-        {showNewCommentInput ? (
-          <CommentForm
-            newComment={newComment}
-            setNewComment={setNewComment}
-            handleSubmitComment={() => {
-              handleSubmitComment(newComment);
-              setNewComment('');
-              setShowNewCommentInput(false);
-            }}
-            type="Comment"
-            users={users}
-            items={items}
-            userPreferences={userPreferences}
-          />
-        ) : (
-          <button
-            onClick={() => setShowNewCommentInput(true)}
-            className="w-full p-2 border border-gray-300 rounded-lg text-left text-gray-500 hover:border-blue-500"
-          >
-            Write a comment...
-          </button>
-        )}
-      </div>
 
       <div className="space-y-3 p-3 pb-32">
+        <div className=" rounded-lg p-3 shadow-sm">
+          {(
+            <CommentForm
+              newComment={newComment}
+              setNewComment={setNewComment}
+              handleSubmitComment={() => {
+                handleSubmitComment(newComment);
+                setNewComment('');
+                setShowNewCommentInput(false);
+              }}
+              type="Comment"
+              users={users}
+              items={items}
+              userPreferences={userPreferences}
+            />
+          ) }
+        </div>
         {comments.map((comment) => (
           <Comment
             key={comment.id}

@@ -1,7 +1,7 @@
 # Development Guidelines
 
 ## Core Principles
-
+Remember: If you're writing a lot of code to solve a common problem, you're probably doing it wrong. Look for existing solutions first. Remember: If you're writing a lot of code to solve a common problem, you're probably doing it wrong. Look for existing solutions first. Remember: If you're writing a lot of code to solve a common problem, you're probably doing it wrong. Look for existing solutions first. Remember: If you're writing a lot of code to solve a common problem, you're probably doing it wrong. Look for existing solutions first. Remember: If you're writing a lot of code to solve a common problem, you're probably doing it wrong. Look for existing solutions first. Remember: If you're writing a lot of code to solve a common problem, you're probably doing it wrong. Look for existing solutions first. Remember: If you're writing a lot of code to solve a common problem, you're probably doing it wrong. Look for existing solutions first. Remember: If you're writing a lot of code to solve a common problem, you're probably doing it wrong. Look for existing solutions first. 
 ### 1. Simplicity Over Complexity
 - Always start with the simplest possible solution
 - If a solution feels complex, it probably is - look for a simpler approach

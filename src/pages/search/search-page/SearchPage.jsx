@@ -146,7 +146,7 @@ const SearchPage = () => {
     if (filteredResults.length === 0) {
       return (
         <div className="text-center py-8" style={{ color: currentTheme.colors.text }}>
-          No results found for "{query}"
+          {query && query.length > 0 ? `No results found for "${query}"` : 'Type to search...'}
         </div>
       );
     }
@@ -171,7 +171,7 @@ const SearchPage = () => {
 
   return (
     <div 
-      className="min-h-screen overflow-x-hidden"
+      className="overflow-x-hidden"
       style={{ 
         color: currentTheme.colors.text
       }}

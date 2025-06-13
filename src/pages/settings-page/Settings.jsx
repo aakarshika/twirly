@@ -54,7 +54,7 @@ const Settings = () => {
   const currentTab = location.pathname.split('/').pop() || 'profile';
 
   return (
-    <div className="min-h-screen max-w-screen-lg mx-auto flex flex-col pt-10" style={{ 
+    <div className="max-w-screen-lg mx-auto flex flex-col pt-10" style={{ 
       position: 'relative'
     }}>
       <div className="flex flex-1">

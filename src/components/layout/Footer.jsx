@@ -10,7 +10,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear();
   
   return (
-    <footer className="flex flex-col items-center justify-center m-t-10  p-6 pt-60 text-center text-gray-500 text-sm mt-8 ">
+    <footer className="flex flex-col items-center justify-center m-t-10  p-6 text-center text-gray-500 text-sm mt-8 pb-20">
       <div className="max-w-6xl mx-auto">
         <h4> .</h4>
         <p>© {currentYear} TWIRLY. All rights reserved.</p>

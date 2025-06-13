@@ -14,11 +14,14 @@ const Grid = ({ layout = '2x2',  gridCollapsed = false , localOptions ,setData, 
   const { currentTheme } = useTheme();
   return (
     // flex th =e grid tpo take up all the space
-    <div className={
+    <motion.div className={
       layout === '1x4'
         ? 'h-full grid grid-cols-4 gap-2 p-4'
         : 'h-full grid grid-cols-2 grid-rows-2 gap-2 p-4'
     }
+    animate={{backgroundColor: gridCollapsed ?  'rgba(0, 0, 0, 0.05)' : 'transparent'}}
+    transition={{duration: 0.5}}
+    style={{backgroundColor: gridCollapsed ?  'rgba(0, 0, 0, 0.05)' : 'transparent'}}
     >
       {localOptions && localOptions.map((opt, i) => (
         <motion.div
@@ -111,7 +114,7 @@ const Grid = ({ layout = '2x2',  gridCollapsed = false , localOptions ,setData, 
 
           {(
             <motion.div 
-              className='absolute bottom-0 right-0 z-50 p-2 rounded-full bg-white/50'
+              className='absolute bottom-0 right-0 z-12 p-2 rounded-full bg-white/50'
               onClick={
                 () => {
                   navigate(`/item/${opt.id}`);
@@ -153,7 +156,7 @@ const Grid = ({ layout = '2x2',  gridCollapsed = false , localOptions ,setData, 
           )}
         </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 };
 

@@ -8,7 +8,7 @@ import AllComments from '../pages/compare-page/AllComments';
 import CompareButtons from '../pages/compare-page/CompareButtons';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
-import { Home, PlusCircle, Settings, TrendingUp } from 'lucide-react';
+import { Home, LucidePlus, Menu, PlusCircle, PlusSquareIcon, Search, Settings, SquarePlus, SquarePlusIcon, TrendingUp, User, User2, UserCircle } from 'lucide-react';
 
 
 const TikTokScroll = () => {
@@ -17,35 +17,34 @@ const TikTokScroll = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [commentsCollapsedMap, setCommentsCollapsedMap] = useState({});
   const [isHorizontalDrag, setIsHorizontalDrag] = useState(false);
-  const [hasUserInteracted, setHasUserInteracted] = useState(false);
+  const [hasUserInteracted, setHasUserInteracted] = useState(true);
   const containerRef = useRef(null);
   const lastScrollTime = useRef(Date.now());
-  const { userPreferences } = useAuth();
   const [users, setUsers] = useState([]);
   const [metricsSectionExpanded, setMetricsSectionExpanded] = useState(false);
   const controls = useAnimation();
   const [dragY, setDragY] = useState(0);
-  const [userCategoryPreferences, setUserCategoryPreferences] = useState([]);
+  const [currentSelectedTag, setCurrentSelectedTag] = useState('home');
+  const [dragX, setDragX] = useState(0);
+  const [opacity, setOpacity] = useState(1);
   const {
     comparisonSets,
     currentIndex,
     setCurrentIndex,
     handleVote,
     handleReset,
+    userPreferences,
+    allCategories,
+    setCategoryId,
+    setCategoryIds,
+    setSelectedTag,
     handleLikeComparisonSet
   } = useComparisonSets(parseInt(currentId) || 0);
-  const [previousIndex, setPreviousIndex] = useState(currentIndex);
 
-  useEffect(() => {
-    const fetchUserCategoryPreferences = async () => {
-      const { data, error } = await supabase
-        .from('user_category_preferences')
-        .select('*, categories(*)')
-        .eq('user_id', userPreferences.user_id);
-      setUserCategoryPreferences(data);
-    };
-    fetchUserCategoryPreferences();
-  }, [userPreferences]);
+  const selectedTagRef = useRef(null);
+
+  const [isCommentsCollapsed, setIsCommentsCollapsed] = useState(true);
+
   // Ensure page scrolls to top on mount
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -88,61 +87,109 @@ const TikTokScroll = () => {
     };
   }, []);
 
+
   // Modify the automatic navigation effect
   useEffect(() => {
+    console.log('🔍 going to next set', comparisonSets[currentIndex]?.hasVoted, hasUserInteracted);
     if (comparisonSets[currentIndex]?.hasVoted && !hasUserInteracted) {
       const timer = setTimeout(() => {
-        if (currentIndex < comparisonSets.length - 1) {
-          setPreviousIndex(currentIndex);
-          setCurrentIndex(currentIndex + 1);
-          if (comparisonSets[currentIndex + 1]) {
-            navigate(`/compare/${comparisonSets[currentIndex + 1].id}`, { replace: true });
-          }
-        }
+        console.log('🔍 gone to next set');
+        goToNextSet();
       }, 3000); // 3 seconds delay
 
       return () => clearTimeout(timer);
     }
   }, [comparisonSets[currentIndex]?.hasVoted, hasUserInteracted]);
 
-  // Reset hasUserInteracted when moving to a new comparison set
-  useEffect(() => {
-    setHasUserInteracted(false);
-  }, [currentIndex, comparisonSets[currentIndex]?.hasVoted]);
+
 
   useEffect(() => {
-    if (comparisonSets.length > 0) {
-      setCommentsCollapsedMap(prev => {
-        const updated = { ...prev };
-        comparisonSets.forEach(item => {
-          if (updated[item.id] === undefined) {
-            updated[item.id] = true; // or false, depending on your desired default
-          }
-        });
-        return updated;
+    if (selectedTagRef.current) {
+      selectedTagRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center'
       });
     }
-  }, [comparisonSets]);
+  }, [currentSelectedTag]);
 
-  // Helper to get/set per-set collapsed state
-  const isCommentsCollapsed = (setId) => commentsCollapsedMap[setId] ?? true;
-  const setCommentsCollapsed = (setId, value) => {
-    setCommentsCollapsedMap(prev => ({ ...prev, [setId]: value }));
+  // Effect to handle URL updates when currentIndex changes
+  useEffect(() => {
+    setIsCommentsCollapsed(true);
+
+    if (currentIndex === 0 || currentIndex == -1) {
+      setDragX(0);
+      setOpacity(1);
+      setIsHorizontalDrag(false);
+      setIsDragging(false);
+    }
+
+    if (currentIndex >= 0 && comparisonSets[currentIndex]) {
+      navigate(`/compare/${comparisonSets[currentIndex].id}`, { replace: true });
+    }
+  }, [currentIndex, comparisonSets]);
+
+  // Effect to handle tag changes
+  useEffect(() => {
+    if (currentSelectedTag) {
+      const categoryId = allCategories.find(category => category.name === currentSelectedTag)?.id;
+      const categoryIds = allCategories.filter(category => category.name === currentSelectedTag).map(category => category.id);
+      setCategoryId(categoryId);
+      setCategoryIds(categoryIds);
+      setSelectedTag(currentSelectedTag);
+    }
+  }, [currentSelectedTag, allCategories]);
+
+  const goToNextSet = () => {
+    if (currentIndex < comparisonSets.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
   };
 
-  const handleDragStart = () => {
+  const goToFirstSet = () => {
+    setCurrentIndex(0);
+  };
+
+  const goToPreviousSet = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+      setHasUserInteracted(true);
+    }
+  };
+
+  const loadNewBatchByCategory = async (tag) => {
+    const categoryId = allCategories.find(category => category.name === tag)?.id;
+    const categoryIds = allCategories.filter(category => category.name === tag).map(category => category.id);
+    setCategoryId(categoryId);
+    setCategoryIds(categoryIds);
+    setSelectedTag(tag);
+  };
+
+  // Update the category change handler
+  useEffect(() => {
+    if (currentSelectedTag) {
+      loadNewBatchByCategory(currentSelectedTag);
+    }
+  }, [currentSelectedTag]);
+
+  const handleDragStart = (event, info) => {
     setIsDragging(true);
-    setIsHorizontalDrag(false);
+    // Determine initial drag direction
+    if (Math.abs(info.offset.x) > Math.abs(info.offset.y)) {
+      setIsHorizontalDrag(true);
+    } else {
+      setIsHorizontalDrag(false);
+    }
   };
 
   const handleDrag = (event, info) => {
-    setDragY(info.offset.y);
-    console.log('dragY', dragY, -dragY/300);
-    // Only check for horizontal drag if comments are collapsed
-    if (isCommentsCollapsed(comparisonSets[currentIndex].id)) {
-      if (Math.abs(info.offset.x) > Math.abs(info.offset.y)) {
-        setIsHorizontalDrag(true);
-      }
+    // Only update the drag values based on the locked direction
+    if (isHorizontalDrag) {
+      setDragX(info.offset.x);
+      setDragY(0);
+    } else {
+      setDragY(info.offset.y);
+      setDragX(0);
     }
   };
 
@@ -155,50 +202,84 @@ const TikTokScroll = () => {
     lastScrollTime.current = now;
 
     // If comments are expanded, only allow horizontal swipe to go back
-    if (!isCommentsCollapsed(comparisonSets[currentIndex].id)) {
-      if (isHorizontalDrag) {
-        const horizontalThreshold = 50;
-        const horizontalVelocity = info.velocity.x;
-
-        if (Math.abs(info.offset.x) > horizontalThreshold || Math.abs(horizontalVelocity) > 500) {
-          if (info.offset.x > 0 || horizontalVelocity > 0) {
-            // Swipe right - go to home with animation
-            controls.start({ x: '100%', transition: { duration: 0.3 } })
-              .then(() => navigate('/'));
-          } else {
-            // Swipe left - prevent default and do nothing
-            event?.preventDefault();
-            controls.start({ x: 0, transition: { duration: 0.3 } });
-          }
-        } else {
-          // Reset position if threshold not met
-          controls.start({ x: 0, transition: { duration: 0.3 } });
-        }
-      }
-      setIsDragging(false);
-      setDragY(0);
-      setIsHorizontalDrag(false);
+    if (!isCommentsCollapsed) {
       return;
     }
 
+    // Handle horizontal swipe
     if (isHorizontalDrag) {
-      // Handle horizontal swipe
       const horizontalThreshold = 50;
       const horizontalVelocity = info.velocity.x;
 
       if (Math.abs(info.offset.x) > horizontalThreshold || Math.abs(horizontalVelocity) > 500) {
-        if (info.offset.x > 0 || horizontalVelocity > 0) {
-          // Swipe right - go to home with animation
-          controls.start({ x: '100%', transition: { duration: 0.3 } })
-            .then(() => navigate('/'));
+        if (info.offset.x > 0) {
+          // Swipe right - go to previous tag
+          // Don't allow swipe right if we're on home
+          if (currentSelectedTag === 'home') {
+            setDragX(0);
+            setIsHorizontalDrag(false);
+            setIsDragging(false);
+            return;
+          }
+          
+          // Animate dragX state back to 0
+          const animateDragX = async () => {
+            const duration = 10;
+            const startTime = Date.now();
+            const startX = dragX;
+
+            const animate = () => {
+              const elapsed = Date.now() - startTime;
+              const progress = Math.min(elapsed / duration, 1);
+              const newX = startX + (progress) * (window.innerWidth - startX);
+              setDragX(newX);
+
+              if (progress < 1) {
+                requestAnimationFrame(animate);
+              } else {
+                prevTag();
+              }
+            };
+            await animate();
+          };
+          animateDragX();
         } else {
-          // Swipe left - prevent default and do nothing
-          event?.preventDefault();
-          controls.start({ x: 0, transition: { duration: 0.3 } });
+          // Swipe left - go to next tag
+          // Don't allow swipe left if we're on the last category
+          const list = ['home', 'trending', ...allCategories.map(category => category.name)];
+          const isLastCategory = currentSelectedTag === list[list.length - 1];
+          
+          if (isLastCategory) {
+            setDragX(0);
+            setIsHorizontalDrag(false);
+            setIsDragging(false);
+            return;
+          }
+
+          const animateDragX = async () => {
+            const duration = 10;
+            const startTime = Date.now();
+            const startX = dragX;
+
+            const animate = () => {
+              const elapsed = Date.now() - startTime;
+              const progress = Math.min(elapsed / duration, 1);
+              const newX = startX - (progress) * (window.innerWidth + startX);
+              setDragX(newX);
+
+              if (progress < 1) {
+                requestAnimationFrame(animate);
+              } else {
+                nextTag();
+              }
+            };
+            await animate();
+          };
+          animateDragX();
         }
       } else {
-        // Reset position if threshold not met
-        controls.start({ x: 0, transition: { duration: 0.3 } });
+        setIsDragging(false);
+        setDragX(0);
       }
     } else {
       // Handle vertical swipe only when comments are collapsed
@@ -206,71 +287,98 @@ const TikTokScroll = () => {
       const velocity = info.velocity.y;
 
       if (Math.abs(info.offset.y) > threshold || Math.abs(velocity) > 500) {
-        if (info.offset.y > 0 && currentIndex > 0) {
+        if (info.offset.y > 0) {
           // Swipe down - go to previous
-          setCurrentIndex(previousIndex);
-          if (comparisonSets[previousIndex]) {
-            navigate(`/compare/${comparisonSets[previousIndex].id}`, { replace: true });
-          }
-        } else if (info.offset.y < 0 && currentIndex < comparisonSets.length - 1) {
+          goToPreviousSet();
+        } else if (info.offset.y < 0) {
           // Swipe up - go to next
-          setPreviousIndex(currentIndex);
-          setCurrentIndex(currentIndex + 1);
-          if (comparisonSets[currentIndex + 1]) {
-            navigate(`/compare/${comparisonSets[currentIndex + 1].id}`, { replace: true });
-          }
+          goToNextSet();
         }
+        setIsDragging(false);
+        setDragY(0);
+      } else {
+        setIsDragging(false);
+        setDragY(0);
       }
     }
 
-    setIsDragging(false);
-    setIsHorizontalDrag(false);
-    setDragY(0);
   };
 
+
+  useEffect(() => {
+    console.log('dragX', dragX, isDragging, isHorizontalDrag);
+  }, [dragX]);
+
+  const prevTag = () => {
+    const list = ['home', 'trending', ...allCategories.map(category => category.name)];
+    const index = list.findIndex(category => category === currentSelectedTag);
+    if (index > 0) {
+      setCurrentSelectedTag(list[index - 1]);
+    } else if (currentSelectedTag === 'trending') {
+      setCurrentSelectedTag('home');
+    }
+  };
+
+  const nextTag = () => {
+    const list = ['home', 'trending', ...allCategories.map(category => category.name)];
+    const index = list.findIndex(category => category === currentSelectedTag);
+    if (index < list.length - 1) {
+      setCurrentSelectedTag(list[index + 1]);
+    } else if (currentSelectedTag === 'home') {
+      setCurrentSelectedTag('trending');
+    }
+  };
   const renderSet = (setData, index, users, userPreferences) => {
     return (
       <motion.div
         key={`set-${setData.id}-${index}`}
-        className="aa w-full flex "
+        className="aa w-full flex rounded-lg bg-white shadow-lg "
         style={{
           position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
           height: '100%',
           width: '100%',
-          y: (index - currentIndex) * (window.innerHeight - 100),
+          y: (index - currentIndex) * (window.innerHeight - 90),
+          // opacity: 0,
         }}
         initial={false}
-        animate={{ y: (index - currentIndex) * (window.innerHeight - 100) + dragY ,
-          backgroundColor: 'white'
+        animate={{
+          y: (index - currentIndex) * (window.innerHeight - 90) + dragY,
+          opacity: isDragging && isHorizontalDrag ? 0 : 1,
+          scale: isDragging && !isHorizontalDrag && currentIndex === index ? 0.95 : 1
         }}
         transition={{
-          type: "spring",
-          stiffness: 300,
-          damping: 30
+          type: "linear",
+          duration: 0.3
         }}
       >
-        <div className='bb w-full h-full max-w-3xl flex flex-col rounded-lg  '
-        style={{
-          backgroundColor: isDragging && currentIndex!==index ? 'rgba(0, 0, 0, '+(1-0.5-(-dragY/window.innerHeight))+')' : 'transparent',
-          paddingTop: '20px'
-        }}
+        <motion.div className='bb w-full h-full max-w-3xl flex flex-col rounded-lg  '
+          style={{
+            backgroundColor: isDragging && currentIndex !== index ? 'rgba(0, 0, 0, ' + (1 - 0.5 - (Math.abs(dragY) / window.innerHeight)) + ')' : 'transparent',
+          }}
+        // animate={{
+        //   x: isDragging && isHorizontalDrag ? dragX : 0,
+        // }}
         >
           <div className="flex-none">
-            <Heading setData={setData} />
+            <Heading setData={setData} gridCollapsed={!isCommentsCollapsed} />
           </div>
-          <div className={`${isCommentsCollapsed(setData.id) ? 'flex-1' : 'h-[12vh]'}`}>
+          <motion.div
+  animate={{
+    height: isCommentsCollapsed ? '100%' : '12vh',
+  }}
+>
             <Grid
-              gridCollapsed={!isCommentsCollapsed(setData.id)}
+              gridCollapsed={!isCommentsCollapsed}
               setData={setData}
               localOptions={setData.set_items}
-              handleVote={handleVote}
+              handleVote={(e) => {
+                setHasUserInteracted(false);
+                handleVote(e);
+              }}
               handleReset={handleReset}
             />
-          </div>
-          {isCommentsCollapsed(setData.id) ? (
+          </motion.div>
+          {isCommentsCollapsed ? (
             <div className="flex-none">
               <div className="flex flex-col gap-0">
                 <CompareButtons
@@ -286,8 +394,8 @@ const TikTokScroll = () => {
                 {index === currentIndex && (
                   <AllComments
                     setId={setData.id}
-                    commentsCollapsed={isCommentsCollapsed(setData.id)}
-                    setCommentsCollapsed={(value) => setCommentsCollapsed(setData.id, value)}
+                    commentsCollapsed={isCommentsCollapsed}
+                    setCommentsCollapsed={(value) => setIsCommentsCollapsed(value)}
                     items={setData.set_items}
                     users={users}
                     userPreferences={userPreferences}
@@ -305,8 +413,8 @@ const TikTokScroll = () => {
               {index === currentIndex && (
                 <AllComments
                   setId={setData.id}
-                  commentsCollapsed={isCommentsCollapsed(setData.id)}
-                  setCommentsCollapsed={(value) => setCommentsCollapsed(setData.id, value)}
+                  commentsCollapsed={isCommentsCollapsed}
+                  setCommentsCollapsed={(value) => setIsCommentsCollapsed(value)}
                   items={setData.set_items}
                   users={users}
                   userPreferences={userPreferences}
@@ -314,65 +422,89 @@ const TikTokScroll = () => {
               )}
             </div>
           )}
-        </div>
+        </motion.div>
       </motion.div>
     );
   };
 
   return (
-    <div className="h-screen w-full overflow-hidden fixed top-0 left-0 right-0 bottom-0 "
-      style={{
-        paddingTop: 'calc(42px + env(safe-area-inset-top))',
-        paddingBottom: 'calc(50px + env(safe-area-inset-bottom))'
-      }}
+    <div className="h-screen w-full overflow-hidden flex flex-col justify-between "
     >
-    <div className="fixed left-0 right-0 top-0  rounded-t-sm bg-gray-100 "
-      style={{
-        paddingTop: 'calc(env(safe-area-inset-top))',
-        paddingBottom: '10px'
-      }}
-    >
-      <div className='h-full max-w-3xl overflow-x-auto w-full overflow-hidden scrollbar-hide'>
-        <div className='flex flex-row'>
-          
-          <div className='flex flex-row p-2 items-center gap-1' style={{ color: 'rgba(116, 101, 204, 0.87)' }}>
-            <Home className='inline-block' size={16} /> <span>Feed</span>
-          </div>
-          
-
-          <div className='flex flex-row p-2 gap-1 items-center'>
-            <TrendingUp className='inline-block' size={16} /> <span>Trending</span>
-          </div>
-          
-
-          {userCategoryPreferences.map((preference) => (
-            <>
-            <div className='flex flex-row p-2 gap-1'>
-              <span className='whitespace-nowrap'>{preference.categories.name}</span>
+      <div className="h-auto rounded-t-sm bg-gray-100 "
+        style={{
+          paddingTop: 'calc(env(safe-area-inset-top))'
+        }}
+      >
+        <div className="w-full overflow-x-auto scrollbar-hide">
+          <div className="flex flex-row min-w-max px-2">
+            <div
+              ref={currentSelectedTag === 'home' ? selectedTagRef : null}
+              className={`flex flex-row p-2 items-center gap-1 ${currentSelectedTag === 'home' ? 'font-semibold' : ''}`}
+              style={{ color: currentSelectedTag === 'home' ? 'rgba(116, 101, 204, 0.87)' : '', cursor: 'pointer' }}
+              onClick={() => setCurrentSelectedTag('home')}
+            >
+              <Home className='inline-block' size={14} /> <span>Feed</span>
             </div>
-            </>
-          ))}
+
+            <div
+              ref={currentSelectedTag === 'trending' ? selectedTagRef : null}
+              className={`flex flex-row p-2 gap-1 items-center ${currentSelectedTag === 'trending' ? 'font-semibold' : ''}`}
+              style={{ color: currentSelectedTag === 'trending' ? 'rgba(116, 101, 204, 0.87)' : '', cursor: 'pointer' }}
+              onClick={() => setCurrentSelectedTag('trending')}
+            >
+              <TrendingUp className='inline-block' size={16} /> <span>Trending</span>
+            </div>
+
+            {allCategories.slice(0, 3).map((category) => (
+              <div
+                key={category.name}
+                ref={currentSelectedTag === category.name ? selectedTagRef : null}
+                className={`flex flex-row p-2 gap-1 ${currentSelectedTag === category.name ? 'font-semibold' : ''}`}
+                style={{ color: currentSelectedTag === category.name ? 'rgba(116, 101, 204, 0.87)' : '', cursor: 'pointer' }}
+                onClick={() => { setCurrentSelectedTag(category.name) }}
+              >
+                <span className='whitespace-nowrap'>{category.name}</span>
+              </div>
+            ))}
+
+            {allCategories.slice(3).map((category) => (
+              <div
+                key={category.name}
+                ref={currentSelectedTag === category.name ? selectedTagRef : null}
+                className={`flex flex-row p-2 gap-1 ${currentSelectedTag === category.name ? 'font-semibold' : ''}`}
+                style={{
+                  color: currentSelectedTag === category.name
+                    ? 'rgba(116, 101, 204, 0.87)'
+                    : 'rgba(101, 101, 101, 0.87)',
+                  cursor: 'pointer'
+                }}
+                onClick={() => setCurrentSelectedTag(category.name)}
+              >
+                <span className='whitespace-nowrap'>{category.name}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
       <div className="h-full w-full overflow-hidden "
-
+        style={{
+          paddingBottom: 'calc(42px + env(safe-area-inset-bottom))'
+        }}
       >
         <motion.div
           ref={containerRef}
           className="h-full w-full flex items-center justify-center rounded-lg "
-          drag={isCommentsCollapsed(comparisonSets[currentIndex]?.id)}
+          drag={isCommentsCollapsed}
           dragConstraints={{
             top: 0,
             bottom: 0,
             left: 0,
             right: 0
           }}
-          dragElastic={0.05}
+          dragDirectionLock={true}
           onDragStart={handleDragStart}
           onDrag={handleDrag}
           onDragEnd={handleDragEnd}
-          dragDirectionLock
           animate={controls}
           style={{
             position: 'relative',
@@ -382,30 +514,20 @@ const TikTokScroll = () => {
           }}
         >
           <AnimatePresence>
-            {comparisonSets.map((item, index) => renderSet(item, index, users, userPreferences))}
+            {comparisonSets.length > 0 && comparisonSets.map((item, index) => renderSet(item, index, users, userPreferences))}
+            {comparisonSets.length === 0 && (
+              <div className="flex flex-col items-center justify-center h-full w-full">
+                <p className="text-gray-500 text-center">No comparisons for this category yet. <br /> Add some?</p>
+              </div>
+            )}
           </AnimatePresence>
         </motion.div>
       </div>
 
-      <div className="fixed left-0 right-0 bottom-0  rounded-t-sm bg-gray-100 "
-        style={{
-          paddingBottom: 'calc(env(safe-area-inset-bottom))'
-        }}
-      >
-        <div className='w-full h-full max-w-3xl flex flex-row justify-between'>
-          <div className='flex p-4 px-12 '>
-            <PlusCircle size={24} />
-          </div>
-          <div className='flex p-4 px-12 '>
-            <Home size={24} />
-          </div>
-          <div className='flex p-4 px-12 '>
-            <Settings size={24} />
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
+
+
 
 export default TikTokScroll; 

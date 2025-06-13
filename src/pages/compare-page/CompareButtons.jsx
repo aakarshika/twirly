@@ -52,11 +52,11 @@ const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, voteButt
   return (
     <div className='flex flex-col'>
       {setData.end_date && (<div className='flex flex-row font-normal text-gray-500 justify-between mx-4'>
-        <span className='text-sm font-semibold'>{'Started '}
-          <span className='text-sm font-semibold'>
-            {formatDistanceToNow(setData.start_date, { addSuffix: false })}</span></span>
-        <span className='text-sm font-semibold'>{'Ends in '}
-          <span className='text-sm font-semibold'>
+        <span className='text-sm font-normal'>
+        <span className="font-normal">{totalVotes} Voters</span>
+        </span>
+        <span className='text-sm font-normal'>{'Ends in '}
+          <span className='text-sm font-normal'>
             {formatDistanceToNow(setData.end_date, { addSuffix: false })}</span></span>
       </div>)}
       <div className="flex text-sm flex-row justify-between gap-2 p-2 bg-white">
@@ -71,18 +71,6 @@ const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, voteButt
             />
           </span>
           <span className="font-semibold">{setData.likeCount} Likes</span>
-        </div>
-        <div className="flex rounded-full px-4 py-2 bg-gray-100 gap-2"
-          onClick={() => voteButtonClicked(setData.id)}
-          style={{ cursor: 'pointer' }}
-        >
-          <span className="inline-block mr-2">
-            <ThumbsUp size={20} 
-              color={hasVoted ? currentTheme.colors.primary : 'gray'}
-              fill={hasVoted ? changeColorAlpha(currentTheme.colors.primary, 0.5) : 'none'}
-            />
-          </span>
-          <span className="font-semibold">{totalVotes} Votes</span>
         </div>
         <div className="relative">
           <div className="flex rounded-full px-4 py-2 bg-gray-100 gap-2"

@@ -9,7 +9,8 @@ const Avatar = ({
   size = 'md', 
   isEditable = false, 
   onAvatarChange,
-  className = ''
+  className = '',
+  onClick
 }) => {
   const { currentTheme } = useTheme();
 
@@ -31,6 +32,7 @@ const Avatar = ({
   return (
     <div className="relative">
       <div 
+        onClick={onClick}
         className={`${sizeClass} rounded-full bg-cover bg-center overflow-hidden ${className}`}
         style={{ 
           backgroundColor: currentTheme.colors.border,

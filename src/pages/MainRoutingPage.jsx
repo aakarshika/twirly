@@ -181,7 +181,7 @@ const MainRoutingPage = () => {
   };
 
   const isPublicRoute = () => {
-    const isPublic = ['/login','/compare', '/landing', '/signup', '/forgot-password', '/auth/v1/callback', '/auth/callback']
+    const isPublic = ['/login','/landing', '/signup', '/forgot-password', '/auth/v1/callback', '/auth/callback']
       .some(path => location.pathname.includes(path));
     return isPublic;
   };
@@ -216,7 +216,7 @@ const MainRoutingPage = () => {
               }}
             >
               {!isPublicRoute() && <Header />}
-              <main className="flex-1 md:pl-60 lg:pl-60" style={{ paddingTop: isPublicRoute() ? '0' : location.pathname.includes('/compare') ? '0px' : '64px' }}>
+              <main className="flex-1 md:pl-60 lg:pl-60" style={{ paddingTop: isPublicRoute() ? '0' : location.pathname.includes('/compare') ? '0' : 'calc(env(safe-area-inset-top))' }}>
                 <Routes>
                   {/* Public Routes */}
                   {/* <Route path="/login" element={<Login />} /> */}
@@ -270,7 +270,7 @@ const MainRoutingPage = () => {
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </main>
-              {!isPublicRoute() && <Footer />}
+              {!(isPublicRoute() || location.pathname.includes('/compare')) && <Footer />}
 
               <BetaTestingControls />
               {showPerformanceMonitor && <PerformanceMonitor isVisible={true} />}

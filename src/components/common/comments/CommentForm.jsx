@@ -7,6 +7,7 @@ import './Comment.css';
 import { useTheme } from '../../../contexts/ThemeContext';
 
 const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, items, userPreferences, type }) => {
+  console.log('userPreferences', userPreferences);
   const inputRef = useRef(null);
   const [focus, setFocus] = useState(false);
   const { currentTheme } = useTheme();
@@ -83,7 +84,6 @@ const CommentForm = ({ newComment, setNewComment, handleSubmitComment, users, it
             <div className="w-full rounded-md border border-gray-200 focus-within:border-amber-400 transition-colors" style={{color: 'black'}}>
               <MentionsInput
                 value={newComment}
-                autoFocus={true}
                 onChange={(e) => setNewComment(e.target.value)}
                 style={mentionStyles}
                 placeholder={focus ? `Type # to tag items` : `Add ${type}...`}

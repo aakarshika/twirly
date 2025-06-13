@@ -337,7 +337,6 @@ const CreateComparison = () => {
           <div>
             <input
               type="text"
-              autoFocus
               value={draft.title}
               onChange={(e) => updateDraft({ title: e.target.value })}
               className="w-full p-3 text-md font-bold rounded-lg"

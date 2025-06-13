@@ -120,7 +120,7 @@ const ProductDetails = () => {
   return (
     <PullToRefresh onRefresh={handleRefresh}>
       <motion.div 
-        className="min-h-screen overflow-x-hidden" 
+        className="overflow-x-hidden" 
         style={{ color: currentTheme.colors.text }}
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}

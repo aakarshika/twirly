@@ -21,7 +21,6 @@ const UserDashboard = () => {
   const { isHeaderVisible } = useHeader();
   const [userData, setUserData] = useState(null);
   const [showFirstTimeDashboard, setShowFirstTimeDashboard] = useState(false);
-  const controls = useAnimation();
 
   const { isLoading, error, fetchData } = useDataFetching(
     'userDashboard',
@@ -52,14 +51,6 @@ const UserDashboard = () => {
     setShowFirstTimeDashboard(false);
   };
 
-  const handleDragEnd = async (event, info) => {
-    if (info.offset.x > 100) { // Only trigger if swiped more than 100px
-      await controls.start({ x: '100%', transition: { duration: 0.3 } });
-      navigate(-1);
-    } else {
-      controls.start({ x: 0, transition: { duration: 0.3 } });
-    }
-  };
 
   if (isLoading) {
     return null; // Loading screen is now handled by LoadingContext
@@ -85,14 +76,10 @@ const UserDashboard = () => {
   return (
     <PullToRefresh onRefresh={handleRefresh}>
       <motion.div 
-        className="min-h-screen overflow-x-hidden"
+        className=""
         style={{ 
           color: currentTheme.colors.text
         }}
-        drag="x"
-        dragConstraints={{ left: 0, right: 0 }}
-        onDragEnd={handleDragEnd}
-        animate={controls}
       >
         {showFirstTimeDashboard && (
           <FirstTimeDashboard onComplete={handleTourComplete} />
