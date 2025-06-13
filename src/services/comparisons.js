@@ -99,12 +99,7 @@ export const getUserComparisons = async (userId) => {
         id,
         item:items(*)
       ),
-      comparison_set_aspects (
-        id,
-        metric_name,
-        description,
-        comments:comparison_set_comments(*)
-      )
+      comments:comparison_set_comments(*)
     `)
     .eq('user_id', userId)
     .order('created_at', { ascending: false });

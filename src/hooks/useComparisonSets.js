@@ -248,7 +248,7 @@ export const useComparisonSets = (paramId) => {
       
       const { data: allImportantCategories } = await supabase
         .from('categories')
-        .select('*, set_categories!inner(*)')
+        .select('*')
         .order('id', { ascending: true })
         .limit(5);
 
