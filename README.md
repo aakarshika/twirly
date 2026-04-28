@@ -35,19 +35,20 @@ Live at [twirlyapp.com](https://twirlyapp.com)
 
 ## Architecture
 
-src/
-├── components/     # Reusable UI — themed, responsive
-├── contexts/       # React Context: auth, theme
-├── hooks/          # Custom hooks for data fetching and state
-├── pages/          # Route-level components
-├── services/       # Supabase client calls, abstracted per domain
-├── utils/          # Shared helpers
-└── lib/            # Third-party configs (Supabase client, etc.)
-
+    src/
+    ├── components/     # Reusable UI — themed, responsive
+    ├── contexts/       # React Context: auth, theme
+    ├── hooks/          # Custom hooks for data fetching and state
+    ├── pages/          # Route-level components
+    ├── services/       # Supabase client calls, abstracted per domain
+    ├── utils/          # Shared helpers
+    └── lib/            # Third-party configs (Supabase client, etc.)
 
 **Theming** — all colors are driven by a theme token system via React Context. Components never hardcode colors. Switching themes is a single state change that cascades across the entire UI.
 
 **Auth** — Supabase session is managed globally via `AuthContext`. Protected routes wrap sensitive pages. All API calls go through the service layer, never directly from components.
+
+**DB logic in PLpgSQL** — voting integrity, deduplication, and ranking are handled at the database layer via stored procedures. A compromised frontend cannot skew results — the source of truth lives in the DB.
 
 ---
 
