@@ -1,166 +1,86 @@
-# Twirly - Comparison Platform
+# Twirly
 
-A modern web application for creating and managing comparisons between different items, products, or concepts
+**Pick a side. Make your case. See what everyone else thinks.**
 
-## 🚀 Features
+Twirly is a comparison platform where users create head-to-head matchups between anything — products, ideas, opinions, places — and let the crowd decide. Less about being right, more about what people actually think.
 
-- User authentication and authorization
-- Create and manage comparisons
-- Vote and comment on comparisons
-- Custom themes and dark mode support
-- Responsive design
-- Real-time updates
-- User profiles and dashboards
-- Feedback system
+Live at [twirlyapp.com](https://twirlyapp.com)
 
-## 🏗️ Project Structure
+---
 
-```
+## What it does
+
+- **Create comparisons** — set up any A vs B matchup with context, images, and a framing argument
+- **Vote and comment** — weigh in on comparisons, see live results, read what others think
+- **User profiles and dashboards** — track comparisons you've created, voted on, or followed
+- **Feedback system** — flag bad comparisons, suggest improvements
+- **Multi-theme support** — 8 themes including Dark, Neon, Retro, Ocean — each with a complete, consistent token set
+- **Mobile-ready** — ships as a web app and as native iOS/Android via Capacitor
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React, JavaScript, Vite, TailwindCSS |
+| Backend / DB | Supabase (PostgreSQL + PLpgSQL) |
+| Auth | Supabase Auth (email/password, session management) |
+| Mobile | Capacitor (iOS + Android) |
+| Deployment | Vercel |
+
+> The database layer carries significant business logic — stored procedures and functions handle voting integrity, comparison ranking, and real-time result computation directly in PLpgSQL. This keeps the client thin and prevents result manipulation from the frontend.
+
+---
+
+## Architecture
+
 src/
-├── components/     # Reusable UI components
-├── contexts/      # React context providers
-├── hooks/         # Custom React hooks
-├── pages/         # Page components
-├── services/      # API and service functions
-├── styles/        # Global styles and themes
-├── utils/         # Utility functions
-├── lib/          # Third-party library configurations
-└── assets/       # Static assets
+├── components/     # Reusable UI — themed, responsive
+├── contexts/       # React Context: auth, theme
+├── hooks/          # Custom hooks for data fetching and state
+├── pages/          # Route-level components
+├── services/       # Supabase client calls, abstracted per domain
+├── utils/          # Shared helpers
+└── lib/            # Third-party configs (Supabase client, etc.)
+
+
+**Theming** — all colors are driven by a theme token system via React Context. Components never hardcode colors. Switching themes is a single state change that cascades across the entire UI.
+
+**Auth** — Supabase session is managed globally via `AuthContext`. Protected routes wrap sensitive pages. All API calls go through the service layer, never directly from components.
+
+---
+
+## Local Setup
+
+```bash
+# Install dependencies
+npm install
+
+# Copy and configure environment
+cp .env.example .env
+# Add your Supabase project URL and anon key
+
+# Start dev server
+npm run dev
 ```
 
-## 🎨 Theming System
+For Supabase setup (tables, RLS policies, stored procedures): see `SUPABASE_SETUP.md`
 
-The application supports multiple themes:
+For deploying to iOS/Android via Capacitor: see `DEPLOYMENT.md`
 
-- Light (default)
-- Dark
-- Sunset
-- Ocean
-- Forest
-- Neon
-- Pastel
-- Retro
+---
 
-Each theme provides a consistent set of colors:
-- `primary`: Main brand color
-- `secondary`: Secondary brand color
-- `background`: Page background
-- `text`: Main text color
-- `card`: Card background
-- `border`: Border color
-- `accent`: Accent color
-- `muted`: Muted elements
-- `hover`: Hover state color
-- `focus`: Focus state color
-- `disabled`: Disabled state color
-- `shadow`: Shadow color
+## Design decisions worth noting
 
-## 🔒 Authentication
+**Heavy DB logic in PLpgSQL** — voting integrity, deduplication, and ranking are handled at the database layer via stored procedures. This means a compromised or modified frontend cannot skew results — the source of truth lives in the DB.
 
-The application uses a secure authentication system with:
-- Email/password authentication
-- Protected routes
-- Session management
-- User profile management
+**Theme system as first-class feature** — rather than a cosmetic toggle, the theme system is architecturally built in. Every UI component reads from the theme context. Adding a new theme means adding one token object — no component changes needed.
 
-## 📱 Responsive Design
+**Capacitor for mobile** — same React codebase ships to web, iOS, and Android. Safe area insets and touch interactions are handled at the component level to ensure native feel across platforms.
 
-The application is fully responsive and follows these guidelines:
-- Mobile-first approach
-- Safe area insets for modern devices
-- Consistent spacing and padding
-- Flexible layouts
-- Touch-friendly interactions
+---
 
-## 🛠️ Development Guidelines
+## Status
 
-### Component Creation
-
-1. **Location**: Place components in appropriate directories based on their scope:
-   - Shared components → `components/`
-   - Page-specific components → `pages/[page-name]/components/`
-
-2. **Structure**:
-   ```jsx
-   import React from 'react';
-   import { useTheme } from '../contexts/ThemeContext';
-
-   const ComponentName = ({ prop1, prop2 }) => {
-     const { currentTheme } = useTheme();
-     
-     return (
-       <div style={{ color: currentTheme.colors.text }}>
-         {/* Component content */}
-       </div>
-     );
-   };
-
-   export default ComponentName;
-   ```
-
-### State Management
-
-1. **Global State**: Use React Context for global state management
-2. **Local State**: Use React hooks for component-level state
-3. **Data Fetching**: Use service layer for API calls
-
-### Routing
-
-1. **Protected Routes**: Wrap sensitive routes with `ProtectedRoute` component
-2. **Route Structure**: Follow the structure in `MainRoutingPage.jsx`
-3. **Navigation**: Use React Router hooks for navigation
-
-### Styling
-
-1. **Theme Usage**:
-   ```jsx
-   const { currentTheme } = useTheme();
-   const styles = {
-     backgroundColor: currentTheme.colors.background,
-     color: currentTheme.colors.text
-   };
-   ```
-
-2. **Responsive Design**:
-   ```jsx
-   <div className="p-4 md:p-6 lg:p-8">
-     {/* Content */}
-   </div>
-   ```
-
-## 🧪 Testing
-
-1. **Unit Tests**: Test individual components and functions
-2. **Integration Tests**: Test feature workflows
-3. **E2E Tests**: Test complete user journeys
-
-## 🔐 Security
-
-1. **Authentication**: Use AuthContext for all auth needs
-2. **Authorization**: Implement proper route protection
-3. **Data Validation**: Validate all user inputs
-4. **Error Handling**: Implement proper error boundaries
-
-## 🚀 Getting Started
-
-1. Clone the repository
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Set up environment variables:
-   ```bash
-   cp .env.example .env
-   ```
-4. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-## 📝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a Pull Request
+Live and deployed at [twirlyapp.com](https://twirlyapp.com). Beta testing in progress — see `BETA_TESTING.md` for the current testing scope and known issues.
