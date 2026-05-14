@@ -27,7 +27,7 @@ const Heading = ({ setData, gridCollapsed }) => {
 
     <div className="flex items-center justify-end gap-2">
         {setData?.set_categories && setData?.set_categories.map((cat, index) => (
-          <span key={index + cat?.categories?.name + cat?.categories?.id} className="text-sm text-gray-500 rounded-full bg-gray-100 px-2 py-1">
+          <span key={index + cat?.categories?.name + cat?.categories?.id} className="text-sm text-text-muted rounded-full bg-surface px-2 py-1">
             {cat?.categories?.name}
           </span>
         ))}

@@ -10,7 +10,6 @@ import {
 import Avatar from '../../components/common/Avatar';
 import { changeColorAlpha, getPublicUrl } from '../../lib/utils';
 import { useNavigate } from 'react-router-dom';
-import { useTheme } from '../../contexts/ThemeContext';
 
 
 import { motion, AnimatePresence } from 'framer-motion';
@@ -56,7 +55,7 @@ const List = ({displayItems, isMobile, winner, runnerUp, comparison, totalVotes,
             {winnerAnnouncement && (
             <div className="flex flex-col items-center justify-center">
                 <div className="rounded-full bg-amber-200 p-2 px-4">
-                        <div className="text-lg text-gray-500 font-bold">
+                        <div className="text-lg text-text-muted font-bold">
                             And the WINNER is...
                         </div>
                     </div>
@@ -65,7 +64,7 @@ const List = ({displayItems, isMobile, winner, runnerUp, comparison, totalVotes,
             {runnerUpAnnouncement && (
                 <div className="flex flex-col items-center justify-center">
                     <div className="rounded-full bg-amber-200 p-2 px-4">
-                        <div className="text-lg text-gray-500 font-bold">
+                        <div className="text-lg text-text-muted font-bold">
                             RUNNER CUP goes to...
                         </div>
                     </div>
@@ -99,13 +98,9 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
     const winner = userVotedAll ? findWinner(displayItems) : null;
     const runnerUp = userVotedAll ? findRunnerUp(displayItems) : null;
     const totalVotes = userVotedAll ? countTotalVotes(comparisonMetrics) : null;
-    // console.log(totalVotes, 'totalVotes');
-    // console.log(displayItems, 'displayItems');
-    // console.log(comparisonMetrics, 'comparisonMetrics');
     const {isHeaderVisible} = useHeader();
     const [scale, setScale] = useState(1);
     const [lastScrollY, setLastScrollY] = useState(0);
-    const { currentTheme } = useTheme();
     // Add scroll event listener for scaling
     useEffect(() => {
         const handleScroll = () => {
@@ -125,7 +120,7 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
             <div className="">
                 <div className='flex flex-col'>
                     {!userVotedAll && (
-                        <div className="text-center text-sm text-gray-500">
+                        <div className="text-center text-sm text-text-muted">
                             Vote all to view results
                         </div>
                     )}
@@ -167,10 +162,10 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
                         isEditable={false}
                     />
                     <div className="flex flex-col" onClick={() => navigate(`/user/${comparison.user?.display_name}`)}>
-                        <span className="text-sm text-gray-600">
-                            Created by <span className="font-medium text-gray-900">{comparison.user?.display_name || 'Anonymous'}</span>
+                        <span className="text-sm text-text-muted">
+                            Created by <span className="font-medium text-text">{comparison.user?.display_name || 'Anonymous'}</span>
                         </span>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-text-muted">
                             {formatDistanceToNow(comparison.created_at && new Date(comparison.created_at))}
                         </span>
                     </div>

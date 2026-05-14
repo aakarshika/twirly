@@ -1,10 +1,44 @@
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
+import apiClient from '../lib/apiClient';
 import { userActivityService, ACTIVITY_TYPES, ENTITY_TYPES } from '../services/userActivityService';
 
 const BATCH_SIZE = 5;
-const MAX_CACHED_SETS = 20; // Maximum number of sets to keep in memory
+
+/**
+ * Transform a set row from /api/sets into the shape the compare UI expects.
+ * Per-item votes are included in the items array from the backend.
+ */
+function transformSet(s) {
+  const totalVotes = s.total_votes ?? 0;
+  const rawItems = Array.isArray(s.items) ? s.items : [];
+  const maxVotes = rawItems.reduce((m, i) => Math.max(m, i.votes ?? 0), 0);
+
+  const set_items = rawItems.map(item => ({
+    ...item,
+    votes: item.votes ?? 0,
+    votesPercentage: totalVotes > 0 ? ((item.votes ?? 0) / totalVotes) * 100 : 0,
+    winner: (item.votes ?? 0) === maxVotes && maxVotes > 0,
+  }));
+
+  return {
+    id: s.set_id,
+    name: s.set_name,
+    user_name: s.creator_display_name,
+    user_profile_image_url: s.creator_image_url,
+    set_items,
+    hasVoted: !!s.has_voted,
+    votedItemId: s.voted_item_id ?? null,
+    voteId: s.vote_id ?? null,
+    hasLiked: false,  // Sprint 8: comparison_set_comment_reactions not yet migrated
+    likeCount: 0,
+    totalVotes,
+    end_date: s.end_date,
+    created_at: s.created_at,
+    set_categories: [],
+  };
+}
 
 export const useComparisonSets = (paramId) => {
   const { user, userPreferences } = useAuth();
@@ -16,415 +50,239 @@ export const useComparisonSets = (paramId) => {
   const [categoryIds, setCategoryIds] = useState(null);
   const isInitialLoad = useRef(true);
 
-  const getPercentAndWinner = (comparisonSets, totalVotes) => {
-    comparisonSets.forEach(opt => {
-      opt.votesPercentage = opt.votes / totalVotes * 100;
-    });
-    const winner = comparisonSets.reduce((max, opt) => opt.votesPercentage > max.votesPercentage ? opt : max);
-    comparisonSets.forEach(opt => {
-      opt.winner = opt.name === winner.name;
-    });
-    return comparisonSets;
+  const getPercentAndWinner = (items, totalVotes) => {
+    items.forEach(opt => { opt.votesPercentage = opt.votes / totalVotes * 100; });
+    const winner = items.reduce((max, opt) => opt.votesPercentage > max.votesPercentage ? opt : max);
+    items.forEach(opt => { opt.winner = opt.name === winner.name; });
+    return items;
   };
 
-  const fetchSetDetails = async (setId) => {
-    // console.log('🔍 Fetching set details for ID:', setId);
+  /** Fetch a batch of sets from the backend, transformed to UI shape. */
+  const fetchSets = async ({ userId, catId, excludeVoted, limit = BATCH_SIZE }) => {
     try {
-      const { data, error } = await supabase
-        .from('comparison_sets')
-        .select(`
-          *,
-          comparison_set_items!inner(items(*)),
-          user_preferences(*),
-          votes(item_id),
-          comparison_set_comment_reactions(count),
-          set_categories(categories(*))
-        `)
-        .eq('id', setId)
-        .single();
-      
-      if (data) {
-        // Get total votes for all items
-        const totalVotes = data.votes?.length || 0;
-        
-        // Check if current user has voted
-        let hasVoted = false;
-        let votedItemId = null;
-        try{if (user) {
-          const { data: userVote } = await supabase
-            .from('votes')
-            .select('item_id')
-            .eq('set_id', setId)
-            .eq('user_id', user.id)
-            .select();
-
-          hasVoted = userVote.length > 0;
-          votedItemId = userVote.length > 0 ? userVote[0].item_id : null;
-        }}
-        catch (err) {
-          // console.error('Error fetching user vote:', err);
-        }
-
-        // Check if user has liked
-        let hasLiked = false;
-        try{if (user) {
-          const { data: userLike } = await supabase
-            .from('comparison_set_comment_reactions')
-            .select('*')
-            .eq('set_id', setId)
-            .eq('user_id', user.id)
-            .select();
-          hasLiked = userLike.length > 0;
-        }}
-        catch (err) {
-          // console.error('Error fetching user like:', err);
-        }
-
-        var winningItemId = data.comparison_set_items[0].items.id;
-        // console.log('✅ Successfully fetched set:', setId);
-        const set =  {
-          ...data,
-          user_name: data.user_preferences.display_name,
-          user_profile_image_url: data.user_preferences.profile_image_url,
-          set_items: data.comparison_set_items.map(item => 
-            {
-              const votes = data.votes.filter(vote => vote.item_id === item.items.id).length;
-              const votesPercentage = (votes / totalVotes) * 100;
-              if (votesPercentage > winningItemId.votesPercentage) {
-                winningItemId = item.items.id;
-              }
-              return ({
-            ...item.items,
-            votes: votes,
-            votesPercentage: votesPercentage
-          })}),
-          hasVoted,
-          votedItemId,
-          hasLiked,
-          likeCount: data.comparison_set_comment_reactions?.length  > 0 ? data.comparison_set_comment_reactions[0].count  : 0,
-          totalVotes
-        };
-        set.set_items.forEach(item => {
-          item.winner = item.id === winningItemId;
-        });
-        return set;
-      }
-      // console.log('❌ No data found for set:', setId);
-      return null;
+      const { data } = await apiClient.get('/api/sets', {
+        params: {
+          userId: userId || undefined,
+          categoryId: catId || undefined,
+          excludeVoted: excludeVoted ? 'true' : undefined,
+          limit,
+        },
+      });
+      return (data.data ?? []).map(transformSet);
     } catch (err) {
-      console.error('❌ Error fetching set:', setId, err);
-      return null;
-    }
-  };
-
-  const fetchFilteredSets = async () => {
-
-    console.log('🔍 categoryIds', categoryIds);
-    console.log('🔍 categoryId', categoryId);
-    console.log('🔍 selectedTag', selectedTag);
-    let filterType = null;
-
-    if (selectedTag) {
-      if (selectedTag === 'trending') {
-        filterType = 'trending';
-      } else if (selectedTag === 'user_home_feed_91819') {
-        filterType = 'user_home_feed_91819';
-      } else if (selectedTag === 'controversial') {
-        filterType = 'controversial';
-      } else if (categoryIds && categoryIds.length > 0) {
-        filterType = 'multiple_categories';
-      } else {
-        filterType = 'single_category';
-      }
-    }
-    try {
-      const { data, error } = await supabase
-        .rpc('get_filtered_sets', {
-          _user_id: user?.id,
-          _filter_type: filterType,
-          _category_id:  filterType === 'single_category' ? categoryId : null,
-          _category_ids: filterType === 'multiple_categories' ? categoryIds : null,
-          _limit: BATCH_SIZE
-        })
-        .select(`
-            *
-        `);
-
-      if (error) throw error;
-      if (!data || data.length === 0) return [];
-
-      // Fetch full details for each set
-      const setDetailsPromises = data.map(set => fetchSetDetails(set.set_id));
-      const setDetails = await Promise.all(setDetailsPromises);
-      
-
-      return setDetails.filter(Boolean);
-      // return data;
-    } catch (err) {
-      console.error('Error fetching filtered sets:', err);
+      console.error('Error fetching sets:', err);
       return [];
     }
   };
-  useEffect(() => {
-    console.log('🔍 comparisonSets', comparisonSets);
-  }, [comparisonSets]);
 
-  // Effect for initial load
+  /** Fetch a single set by id (for initial URL-based navigation). */
+  const fetchSetById = async (id) => {
+    try {
+      const { data } = await apiClient.get(`/api/sets/${id}`, {
+        params: { userId: user?.id || undefined },
+      });
+      return data.data ? transformSet(data.data) : null;
+    } catch (err) {
+      console.error('Error fetching set by id:', err);
+      return null;
+    }
+  };
+
+  /** Determine fetch params based on the active tag / category state. */
+  const buildFetchParams = () => {
+    const base = { userId: user?.id, limit: BATCH_SIZE };
+    if (selectedTag === 'user_home_feed_91819') return { ...base, excludeVoted: true };
+    if (selectedTag === 'trending') return base;
+    if (categoryId) return { ...base, catId: categoryId };
+    return base;
+  };
+
+  const updateSetVotes = (set, votedItemId, isAdding) => {
+    const updatedItems = set.set_items.map(item => ({
+      ...item,
+      votes: isAdding && item.id === votedItemId ? item.votes + 1 : item.votes,
+    }));
+    const totalVotes = updatedItems.reduce((acc, item) => acc + item.votes, 0);
+    return { set_items: getPercentAndWinner(updatedItems, totalVotes), totalVotes };
+  };
+
+  // Initial load
   useEffect(() => {
     if (!user || !isInitialLoad.current) return;
 
-    const loadInitialData = async () => {
+    const load = async () => {
       try {
         const initialSets = [];
-        
-        // If we have a paramId, load that set first
+
         if (paramId) {
-          const initialSet = await fetchSetDetails(paramId);
-          if (initialSet) {
-            initialSets.push(initialSet);
-          }
+          const initial = await fetchSetById(paramId);
+          if (initial) initialSets.push(initial);
         }
 
-        // Load the first batch of sets
-        const firstBatch = await fetchFilteredSets();
-        if (firstBatch.length > 0) {
-          initialSets.push(...firstBatch.filter(set => set.id !== paramId));
-        }
+        const batch = await fetchSets(buildFetchParams());
+        initialSets.push(...batch.filter(s => s.id !== paramId));
 
         if (initialSets.length > 0) {
           setComparisonSets(initialSets);
           setCurrentIndex(0);
         }
-
         isInitialLoad.current = false;
       } catch (err) {
         console.error('Error loading initial data:', err);
       }
     };
 
-    loadInitialData();
+    load();
   }, [user, paramId]);
 
-  // Effect for loading more sets when reaching the end
+  // Load more when approaching the end
   useEffect(() => {
     if (currentIndex === -1 || !user) return;
+    if (currentIndex < comparisonSets.length - 2) return;
 
-    const loadNextBatch = async () => {
-      if (currentIndex >= comparisonSets.length - 2) {
-        const newSets = await fetchFilteredSets();
-        if (newSets.length > 0) {
-          setComparisonSets(prev => [...prev, ...newSets]);
-        }
-      }
+    const loadMore = async () => {
+      const newSets = await fetchSets(buildFetchParams());
+      if (newSets.length > 0) setComparisonSets(prev => [...prev, ...newSets]);
     };
-
-    loadNextBatch();
+    loadMore();
   }, [currentIndex, user]);
 
-  // Effect for handling tag changes
+  // Reload when tag / category changes
   useEffect(() => {
     if (!user || isInitialLoad.current) return;
 
-    const loadTaggedBatch = async () => {
-      const sets = await fetchFilteredSets();
-      if (sets.length > 0) {
-        setComparisonSets(sets);
-        setCurrentIndex(0);
-      } else {
-        setComparisonSets([]);
-        setCurrentIndex(-1);
-      }
+    const reload = async () => {
+      const sets = await fetchSets(buildFetchParams());
+      setComparisonSets(sets);
+      setCurrentIndex(sets.length > 0 ? 0 : -1);
     };
-
-    loadTaggedBatch();
+    reload();
   }, [selectedTag, user]);
 
-  // Effect for fetching categories
+  // Category fetch — still uses Supabase (Sprint 12 will migrate user/preference endpoints)
   useEffect(() => {
     if (!user) return;
-    
+
     const fetchCategories = async () => {
       const { data: userCategoryPreferences } = await supabase
         .from('user_category_preferences')
         .select('*, categories(*)')
         .eq('user_id', user?.id);
-      
+
       const { data: allImportantCategories } = await supabase
         .from('top_category_groups')
         .select('*')
         .order('set_count', { ascending: false })
         .limit(10);
 
-      const allImportantCategoriesFiltered = allImportantCategories.filter(
-        category => !userCategoryPreferences.some(item => (item.categories.name).toLowerCase().trim() === (category.category_group).toLowerCase().trim())
+      const filtered = (allImportantCategories ?? []).filter(
+        cat => !(userCategoryPreferences ?? []).some(
+          up => up.categories?.name?.toLowerCase() === cat.category_group?.toLowerCase()
+        )
       );
-      setAllCategories([ ...userCategoryPreferences.map(item => ({
-        ...item.categories,
-        userCat: true
-      })),
-      ...allImportantCategoriesFiltered.map(category => ({
-        ...category,
-        name: category.category_group,
-        included_categories: category.included_categories,
-        userCat: false
-      }))
+      setAllCategories([
+        ...(userCategoryPreferences ?? []).map(item => ({ ...item.categories, userCat: true })),
+        ...filtered.map(cat => ({
+          ...cat, name: cat.category_group,
+          included_categories: cat.included_categories, userCat: false,
+        })),
       ]);
     };
 
     fetchCategories();
   }, [user]);
 
-  const updateSetVotes = (set, votedItemId, isAdding) => {
-    const updatedItems = set.set_items.map(item => ({
-      ...item,
-      votes: isAdding && item.id === votedItemId ? item.votes + 1 : item.votes
-    }));
-    const totalVotes = updatedItems.reduce((acc, item) => acc + item.votes, 0);
-    return {
-      set_items: getPercentAndWinner(updatedItems, totalVotes),
-      totalVotes
-    };
-  };
-
   const handleVote = async (itemId) => {
     if (!user || !comparisonSets[currentIndex]) return;
-    
     const currentSet = comparisonSets[currentIndex];
     if (currentSet.hasVoted) return;
 
     try {
-      const { data, error } = await supabase
-        .from('votes')
-        .insert({
-          user_id: user.id,
-          item_id: itemId,
-          set_id: currentSet.id
-        })
-        .select();
+      const { data: resp } = await apiClient.post('/api/votes', {
+        setId: currentSet.id, itemId,
+      });
+      const voteId = resp.data?.id ?? null;
 
-      if (error) throw error;
+      setComparisonSets(prev => prev.map((set, i) =>
+        i === currentIndex
+          ? { ...set, hasVoted: true, votedItemId: itemId, voteId, ...updateSetVotes(set, itemId, true) }
+          : set
+      ));
 
-      // Update the local state with the new vote
-      setComparisonSets(prev => 
-        prev.map((set, i) => 
-          i === currentIndex ? { ...set, hasVoted: true, votedItemId: itemId, ...updateSetVotes(set, itemId, true) } : set
-        )
-      );
-
-      // Log the vote activity
       await userActivityService.logActivity({
         userId: user.id,
         activityType: ACTIVITY_TYPES.VOTE,
         entityType: ENTITY_TYPES.COMPARISON_SET,
         entityId: currentSet.id,
         pageName: `/compare/${currentSet.id}`,
-        metadata: { 
-          comparisonSetId: currentSet.id,
-          votedItemId: itemId
-        }
+        metadata: { comparisonSetId: currentSet.id, votedItemId: itemId },
       });
-
     } catch (error) {
       console.error('Error voting:', error);
-      // You might want to show an error message to the user here
     }
   };
 
   const handleReset = async () => {
     if (!user || !comparisonSets[currentIndex]) return;
-    
     const currentSet = comparisonSets[currentIndex];
     if (!currentSet.hasVoted || !currentSet.votedItemId) return;
 
     try {
-      const { error } = await supabase
-        .from('votes')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('set_id', currentSet.id)
-        .eq('item_id', currentSet.votedItemId);
+      if (currentSet.voteId) {
+        await apiClient.delete(`/api/votes/${currentSet.voteId}`);
+      } else {
+        await apiClient.delete('/api/votes', { params: { setId: currentSet.id } });
+      }
 
-      if (error) throw error;
+      setComparisonSets(prev => prev.map((set, i) =>
+        i === currentIndex
+          ? { ...set, hasVoted: false, votedItemId: null, voteId: null,
+              ...updateSetVotes(set, currentSet.votedItemId, false) }
+          : set
+      ));
 
-      // Update the local state to remove the vote
-      setComparisonSets(prev => 
-        prev.map((set, i) => 
-          i === currentIndex ? { ...set, hasVoted: false, votedItemId: null, ...updateSetVotes(set, currentSet.votedItemId, false) } : set
-        )
-      );
-
-      // Log the reset activity
       await userActivityService.logActivity({
         userId: user.id,
         activityType: ACTIVITY_TYPES.VOTE_REVERT,
         entityType: ENTITY_TYPES.COMPARISON_SET,
         entityId: currentSet.id,
         pageName: `/compare/${currentSet.id}`,
-        metadata: { 
-          comparisonSetId: currentSet.id,
-          resetItemId: currentSet.votedItemId
-        }
+        metadata: { comparisonSetId: currentSet.id, resetItemId: currentSet.votedItemId },
       });
-
     } catch (error) {
       console.error('Error resetting vote:', error);
-      // You might want to show an error message to the user here
     }
   };
 
+  // Sprint 8 carry-over: comparison_set_comment_reactions not yet in backend schema.
+  // handleLikeComparisonSet stays on Supabase until Sprint 8 migrates comments/reactions.
   const handleLikeComparisonSet = async (setId) => {
     if (!user) return;
-    // console.log('handleLikeComparisonSet', setId);
     try {
       const currentSet = comparisonSets[currentIndex];
       const newHasLiked = !currentSet.hasLiked;
-      
+
       if (newHasLiked) {
         await supabase
           .from('comparison_set_comment_reactions')
           .insert([{ set_id: setId, user_id: user.id, reaction_type: 'like' }]);
-
-        await userActivityService.logActivity({
-          userId: user.id,
-          activityType: ACTIVITY_TYPES.LIKE_COMPARISON_SET,
-          entityType: ENTITY_TYPES.COMPARISON_SET,
-          entityId: setId,
-          pageName: `/compare/${setId}`,
-          metadata: { 
-            comparisonSetId: setId,
-            comparisonSetTitle: currentSet.title
-          }
-        });
       } else {
         await supabase
           .from('comparison_set_comment_reactions')
           .delete()
           .eq('set_id', setId)
           .eq('user_id', user.id);
-
-        await userActivityService.logActivity({
-          userId: user.id,
-          activityType: ACTIVITY_TYPES.UNLIKE_COMPARISON_SET,
-          entityType: ENTITY_TYPES.COMPARISON_SET,
-          entityId: setId,
-          pageName: `/compare/${setId}`,
-          metadata: { 
-            comparisonSetId: setId,
-            comparisonSetTitle: currentSet.title
-          }
-        });
       }
 
-      setComparisonSets(prev => 
-        prev.map((set, i) => 
-          i === currentIndex ? { ...set, hasLiked: newHasLiked, likeCount: newHasLiked ? set.likeCount + 1 : set.likeCount - 1 } : set
-        )
-      );
+      setComparisonSets(prev => prev.map((set, i) =>
+        i === currentIndex
+          ? { ...set, hasLiked: newHasLiked, likeCount: newHasLiked ? set.likeCount + 1 : set.likeCount - 1 }
+          : set
+      ));
     } catch (error) {
       console.error('Error liking comparison set:', error);
     }
   };
-
 
   return {
     comparisonSets,
@@ -437,6 +295,6 @@ export const useComparisonSets = (paramId) => {
     setCategoryIds,
     setSelectedTag,
     userPreferences,
-    allCategories
+    allCategories,
   };
-}; 
+};

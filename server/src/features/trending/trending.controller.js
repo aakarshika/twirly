@@ -1,5 +1,5 @@
 import createError from 'http-errors';
-import { getTrendingSets, getFilteredSets } from './trending.queries.js';
+import { getTrendingSets, getFilteredSets, getSetById } from './trending.queries.js';
 
 export async function getTrending(req, res, next) {
   try {
@@ -24,6 +24,19 @@ export async function getSets(req, res, next) {
 
     const sets = await getFilteredSets({ userId, categoryId, excludeVoted, limit });
     res.json({ data: sets });
+  } catch (err) {
+    next(err);
+  }
+}
+
+export async function getSet(req, res, next) {
+  try {
+    const id = Number(req.params.id);
+    if (isNaN(id)) throw createError(400, 'id must be a number');
+    const userId = req.query.userId || null;
+    const set = await getSetById(id, userId);
+    if (!set) throw createError(404, 'Set not found');
+    res.json({ data: set });
   } catch (err) {
     next(err);
   }

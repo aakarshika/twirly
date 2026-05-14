@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTheme } from '../../../contexts/ThemeContext';
 import { COMPARISON_COLOR_SET } from '../../../lib/constants';
 import ComparisonCommentsInshort from './ComparisonCommentsInshort';
 import Button from '../../../components/common/Button';
@@ -10,7 +9,7 @@ import { useState } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import ComparisonSetAspectsCommentsSection from '../../comparison-aspect-page/ComparisonSetAspectsCommentsSection';
 
-const MetricCard = ({ metric, items, getMetricAverageVotes, currentTheme, userVoted }) => {
+const MetricCard = ({ metric, items, getMetricAverageVotes, userVoted }) => {
   const totalVotes = metric.votes.length;
   const navigate = useNavigate();
   return (
@@ -20,22 +19,20 @@ const MetricCard = ({ metric, items, getMetricAverageVotes, currentTheme, userVo
     }}>
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center space-x-2">
-          <Target className="w-5 h-5" style={{ color: currentTheme.colors.secondary }} />
-          <h3 className="text-md text-gray-500">{metric.metric_name.split('_').map(word => 
+          <Target className="w-5 h-5 text-text-muted" />
+          <h3 className="text-md text-text-muted">{metric.metric_name.split('_').map(word =>
             word.charAt(0).toUpperCase() + word.slice(1)
           ).join(' ')}</h3>
         </div>
         {userVoted && (<div className="flex items-center space-x-4">
           <div className="flex items-center space-x-1">
-            <ThumbsUp className="w-4 h-4 text-gray-500" />
-            <span className="text-sm text-gray-600">{totalVotes} votes</span>
+            <ThumbsUp className="w-4 h-4 text-text-muted" />
+            <span className="text-sm text-text-muted">{totalVotes} votes</span>
           </div>
         </div>)}
 
         {(!userVoted && <div className='flex flex-row justify-end items-center'>
-          <button className='bg-blue-500 text-white px-4 py-2 rounded-md'
-          
-          >
+          <button className='bg-primary text-primary-fg px-4 py-2 rounded-md'>
             <span className='flex items-center'>Play <Play className='w-4 h-4 ml-2' /></span>
           </button>
         </div>)}
@@ -50,10 +47,10 @@ const MetricCard = ({ metric, items, getMetricAverageVotes, currentTheme, userVo
             <div key={item.id} className="flex flex-row items-center">
               <div className="flex flex-row w-full">
                 <div className="flex  w-60">
-                  <span className="text-sm font-medium text-gray-700 line-clamp-1">{item.name}</span>
+                  <span className="text-sm font-medium text-text line-clamp-1">{item.name}</span>
                 </div>
-                <span className=' text-sm text-white-500 ml-2 w-6'>{value} </span>
-                <div className="flex w-full bg-gray-200 rounded-full h-4">
+                <span className='text-sm text-text-muted ml-2 w-6'>{value} </span>
+                <div className="flex w-full bg-surface rounded-full h-4">
                   <div 
                     className="flex rounded-full transition-all duration-300"
                     style={{ 
@@ -74,7 +71,6 @@ const MetricCard = ({ metric, items, getMetricAverageVotes, currentTheme, userVo
 
 const BarChart = ({ items,  comparisonMetrics }) => {
   const { user } = useAuth();
-  const { currentTheme } = useTheme();
   const navigate = useNavigate();
 
 
@@ -105,7 +101,6 @@ const BarChart = ({ items,  comparisonMetrics }) => {
             metric={metric}
             items={items}
             getMetricAverageVotes={getMetricAverageVotes}
-            currentTheme={currentTheme}
             userVoted={metric.userVoted}
           />
           <div className='mt-4 mb-8'>

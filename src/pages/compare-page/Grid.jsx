@@ -1,7 +1,6 @@
 import { Maximize2, Send, ThumbsUp } from 'lucide-react';
 import React, { useState } from 'react';
 import { changeColorAlpha } from '../../lib/utils';
-import { useTheme } from '../../contexts/ThemeContext';
 import { motion } from 'framer-motion';
 import VotingAnimation from '../comparison-aspect-page/ComparisonItemCard/VotingAnimation/VotingAnimation';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +10,6 @@ import { useNavigate } from 'react-router-dom';
 const Grid = ({ layout = '2x2',  gridCollapsed = false , localOptions ,setData, handleVote, handleReset }) => {
   const hasVoted = setData.hasVoted;
   const navigate = useNavigate();
-  const { currentTheme } = useTheme();
   return (
     // flex th =e grid tpo take up all the space
     <motion.div className={
@@ -26,9 +24,9 @@ const Grid = ({ layout = '2x2',  gridCollapsed = false , localOptions ,setData, 
       {localOptions && localOptions.map((opt, i) => (
         <motion.div
           key={opt.name + i}
-          className={`relative flex h-full items-center justify-center border rounded-xl h-16 text-md font-semibold ${opt.id === setData.votedItemId ? 'text-blue-600' : ''}`}
+          className={`relative flex h-full items-center justify-center border rounded-xl h-16 text-md font-semibold ${opt.id === setData.votedItemId ? 'text-primary' : ''}`}
           initial={{
-            backgroundColor: currentTheme.colors.background,
+            backgroundColor: 'var(--color-bg)',
             boxShadow: opt.winner && hasVoted ? `0 0 15px ${changeColorAlpha(opt.item_color_string, 0.5)}` : 'none'
           }}
           animate={{
@@ -105,16 +103,17 @@ const Grid = ({ layout = '2x2',  gridCollapsed = false , localOptions ,setData, 
               }}
               onClick={handleReset}
             >
-              <ThumbsUp className='text-blue-600' color={hasVoted ? currentTheme.colors.primary : 'gray'} 
-              fill={hasVoted ? changeColorAlpha(currentTheme.colors.primary, 0.5) : 'none'} 
-              size={gridCollapsed ? 16 : 24} />
+              <ThumbsUp
+                className={hasVoted ? 'text-primary' : 'text-text-muted'}
+                fill={hasVoted ? 'color-mix(in srgb, var(--color-primary) 50%, transparent)' : 'none'}
+                size={gridCollapsed ? 16 : 24} />
             </motion.div>
           )}
           
 
           {(
             <motion.div 
-              className='absolute bottom-0 right-0 z-12 p-2 rounded-full bg-white/50'
+              className='absolute bottom-0 right-0 z-12 p-2 rounded-full bg-bg/50'
               onClick={
                 () => {
                   navigate(`/item/${opt.id}`);

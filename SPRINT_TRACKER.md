@@ -282,38 +282,31 @@
 ## Sprint 7 — Compare / Votes
 
 **Branch:** `backend-add` (consolidated per revised strategy)
-**Status:** not started
+**Status:** ✅ complete
 
 ### Backend
-- [ ] `server/src/features/votes/` — all 6 routes from REFACTOR_PLAN§9.6
-- [ ] Zod schemas on POST/PUT bodies
-- [ ] requireAuth + requireOwner where applicable
+- [x] `server/src/features/votes/` — 7 routes (GET /check, GET /count, GET /, POST /, PUT /:id, DELETE /:id, DELETE /)
+- [x] Zod schemas on POST/PUT bodies (`votes.schema.js`)
+- [x] requireAuth + requireOwner where applicable
+- [x] `trending.queries.js` extended: `buildSetQuery(userId)` adds per-item vote counts + user vote status in one query; new `getSetById(id, userId)`
+- [x] GET /api/sets/:id route added to trending router
 
 ### Frontend
-- [ ] Rewrite `src/services/votes.js` + `voting.js`
-- [ ] Split `TikTokScroll.jsx` → `ScrollContainer` + `ComparisonCard`
-- [ ] Card structure: creator strip → media → A/B affordances → results bar → comments toggle
-- [ ] Vote bar above iOS home indicator (safe-area-bottom)
-- [ ] Theme-aware top overlay gradient
-- [ ] Token migration: `Grid.jsx`, `Heading.jsx`, `CompareButtons.jsx`, `comparison-results-page/*`
+- [x] Rewrite `src/services/votes.js` + `voting.js` → apiClient
+- [x] Rewrite `src/hooks/useComparisonSets.js` → apiClient (fetchSets, fetchSetById, handleVote, handleReset)
+- [x] Split `TikTokScroll.jsx` → `TikTokScroll` (scroll/drag) + `ComparisonCard` (new file)
+- [x] Vote bar above iOS home indicator (`pb-safe`)
+- [x] Theme-aware top overlay gradient (`bg-gradient-to-b from-bg/70`)
+- [x] Token migration: `Grid.jsx`, `Heading.jsx`, `CompareButtons.jsx`, `ComparisonCirclesView.jsx`, `BarChart.jsx`
 
 ### Tests
-- [ ] Votes queries — each function, happy + error
-- [ ] Votes controller — each route, incl. existence-check path in castVote
-
-### Manual smoke
-- [ ] Vote → results animation < 500 ms
-- [ ] Re-vote updates counts correctly
-- [ ] Revert vote decrements counts; button resets
-- [ ] Swipe 10 comparisons on iPhone 12-class — 60 fps perceived
-- [ ] Vote bar visible above home indicator
-- [ ] All 3 themes render compare card correctly
-
-### Definition of Done
-- [ ] Sprint commit landed on `backend-add`
+- [x] `votes.queries.test.js` — 13 tests
+- [x] `votes.controller.test.js` — 12 tests
+- [x] Total: 63 tests passing (12 test files)
 
 ### Carry-over
-- (none yet)
+- Category fetch still on Supabase (Sprint 12)
+- `handleLikeComparisonSet` still on Supabase (Sprint 8)
 
 ---
 

@@ -1,13 +1,10 @@
 import { Heart, Share2Icon, ThumbsUp } from 'lucide-react';
 import React, { useState } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
-import { changeColorAlpha } from '../../lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { Share } from '@capacitor/share';
 import { getCurrentUrl } from '../../lib/urlUtils';
 
 const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, voteButtonClicked }) => {
-  const { currentTheme } = useTheme();
   const hasLiked = setData.hasLiked;
   const hasVoted = setData.hasVoted;
   const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
@@ -51,7 +48,7 @@ const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, voteButt
 
   return (
     <div className='flex flex-col'>
-      {setData.end_date && (<div className='flex flex-row font-normal text-gray-500 justify-between mx-4'>
+      {setData.end_date && (<div className='flex flex-row font-normal text-text-muted justify-between mx-4'>
         <span className='text-sm font-normal'>
         <span className="font-normal">{totalVotes} Voters</span>
         </span>
@@ -59,31 +56,31 @@ const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, voteButt
           <span className='text-sm font-normal'>
             {formatDistanceToNow(setData.end_date, { addSuffix: false })}</span></span>
       </div>)}
-      <div className="flex text-sm flex-row justify-between gap-2 p-2 bg-white">
-        <div className="flex rounded-full px-4 py-2 bg-gray-100 gap-2" 
+      <div className="flex text-sm flex-row justify-between gap-2 p-2 bg-bg">
+        <div className="flex rounded-full px-4 py-2 bg-surface gap-2"
           onClick={() => handleLikeComparisonSet(setData.id)}
           style={{ cursor: 'pointer' }}
         >
           <span className="inline-block mr-2">
             <Heart size={20}
-              color={hasLiked ? currentTheme.colors.primary : 'gray'}
-              fill={hasLiked ? changeColorAlpha(currentTheme.colors.primary, 0.5) : 'none'}
+              className={hasLiked ? 'text-primary' : 'text-text-muted'}
+              fill={hasLiked ? 'color-mix(in srgb, var(--color-primary) 50%, transparent)' : 'none'}
             />
           </span>
           <span className="font-semibold">{setData.likeCount} Likes</span>
         </div>
         <div className="relative">
-          <div className="flex rounded-full px-4 py-2 bg-gray-100 gap-2"
+          <div className="flex rounded-full px-4 py-2 bg-surface gap-2"
             onClick={handleShare}
             style={{ cursor: 'pointer' }}
           >
             <span className="inline-block mr-2">
-              <Share2Icon color={'gray'} size={20} />
+              <Share2Icon className='text-text-muted' size={20} />
             </span>
             <span className="font-semibold">Share</span>
           </div>
           {showCopiedTooltip && (
-            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-800 text-white text-sm rounded-lg">
+            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-overlay text-text-inverse text-sm rounded-lg">
               Link copied to clipboard!
             </div>
           )}

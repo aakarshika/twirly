@@ -13,6 +13,7 @@ import { trendingRouter, setsRouter } from './features/trending/trending.routes.
 import { karmaRouter } from './features/karma/karma.routes.js';
 import { searchRouter } from './features/search/search.routes.js';
 import { pollsRouter } from './features/polls/polls.routes.js';
+import { votesRouter } from './features/votes/votes.routes.js';
 
 export function createApp() {
   const app = express();
@@ -34,6 +35,7 @@ export function createApp() {
   app.use('/api/karma', karmaRouter);
   app.use('/api/search', searchRouter);
   app.use('/api/polls', pollsRouter);
+  app.use('/api/votes', votesRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);
