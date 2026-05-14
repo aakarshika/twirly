@@ -3,11 +3,11 @@ import { useLoading } from '../contexts/LoadingContext';
 
 export const useDataFetching = (key, fetchFunction, dependencies = [], options = {}) => {
   const { setLoading, setError, clearError, clearLoading, isLoading, getError } = useLoading();
-  const { 
-    useGlobalLoading = false, 
+  const {
+    useGlobalLoading = false,
     loadingMessage = 'Loading Comparison...',
     useGlobalError = false,
-    retryFunction = null
+    retryFunction = null,
   } = options;
 
   const fetchData = async () => {
@@ -55,6 +55,6 @@ export const useDataFetching = (key, fetchFunction, dependencies = [], options =
   return {
     isLoading: useGlobalLoading ? isLoading('global') : isLoading(key),
     error: useGlobalError ? getError('global') : getError(key),
-    fetchData
+    fetchData,
   };
-}; 
+};

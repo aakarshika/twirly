@@ -14,14 +14,14 @@ const CompareResultsView = ({ items, currentSetId, currentSet, celebratingResult
 
   return (
     <div className="w-full">
-      <PollScreen 
-        items={items} 
-        currentSetId={currentSetId} 
-        currentSet={currentSet} 
+      <PollScreen
+        items={items}
+        currentSetId={currentSetId}
+        currentSet={currentSet}
         celebratingResults={celebratingResults}
       />
     </div>
   );
 };
 
-export default CompareResultsView; 
+export default CompareResultsView;

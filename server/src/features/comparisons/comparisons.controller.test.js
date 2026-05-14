@@ -15,7 +15,6 @@ vi.mock('./comparisons.queries.js', () => ({
   unlikeSet:               vi.fn(),
 }));
 
-// eslint-disable-next-line no-unused-vars
 vi.mock('../comments/comments.controller.js', () => ({
   listComments:  vi.fn(),
   createComment: vi.fn(),

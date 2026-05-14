@@ -4,7 +4,7 @@ import apiClient from '../lib/apiClient';
  * Get a user's profile + activity counts.
  * Returns the nested shape { profile, votes_count, ... } that ProfileHeader + ContentTabs expect.
  */
-export const getUserProfile = async (userId) => {
+export const getUserProfile = async userId => {
   const { data } = await apiClient.get(`/api/users/${userId}`);
   const u = data.data;
   if (!u) return null;
@@ -26,7 +26,7 @@ export const getUserProfile = async (userId) => {
   };
 };
 
-export const updateUserProfile = async (profileData) => {
+export const updateUserProfile = async profileData => {
   const { data } = await apiClient.put('/api/users/me', {
     displayName:     profileData.display_name ?? profileData.displayName,
     username:        profileData.username,

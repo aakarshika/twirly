@@ -50,7 +50,7 @@ const TrendingCard = ({ set }) => {
       {/* A vs B items */}
       <div className="grid grid-cols-2 h-32">
         {items.length >= 2 ? (
-          items.map((item) => <ItemCell key={item.id} item={item} />)
+          items.map(item => <ItemCell key={item.id} item={item} />)
         ) : (
           <div
             className="col-span-2 flex items-center justify-center h-32"

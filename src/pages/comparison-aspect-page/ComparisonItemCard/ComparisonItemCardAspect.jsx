@@ -7,23 +7,19 @@ import './ComparisonItemCard.css';
 
 const ComparisonItemCardAspect = ({
   item,
-  index,
-  height,
+  _index,
+  _height,
   userVoted,
   handleVote,
   handleRevertVote,
   votedItemId,
   totalVotes,
-  itemReviews
+  itemReviews,
 }) => {
   const {
-    imageError,
-    showStartAnimation,
     isVotedItem,
-    itemReviewData,
-    reviewCount,
     onVoteCasted,
-    handleRevertClick
+    handleRevertClick,
   } = useComparisonItemCardAspect({
     item,
     userVoted,
@@ -31,7 +27,7 @@ const ComparisonItemCardAspect = ({
     handleRevertVote,
     votedItemId,
     totalVotes,
-    itemReviews
+    itemReviews,
   });
   return (
     <div className="relative">
@@ -53,4 +49,4 @@ const ComparisonItemCardAspect = ({
   );
 };
 
-export default ComparisonItemCardAspect; 
+export default ComparisonItemCardAspect;

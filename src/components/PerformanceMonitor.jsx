@@ -53,4 +53,4 @@ const PerformanceMonitor = ({ isVisible = false }) => {
   );
 };
 
-export default PerformanceMonitor; 
+export default PerformanceMonitor;

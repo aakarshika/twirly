@@ -24,4 +24,4 @@ export const useAuth = () => {
   return context;
 };
 
-export const useAuthContext = useAuth; // Alias for backward compatibility 
+export const useAuthContext = useAuth; // Alias for backward compatibility

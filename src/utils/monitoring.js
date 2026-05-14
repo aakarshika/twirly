@@ -25,7 +25,7 @@ export const trackPerformance = (name, fn) => {
 
 // Error tracking
 export const trackError = (error, context = {}) => {
-  Sentry.withScope((scope) => {
+  Sentry.withScope(scope => {
     Object.entries(context).forEach(([key, value]) => {
       scope.setExtra(key, value);
     });
@@ -67,7 +67,7 @@ export const trackPageLoad = () => {
   if (window.performance) {
     const timing = window.performance.timing;
     const pageLoadTime = timing.loadEventEnd - timing.navigationStart;
-    
+
     Sentry.addBreadcrumb({
       category: 'performance',
       message: 'Page Load',
@@ -79,4 +79,4 @@ export const trackPageLoad = () => {
       },
     });
   }
-}; 
+};

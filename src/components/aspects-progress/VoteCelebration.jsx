@@ -19,7 +19,7 @@ const VoteCelebration = () => {
         transition={{
           duration: 2,
           repeat: 0,
-          ease: "easeInOut"
+          ease: "easeInOut",
         }}
       >
         <CheckCircle className="w-8 h-8 text-yellow-400" />
@@ -28,4 +28,4 @@ const VoteCelebration = () => {
   );
 };
 
-export default VoteCelebration; 
+export default VoteCelebration;

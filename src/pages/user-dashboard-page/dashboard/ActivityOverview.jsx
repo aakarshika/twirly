@@ -1,13 +1,12 @@
 import React from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { BarChart2, MessageSquare, ThumbsUp, Vote, Package, Clock, TrendingUp } from 'lucide-react';
-import ActivityStats from './ActivityStats';
+import { BarChart2, MessageSquare, Vote, Package, Clock, TrendingUp } from 'lucide-react';
 import ActivityVisualizations from './ActivityVisualizations';
 
 const RecentActivityCard = ({ activity }) => {
   const { currentTheme } = useTheme();
 
-  const getActivityIcon = (type) => {
+  const getActivityIcon = type => {
     switch (type) {
       case 'product':
         return <Package size={16} style={{ color: currentTheme.colors.primary }} />;
@@ -23,7 +22,7 @@ const RecentActivityCard = ({ activity }) => {
   };
 
   return (
-    <div 
+    <div
       className="flex items-center p-3 rounded-lg mb-2"
       style={{ backgroundColor: currentTheme.colors.cardBackground }}
     >
@@ -33,13 +32,13 @@ const RecentActivityCard = ({ activity }) => {
         {getActivityIcon(activity.type)}
       </div>
       <div className="flex-1">
-        <p 
+        <p
           className="text-sm font-medium"
           style={{ color: currentTheme.colors.text }}
         >
           {activity.description}
         </p>
-        <p 
+        <p
           className="text-xs"
           style={{ color: currentTheme.colors.textSecondary }}
         >
@@ -55,27 +54,27 @@ const ActivityTrend = ({ title, value, change }) => {
   const isPositive = change >= 0;
 
   return (
-    <div 
+    <div
       className="p-4 rounded-lg"
       style={{ backgroundColor: currentTheme.colors.cardBackground }}
     >
-      <p 
+      <p
         className="text-sm"
         style={{ color: currentTheme.colors.textSecondary }}
       >
         {title}
       </p>
       <div className="flex items-center justify-between mt-1">
-        <p 
+        <p
           className="text-xl font-bold"
           style={{ color: currentTheme.colors.text }}
         >
           {value}
         </p>
         <div className={`flex items-center ${isPositive ? 'text-green-500' : 'text-red-500'}`}>
-          <TrendingUp 
-            size={16} 
-            className={isPositive ? 'rotate-0' : 'rotate-180'} 
+          <TrendingUp
+            size={16}
+            className={isPositive ? 'rotate-0' : 'rotate-180'}
           />
           <span className="ml-1 text-sm">{Math.abs(change)}%</span>
         </div>
@@ -84,26 +83,25 @@ const ActivityTrend = ({ title, value, change }) => {
   );
 };
 
-const ActivityOverview = ({ 
-  votesCount, 
-  reviewsCount, 
-  productsCount, 
-  comparisonsCount, 
-  likesCount,
+const ActivityOverview = ({
+  _votesCount,
+  _reviewsCount,
+  _productsCount,
+  _comparisonsCount,
+  _likesCount,
   recentActivities = [],
   trends = {},
   activityData = [],
   categoryData = [],
-  isPublic = true
+  isPublic = true,
 }) => {
   const { currentTheme } = useTheme();
-
 
   return (
     <div className="space-y-6">
 { !isPublic && (
       <div >
-      <ActivityVisualizations 
+      <ActivityVisualizations
         activityData={activityData}
         categoryData={categoryData}
       />
@@ -112,8 +110,8 @@ const ActivityOverview = ({
 
 { !isPublic && (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div  className='rounded-lg p-4' style={{ backgroundColor: currentTheme.colors.card }}>
-          <h3 
+        <div  className="rounded-lg p-4" style={{ backgroundColor: currentTheme.colors.card }}>
+          <h3
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
           >
@@ -126,8 +124,8 @@ const ActivityOverview = ({
           </div>
         </div>
 
-        <div  className='rounded-lg p-4' style={{ backgroundColor: currentTheme.colors.card }}>
-          <h3 
+        <div  className="rounded-lg p-4" style={{ backgroundColor: currentTheme.colors.card }}>
+          <h3
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
           >
@@ -152,4 +150,4 @@ const ActivityOverview = ({
   );
 };
 
-export default ActivityOverview; 
+export default ActivityOverview;

@@ -12,7 +12,7 @@ const ComparisonGridSkeleton = () => {
           className="h-6 w-48 rounded animate-pulse"
           style={{
             backgroundColor: currentTheme.colors.muted,
-            animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+            animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
           }}
         />
       </div>
@@ -25,7 +25,7 @@ const ComparisonGridSkeleton = () => {
             className="relative rounded-lg overflow-hidden transition-all duration-300"
             style={{
               background: currentTheme.colors.card,
-              height: '40vh'
+              height: '40vh',
             }}
           >
 
@@ -52,4 +52,4 @@ const ComparisonGridSkeleton = () => {
   );
 };
 
-export default ComparisonGridSkeleton; 
+export default ComparisonGridSkeleton;

@@ -92,7 +92,7 @@ export const useComparisonData = (setId, aspectId = null) => {
     }
   };
 
-  const handleVote = async (itemId) => {
+  const handleVote = async itemId => {
     if (!user || !aspectId) return;
 
     try {

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { Globe, Save } from 'lucide-react';
-import Button from '../../../components/common/Button';
+import { Globe } from 'lucide-react';
 
 const LanguageSettings = () => {
   const { currentTheme } = useTheme();
@@ -11,7 +10,7 @@ const LanguageSettings = () => {
     dateFormat: 'MM/DD/YYYY',
     timeFormat: '12h',
     timezone: 'America/New_York',
-    currency: 'USD'
+    currency: 'USD',
   });
 
   const languages = [
@@ -20,7 +19,7 @@ const LanguageSettings = () => {
     { code: 'fr', name: 'Français' },
     { code: 'de', name: 'Deutsch' },
     { code: 'ja', name: '日本語' },
-    { code: 'zh', name: '中文' }
+    { code: 'zh', name: '中文' },
   ];
 
   const regions = [
@@ -29,7 +28,7 @@ const LanguageSettings = () => {
     { code: 'CA', name: 'Canada' },
     { code: 'AU', name: 'Australia' },
     { code: 'DE', name: 'Germany' },
-    { code: 'JP', name: 'Japan' }
+    { code: 'JP', name: 'Japan' },
   ];
 
   const timezones = [
@@ -39,7 +38,7 @@ const LanguageSettings = () => {
     { value: 'America/Los_Angeles', label: 'Pacific Time (PT)' },
     { value: 'Europe/London', label: 'London (GMT)' },
     { value: 'Europe/Paris', label: 'Paris (CET)' },
-    { value: 'Asia/Tokyo', label: 'Tokyo (JST)' }
+    { value: 'Asia/Tokyo', label: 'Tokyo (JST)' },
   ];
 
   const currencies = [
@@ -48,17 +47,17 @@ const LanguageSettings = () => {
     { code: 'GBP', symbol: '£', name: 'British Pound' },
     { code: 'JPY', symbol: '¥', name: 'Japanese Yen' },
     { code: 'CAD', symbol: 'C$', name: 'Canadian Dollar' },
-    { code: 'AUD', symbol: 'A$', name: 'Australian Dollar' }
+    { code: 'AUD', symbol: 'A$', name: 'Australian Dollar' },
   ];
 
   const handleSettingChange = (setting, value) => {
     setLanguageSettings(prev => ({
       ...prev,
-      [setting]: value
+      [setting]: value,
     }));
   };
 
-  const handleSave = () => {
+  const _handleSave = () => {
     // TODO: Implement save functionality with Supabase
     // console.log('Saving language settings:', languageSettings);
   };
@@ -66,7 +65,7 @@ const LanguageSettings = () => {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h2 
+        <h2
           className="text-md font-semibold"
           style={{ color: currentTheme.colors.text }}
         >
@@ -86,14 +85,14 @@ const LanguageSettings = () => {
 
       <div className="space-y-6">
         {/* Language Selection */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4 flex items-center space-x-2"
             style={{ color: currentTheme.colors.text }}
           >
@@ -108,9 +107,9 @@ const LanguageSettings = () => {
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   languageSettings.language === lang.code ? 'bg-opacity-20' : 'hover:bg-opacity-5'
                 }`}
-                style={{ 
+                style={{
                   backgroundColor: languageSettings.language === lang.code ? currentTheme.colors.primary : 'transparent',
-                  color: languageSettings.language === lang.code ? currentTheme.colors.background : currentTheme.colors.text
+                  color: languageSettings.language === lang.code ? currentTheme.colors.background : currentTheme.colors.text,
                 }}
               >
                 <span className="text-xl font-semibold">{lang.name}</span>
@@ -121,14 +120,14 @@ const LanguageSettings = () => {
         </div>
 
         {/* Region Selection */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
           >
@@ -142,9 +141,9 @@ const LanguageSettings = () => {
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   languageSettings.region === region.code ? 'bg-opacity-20' : 'hover:bg-opacity-5'
                 }`}
-                style={{ 
+                style={{
                   backgroundColor: languageSettings.region === region.code ? currentTheme.colors.primary : 'transparent',
-                  color: languageSettings.region === region.code ? currentTheme.colors.background : currentTheme.colors.text
+                  color: languageSettings.region === region.code ? currentTheme.colors.background : currentTheme.colors.text,
                 }}
               >
                 <span className="text-xl font-semibold">{region.name}</span>
@@ -155,14 +154,14 @@ const LanguageSettings = () => {
         </div>
 
         {/* Date & Time Format */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
           >
@@ -170,7 +169,7 @@ const LanguageSettings = () => {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label 
+              <label
                 className="block text-sm font-medium mb-2"
                 style={{ color: currentTheme.colors.text }}
               >
@@ -178,12 +177,12 @@ const LanguageSettings = () => {
               </label>
               <select
                 value={languageSettings.dateFormat}
-                onChange={(e) => handleSettingChange('dateFormat', e.target.value)}
+                onChange={e => handleSettingChange('dateFormat', e.target.value)}
                 className="w-full p-2 rounded"
-                style={{ 
+                style={{
                   backgroundColor: currentTheme.colors.background,
                   color: currentTheme.colors.text,
-                  border: `1px solid ${currentTheme.colors.border}`
+                  border: `1px solid ${currentTheme.colors.border}`,
                 }}
               >
                 <option value="MM/DD/YYYY">MM/DD/YYYY</option>
@@ -192,7 +191,7 @@ const LanguageSettings = () => {
               </select>
             </div>
             <div>
-              <label 
+              <label
                 className="block text-sm font-medium mb-2"
                 style={{ color: currentTheme.colors.text }}
               >
@@ -200,12 +199,12 @@ const LanguageSettings = () => {
               </label>
               <select
                 value={languageSettings.timeFormat}
-                onChange={(e) => handleSettingChange('timeFormat', e.target.value)}
+                onChange={e => handleSettingChange('timeFormat', e.target.value)}
                 className="w-full p-2 rounded"
-                style={{ 
+                style={{
                   backgroundColor: currentTheme.colors.background,
                   color: currentTheme.colors.text,
-                  border: `1px solid ${currentTheme.colors.border}`
+                  border: `1px solid ${currentTheme.colors.border}`,
                 }}
               >
                 <option value="12h">12-hour (1:30 PM)</option>
@@ -216,14 +215,14 @@ const LanguageSettings = () => {
         </div>
 
         {/* Timezone */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
           >
@@ -231,12 +230,12 @@ const LanguageSettings = () => {
           </h3>
           <select
             value={languageSettings.timezone}
-            onChange={(e) => handleSettingChange('timezone', e.target.value)}
+            onChange={e => handleSettingChange('timezone', e.target.value)}
             className="w-full p-2 rounded"
-            style={{ 
+            style={{
               backgroundColor: currentTheme.colors.background,
               color: currentTheme.colors.text,
-              border: `1px solid ${currentTheme.colors.border}`
+              border: `1px solid ${currentTheme.colors.border}`,
             }}
           >
             {timezones.map(tz => (
@@ -248,14 +247,14 @@ const LanguageSettings = () => {
         </div>
 
         {/* Currency */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
           >
@@ -269,9 +268,9 @@ const LanguageSettings = () => {
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   languageSettings.currency === currency.code ? 'bg-opacity-20' : 'hover:bg-opacity-5'
                 }`}
-                style={{ 
+                style={{
                   backgroundColor: languageSettings.currency === currency.code ? currentTheme.colors.primary : 'transparent',
-                  color: languageSettings.currency === currency.code ? currentTheme.colors.background : currentTheme.colors.text
+                  color: languageSettings.currency === currency.code ? currentTheme.colors.background : currentTheme.colors.text,
                 }}
               >
                 <span className="text-xl font-semibold">{currency.symbol}</span>
@@ -286,4 +285,4 @@ const LanguageSettings = () => {
   );
 };
 
-export default LanguageSettings; 
+export default LanguageSettings;

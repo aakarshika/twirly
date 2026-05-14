@@ -33,7 +33,7 @@ export const useAuthHook = () => {
     };
   }, [user?.id]);
 
-  const wrap = (fn) => async (...args) => {
+  const wrap = fn => async (...args) => {
     try {
       setError(null);
       return await fn(...args);

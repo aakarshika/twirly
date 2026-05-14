@@ -1,6 +1,5 @@
 import React, { useRef, useState } from 'react';
 import './VotingAnimation.css';
-import { ThumbsUp } from 'lucide-react';
 
 const VotingAnimation = ({ onVote }) => {
   const tapCountRef = useRef(0);
@@ -9,7 +8,7 @@ const VotingAnimation = ({ onVote }) => {
   const [balloonHearts, setBalloonHearts] = useState([]);
   const [isVoting, setIsVoting] = useState(false);
 
-  const handleTap = async (e) => {
+  const handleTap = async e => {
     if (isVoting) return; // Prevent multiple votes while processing
 
     const now = Date.now();
@@ -19,26 +18,26 @@ const VotingAnimation = ({ onVote }) => {
       // Double tap detected
       tapCountRef.current = 0;
       clearTimeout(tapTimerRef.current);
-      
+
       try {
         setIsVoting(true);
-        
+
         // Show balloon hearts immediately
         const newBalloonHearts = Array.from({ length: 10 }, (_, i) => ({
           id: i,
           size: `${Math.random() * 100}%`,
           left: `${Math.random() * 100}%`,
           top: `${Math.random() * 100}%`,
-          delay: i * 50
+          delay: i * 50,
         }));
         setBalloonHearts(newBalloonHearts);
-        
+
         // Wait a bit before casting the vote
         await new Promise(resolve => setTimeout(resolve, 300));
-        
+
         // Cast vote
         await onVote(e);
-        
+
         // Keep hearts visible for a while after vote
         setTimeout(() => {
           setBalloonHearts([]);
@@ -54,7 +53,7 @@ const VotingAnimation = ({ onVote }) => {
       tapCountRef.current = now;
       setShowSingleHeart(true);
       setTimeout(() => setShowSingleHeart(false), 500);
-      
+
       tapTimerRef.current = setTimeout(() => {
         tapCountRef.current = 0;
       }, 500); // Reset after 500ms if no second tap
@@ -62,15 +61,15 @@ const VotingAnimation = ({ onVote }) => {
   };
 
   return (
-    <div 
+    <div
       className="voting-animation-container"
       onClick={handleTap}
       onTouchStart={handleTap}
     >
       <div className="heart-container">
-        {showSingleHeart && 
+        {showSingleHeart &&
           <div className="heart-container">
-            <div className="heart" 
+            <div className="heart"
               style={{ left: '50%', top: '50%', transform: 'translate(-50%, -50%) rotate(45deg)' }} >
             </div>
             {tapCountRef.current > 0 && (<div className="voting-instruction">
@@ -85,7 +84,7 @@ const VotingAnimation = ({ onVote }) => {
             style={{
               left: heart.left,
               top: heart.top,
-              animationDelay: `${heart.delay}ms`
+              animationDelay: `${heart.delay}ms`,
             }}
           />
         ))}
@@ -94,4 +93,4 @@ const VotingAnimation = ({ onVote }) => {
   );
 };
 
-export default VotingAnimation; 
+export default VotingAnimation;

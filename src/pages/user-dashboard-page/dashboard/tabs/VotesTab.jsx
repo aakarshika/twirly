@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../../contexts/ThemeContext';
 import { getUserVotes } from '../../../../services/votes';
-import { useAuth } from '../../../../contexts/AuthContext';
-import { changeColorAlpha, splitAndJoin } from '../../../../lib/utils';
+import { changeColorAlpha } from '../../../../lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
 const VoteCard = ({ vote }) => {
   const { currentTheme } = useTheme();
   const navigate = useNavigate();
   return (
-    <div 
+    <div
       className="rounded-lg overflow-hidden "
             onClick={() => {
               navigate(`/compare/${vote.comparison_sets?.id}`);
@@ -20,7 +19,7 @@ const VoteCard = ({ vote }) => {
         <div className="flex justify-between items-start mb-4">
           <div
           >
-            <h3 
+            <h3
               className="font-semibold text-lg"
               style={{ color: currentTheme.colors.text }}
             >
@@ -29,7 +28,7 @@ const VoteCard = ({ vote }) => {
 
           </div>
           <div className="flex items-center space-x-2">
-            <span 
+            <span
               className="text-sm"
               style={{ color: currentTheme.colors.text }}
             >
@@ -37,15 +36,15 @@ const VoteCard = ({ vote }) => {
             </span>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-2">
-          <span 
+          <span
             className="text-sm"
             style={{ color: currentTheme.colors.text }}
           >
             Voted for:
           </span>
-          <span 
+          <span
             className="font-medium"
             style={{ color: currentTheme.colors.primary }}
           >
@@ -57,8 +56,7 @@ const VoteCard = ({ vote }) => {
   );
 };
 
-const VotesTab = ({ userId, isPublic }) => {
-  const { currentTheme } = useTheme();
+const VotesTab = ({ userId, _isPublic }) => {
   const [votes, setVotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -107,7 +105,7 @@ const VotesTab = ({ userId, isPublic }) => {
       </div>
 
       <div className="space-y-4">
-        {votes.map((vote) => (
+        {votes.map(vote => (
           <VoteCard key={vote.id} vote={vote} />
         ))}
       </div>
@@ -115,4 +113,4 @@ const VotesTab = ({ userId, isPublic }) => {
   );
 };
 
-export default VotesTab; 
+export default VotesTab;

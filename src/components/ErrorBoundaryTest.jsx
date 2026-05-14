@@ -4,7 +4,7 @@ import ErrorBoundary from './ErrorBoundary';
 const ErrorBoundaryTest = () => {
   // This will trigger the error boundary
   throw new Error('Test error for error boundary');
-  
+  // eslint-disable-next-line no-unreachable
   return (
     <div>
       This content will never be rendered because the error is thrown before the return statement
@@ -20,4 +20,4 @@ const WrappedErrorBoundaryTest = () => {
   );
 };
 
-export default WrappedErrorBoundaryTest; 
+export default WrappedErrorBoundaryTest;

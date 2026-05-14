@@ -34,15 +34,15 @@ const OnboardingFlow = () => {
   const { user, signOut } = useAuth();
   const totalSteps = 4;
   const [preferences, setPreferences] = useState(null);
-  const [categoryPreferences, setCategoryPreferences] = useState(null);
-  const [notificationPreferences, setNotificationPreferences] = useState(null);
+  const [_categoryPreferences, setCategoryPreferences] = useState(null);
+  const [_notificationPreferences, setNotificationPreferences] = useState(null);
   const [notif, setNotif] = useState(null);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedNotifications, setSelectedNotifications] = useState([]);
   const [username, setUsername] = useState('');
   const [usernameError, setUsernameError] = useState('');
   const [onboardingComplete, setOnboardingComplete] = useState(false);
-  const [allCategories, setAllCategories] = useState([]);
+  const [_allCategories, setAllCategories] = useState([]);
 
   // console.log('[OnboardingFlow] Render', {
   //   user,
@@ -66,7 +66,7 @@ const OnboardingFlow = () => {
       setSelectedCategories(cats.map(cat => cat.category_id+''));
       setSelectedNotifications(notif.notifications);
       setNotif(notif);
-      
+
       // prefs is null for brand-new users who have no preferences row yet — start from step 1
       if (prefs?.display_name && cats && cats.length > 0 && notif && notif.created_at !== notif.updated_at) {
         setOnboardingComplete(true);
@@ -104,23 +104,23 @@ const OnboardingFlow = () => {
     fetchAllCategories();
   }, [user]);
 
-  const handleCategoryToggle = (categoryId) => {
-    setSelectedCategories((prev) =>
+  const handleCategoryToggle = categoryId => {
+    setSelectedCategories(prev =>
       prev.includes(categoryId)
-        ? prev.filter((id) => id !== categoryId)
-        : [...prev, categoryId]
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId],
     );
   };
 
-  const handleNotificationToggle = (notificationId) => {
-    setSelectedNotifications((prev) =>
+  const handleNotificationToggle = notificationId => {
+    setSelectedNotifications(prev =>
       prev.includes(notificationId)
-        ? prev.filter((id) => id !== notificationId)
-        : [...prev, notificationId]
+        ? prev.filter(id => id !== notificationId)
+        : [...prev, notificationId],
     );
   };
 
-  const validateUsernameInput = (value) => {
+  const validateUsernameInput = value => {
     if (!value) {
       setUsernameError('Username is required');
       return false;
@@ -161,7 +161,7 @@ const OnboardingFlow = () => {
 
   const handleNext = async () => {
     setError('');
-    
+
     if (currentStep === 2) {
       const isValid = await validateUsername();
       if (!isValid) return;
@@ -208,7 +208,7 @@ const OnboardingFlow = () => {
           <div className="text-center space-y-6">
             <h2 className="text-3xl font-bold" style={{ color: currentTheme.colors.text }}>Welcome to Twirly! 🎉</h2>
             <p className="text-lg" style={{ color: currentTheme.colors.textSecondary }}>
-              Let's help you discover amazing products through community comparisons.
+              Let&apos;s help you discover amazing products through community comparisons.
             </p>
           </div>
         );
@@ -221,7 +221,7 @@ const OnboardingFlow = () => {
               <input
                 type="text"
                 value={username}
-                onChange={(e) => {
+                onChange={e => {
                   const value = e.target.value.toLowerCase();
                   setUsername(value);
                   validateUsernameInput(value);
@@ -249,10 +249,10 @@ const OnboardingFlow = () => {
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-center" style={{ color: currentTheme.colors.text }}>What interests you?</h2>
             <p className="text-center" style={{ color: currentTheme.colors.textSecondary }}>
-              Select categories you're interested in to see relevant comparisons
+              Select categories you&apos;re interested in to see relevant comparisons
             </p>
             <div className="grid grid-cols-2 gap-4">
-              {categoriesAll.map((category) => (
+              {categoriesAll.map(category => (
                 <button
                   key={category.id}
                   onClick={() => handleCategoryToggle(category.id)}
@@ -262,7 +262,7 @@ const OnboardingFlow = () => {
                       : 'border-gray-200 hover:border-indigo-300'
                   }`}
                   style={{
-                    backgroundColor: selectedCategories.includes(category.id) 
+                    backgroundColor: selectedCategories.includes(category.id)
                       ? currentTheme.colors.primary + '20' // 20% opacity
                       : currentTheme.colors.card,
                     borderColor: selectedCategories.includes(category.id)
@@ -283,10 +283,10 @@ const OnboardingFlow = () => {
           <div className="space-y-6">
             <h2 className="text-2xl font-bold text-center" style={{ color: currentTheme.colors.text }}>Notification Preferences</h2>
             <p className="text-center" style={{ color: currentTheme.colors.textSecondary }}>
-              Choose what you'd like to be notified about
+              Choose what you&apos;d like to be notified about
             </p>
             <div className="space-y-4">
-              {notificationsAll.map((pref) => (
+              {notificationsAll.map(pref => (
                 <label
                   key={pref.id}
                   className="flex items-center space-x-3 p-4 border rounded-lg cursor-pointer transition-all duration-300 hover:shadow-md"
@@ -351,9 +351,9 @@ const OnboardingFlow = () => {
           <div className="w-full bg-gray-200 rounded-full h-2.5">
             <div
               className="h-2.5 rounded-full transition-all duration-300"
-              style={{ 
+              style={{
                 width: `${(currentStep / totalSteps) * 100}%`,
-                backgroundColor: currentTheme.colors.primary 
+                backgroundColor: currentTheme.colors.primary,
               }}
             ></div>
           </div>
@@ -405,4 +405,4 @@ const OnboardingFlow = () => {
   );
 };
 
-export default OnboardingFlow; 
+export default OnboardingFlow;

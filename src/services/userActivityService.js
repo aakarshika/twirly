@@ -91,7 +91,7 @@ export const userActivityService = {
     }
   },
 
-  async getActivityCount(userId, activityType) {
+  async getActivityCount(userId, _activityType) {
     try {
       const { data } = await apiClient.get('/activity/count', { params: { userId } });
       return data.data?.total ?? 0;

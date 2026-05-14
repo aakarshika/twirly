@@ -1,22 +1,21 @@
 import React from 'react';
 import ComparisonCircle from './ComparisonCircle';
 import { motion } from 'framer-motion';
-import { useHeader } from '../../contexts/HeaderContext';
 
 const CenterStage = ({ item, isMobile, comparison, winner, runnerUp, totalVotes }) => {
     return (
-        <motion.div 
+        <motion.div
             className="relative w-50 h-50 flex items-center justify-center"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
-            exit={{ 
+            exit={{
                 scale: 0.5,
                 x: isMobile ? '-45vw' : '-20vw',
                 y: isMobile ? '20vh' : '25vh',
-                transition: { 
+                transition: {
                     duration: 0.5,
-                    ease: "easeInOut"
-                }
+                    ease: "easeInOut",
+                },
             }}
         >
             <div className="flex items-center justify-center">
@@ -36,4 +35,4 @@ const CenterStage = ({ item, isMobile, comparison, winner, runnerUp, totalVotes 
     );
 };
 
-export default CenterStage; 
+export default CenterStage;

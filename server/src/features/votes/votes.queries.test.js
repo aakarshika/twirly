@@ -5,7 +5,7 @@ vi.mock('../../config/db.js', () => ({ db: { execute: vi.fn() } }));
 const { db } = await import('../../config/db.js');
 const {
   getVoteById, getVoteForSet, getUserVotes, getVoteCount,
-  castVote, updateVote, revertVote, revertVoteBySetId,
+  castVote, revertVote,
 } = await import('./votes.queries.js');
 
 beforeEach(() => db.execute.mockReset());

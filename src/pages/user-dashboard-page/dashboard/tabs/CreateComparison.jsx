@@ -4,11 +4,10 @@ import { useAuth } from '../../../../contexts/AuthContext';
 import { useComparisonDraft } from '../../../../contexts/ComparisonDraftContext';
 import { searchProducts, searchCategories } from '../../../../services/products';
 import { createComparison, getUnpublishedComparison, updateComparison, getComparison } from '../../../../services/comparisons';
-import { X, Check, Search, User, Trash2, Plus, PlusIcon, PlusCircle, Pencil } from 'lucide-react';
+import { X, Search, Trash2, Plus, Pencil } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useHeader } from '../../../../contexts/HeaderContext';
 import VotedCard from '../../../../pages/comparison-aspect-page/ComparisonItemCard/VotedCard';
-import AspectForm from './AspectForm';
 import ItemCardEditable from '../../../comparison-aspect-page/ComparisonItemCard/ItemCardEditable';
 import { changeColorAlpha } from '../../../../lib/utils';
 
@@ -21,23 +20,23 @@ const CreateComparison = () => {
     draft,
     addItem,
     updateItem,
-    addCategory,
+    _addCategory,
     removeItem,
     addAspect,
-    removeAspect,
+    _removeAspect,
     updateAspect,
     updateDraft,
-    clearDraft
+    clearDraft,
   } = useComparisonDraft();
 
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchCategoryQuery, setSearchCategoryQuery] = useState('');
-  const [searchCategoryResults, setSearchCategoryResults] = useState([]);
+  const [searchCategoryQuery, _setSearchCategoryQuery] = useState('');
+  const [_searchCategoryResults, setSearchCategoryResults] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
-  const [editAspectExpanded, setEditAspectExpanded] = useState(null);
-  const [newAspectExpanded, setNewAspectExpanded] = useState(true);
+  const [_editAspectExpanded, setEditAspectExpanded] = useState(null);
+  const [_newAspectExpanded, setNewAspectExpanded] = useState(true);
   const [editingAspect, setEditingAspect] = useState({ metric_name: '', description: '', weight: 1, id: null });
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [newAspect, setNewAspect] = useState({ metric_name: '', description: '', weight: 1 });
   const [existingComparisonId, setExistingComparisonId] = useState(null);
@@ -57,7 +56,7 @@ const CreateComparison = () => {
     "What's the best camera for beginners",
     "Which smartwatch should I buy",
     "What's the best e-reader",
-    "Which headphones are worth it"
+    "Which headphones are worth it",
   ];
 
   useEffect(() => {
@@ -80,7 +79,7 @@ const CreateComparison = () => {
             setExistingComparisonId(comparisonData.id);
           }
         }
-        
+
         if (comparisonData) {
           // Transform the data to match the draft format
           updateDraft({
@@ -92,9 +91,9 @@ const CreateComparison = () => {
               id: aspect.id,
               metric_name: aspect.metric_name,
               description: aspect.description,
-              weight: aspect.weight || 1
+              weight: aspect.weight || 1,
             })),
-            isPublished: comparisonData.isPublished || false
+            isPublished: comparisonData.isPublished || false,
           });
         } else {
           // Reset draft to empty state
@@ -169,7 +168,7 @@ const CreateComparison = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setPlaceholderIndex((prevIndex) => (prevIndex + 1) % placeholders.length);
+      setPlaceholderIndex(prevIndex => (prevIndex + 1) % placeholders.length);
     }, 2000);
 
     return () => clearInterval(interval);
@@ -191,14 +190,14 @@ const CreateComparison = () => {
             name: item.name,
             description: item.description,
             image_url: item.image_url,
-            item_color_string: item.item_color_string
-          }))
+            item_color_string: item.item_color_string,
+          })),
         });
       } else {
         await createComparison({
           ...draft,
           user_id: user.id,
-          isPublished: false
+          isPublished: false,
         });
       }
       clearDraft();
@@ -227,14 +226,14 @@ const CreateComparison = () => {
             name: item.name,
             description: item.description,
             image_url: item.image_url,
-            item_color_string: item.item_color_string
-          }))
+            item_color_string: item.item_color_string,
+          })),
         });
       } else {
         await createComparison({
           ...draft,
           user_id: user.id,
-          isPublished: true
+          isPublished: true,
         });
       }
       clearDraft();
@@ -267,19 +266,19 @@ const CreateComparison = () => {
     return true;
   };
 
-  const handleAddAspect = () => {
+  const _handleAddAspect = () => {
     if (!newAspect.metric_name) {
       setError('Aspect name is required');
       return;
     }
     addAspect({
-      ...newAspect
+      ...newAspect,
     });
     setNewAspect({ metric_name: '', description: '', weight: 1 });
     setNewAspectExpanded(true);
   };
 
-  const handleUpdateAspect = (aspectId) => {
+  const _handleUpdateAspect = _aspectId => {
     if (!editingAspect.metric_name) {
       setError('Aspect name is required');
       return;
@@ -302,7 +301,7 @@ const CreateComparison = () => {
             style={{
               backgroundColor: currentTheme.colors.background,
               color: currentTheme.colors.text,
-              borderColor: currentTheme.colors.border
+              borderColor: currentTheme.colors.border,
             }}
           >
             Save Draft
@@ -312,7 +311,7 @@ const CreateComparison = () => {
             className="px-4 py-2 font-medium rounded-lg"
             style={{
               backgroundColor: currentTheme.colors.primary,
-              color: currentTheme.colors.buttonText
+              color: currentTheme.colors.buttonText,
             }}
           >
             Publish
@@ -324,7 +323,7 @@ const CreateComparison = () => {
         <div className="p-3 mb-4 border-l-4 rounded-lg" style={{
           backgroundColor: currentTheme.colors.error + '10',
           borderColor: currentTheme.colors.error,
-          color: currentTheme.colors.error
+          color: currentTheme.colors.error,
         }}>
           {error}
         </div>
@@ -338,18 +337,18 @@ const CreateComparison = () => {
             <input
               type="text"
               value={draft.title}
-              onChange={(e) => updateDraft({ title: e.target.value })}
+              onChange={e => updateDraft({ title: e.target.value })}
               className="w-full p-3 text-md font-bold rounded-lg"
               style={{
                 backgroundColor: currentTheme.colors.background,
-                color: currentTheme.colors.primary
+                color: currentTheme.colors.primary,
               }}
               placeholder={placeholders[placeholderIndex]}
             />
           </div>
           <div>
             <div className="grid grid-cols-2 gap-2">
-              {draft.items.map((item) => {
+              {draft.items.map(item => {
                 // console.log("item", item);
                 return (
                 <div key={item.id} className="relative">
@@ -365,7 +364,7 @@ const CreateComparison = () => {
                         className="p-2 rounded-full"
                         style={{
                           backgroundColor: currentTheme.colors.primary + '10',
-                          color: currentTheme.colors.primary
+                          color: currentTheme.colors.primary,
                         }}
                       >
                         <Pencil size={16} />
@@ -376,17 +375,17 @@ const CreateComparison = () => {
                       className="p-2 rounded-full"
                       style={{
                         backgroundColor: currentTheme.colors.error + '10',
-                        color: currentTheme.colors.error
+                        color: currentTheme.colors.error,
                       }}
                     >
                       <Trash2 size={16} />
                     </button>
                   </div>
                 </div>
-              )})}
+              );})}
               {Array.from({ length: 4 - draft.items.length }).map((_, index) => (
                 <div key={`empty-slot-${index}`} className="flex flex-row  rounded-lg items-center justify-center"
-                style={{ backgroundColor: currentTheme.colors.background, height: '100px'
+                style={{ backgroundColor: currentTheme.colors.background, height: '100px',
                  }}>
                 <button
                   onClick={() => {
@@ -394,9 +393,9 @@ const CreateComparison = () => {
                   }}
                   style={{  color: currentTheme.colors.text }}
                 >
-                  <div className='flex flex-col items-center justify-center'>
-                    <span className='text-4xl'>+</span>
-                    <span className='text-sm'>Add Item</span>
+                  <div className="flex flex-col items-center justify-center">
+                    <span className="text-4xl">+</span>
+                    <span className="text-sm">Add Item</span>
                   </div>
                   </button>
               </div>
@@ -410,12 +409,12 @@ const CreateComparison = () => {
                 id="item-input"
                 type="text"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={e => setSearchQuery(e.target.value)}
                 className="w-full p-3 pl-10 rounded-lg"
                 style={{
                   backgroundColor: currentTheme.colors.background,
                   color: currentTheme.colors.text,
-                  border: `1px solid ${currentTheme.colors.border}`
+                  border: `1px solid ${currentTheme.colors.border}`,
                 }}
                 placeholder="Or search items added by others..."
               />
@@ -428,7 +427,7 @@ const CreateComparison = () => {
                 className="absolute right-3 top-3.5 p-1 rounded-full hover:bg-opacity-10"
                 style={{
                   backgroundColor: currentTheme.colors.background,
-                  color: currentTheme.colors.textSecondary
+                  color: currentTheme.colors.textSecondary,
                 }}
               >
                 <X size={16} />
@@ -441,7 +440,7 @@ const CreateComparison = () => {
               style={{
                 backgroundColor: currentTheme.colors.background,
                 color: currentTheme.colors.text,
-                border: `1px solid ${currentTheme.colors.border}`
+                border: `1px solid ${currentTheme.colors.border}`,
               }}
             >
               <Search size={20} />
@@ -453,7 +452,7 @@ const CreateComparison = () => {
 
             {searchResults.length > 0 && (
               <div className="mt-1 border rounded-lg" style={{ backgroundColor: currentTheme.colors.background }}>
-                {searchResults.map((product) =>{
+                {searchResults.map(product =>{
                   // console.log("result product", product);
                   return (
                   <div
@@ -462,7 +461,7 @@ const CreateComparison = () => {
                     style={{
                       backgroundColor: product.item_color_string,
                       color: currentTheme.colors.text,
-                      borderBottom: `1px solid ${currentTheme.colors.border}`
+                      borderBottom: `1px solid ${currentTheme.colors.border}`,
                     }}
                     onClick={() => {
                       // console.log("added product", product);
@@ -470,7 +469,7 @@ const CreateComparison = () => {
                       setSearchQuery('');
                     }}
                   >
-                    {product.image_url && product.image_url != '' && (<img src={product.image_url} className="w-10 h-10 rounded" onError={(e) => {
+                    {product.image_url && product.image_url != '' && (<img src={product.image_url} className="w-10 h-10 rounded" onError={e => {
                       e.target.src = '/images/default-product-image.png';
                     }} />)}
                     {!product.image_url && product.image_url != '' && (<img src={'/images/default-product-image.png'} className="w-10 h-10 rounded" />)}
@@ -480,7 +479,7 @@ const CreateComparison = () => {
                       <p className="text-xs">{product.description}</p></div>
                     <Plus size={20} />
                   </div>
-                )})}
+                );})}
               </div>
             )}
             {isSearchExpanded && searchQuery.length > 0 && searchResults.length === 0 && !addItemModalOpen && (
@@ -494,7 +493,7 @@ const CreateComparison = () => {
                   className="px-4 py-2 rounded-lg font-medium"
                   style={{ backgroundColor: currentTheme.colors.primary, color: currentTheme.colors.buttonText }}
                 >
-                  + Create 
+                  + Create
                 </button>
               </div>
             )}
@@ -504,9 +503,9 @@ const CreateComparison = () => {
       {addItemModalOpen && (
         <ItemCardEditable
           item={{
-            name: searchQuery
+            name: searchQuery,
           }}
-          onSave={(item) => {
+          onSave={item => {
             // console.log("saved item", item);
             addItem(item);
             setAddItemModalOpen(false);
@@ -517,7 +516,7 @@ const CreateComparison = () => {
       {editItemModalOpen && (
         <ItemCardEditable
           item={editItem}
-          onSave={(item) => {
+          onSave={item => {
             // console.log("saved item", item);
             updateItem(item);
             setEditItemModalOpen(false);
@@ -529,4 +528,4 @@ const CreateComparison = () => {
   );
 };
 
-export default CreateComparison; 
+export default CreateComparison;

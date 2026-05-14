@@ -27,9 +27,9 @@ export const LoadingProvider = ({ children }) => {
     // console.log('[LoadingContext] Setting loading state:', { key, isLoading, message });
     setLoadingStates(prev => ({
       ...prev,
-      [key]: isLoading
+      [key]: isLoading,
     }));
-    
+
     // If this is a global loading state, update the global loading
     if (key === 'global') {
       // console.log('[LoadingContext] Setting global loading:', { isLoading, message });
@@ -47,9 +47,9 @@ export const LoadingProvider = ({ children }) => {
     // console.log('[LoadingContext] Setting error state:', { key, error });
     setErrorStates(prev => ({
       ...prev,
-      [key]: error
+      [key]: error,
     }));
-    
+
     // If this is a global error state, update the global error
     if (key === 'global') {
       // console.log('[LoadingContext] Setting global error:', { error });
@@ -58,14 +58,14 @@ export const LoadingProvider = ({ children }) => {
     }
   };
 
-  const clearError = (key) => {
+  const clearError = key => {
     // console.log('[LoadingContext] Clearing error state:', { key });
     setErrorStates(prev => {
       const newState = { ...prev };
       delete newState[key];
       return newState;
     });
-    
+
     // If this is a global error state, clear it
     if (key === 'global') {
       // console.log('[LoadingContext] Clearing global error');
@@ -74,22 +74,22 @@ export const LoadingProvider = ({ children }) => {
     }
   };
 
-  const clearLoading = (key) => {
+  const clearLoading = key => {
     // console.log('[LoadingContext] Clearing loading state:', { key });
     setLoadingStates(prev => {
       const newState = { ...prev };
       delete newState[key];
       return newState;
     });
-    
+
     // If this is a global loading state, clear it
     if (key === 'global') {
       setGlobalLoading(false);
     }
   };
 
-  const isLoading = (key) => loadingStates[key] || false;
-  const getError = (key) => errorStates[key] || null;
+  const isLoading = key => loadingStates[key] || false;
+  const getError = key => errorStates[key] || null;
 
   const value = {
     setLoading,
@@ -103,20 +103,20 @@ export const LoadingProvider = ({ children }) => {
     globalLoading,
     globalLoadingMessage,
     globalError,
-    globalErrorRetry
+    globalErrorRetry,
   };
 
   return (
     <LoadingContext.Provider value={value}>
       {children}
       {globalLoading && (
-        <LoadingScreen 
+        <LoadingScreen
           message={globalLoadingMessage}
           showLogo={true}
         />
       )}
       {globalError && (
-        <ErrorScreen 
+        <ErrorScreen
           message={globalError}
           onRetry={globalErrorRetry}
           showRetryButton={!!globalErrorRetry}
@@ -132,4 +132,4 @@ export const useLoading = () => {
     throw new Error('useLoading must be used within a LoadingProvider');
   }
   return context;
-}; 
+};

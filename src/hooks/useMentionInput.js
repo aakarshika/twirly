@@ -3,21 +3,17 @@ import { useEffect } from 'react';
 
 const useMentionInput = (users, products) => {
   const [text, setText] = useState('Lol');
-  const [textToSave, setTextToSave] = useState('');
+  const [_textToSave, _setTextToSave] = useState('');
   const [suggestions, setSuggestions] = useState([]);
   const [mode, setMode] = useState('normal');
   const contentEditableRef = useRef(null);
   const [triggerPosition, setTriggerPosition] = useState(-1);
-  
-  const renderTextWithMentions = (text) => {
+
+  const renderTextWithMentions = text => {
     const words = text.split(' ');
     const processedText = words.map(word => {
       if (word.startsWith('@') && word.length > 1) {
         // console.log('word', word);
-        const matchSplit = word.split(/(@\(user\(([A-Za-z0-9_#]+)\)\[([0-9]+)\]\))+/g);
-        // console.log('matchSplit', matchSplit);
-        const userName = unescapeMentionName(matchSplit[2]);
-  
         return `<span class="highlighted-mention-user">${word}</span>`;
       } else if (word.startsWith('#')) {
         return `<span class="highlighted-mention-product">${word}</span>`;
@@ -28,7 +24,7 @@ const useMentionInput = (users, products) => {
     return processedText.join(' ');
   };
 
-const handleReplySubmit = (e) => {
+const handleReplySubmit = e => {
   e.preventDefault();
   if (!text.trim()) return;
 
@@ -55,14 +51,12 @@ const handleReplySubmit = (e) => {
     range.collapse(false); // Move to end
     selection?.removeAllRanges();
     selection?.addRange(range);
-  }
+  };
 
-
-  const handleInputChange = (innerText) => {
+  const handleInputChange = innerText => {
     const value = innerText;
     setText(value);
     setTriggerPosition(value.length - 1);
-
 
     const lastChar = value.slice(-1);
     if (lastChar === '@') {
@@ -77,19 +71,15 @@ const handleReplySubmit = (e) => {
     }
   };
 
-  const appendText = (textToAppend) => {
+  const appendText = textToAppend => {
     handleInputChange(text + textToAppend);
   };
-  const escapeMentionName = (name) => {
+  const escapeMentionName = name => {
     return name
       .replaceAll(/ /g, '#space#');
-  }
-  const unescapeMentionName = (name) => {
-    return name && name.length > 0 ? name
-      .replaceAll(/#space#/g, ' ') : '';
-  }
-  
-  const insertMention = (mention) => {
+  };
+
+  const insertMention = mention => {
     const aa = escapeMentionName(mention.items.name);
     // console.log('insertMention escaped', aa);
     const mentionText = mode === 'mentionUser' ? `@(user(${aa})[${mention.items.id}]) ` : `#(product(${aa})[${mention.items.id}]) `;
@@ -112,7 +102,7 @@ const handleReplySubmit = (e) => {
     // handleTyping,
     handleReplySubmit,
     insertMention,
-    appendText
+    appendText,
   };
 };
 

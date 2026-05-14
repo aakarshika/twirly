@@ -16,14 +16,14 @@ const LottieAnimation = ({
   onSegmentStart,
   onDestroy,
   rendererSettings = {
-    preserveAspectRatio: 'xMidYMid slice'
-  }
+    preserveAspectRatio: 'xMidYMid slice',
+  },
 }) => {
 
   const defaultStyle = {
     width: width || '100%',
     height: height || '100%',
-    ...style
+    ...style,
   };
 
   return (
@@ -44,4 +44,4 @@ const LottieAnimation = ({
   );
 };
 
-export default LottieAnimation; 
+export default LottieAnimation;

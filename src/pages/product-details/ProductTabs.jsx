@@ -4,11 +4,11 @@ import { useNavigate, useParams } from 'react-router-dom';
 import AppearancesTab from './tabs/AppearancesTab';
 import CommentAppearancesTab from './tabs/CommentAppearancesTab';
 
-const ProductTabs = ({ 
-  activeTab, 
-  setActiveTab, 
-  item, 
-  comparisonSets
+const ProductTabs = ({
+  activeTab,
+  setActiveTab,
+  item,
+  comparisonSets,
 }) => {
   const { currentTheme } = useTheme();
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const ProductTabs = ({
     }
   }, [tab, activeTab, setActiveTab]);
 
-  const handleTabClick = (tabId) => {
+  const handleTabClick = tabId => {
     setActiveTab(tabId);
     navigate(`/item/${itemId}/${tabId}`);
   };
@@ -28,7 +28,7 @@ const ProductTabs = ({
   return (
     <div className="mb-8">
       <div className="flex space-x-4 border-b border-gray-700 sticky top-0 z-10">
-        {['mentions', 'comparisons'].map((tab) => (
+        {['mentions', 'comparisons'].map(tab => (
           <button
             key={tab}
             onClick={() => handleTabClick(tab)}
@@ -46,13 +46,13 @@ const ProductTabs = ({
 
       <div className="mt-8">
         {activeTab === 'mentions' && (
-          <CommentAppearancesTab 
+          <CommentAppearancesTab
             comparisonSets={comparisonSets}
             item={item}
           />
         )}
         {activeTab === 'comparisons' && (
-          <AppearancesTab 
+          <AppearancesTab
             comparisonSets={comparisonSets}
             item={item}
           />
@@ -62,4 +62,4 @@ const ProductTabs = ({
   );
 };
 
-export default ProductTabs; 
+export default ProductTabs;

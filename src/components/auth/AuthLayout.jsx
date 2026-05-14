@@ -38,4 +38,4 @@ const AuthLayout = ({ children, title, subtitle, footerText, footerLink, footerL
   );
 };
 
-export default AuthLayout; 
+export default AuthLayout;

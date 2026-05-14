@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
-import { AlertCircle } from 'lucide-react';
 import * as Sentry from '@sentry/react';
 import ErrorBoundaryTest from './ErrorBoundaryTest';
 
@@ -25,7 +23,7 @@ const ErrorTest = () => {
       console.error('❌ API Error Details:', {
         message: error.message,
         stack: error.stack,
-        type: error.name
+        type: error.name,
       });
       Sentry.captureException(error);
       console.log('📤 Error sent to Sentry');
@@ -33,7 +31,7 @@ const ErrorTest = () => {
       setErrorDetails({
         message: error.message,
         stack: error.stack,
-        type: error.name
+        type: error.name,
       });
     }
   };
@@ -53,7 +51,7 @@ const ErrorTest = () => {
       console.error('❌ Sentry Error Details:', {
         message: error.message,
         stack: error.stack,
-        type: error.name
+        type: error.name,
       });
       Sentry.captureException(error);
       console.log('📤 Error sent to Sentry');
@@ -61,7 +59,7 @@ const ErrorTest = () => {
       setErrorDetails({
         message: error.message,
         stack: error.stack,
-        type: error.name
+        type: error.name,
       });
     }
   };
@@ -75,13 +73,13 @@ const ErrorTest = () => {
       console.error('❌ Navigation Error Details:', {
         message: error.message,
         stack: error.stack,
-        type: error.name
+        type: error.name,
       });
       setError('Navigation error has been triggered');
       setErrorDetails({
         message: error.message,
         stack: error.stack,
-        type: error.name
+        type: error.name,
       });
     }
   };
@@ -97,11 +95,11 @@ const ErrorTest = () => {
   const handleMemoryLeak = () => {
     console.log('🔄 Initiating Memory Leak Test...');
     console.log('💾 Starting memory allocation...');
-    const interval = setInterval(() => {
-      const arr = new Array(1000000).fill('x');
+    setInterval(() => {
+      new Array(1000000).fill('x');
       console.log('📊 Current Memory Usage:', {
         heapUsed: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + 'MB',
-        heapTotal: Math.round(process.memoryUsage().heapTotal / 1024 / 1024) + 'MB'
+        heapTotal: Math.round(process.memoryUsage().heapTotal / 1024 / 1024) + 'MB',
       });
     }, 100);
     console.log('⚠️ Memory leak test running - check console for memory usage');
@@ -172,4 +170,4 @@ const ErrorTest = () => {
   );
 };
 
-export default ErrorTest; 
+export default ErrorTest;

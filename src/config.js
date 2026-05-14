@@ -12,4 +12,4 @@ console.log('Environment Config:', {
   environment: config.environment,
   apiUrl: config.apiUrl,
   // Don't log sensitive keys
-}); 
+});

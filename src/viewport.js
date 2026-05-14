@@ -9,4 +9,4 @@ setAppHeight();
 
 // Update height on resize and orientation change
 window.addEventListener('resize', setAppHeight);
-window.addEventListener('orientationchange', setAppHeight); 
+window.addEventListener('orientationchange', setAppHeight);

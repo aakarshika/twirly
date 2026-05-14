@@ -23,8 +23,8 @@ const ProfileSettings = () => {
     socialLinks: {
       twitter: '',
       github: '',
-      linkedin: ''
-    }
+      linkedin: '',
+    },
   });
   const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(true);
@@ -60,7 +60,7 @@ const ProfileSettings = () => {
     fetchProfileData();
   }, [user]);
 
-  const validateUsernameInput = (value) => {
+  const validateUsernameInput = value => {
     if (!value) {
       setUsernameError('Username is required');
       return false;
@@ -81,7 +81,7 @@ const ProfileSettings = () => {
     return true;
   };
 
-  const validateUsername = async (value) => {
+  const validateUsername = async value => {
     if (!validateUsernameInput(value)) return false;
 
     try {
@@ -98,35 +98,35 @@ const ProfileSettings = () => {
     }
   };
 
-  const handleInputChange = async (e) => {
+  const handleInputChange = async e => {
     const { name, value } = e.target;
-    
+
     if (name === 'display_name') {
       const lowercaseValue = value.toLowerCase().replace(/ /g, '');
       setProfileData(prev => ({
         ...prev,
-        [name]: lowercaseValue
+        [name]: lowercaseValue,
       }));
       await validateUsername(lowercaseValue);
     } else {
       setProfileData(prev => ({
         ...prev,
-        [name]: value
+        [name]: value,
       }));
     }
   };
 
-  const handleSocialLinkChange = (platform, value) => {
+  const _handleSocialLinkChange = (platform, value) => {
     setProfileData(prev => ({
       ...prev,
       socialLinks: {
         ...prev.socialLinks,
-        [platform]: value
-      }
+        [platform]: value,
+      },
     }));
   };
 
-  const handleAvatarChange = async (e) => {
+  const handleAvatarChange = async e => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -178,7 +178,7 @@ const ProfileSettings = () => {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h2 
+        <h2
           className="text-md font-semibold"
           style={{ color: currentTheme.colors.text }}
         >
@@ -196,11 +196,11 @@ const ProfileSettings = () => {
 
       <div className="space-y-6">
         {/* Avatar Section */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
           <div className="flex items-center space-x-6">
@@ -212,13 +212,13 @@ const ProfileSettings = () => {
               onAvatarChange={handleAvatarChange}
             />
             <div>
-              <h3 
+              <h3
                 className="text-lg font-medium"
                 style={{ color: currentTheme.colors.text }}
               >
                 Profile Picture
               </h3>
-              <p 
+              <p
                 className="text-sm"
                 style={{ color: currentTheme.colors.text }}
               >
@@ -229,14 +229,14 @@ const ProfileSettings = () => {
         </div>
 
         {/* Basic Information */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
           >
@@ -253,10 +253,10 @@ const ProfileSettings = () => {
                 placeholder="Username.. What others will see"
                 readOnly={!isEditing}
                 className="flex-1 p-2 rounded-lg"
-                style={{ 
+                style={{
                   backgroundColor: currentTheme.colors.background,
                   color: currentTheme.colors.text,
-                  border: `1px solid ${usernameError ? currentTheme.colors.error : currentTheme.colors.border}`
+                  border: `1px solid ${usernameError ? currentTheme.colors.error : currentTheme.colors.border}`,
                 }}
               />
             </div>
@@ -272,10 +272,10 @@ const ProfileSettings = () => {
                 readOnly
                 placeholder="Email"
                 className="flex-1 p-2 rounded-lg"
-                style={{ 
+                style={{
                   backgroundColor: currentTheme.colors.background,
                   color: currentTheme.colors.text,
-                  border: `1px solid transparent`
+                  border: `1px solid transparent`,
                 }}
               />
             </div>
@@ -289,10 +289,10 @@ const ProfileSettings = () => {
                 placeholder="Phone Number"
                 readOnly
                 className="flex-1 p-2 rounded-lg"
-                style={{ 
+                style={{
                   backgroundColor: currentTheme.colors.background,
                   color: currentTheme.colors.text,
-                  border: `1px solid transparent`
+                  border: `1px solid transparent`,
                 }}
               />
             </div>
@@ -300,14 +300,14 @@ const ProfileSettings = () => {
         </div>
 
         {/* Bio Section */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
           >
@@ -321,29 +321,29 @@ const ProfileSettings = () => {
             value={profileData.bio}
             rows="4"
             className="w-full p-2 rounded-lg"
-            style={{ 
+            style={{
               backgroundColor: currentTheme.colors.background,
               color: currentTheme.colors.text,
-              border: `1px solid ${currentTheme.colors.border}`
+              border: `1px solid ${currentTheme.colors.border}`,
             }}
           />
         </div>
 
         {/* Social Links */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
           >
             Social Links
           </h3>
-          
+
           <div className="space-y-4 ml-4">
             <div className="flex items-center space-x-3">
               <Twitter size={30} style={{ color: currentTheme.colors.text }} />
@@ -357,4 +357,4 @@ const ProfileSettings = () => {
   );
 };
 
-export default ProfileSettings; 
+export default ProfileSettings;

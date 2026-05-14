@@ -48,14 +48,14 @@ export const handleApiError = (error, context = '') => {
   return Promise.reject(error);
 };
 
-export const isNetworkError = (error) => {
+export const isNetworkError = error => {
   return !error.response && error.request;
 };
 
-export const isServerError = (error) => {
+export const isServerError = error => {
   return error.response && error.response.status >= 500;
 };
 
-export const isClientError = (error) => {
+export const isClientError = error => {
   return error.response && error.response.status >= 400 && error.response.status < 500;
-}; 
+};

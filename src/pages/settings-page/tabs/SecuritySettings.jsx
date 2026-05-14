@@ -1,40 +1,37 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { Shield, Lock, Key, Save } from 'lucide-react';
-import Button from '../../../components/common/Button';
+import { Shield, Lock } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { authClient } from '../../../lib/authClient';
-import { useNavigate } from 'react-router-dom';
 
 const SecuritySettings = () => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [securitySettings, setSecuritySettings] = useState({
     password: {
       current: '',
       new: '',
-      confirm: ''
-    }
+      confirm: '',
+    },
   });
   const [passwordError, setPasswordError] = useState('');
   const [passwordSuccess, setPasswordSuccess] = useState('');
 
-  const handlePasswordChange = (e) => {
+  const handlePasswordChange = e => {
     const { name, value } = e.target;
     setSecuritySettings(prev => ({
       ...prev,
       password: {
         ...prev.password,
-        [name]: value
-      }
+        [name]: value,
+      },
     }));
     // Clear any previous messages
     setPasswordError('');
     setPasswordSuccess('');
   };
 
-  const handleUpdatePassword = async () => {
+  const _handleUpdatePassword = async () => {
     try {
       setPasswordError('');
       setPasswordSuccess('');
@@ -63,8 +60,8 @@ const SecuritySettings = () => {
         password: {
           current: '',
           new: '',
-          confirm: ''
-        }
+          confirm: '',
+        },
       }));
       setPasswordSuccess('Password updated successfully');
     } catch (error) {
@@ -79,7 +76,7 @@ const SecuritySettings = () => {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h2 
+        <h2
           className="text-md text-gray-500 font-semibold"
           style={{ color: currentTheme.colors.text }}
         >
@@ -100,17 +97,17 @@ const SecuritySettings = () => {
 
       <div className="space-y-6">
         {/* Two-Factor Authentication */}
-        <div 
+        <div
           className="p-6 rounded-lg relative"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
           <div className="absolute top-0 right-0 bg-blue-500 text-white px-3 py-1 rounded-bl-lg text-sm">
             Coming Soon
           </div>
-          <h3 
+          <h3
             className="text-lg font-medium mb-4 flex items-center space-x-2"
             style={{ color: currentTheme.colors.text }}
           >
@@ -132,17 +129,17 @@ const SecuritySettings = () => {
                 className="sr-only peer"
                 disabled
               />
-              <div 
+              <div
                 className="w-11 h-6 rounded-full peer"
-                style={{ 
-                  backgroundColor: currentTheme.colors.border
+                style={{
+                  backgroundColor: currentTheme.colors.border,
                 }}
               >
-                <div 
+                <div
                   className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                  style={{ 
+                  style={{
                     backgroundColor: currentTheme.colors.background,
-                    transform: 'translateX(0)'
+                    transform: 'translateX(0)',
                   }}
                 />
               </div>
@@ -152,14 +149,14 @@ const SecuritySettings = () => {
 
         {/* Password Change */}
         {hasPasswordAuth ? (
-          <div 
+          <div
             className="p-6 rounded-lg"
-            style={{ 
+            style={{
               backgroundColor: currentTheme.colors.background,
-              border: `1px solid ${currentTheme.colors.border}`
+              border: `1px solid ${currentTheme.colors.border}`,
             }}
           >
-            <h3 
+            <h3
               className="text-lg font-medium mb-4 flex items-center space-x-2"
               style={{ color: currentTheme.colors.text }}
             >
@@ -168,7 +165,7 @@ const SecuritySettings = () => {
             </h3>
             <div className="space-y-4">
               <div>
-                <label 
+                <label
                   className="block text-sm font-medium mb-2"
                   style={{ color: currentTheme.colors.text }}
                 >
@@ -180,15 +177,15 @@ const SecuritySettings = () => {
                   value={securitySettings.password.current}
                   onChange={handlePasswordChange}
                   className="w-full p-2 rounded"
-                  style={{ 
+                  style={{
                     backgroundColor: currentTheme.colors.background,
                     color: currentTheme.colors.text,
-                    border: `1px solid ${currentTheme.colors.border}`
+                    border: `1px solid ${currentTheme.colors.border}`,
                   }}
                 />
               </div>
               <div>
-                <label 
+                <label
                   className="block text-sm font-medium mb-2"
                   style={{ color: currentTheme.colors.text }}
                 >
@@ -200,15 +197,15 @@ const SecuritySettings = () => {
                   value={securitySettings.password.new}
                   onChange={handlePasswordChange}
                   className="w-full p-2 rounded"
-                  style={{ 
+                  style={{
                     backgroundColor: currentTheme.colors.background,
                     color: currentTheme.colors.text,
-                    border: `1px solid ${currentTheme.colors.border}`
+                    border: `1px solid ${currentTheme.colors.border}`,
                   }}
                 />
               </div>
               <div>
-                <label 
+                <label
                   className="block text-sm font-medium mb-2"
                   style={{ color: currentTheme.colors.text }}
                 >
@@ -220,10 +217,10 @@ const SecuritySettings = () => {
                   value={securitySettings.password.confirm}
                   onChange={handlePasswordChange}
                   className="w-full p-2 rounded"
-                  style={{ 
+                  style={{
                     backgroundColor: currentTheme.colors.background,
                     color: currentTheme.colors.text,
-                    border: `1px solid ${currentTheme.colors.border}`
+                    border: `1px solid ${currentTheme.colors.border}`,
                   }}
                 />
               </div>
@@ -236,14 +233,14 @@ const SecuritySettings = () => {
             </div>
           </div>
         ) : (
-          <div 
+          <div
             className="p-6 rounded-lg"
-            style={{ 
+            style={{
               backgroundColor: currentTheme.colors.background,
-              border: `1px solid ${currentTheme.colors.border}`
+              border: `1px solid ${currentTheme.colors.border}`,
             }}
           >
-            <h3 
+            <h3
               className="text-lg font-medium mb-4 flex items-center space-x-2"
               style={{ color: currentTheme.colors.text }}
             >
@@ -251,7 +248,7 @@ const SecuritySettings = () => {
               <span>Account Security</span>
             </h3>
             <p style={{ color: currentTheme.colors.text }}>
-              Your account is secured through {user?.app_metadata?.provider || 'social authentication'}. 
+              Your account is secured through {user?.app_metadata?.provider || 'social authentication'}.
               Password management is not available for social login accounts.
             </p>
           </div>
@@ -261,4 +258,4 @@ const SecuritySettings = () => {
   );
 };
 
-export default SecuritySettings; 
+export default SecuritySettings;

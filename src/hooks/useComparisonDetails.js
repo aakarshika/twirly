@@ -3,7 +3,7 @@ import apiClient from '../lib/apiClient';
 import { useComparison } from '../contexts/useComparison';
 import { useAuth } from '../contexts/AuthContext';
 
-export const useComparisonDetails = (currentSetId) => {
+export const useComparisonDetails = currentSetId => {
   const {
     setItems,
     setUserVoted,
@@ -12,7 +12,7 @@ export const useComparisonDetails = (currentSetId) => {
     setCurrentComparisonDescription,
     setCurrentSet,
     items,
-    currentSet
+    currentSet,
   } = useComparison(currentSetId);
 
   const { user } = useAuth();

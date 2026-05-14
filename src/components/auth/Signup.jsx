@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { User, Lock } from 'lucide-react';
@@ -7,10 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import TwirlingTwirlyLogo from './TwirlingTwirlyLogo';
 export default function Signup({ onGoToLogin, onGoHome, source }) {
   console.log('[Signup] Component rendering');
-  
+
   const { user, signUp, signInWithGoogle, error: authError } = useAuth();
   console.log('[Signup] Auth state:', { hasUser: !!user, authError });
-  
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -64,7 +64,7 @@ export default function Signup({ onGoToLogin, onGoHome, source }) {
     return true;
   };
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
     console.log('[Signup] Form field changed:', { name, value });
     setFormData(prev => ({
@@ -74,7 +74,7 @@ export default function Signup({ onGoToLogin, onGoHome, source }) {
     if (error) setError('');
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     console.log('[Signup] Form submitted');
     setError('');
@@ -92,12 +92,12 @@ export default function Signup({ onGoToLogin, onGoHome, source }) {
       await signUp(formData.email, formData.password);
       console.log('[Signup] Signup successful');
       // Navigate to login page with verification message and credentials for auto-login
-      navigate('/landing', { 
-        state: { 
+      navigate('/landing', {
+        state: {
           message: 'Please check your email to verify your account. You can now log in once verified.',
           email: formData.email,
-          password: formData.password
-        }
+          password: formData.password,
+        },
       }, { replace: true });
     } catch (error) {
       console.error('[Signup] Signup error:', error);
@@ -108,7 +108,7 @@ export default function Signup({ onGoToLogin, onGoHome, source }) {
     }
   };
 
-  const handleSocialSignup = async (provider) => {
+  const handleSocialSignup = async provider => {
     console.log('[Signup] Social signup initiated:', provider);
     setError('');
     setLoading(true);
@@ -135,7 +135,7 @@ export default function Signup({ onGoToLogin, onGoHome, source }) {
       <div className="">
         <div className="">
 
-        {source === 'MOBILE' && (<div className="flex flex-col items-center justify-center" onClick={onGoHome}>   
+        {source === 'MOBILE' && (<div className="flex flex-col items-center justify-center" onClick={onGoHome}>
                 <TwirlingTwirlyLogo />
               </div>)}
           <div className="">
@@ -253,7 +253,7 @@ export default function Signup({ onGoToLogin, onGoHome, source }) {
               <div className="w-full border-t" style={{ borderColor: currentTheme.colors.border }}></div>
             </div>
             <div className="flex justify-center text-sm">
-              <span className="px-2" style={{color: currentTheme.colors.textSecondary }}>
+              <span className="px-2" style={{ color: currentTheme.colors.textSecondary }}>
                 OR
               </span>
             </div>
@@ -308,4 +308,4 @@ export default function Signup({ onGoToLogin, onGoHome, source }) {
       </div>
     </div>
   );
-} 
+}

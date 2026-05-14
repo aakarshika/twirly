@@ -125,7 +125,7 @@ describe('updateNotificationSettings', () => {
       tx.execute
         .mockResolvedValueOnce({ rows: [] })            // DELETE OK
         .mockRejectedValueOnce(new Error('insert err')); // INSERT fails
-      try { return await fn(tx); } catch (e) { throw e; }
+      return fn(tx);
     });
 
     await expect(
@@ -151,7 +151,7 @@ describe('updateCategoryPreferences', () => {
       tx.execute
         .mockResolvedValueOnce({ rows: [] })              // DELETE OK
         .mockRejectedValueOnce(new Error('FK error'));    // INSERT fails
-      try { return await fn(tx); } catch (e) { throw e; }
+      return fn(tx);
     });
 
     await expect(
@@ -196,7 +196,7 @@ describe('deleteAccount', () => {
         .mockResolvedValueOnce({ rows: [] })              // DELETE session OK
         .mockResolvedValueOnce({ rows: [] })              // DELETE account OK
         .mockRejectedValueOnce(new Error('constraint')); // DELETE user fails
-      try { return await fn(tx); } catch (e) { throw e; }
+      return fn(tx);
     });
 
     await expect(deleteAccount('u1')).rejects.toThrow('constraint');

@@ -132,7 +132,7 @@ describe('createComparison', () => {
       tx.execute
         .mockResolvedValueOnce({ rows: [{ id: 1 }] }) // INSERT comparison_sets OK
         .mockRejectedValueOnce(new Error('FK violation')); // INSERT item fails
-      try { return await fn(tx); } catch (e) { throw e; }
+      return fn(tx);
     });
 
     await expect(
@@ -147,7 +147,7 @@ describe('createComparison', () => {
         .mockResolvedValueOnce({ rows: [{ id: 1 }] }) // INSERT set OK
         .mockResolvedValueOnce({ rows: [] })             // INSERT item OK
         .mockRejectedValueOnce(new Error('aspect error')); // INSERT aspect fails
-      try { return await fn(tx); } catch (e) { throw e; }
+      return fn(tx);
     });
 
     await expect(
@@ -202,7 +202,7 @@ describe('updateComparison', () => {
       tx.execute
         .mockResolvedValueOnce({ rows: [{ id: 1 }] }) // UPDATE OK
         .mockRejectedValueOnce(new Error('delete failed')); // DELETE items fails
-      try { return await fn(tx); } catch (e) { throw e; }
+      return fn(tx);
     });
 
     await expect(

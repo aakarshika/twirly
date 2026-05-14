@@ -12,4 +12,4 @@ const ResultsPanel = () => {
   );
 };
 
-export default ResultsPanel; 
+export default ResultsPanel;

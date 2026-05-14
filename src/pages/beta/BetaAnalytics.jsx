@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
 import { useBetaTesting } from '../../contexts/BetaTestingContext';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
 const BetaAnalytics = () => {
-  const { currentTheme } = useTheme();
   const { isBetaMode } = useBetaTesting();
   const [analyticsData, setAnalyticsData] = useState({
     userActions: [],
     errorRates: [],
     featureUsage: [],
-    userEngagement: []
+    userEngagement: [],
   });
   const [loading, setLoading] = useState(true);
 
@@ -25,7 +23,7 @@ const BetaAnalytics = () => {
             { time: '08:00', actions: 20 },
             { time: '12:00', actions: 30 },
             { time: '16:00', actions: 25 },
-            { time: '20:00', actions: 15 }
+            { time: '20:00', actions: 15 },
           ],
           errorRates: [
             { time: '00:00', errors: 2 },
@@ -33,13 +31,13 @@ const BetaAnalytics = () => {
             { time: '08:00', errors: 3 },
             { time: '12:00', errors: 4 },
             { time: '16:00', errors: 2 },
-            { time: '20:00', errors: 1 }
+            { time: '20:00', errors: 1 },
           ],
           featureUsage: [
             { name: 'Comparisons', value: 40 },
             { name: 'Votes', value: 30 },
             { name: 'Reviews', value: 20 },
-            { name: 'Profile', value: 10 }
+            { name: 'Profile', value: 10 },
           ],
           userEngagement: [
             { time: '00:00', engagement: 15 },
@@ -47,8 +45,8 @@ const BetaAnalytics = () => {
             { time: '08:00', engagement: 25 },
             { time: '12:00', engagement: 35 },
             { time: '16:00', engagement: 30 },
-            { time: '20:00', engagement: 20 }
-          ]
+            { time: '20:00', engagement: 20 },
+          ],
         };
         setAnalyticsData(data);
       } catch (error) {
@@ -85,7 +83,7 @@ const BetaAnalytics = () => {
   return (
     <div className="p-4" style={{ paddingTop: '104px' }}>
       <h1 className="text-2xl font-bold mb-6" style={{ color: 'var(--color-text)' }}>Analytics Dashboard</h1>
-      
+
       {/* User Actions Over Time */}
       <div className="mb-8">
         <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text)' }}>User Actions Over Time</h2>
@@ -163,4 +161,4 @@ const BetaAnalytics = () => {
   );
 };
 
-export default BetaAnalytics; 
+export default BetaAnalytics;

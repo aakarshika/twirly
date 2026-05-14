@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Edit2, Trash2, Save, X } from 'lucide-react';
-import { updateProduct, deleteProduct } from '../../../services/products';
+import { Edit2, Trash2 } from 'lucide-react';
+import { deleteProduct } from '../../../services/products';
 import { useNavigate } from 'react-router-dom';
 import ItemCard from '../../../components/common/common-cards/ItemCard';
 import { useTheme } from '../../../contexts/ThemeContext';
@@ -8,7 +8,7 @@ import ItemCardEditable from '../../comparison-aspect-page/ComparisonItemCard/It
 const ProductCard = ({ product, onUpdate, onDelete, isPublic }) => {
   const { currentTheme } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
-  const [editedProduct, setEditedProduct] = useState({ ...product });
+  const [, setEditedProduct] = useState({ ...product });
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -26,17 +26,17 @@ const ProductCard = ({ product, onUpdate, onDelete, isPublic }) => {
   };
   const navigate = useNavigate();
 
-  const handleItemClick = () => {
+  const _handleItemClick = () => {
     navigate(`/item/${product.id}`);
   };
-  const handleCancel = () => {
+  const _handleCancel = () => {
     setEditedProduct({ ...product });
     setIsEditing(false);
   };
 
   return (
     <div>
-    <div 
+    <div
       // onClick={() => handleItemClick()}
       className="rounded-lg overflow-hidden"
       style={{ backgroundColor: currentTheme.colors.cardBackground }}
@@ -62,13 +62,13 @@ const ProductCard = ({ product, onUpdate, onDelete, isPublic }) => {
           </button>
         </div>)}
       </div>
-      
+
     </div>
-    {isEditing && 
-     
+    {isEditing &&
+
      <div>
-      
-    <ItemCardEditable item={product} onSave={(updatedProduct) => {
+
+    <ItemCardEditable item={product} onSave={updatedProduct => {
       onUpdate(updatedProduct);
       setIsEditing(false);
     }} onCancel={() => setIsEditing(false)} />
@@ -77,4 +77,4 @@ const ProductCard = ({ product, onUpdate, onDelete, isPublic }) => {
   );
 };
 
-export default ProductCard; 
+export default ProductCard;

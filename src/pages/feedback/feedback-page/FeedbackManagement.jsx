@@ -3,7 +3,7 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { feedbackService } from '../../../services/feedbackService';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
-import { FiImage, FiTrash2, FiExternalLink, FiEdit2, FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { FiImage, FiTrash2, FiExternalLink, FiEdit2 } from 'react-icons/fi';
 import { useLoading } from '../../../contexts/LoadingContext';
 import { formatDistanceToNow } from 'date-fns';
 const ADMIN_EMAILS = ['aakarshika93@gmail.com', 'great.shivam19@gmail.com'];
@@ -12,24 +12,24 @@ const FeedbackManagement = () => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
   const [feedbackList, setFeedbackList] = useState([]);
-  const [error, setError] = useState(null);
-  const { setLoading, setError: setGlobalError } = useLoading();
+  const [error] = useState(null);
+  const { setLoading, setError: _setGlobalError } = useLoading();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [feedbackToDelete, setFeedbackToDelete] = useState(null);
   const [feedbackToEdit, setFeedbackToEdit] = useState(null);
   const [expandedMessages, setExpandedMessages] = useState({});
-  
+
   // New state for filters and sorting
   const [filters, setFilters] = useState({
     status: 'all',
     type: 'all',
     priority: 'all',
-    pageRoute: 'all'
+    pageRoute: 'all',
   });
   const [sortConfig, setSortConfig] = useState({
     key: 'created_at',
-    direction: 'desc'
+    direction: 'desc',
   });
   const [showResolved, setShowResolved] = useState(false);
 
@@ -56,23 +56,23 @@ const FeedbackManagement = () => {
   const handleStatusChange = async (id, newStatus) => {
     try {
       await feedbackService.updateFeedbackStatus(id, newStatus);
-      setFeedbackList(prev => 
-        prev.map(item => 
-          item.id === id ? { ...item, status: newStatus } : item
-        )
+      setFeedbackList(prev =>
+        prev.map(item =>
+          item.id === id ? { ...item, status: newStatus } : item,
+        ),
       );
     } catch (error) {
       console.error('Error updating feedback status:', error);
     }
   };
 
-  const handleEdit = async (updatedFeedback) => {
+  const handleEdit = async updatedFeedback => {
     try {
       await feedbackService.updateFeedbackStatus(updatedFeedback.id, updatedFeedback.status);
       setFeedbackList(prev =>
         prev.map(item =>
-          item.id === updatedFeedback.id ? { ...item, ...updatedFeedback } : item
-        )
+          item.id === updatedFeedback.id ? { ...item, ...updatedFeedback } : item,
+        ),
       );
       setEditModalOpen(false);
       setFeedbackToEdit(null);
@@ -81,14 +81,14 @@ const FeedbackManagement = () => {
     }
   };
 
-  const toggleMessage = (id) => {
+  const toggleMessage = id => {
     setExpandedMessages(prev => ({
       ...prev,
-      [id]: !prev[id]
+      [id]: !prev[id],
     }));
   };
 
-  const openDeleteModal = (feedback) => {
+  const openDeleteModal = feedback => {
     setFeedbackToDelete(feedback);
     setDeleteModalOpen(true);
   };
@@ -100,7 +100,7 @@ const FeedbackManagement = () => {
 
   const handleDelete = async () => {
     if (!feedbackToDelete) return;
-    
+
     try {
       await feedbackService.deleteFeedback(feedbackToDelete.id);
       setFeedbackList(prev => prev.filter(item => item.id !== feedbackToDelete.id));
@@ -110,7 +110,7 @@ const FeedbackManagement = () => {
     }
   };
 
-  const openEditModal = (feedback) => {
+  const openEditModal = feedback => {
     setFeedbackToEdit(feedback);
     setEditModalOpen(true);
   };
@@ -135,14 +135,14 @@ const FeedbackManagement = () => {
         (filters.priority === 'all' || feedback.priority === filters.priority) &&
         (filters.pageRoute === 'all' || feedback.page_route === filters.pageRoute)
       );
-      
+
       // Separate resolved and unresolved
       const isResolved = feedback.status === 'resolved' || feedback.status === 'closed';
       return matchesFilters && (showResolved ? isResolved : !isResolved);
     })
     .sort((a, b) => {
       if (sortConfig.key === 'created_at') {
-        return sortConfig.direction === 'asc' 
+        return sortConfig.direction === 'asc'
           ? new Date(a.created_at) - new Date(b.created_at)
           : new Date(b.created_at) - new Date(a.created_at);
       }
@@ -157,17 +157,17 @@ const FeedbackManagement = () => {
         : b[sortConfig.key]?.localeCompare(a[sortConfig.key]);
     });
 
-  const handleSort = (key) => {
+  const handleSort = key => {
     setSortConfig(prev => ({
       key,
-      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc',
     }));
   };
 
   const handleFilterChange = (filterType, value) => {
     setFilters(prev => ({
       ...prev,
-      [filterType]: value
+      [filterType]: value,
     }));
   };
 
@@ -180,7 +180,7 @@ const FeedbackManagement = () => {
     return null; // Error screen is now handled by LoadingContext
   }
 
-  const handlePageRouteClick = (route) => {
+  const handlePageRouteClick = route => {
     window.open(route, '_blank', 'noopener,noreferrer');
   };
 
@@ -209,7 +209,7 @@ const FeedbackManagement = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
         <select
           value={filters.status}
-          onChange={(e) => handleFilterChange('status', e.target.value)}
+          onChange={e => handleFilterChange('status', e.target.value)}
           className="p-2 rounded border"
           style={{
             backgroundColor: currentTheme.colors.background,
@@ -226,7 +226,7 @@ const FeedbackManagement = () => {
 
         <select
           value={filters.type}
-          onChange={(e) => handleFilterChange('type', e.target.value)}
+          onChange={e => handleFilterChange('type', e.target.value)}
           className="p-2 rounded border"
           style={{
             backgroundColor: currentTheme.colors.background,
@@ -243,7 +243,7 @@ const FeedbackManagement = () => {
 
         <select
           value={filters.priority}
-          onChange={(e) => handleFilterChange('priority', e.target.value)}
+          onChange={e => handleFilterChange('priority', e.target.value)}
           className="p-2 rounded border"
           style={{
             backgroundColor: currentTheme.colors.background,
@@ -260,7 +260,7 @@ const FeedbackManagement = () => {
 
         <select
           value={filters.pageRoute}
-          onChange={(e) => handleFilterChange('pageRoute', e.target.value)}
+          onChange={e => handleFilterChange('pageRoute', e.target.value)}
           className="p-2 rounded border"
           style={{
             backgroundColor: currentTheme.colors.background,
@@ -285,24 +285,24 @@ const FeedbackManagement = () => {
                 onClick={() => handleSort('priority')}>
                    {sortConfig.key === 'priority' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
                 </th>
-              <th 
+              <th
                 className="px-2 py-2 text-left"
               >
                 Message
               </th>
-              <th 
+              <th
                 className="px-4 py-2 text-left cursor-pointer"
                 onClick={() => handleSort('status')}
               >
                 Status {sortConfig.key === 'status' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
               </th>
-              <th 
+              <th
                 className="px-4 py-2 text-left cursor-pointer"
                 onClick={() => handleSort('created_at')}
               >
                 Date {sortConfig.key === 'created_at' && (sortConfig.direction === 'asc' ? '↑' : '↓')}
               </th>
-              <th 
+              <th
                 className="px-4 py-2 text-left cursor-pointer"
                 onClick={() => handleSort('name')}
               >
@@ -312,17 +312,17 @@ const FeedbackManagement = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredAndSortedFeedback.map((item) => (
-              <tr 
-                key={item.id} 
+            {filteredAndSortedFeedback.map(item => (
+              <tr
+                key={item.id}
                 className={`border-b hover:bg-gray-50 transition-colors ${
-                  item.status === 'resolved' || item.status === 'closed' 
-                    ? 'opacity-60 hover:opacity-100' 
+                  item.status === 'resolved' || item.status === 'closed'
+                    ? 'opacity-60 hover:opacity-100'
                     : ''
                 }`}
               >
-                <td className='px-4 py-2'>
-                  <div className='flex items-center gap-2 rounded-full h-4 w-4' style={{ backgroundColor: item.priority === 'high' ? '#ef4444' : item.priority === 'medium' ? '#f59e0b' : '#34d399' }}>
+                <td className="px-4 py-2">
+                  <div className="flex items-center gap-2 rounded-full h-4 w-4" style={{ backgroundColor: item.priority === 'high' ? '#ef4444' : item.priority === 'medium' ? '#f59e0b' : '#34d399' }}>
                   </div>
                 </td>
                 <td className="px-2 py-2 capitalize">
@@ -355,7 +355,7 @@ const FeedbackManagement = () => {
                 <td className="px-4 py-2">
                   <select
                     value={item.status}
-                    onChange={(e) => {
+                    onChange={e => {
                       const newStatus = e.target.value;
                       handleStatusChange(item.id, newStatus);
                       // If status is changed to resolved or closed, switch to resolved view
@@ -421,7 +421,7 @@ const FeedbackManagement = () => {
       {/* Delete Confirmation Modal */}
       {deleteModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div 
+          <div
             className="bg-white rounded-lg p-6 max-w-md w-full mx-4"
             style={{ backgroundColor: currentTheme.colors.background }}
           >
@@ -435,9 +435,9 @@ const FeedbackManagement = () => {
               <button
                 onClick={closeDeleteModal}
                 className="px-4 py-2 rounded"
-                style={{ 
+                style={{
                   backgroundColor: currentTheme.colors.secondary,
-                  color: currentTheme.colors.text
+                  color: currentTheme.colors.text,
                 }}
               >
                 Cancel
@@ -457,14 +457,14 @@ const FeedbackManagement = () => {
       {/* Edit Modal */}
       {editModalOpen && feedbackToEdit && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div 
+          <div
             className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4"
             style={{ backgroundColor: currentTheme.colors.background }}
           >
             <h3 className="text-xl font-bold mb-4" style={{ color: currentTheme.colors.text }}>
               Edit Feedback
             </h3>
-            <form onSubmit={(e) => {
+            <form onSubmit={e => {
               e.preventDefault();
               handleEdit(feedbackToEdit);
             }} className="space-y-4">
@@ -473,12 +473,12 @@ const FeedbackManagement = () => {
                 <input
                   type="text"
                   value={feedbackToEdit.name}
-                  onChange={(e) => setFeedbackToEdit(prev => ({ ...prev, name: e.target.value }))}
+                  onChange={e => setFeedbackToEdit(prev => ({ ...prev, name: e.target.value }))}
                   className="w-full p-2 rounded border"
-                  style={{ 
+                  style={{
                     backgroundColor: currentTheme.colors.background,
                     borderColor: currentTheme.colors.border,
-                    color: currentTheme.colors.text
+                    color: currentTheme.colors.text,
                   }}
                   required
                 />
@@ -488,12 +488,12 @@ const FeedbackManagement = () => {
                 <label className="block mb-1" style={{ color: currentTheme.colors.text }}>Type</label>
                 <select
                   value={feedbackToEdit.type}
-                  onChange={(e) => setFeedbackToEdit(prev => ({ ...prev, type: e.target.value }))}
+                  onChange={e => setFeedbackToEdit(prev => ({ ...prev, type: e.target.value }))}
                   className="w-full p-2 rounded border"
-                  style={{ 
+                  style={{
                     backgroundColor: currentTheme.colors.background,
                     borderColor: currentTheme.colors.border,
-                    color: currentTheme.colors.text
+                    color: currentTheme.colors.text,
                   }}
                 >
                   <option value="suggestion">Suggestion</option>
@@ -506,12 +506,12 @@ const FeedbackManagement = () => {
                 <label className="block mb-1" style={{ color: currentTheme.colors.text }}>Priority</label>
                 <select
                   value={feedbackToEdit.priority}
-                  onChange={(e) => setFeedbackToEdit(prev => ({ ...prev, priority: e.target.value }))}
+                  onChange={e => setFeedbackToEdit(prev => ({ ...prev, priority: e.target.value }))}
                   className="w-full p-2 rounded border"
-                  style={{ 
+                  style={{
                     backgroundColor: currentTheme.colors.background,
                     borderColor: currentTheme.colors.border,
-                    color: currentTheme.colors.text
+                    color: currentTheme.colors.text,
                   }}
                 >
                   <option value="low">Low</option>
@@ -524,12 +524,12 @@ const FeedbackManagement = () => {
                 <label className="block mb-1" style={{ color: currentTheme.colors.text }}>Message</label>
                 <textarea
                   value={feedbackToEdit.message}
-                  onChange={(e) => setFeedbackToEdit(prev => ({ ...prev, message: e.target.value }))}
+                  onChange={e => setFeedbackToEdit(prev => ({ ...prev, message: e.target.value }))}
                   className="w-full p-2 rounded border"
-                  style={{ 
+                  style={{
                     backgroundColor: currentTheme.colors.background,
                     borderColor: currentTheme.colors.border,
-                    color: currentTheme.colors.text
+                    color: currentTheme.colors.text,
                   }}
                   rows="4"
                   required
@@ -541,12 +541,12 @@ const FeedbackManagement = () => {
                 <input
                   type="text"
                   value={feedbackToEdit.page_route || ''}
-                  onChange={(e) => setFeedbackToEdit(prev => ({ ...prev, page_route: e.target.value }))}
+                  onChange={e => setFeedbackToEdit(prev => ({ ...prev, page_route: e.target.value }))}
                   className="w-full p-2 rounded border"
-                  style={{ 
+                  style={{
                     backgroundColor: currentTheme.colors.background,
                     borderColor: currentTheme.colors.border,
-                    color: currentTheme.colors.text
+                    color: currentTheme.colors.text,
                   }}
                   placeholder="Enter page route"
                 />
@@ -556,12 +556,12 @@ const FeedbackManagement = () => {
                 <label className="block mb-1" style={{ color: currentTheme.colors.text }}>Status</label>
                 <select
                   value={feedbackToEdit.status}
-                  onChange={(e) => setFeedbackToEdit(prev => ({ ...prev, status: e.target.value }))}
+                  onChange={e => setFeedbackToEdit(prev => ({ ...prev, status: e.target.value }))}
                   className="w-full p-2 rounded border"
-                  style={{ 
+                  style={{
                     backgroundColor: currentTheme.colors.background,
                     borderColor: currentTheme.colors.border,
-                    color: currentTheme.colors.text
+                    color: currentTheme.colors.text,
                   }}
                 >
                   <option value="pending">Pending</option>
@@ -576,9 +576,9 @@ const FeedbackManagement = () => {
                   type="button"
                   onClick={closeEditModal}
                   className="px-4 py-2 rounded"
-                  style={{ 
+                  style={{
                     backgroundColor: currentTheme.colors.secondary,
-                    color: currentTheme.colors.text
+                    color: currentTheme.colors.text,
                   }}
                 >
                   Cancel
@@ -599,4 +599,4 @@ const FeedbackManagement = () => {
   );
 };
 
-export default FeedbackManagement; 
+export default FeedbackManagement;

@@ -72,12 +72,12 @@ const palettes = {
 
 const themeIds = Object.keys(palettes);
 
-const rgbToHex = (rgbString) => {
-  const [r, g, b] = rgbString.split(' ').map((n) => parseInt(n, 10));
-  return `#${[r, g, b].map((n) => n.toString(16).padStart(2, '0')).join('')}`;
+const rgbToHex = rgbString => {
+  const [r, g, b] = rgbString.split(' ').map(n => parseInt(n, 10));
+  return `#${[r, g, b].map(n => n.toString(16).padStart(2, '0')).join('')}`;
 };
 
-const buildLegacyColors = (palette) => {
+const buildLegacyColors = palette => {
   const t = palette.tokens;
   const overlayRgb = t.overlay;
   return {
@@ -99,7 +99,7 @@ const buildLegacyColors = (palette) => {
   };
 };
 
-const applyTokens = (palette) => {
+const applyTokens = palette => {
   const root = document.documentElement;
   Object.entries(palette.tokens).forEach(([name, value]) => {
     root.style.setProperty(`--${name}`, value);
@@ -137,7 +137,7 @@ const loadStoredTheme = () => {
   return null;
 };
 
-const buildPublicTheme = (id) => {
+const buildPublicTheme = id => {
   const palette = palettes[id];
   return {
     id,
@@ -165,12 +165,12 @@ export const ThemeProvider = ({ children }) => {
     if (typeof window === 'undefined' || !window.matchMedia) return undefined;
     if (userOverride) return undefined;
     const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    const handler = (e) => setThemeId(e.matches ? 'dark' : 'light');
+    const handler = e => setThemeId(e.matches ? 'dark' : 'light');
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);
   }, [userOverride]);
 
-  const changeTheme = (next) => {
+  const changeTheme = next => {
     const nextId = typeof next === 'string' ? next : next?.id || next?.name?.toLowerCase();
     if (!nextId || !palettes[nextId]) return;
     setThemeId(nextId);
@@ -193,7 +193,7 @@ export const ThemeProvider = ({ children }) => {
       themes,
       isSystemTheme: !userOverride,
     }),
-    [themeId, userOverride]
+    [themeId, userOverride],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import ActivityOverview from '../ActivityOverview';
 import { useEffect } from 'react';
-import { useAuth } from '../../../../contexts/AuthContext';
 import { getUserProfile } from '../../../../services/users';
 import { getWeeklyActivity, getCategoryDistribution, getRecentActivities, getActivityTrends } from '../../activity';
 
 const OverviewTab = ({ userId, isPublic }) => {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [_loading, setLoading] = useState(true);
+  const [_error, setError] = useState(null);
   const [userData, setUserData] = useState({});
 
   const [activityData, setActivityData] = useState([]);
@@ -21,20 +20,20 @@ const OverviewTab = ({ userId, isPublic }) => {
 
       try {
         setLoading(true);
-        
+
         // Fetch all data in parallel
         const [
           userProfile,
           weeklyActivity,
           categoryDistribution,
           recentActivitiesData,
-          activityTrends
+          activityTrends,
         ] = await Promise.all([
           getUserProfile(userId),
           getWeeklyActivity(),
           getCategoryDistribution(),
           getRecentActivities(),
-          getActivityTrends()
+          getActivityTrends(),
         ]);
 
         setUserData(userProfile);
@@ -72,4 +71,4 @@ const OverviewTab = ({ userId, isPublic }) => {
   );
 };
 
-export default OverviewTab; 
+export default OverviewTab;

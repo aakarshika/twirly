@@ -10,29 +10,29 @@ export const calculateProcessedItems = (items, comparisonMetrics) => {
   return calculateLeadingMetrics(
     calculateMetricVotes(
       calculateVotePercentages(items),
-      comparisonMetrics
+      comparisonMetrics,
     ),
     processMetrics(
       calculateMetricVotes(
         calculateVotePercentages(items),
-        comparisonMetrics
+        comparisonMetrics,
       ),
       comparisonMetrics,
       hasAnyClearLeader(
         calculateMetricVotes(
           calculateVotePercentages(items),
-          comparisonMetrics
+          comparisonMetrics,
         ),
-        comparisonMetrics
-      )
+        comparisonMetrics,
+      ),
     ),
     hasAnyClearLeader(
       calculateMetricVotes(
         calculateVotePercentages(items),
-        comparisonMetrics
+        comparisonMetrics,
       ),
-      comparisonMetrics
-    )
+      comparisonMetrics,
+    ),
   );
 };
 
@@ -41,7 +41,7 @@ export const calculateProcessedItems = (items, comparisonMetrics) => {
  * @param {Array} comparisonMetrics - Array of comparison metrics
  * @returns {number} - Total votes across all metrics
  */
-export const countTotalVotes = (comparisonMetrics) => {
+export const countTotalVotes = comparisonMetrics => {
   return comparisonMetrics.reduce((sum, metric) => sum + metric.votes.length, 0);
 };
 
@@ -56,10 +56,10 @@ export const calculateItemVotes = (items, comparisonMetrics) => {
     const totalVotes = comparisonMetrics.reduce((sum, metric) => {
       return sum + metric.votes.filter(vote => vote.item_id === item.id).length;
     }, 0);
-    
+
     return {
       ...item,
-      votes: totalVotes
+      votes: totalVotes,
     };
   });
 };
@@ -69,11 +69,11 @@ export const calculateItemVotes = (items, comparisonMetrics) => {
  * @param {Array} items - Array of comparison items
  * @returns {Array} - Items with added vote percentages
  */
-export const calculateVotePercentages = (items) => {
+export const calculateVotePercentages = items => {
   const totalVotes = items.reduce((sum, item) => sum + (item.votes || 0), 0);
   return items.map(item => ({
     ...item,
-    votesPercentage: (item.votes / totalVotes) * 100
+    votesPercentage: (item.votes / totalVotes) * 100,
   }));
 };
 
@@ -82,7 +82,7 @@ export const calculateVotePercentages = (items) => {
  * @param {Array} items - Array of items with votes
  * @returns {Object} - The winning item
  */
-export const findWinner = (items) => {
+export const findWinner = items => {
   return items.reduce((max, item) => {
     return (item.votes > max.votes) ? item : max;
   }, items[0]);
@@ -93,7 +93,7 @@ export const findWinner = (items) => {
  * @param {Array} items - Array of items with votes
  * @returns {Object} - The runner-up item
  */
-export const findRunnerUp = (items) => {
+export const findRunnerUp = items => {
   const sortedItems = [...items].sort((a, b) => b.votes - a.votes);
   return sortedItems[1];
 };
@@ -108,16 +108,16 @@ export const calculateMetricVotes = (items, comparisonMetrics) => {
   return items.map(item => {
     const votes = comparisonMetrics.map(metric => ({
       metric_name: metric.metric_name,
-      itemVotes: metric.votes.filter(vote => vote.item_id === item.id).length
+      itemVotes: metric.votes.filter(vote => vote.item_id === item.id).length,
     }));
-    const shiningAt = votes 
+    const shiningAt = votes
       .sort((a, b) => b.itemVotes - a.itemVotes)
       .slice(0, 1);
 
     return {
       ...item,
       metric_votes: votes,
-      shiningAt
+      shiningAt,
     };
   });
 };
@@ -132,12 +132,12 @@ export const hasAnyClearLeader = (items, comparisonMetrics) => {
   return comparisonMetrics.some(metric => {
     const itemVotes = items.map(item => ({
       id: item.id,
-      votes: item.metric_votes?.find(vote => vote.metric_name === metric.metric_name).itemVotes
+      votes: item.metric_votes?.find(vote => vote.metric_name === metric.metric_name).itemVotes,
     }));
-    
+
     const maxVotes = Math.max(...itemVotes.map(item => item.votes));
     const itemsWithMaxVotes = itemVotes.filter(item => item.votes === maxVotes);
-    
+
     return maxVotes > 0 && itemsWithMaxVotes.length === 1;
   });
 };
@@ -153,33 +153,33 @@ export const processMetrics = (items, comparisonMetrics, hasAnyLeader) => {
   return comparisonMetrics.map(metric => {
     const itemVotes = items.map(item => ({
       id: item.id,
-      votes: item.metric_votes?.find(vote => vote.metric_name === metric.metric_name).itemVotes
+      votes: item.metric_votes?.find(vote => vote.metric_name === metric.metric_name).itemVotes,
     }));
-    
+
     const maxVotes = Math.max(...itemVotes.map(item => item.votes));
     const itemsWithMaxVotes = itemVotes.filter(item => item.votes === maxVotes);
-    
+
     if (maxVotes > 0) {
       if (hasAnyLeader) {
         return {
           ...metric,
           leader: itemsWithMaxVotes.length === 1 ? itemsWithMaxVotes[0] : null,
-          isTied: false
+          isTied: false,
         };
       } else {
         return {
           ...metric,
           leadingItems: itemsWithMaxVotes,
-          isTied: true
+          isTied: true,
         };
       }
     }
-    
+
     return {
       ...metric,
       leader: null,
       leadingItems: [],
-      isTied: false
+      isTied: false,
     };
   });
 };
@@ -196,8 +196,8 @@ export const calculateLeadingMetrics = (items, comparisonMetrics, hasAnyLeader) 
     ...item,
     leadingMetrics: hasAnyLeader
       ? comparisonMetrics.filter(metric => metric.leader && metric.leader.id === item.id)
-      : comparisonMetrics.filter(metric => 
-          metric.leadingItems && metric.leadingItems.some(leadingItem => leadingItem.id === item.id)
-        )
+      : comparisonMetrics.filter(metric =>
+          metric.leadingItems && metric.leadingItems.some(leadingItem => leadingItem.id === item.id),
+        ),
   }));
-}; 
+};

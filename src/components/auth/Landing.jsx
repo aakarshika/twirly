@@ -1,24 +1,25 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link, Navigate, useLocation } from 'react-router-dom';
+import { useNavigate, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
-import { User, ArrowRight } from 'lucide-react';
+import { User } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useMediaQuery } from 'react-responsive';
 import { config } from '../../config';
+import { isNativePlatform } from '../../config/auth';
 import Login from './Login';
 import Signup from './Signup';
 import TwirlingTwirlyLogo from './TwirlingTwirlyLogo';
 // Mobile Landing Component
-const MobileLanding = ({ currentTheme, handleSocialAuth, loading, modalType, setModalType }) => {
+const MobileLanding = ({ currentTheme, _handleSocialAuth, _loading, modalType, setModalType }) => {
 
-  const openModal = (type) => {
+  const openModal = type => {
     setModalType(type);
   };
   if (modalType === 'login') {
-    return <Login source="MOBILE" onGoToSignup={() => setModalType('signup')} onGoHome={() => setModalType(null)} />
+    return <Login source="MOBILE" onGoToSignup={() => setModalType('signup')} onGoHome={() => setModalType(null)} />;
   } else if (modalType === 'signup') {
-    return <Signup source="MOBILE" onGoToLogin={() => setModalType('login')} onGoHome={() => setModalType(null)} />
+    return <Signup source="MOBILE" onGoToLogin={() => setModalType('login')} onGoHome={() => setModalType(null)} />;
   }
   return (
     <div className="flex flex-col  mt-24">
@@ -28,7 +29,7 @@ const MobileLanding = ({ currentTheme, handleSocialAuth, loading, modalType, set
         style={{
           backgroundColor: config.environment === 'development' ? '#4CAF50' :
             config.environment === 'staging' ? '#FFA726' : '#F44336',
-          color: 'white'
+          color: 'white',
         }}
       >
         {config.environment.toUpperCase()}
@@ -56,7 +57,7 @@ const MobileLanding = ({ currentTheme, handleSocialAuth, loading, modalType, set
             style={{
               color: currentTheme.colors.text,
               backgroundColor: 'rgba(255, 255, 255, 0.8)',
-              border: `1px solid ${currentTheme.colors.border}`
+              border: `1px solid ${currentTheme.colors.border}`,
             }}
           >
             <User className="w-4 h-4" />
@@ -68,7 +69,7 @@ const MobileLanding = ({ currentTheme, handleSocialAuth, loading, modalType, set
             style={{
               color: currentTheme.colors.text,
               backgroundColor: 'rgba(255, 255, 255, 0.8)',
-              border: `1px solid ${currentTheme.colors.border}`
+              border: `1px solid ${currentTheme.colors.border}`,
             }}
           >
             <User className="w-4 h-4" />
@@ -81,7 +82,7 @@ const MobileLanding = ({ currentTheme, handleSocialAuth, loading, modalType, set
 };
 
 // Web Landing Component
-const WebLanding = ({ currentTheme, handleSocialAuth, loading, modalType, setModalType }) => {
+const WebLanding = ({ currentTheme, _handleSocialAuth, _loading, modalType, setModalType }) => {
   return (
     <div className="flex items-center justify-center">
       {/* Environment Indicator */}
@@ -90,7 +91,7 @@ const WebLanding = ({ currentTheme, handleSocialAuth, loading, modalType, setMod
         style={{
           backgroundColor: config.environment === 'development' ? '#4CAF50' :
             config.environment === 'staging' ? '#FFA726' : '#F44336',
-          color: 'white'
+          color: 'white',
         }}
       >
         {config.environment.toUpperCase()}
@@ -152,7 +153,6 @@ export default function Landing() {
   const isMobile = useMediaQuery({ maxWidth: 767 });
   const location = useLocation();
 
-
   // Get verification message from navigation state or URL parameters
   const verificationMessage = location.state?.message;
   const [verificationStatus, setVerificationStatus] = useState(null);
@@ -176,7 +176,7 @@ export default function Landing() {
     }
   });
 
-  const handleAutoLogin = async (email) => {
+  const handleAutoLogin = async email => {
     // console.log("handleAutoLogin", "email", email, "handleeeeeee");
     setLoading(true);
     try {
@@ -201,7 +201,7 @@ export default function Landing() {
     return <Navigate to="/dashboard" replace />;
   }
 
-  const handleSocialAuth = async (provider) => {
+  const handleSocialAuth = async provider => {
     setError('');
     setLoading(true);
     try {
@@ -253,4 +253,4 @@ export default function Landing() {
       )}
     </div>
   );
-} 
+}

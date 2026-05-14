@@ -5,18 +5,18 @@ import { BarChart } from 'lucide-react';
 
 /**
  * Metrics component that visualizes rating data with horizontal bars
- * 
+ *
  * @param {Object} props - Component props
  * @param {Object} props.metrics - Object containing metric names as keys and values (0-10)
  * @param {string} props.title - Optional title for the metrics section
  * @param {boolean} props.showIcon - Whether to show the BarChart icon
  * @param {string} props.className - Additional CSS classes
  */
-const Metrics = ({ 
-  metrics, 
-  title = "Ratings", 
+const Metrics = ({
+  metrics,
+  title = "Ratings",
   showIcon = true,
-  className = ''
+  className = '',
 }) => {
   if (!metrics || Object.keys(metrics).length === 0) {
     return null;
@@ -30,7 +30,7 @@ const Metrics = ({
           {title}
         </h4>
       )}
-      
+
       {Object.entries(metrics).map(([key, value]) => (
         <div key={key} className="space-y-1">
           <div className="flex justify-between text-xs">
@@ -38,7 +38,7 @@ const Metrics = ({
             <span>{typeof value === 'number' ? value.toFixed(1) : value}/10</span>
           </div>
           <div className="h-1 bg-gray-800 rounded-full overflow-hidden">
-            <div 
+            <div
               className={`h-full ${
                 value >= 8 ? 'bg-white' :
                 value >= 6 ? 'bg-gray-300' :

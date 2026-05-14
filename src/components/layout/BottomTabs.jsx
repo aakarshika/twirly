@@ -9,21 +9,21 @@ const TABS = [
     label: 'Home',
     icon: Home,
     path: '/',
-    match: (p) => p === '/',
+    match: p => p === '/',
   },
   {
     id: 'search',
     label: 'Search',
     icon: Search,
     path: '/search',
-    match: (p) => p.startsWith('/search'),
+    match: p => p.startsWith('/search'),
   },
   {
     id: 'create',
     label: 'Create',
     icon: PlusCircle,
     path: '/new-comparison?load_draft=true',
-    match: (p) => p.startsWith('/new-comparison') || p.startsWith('/edit-comparison'),
+    match: p => p.startsWith('/new-comparison') || p.startsWith('/edit-comparison'),
     prominent: true,
   },
   {
@@ -31,14 +31,14 @@ const TABS = [
     label: 'Activity',
     icon: Bell,
     path: '/activity',
-    match: (p) => p.startsWith('/activity'),
+    match: p => p.startsWith('/activity'),
   },
   {
     id: 'profile',
     label: 'Profile',
     icon: User,
     path: '/dashboard',
-    match: (p) => p.startsWith('/dashboard'),
+    match: p => p.startsWith('/dashboard'),
   },
 ];
 
@@ -64,7 +64,7 @@ const BottomTabs = () => {
               onClick={() => navigate(path)}
               className={cn(
                 'flex flex-col items-center justify-center gap-0.5 flex-1 min-h-[44px] py-1.5 transition-colors',
-                prominent && 'relative'
+                prominent && 'relative',
               )}
               style={{
                 color: active

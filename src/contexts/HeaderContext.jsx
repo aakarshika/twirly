@@ -18,4 +18,4 @@ export const useHeader = () => {
     throw new Error('useHeader must be used within a HeaderProvider');
   }
   return context;
-}; 
+};

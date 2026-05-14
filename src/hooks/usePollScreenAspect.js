@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useComparisonAspectDetails } from './useComparisonAspectDetails';
 import { useAuth } from '@/contexts/AuthContext';
-export const usePollScreenAspect = (id) => {
+export const usePollScreenAspect = id => {
   const navigate = useNavigate();
   const [showStartAnimation, setShowStartAnimation] = useState(true);
   const [showEndAnimation, setShowEndAnimation] = useState(false);
@@ -10,7 +10,7 @@ export const usePollScreenAspect = (id) => {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [height, setHeight] = useState('100vh');
 
-  const { user } = useAuth();
+  const { user: _user } = useAuth();
   const {
     items,
     currentSet,
@@ -26,14 +26,8 @@ export const usePollScreenAspect = (id) => {
     fetchComparisonDetails,
     fetchRemainingAspects,
     handleLikeComparisonAspectSet,
-    handleNext,
-    fetchComparison
+    fetchComparison,
   } = useComparisonAspectDetails(id);
-
-  const getPreviousId = () => {
-    const previousId = parseInt(id) - 1;
-    return previousId;
-  }
   // Preload next card data
   useEffect(() => {
     const loadNextCard = async () => {
@@ -68,21 +62,21 @@ export const usePollScreenAspect = (id) => {
 
   const handlePreviousNavigation = () => {
     if (isTransitioning) return;
-    
+
     setIsTransitioning(true);
     setShowEndAnimation(true);
-    
+
     setTimeout(() => {
       if (nextCardData) {
         // Update state with nextCardData if needed
       }
-      
+
       navigate(-1);
-      
+
       setShowEndAnimation(false);
       setShowStartAnimation(true);
       setIsTransitioning(false);
-      
+
       setTimeout(() => {
         setShowStartAnimation(false);
       }, 600);
@@ -91,10 +85,10 @@ export const usePollScreenAspect = (id) => {
 
   const handleNextNavigation = async () => {
     if (isTransitioning) return;
-    
+
     setIsTransitioning(true);
     setShowEndAnimation(true);
-    
+
     setTimeout(async () => {
       // console.log('nextCardData', nextCardData);
       if (nextCardData) {
@@ -105,11 +99,11 @@ export const usePollScreenAspect = (id) => {
       else {
         navigate('/comparison/' + currentSet.id);
       }
-      
+
       setShowEndAnimation(false);
       setShowStartAnimation(true);
       setIsTransitioning(false);
-      
+
       setTimeout(() => {
         setShowStartAnimation(false);
       }, 600);
@@ -131,7 +125,7 @@ export const usePollScreenAspect = (id) => {
     itemReviews,
     loading,
     error,
-    
+
     // Actions
     handleVote,
     handleRevertVote,
@@ -140,4 +134,4 @@ export const usePollScreenAspect = (id) => {
     handleNextNavigation,
     nextCardData,
   };
-}; 
+};

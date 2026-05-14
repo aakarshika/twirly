@@ -22,7 +22,7 @@ export const userService = {
     }
   },
 
-  async getUserNotificationSettings(userId) {
+  async getUserNotificationSettings(_userId) {
     try {
       const { data } = await apiClient.get('/api/users/me/notifications');
       const row = data.data;
@@ -34,7 +34,7 @@ export const userService = {
     }
   },
 
-  async getUserCategoryPreferences(userId) {
+  async getUserCategoryPreferences(_userId) {
     try {
       const { data } = await apiClient.get('/api/users/me/category-preferences');
       return data.data ?? [];
@@ -83,7 +83,7 @@ export const userService = {
     await Promise.all(ops);
   },
 
-  async deleteUserPreferences(userId) {
+  async deleteUserPreferences(_userId) {
     await apiClient.delete('/api/users/me');
   },
 };

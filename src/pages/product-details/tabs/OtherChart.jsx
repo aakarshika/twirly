@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -10,7 +10,7 @@ import {
   Legend,
   CategoryScale,
   BarElement,
-  ArcElement
+  ArcElement,
 } from 'chart.js';
 import { Bar, Bubble, Line, Pie, PolarArea, Radar } from 'react-chartjs-2';
 
@@ -24,16 +24,25 @@ ChartJS.register(
   LineElement,
   Filler,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const OtherChart = ({ data, selectedChart }) => {
+  useEffect(() => {
+    return () => {
+      const chartInstance = ChartJS.getChart('chartCanvasId');
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+    };
+  }, [data]);
+
   if (!data || !data[0]) return null;
 
   const { aspects, items } = data[0];
   const chartDataRadar = {
     labels: aspects.map(aspect => (aspect.name).split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')),
-    datasets: items.map((item, index) => ({
+    datasets: items.map(item => ({
       label: item.name,
       data: aspects.map(aspect => item.metrics[aspect.name]),
       backgroundColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 0.2)`,
@@ -42,56 +51,55 @@ const OtherChart = ({ data, selectedChart }) => {
       pointBackgroundColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
       pointBorderColor: '#fff',
       pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`
-    }))
+      pointHoverBorderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
+    })),
   };
 
   const chartDataLine = {
     labels: aspects.map(aspect => (aspect.name).split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')),
-    datasets: items.map((item, index) => ({
+    datasets: items.map(item => ({
       label: item.name,
       data: aspects.map(aspect => item.metrics[aspect.name]),
       borderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
       borderWidth: 2,
       fill: false,
-      tension: 0.4
-    }))
+      tension: 0.4,
+    })),
   };
 
   const chartDataBar = {
     labels: aspects.map(aspect => (aspect.name).split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')),
-    datasets: items.map((item, index) => ({
+    datasets: items.map(item => ({
       label: item.name,
       data: aspects.map(aspect => item.metrics[aspect.name]),
       backgroundColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 0.2)`,
       borderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
       borderWidth: 2,
       fill: false,
-      tension: 0.4
-    }))
+      tension: 0.4,
+    })),
   };
 
   const chartDataPie = {
     labels: aspects.map(aspect => (aspect.name).split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')),
-    datasets: items.map((item, index) => ({
+    datasets: items.map(item => ({
       label: item.name,
       data: aspects.map(aspect => item.metrics[aspect.name]),
       backgroundColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 0.2)`,
       borderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
       borderWidth: 2,
       fill: false,
-      tension: 0.4
-    }))
+      tension: 0.4,
+    })),
   };
 
   const chartDataBubble = {
     labels: aspects.map(aspect => (aspect.name).split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')),
-    datasets: items.map((item, index) => {
+    datasets: items.map(item => {
 
       const xValues = aspects.map(aspect => item.metrics[aspect.name]?.x || 0);
       const yValues = aspects.map(aspect => item.metrics[aspect.name]?.y || 0);
       const rValues = aspects.map(aspect => item.metrics[aspect.name]?.r || 0);
-
 
       const xMin = Math.min(...xValues);
       const xMax = Math.max(...xValues);
@@ -103,7 +111,7 @@ const OtherChart = ({ data, selectedChart }) => {
       const normalizedData = aspects.map(aspect => ({
         x: (item.metrics[aspect.name]?.x - xMin) / (xMax - xMin) || 0,
         y: (item.metrics[aspect.name]?.y - yMin) / (yMax - yMin) || 0,
-        r: ((item.metrics[aspect.name]?.r - rMin) / (rMax - rMin) || 0) * 20 // Scale radius for visibility
+        r: ((item.metrics[aspect.name]?.r - rMin) / (rMax - rMin) || 0) * 20, // Scale radius for visibility
       }));
 
       return {
@@ -113,24 +121,23 @@ const OtherChart = ({ data, selectedChart }) => {
         borderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
         borderWidth: 2,
         fill: false,
-        tension: 0.4
+        tension: 0.4,
       };
-    })
+    }),
   };
 
   const chartDataPolar = {
     labels: aspects.map(aspect => (aspect.name).split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')),
-    datasets: items.map((item, index) => ({
+    datasets: items.map(item => ({
       label: item.name,
       data: aspects.map(aspect => item.metrics[aspect.name]),
       backgroundColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 0.2)`,
       borderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
       borderWidth: 2,
       fill: false,
-      tension: 0.4
-    }))
+      tension: 0.4,
+    })),
   };
-
 
   const optionsRadar = {
     responsive: true,
@@ -138,14 +145,14 @@ const OtherChart = ({ data, selectedChart }) => {
     scales: {
       r: {
         angleLines: {
-          display: true
+          display: true,
         },
         suggestedMin: 0,
         suggestedMax: 100,
         ticks: {
-          display: false
-        }
-      }
+          display: false,
+        },
+      },
     },
     plugins: {
       legend: {
@@ -153,9 +160,9 @@ const OtherChart = ({ data, selectedChart }) => {
       },
       title: {
         display: true,
-        text: data[0].setTitle
-      }
-    }
+        text: data[0].setTitle,
+      },
+    },
   };
 
   const optionsLine = {
@@ -163,9 +170,9 @@ const OtherChart = ({ data, selectedChart }) => {
     maintainAspectRatio: false,
     scales: {
       y: {
-        beginAtZero: true
-      }
-    }
+        beginAtZero: true,
+      },
+    },
   };
 
   const optionsBar = {
@@ -173,9 +180,9 @@ const OtherChart = ({ data, selectedChart }) => {
     maintainAspectRatio: false,
     scales: {
       y: {
-        beginAtZero: true
-      }
-    }
+        beginAtZero: true,
+      },
+    },
   };
 
   const optionsPie = {
@@ -187,18 +194,17 @@ const OtherChart = ({ data, selectedChart }) => {
       },
       title: {
         display: true,
-        text: data[0].setTitle
+        text: data[0].setTitle,
       },
       tooltip: {
         callbacks: {
           label: function(tooltipItem) {
             const label = tooltipItem.label || '';
-            const value = tooltipItem.raw || 0;
             return `${label}`;
-          }
-        }
-      }
-    }
+          },
+        },
+      },
+    },
   };
 
   const optionsBubble = {
@@ -206,11 +212,11 @@ const OtherChart = ({ data, selectedChart }) => {
     maintainAspectRatio: false,
     scales: {
       x: {
-        beginAtZero: true
+        beginAtZero: true,
       },
       y: {
-        beginAtZero: true
-      }
+        beginAtZero: true,
+      },
     },
     plugins: {
       legend: {
@@ -218,9 +224,9 @@ const OtherChart = ({ data, selectedChart }) => {
       },
       title: {
         display: true,
-        text: data[0].setTitle
-      }
-    }
+        text: data[0].setTitle,
+      },
+    },
   };
 
   const optionsPolar = {
@@ -229,14 +235,14 @@ const OtherChart = ({ data, selectedChart }) => {
     scales: {
       r: {
         angleLines: {
-          display: true 
+          display: true,
         },
         suggestedMin: 0,
         suggestedMax: 100,
         ticks: {
-          display: false
-        }
-      }
+          display: false,
+        },
+      },
     },
     plugins: {
       legend: {
@@ -244,21 +250,10 @@ const OtherChart = ({ data, selectedChart }) => {
       },
       title: {
         display: true,
-        text: data[0].setTitle
-      }
-    }
+        text: data[0].setTitle,
+      },
+    },
   };
-  
-
-  useEffect(() => {
-    // Cleanup function to destroy the chart instance
-    return () => {
-      const chartInstance = ChartJS.getChart('chartCanvasId'); // Replace 'chartCanvasId' with your actual canvas ID
-      if (chartInstance) {
-        chartInstance.destroy();
-      }
-    };
-  }, [data]); // Run cleanup when data changes
 
   return (
     <div>
@@ -277,4 +272,4 @@ const OtherChart = ({ data, selectedChart }) => {
 };
 
 export { OtherChart };
-export default OtherChart; 
+export default OtherChart;

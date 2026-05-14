@@ -1,26 +1,24 @@
-import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../../contexts/ThemeContext';
-import { getUserReviews } from '../../../../services/reviews';
 import { formatDistanceToNow } from 'date-fns';
 
 const ReviewCard = ({ review }) => {
   const { currentTheme } = useTheme();
 
   return (
-    <div 
+    <div
       className="rounded-lg overflow-hidden"
       style={{ backgroundColor: currentTheme.colors.cardBackground }}
     >
       <div className="p-4">
         <div className="flex justify-between items-start mb-4">
           <div>
-            <h3 
+            <h3
               className="font-semibold text-lg"
               style={{ color: currentTheme.colors.text }}
             >
               {review.productName}
             </h3>
-            <p 
+            <p
               className="text-sm"
               style={{ color: currentTheme.colors.textSecondary }}
             >
@@ -28,7 +26,7 @@ const ReviewCard = ({ review }) => {
             </p>
           </div>
           <div className="flex items-center space-x-2">
-            <span 
+            <span
               className="text-sm font-medium"
               style={{ color: currentTheme.colors.text }}
             >
@@ -37,8 +35,8 @@ const ReviewCard = ({ review }) => {
             <span className="text-yellow-500">★</span>
           </div>
         </div>
-        
-        <p 
+
+        <p
           className="mb-4"
           style={{ color: currentTheme.colors.text }}
         >
@@ -47,13 +45,13 @@ const ReviewCard = ({ review }) => {
 
         <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <span 
+            <span
               className="text-sm"
               style={{ color: currentTheme.colors.textSecondary }}
             >
               {review.likes} likes
             </span>
-            <span 
+            <span
               className="text-sm"
               style={{ color: currentTheme.colors.textSecondary }}
             >

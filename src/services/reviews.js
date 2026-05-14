@@ -16,7 +16,7 @@ export const likeReview = async (reviewId, _userId) => {
   return data.data;
 };
 
-export const unlikeReview = async (reviewId) => {
+export const unlikeReview = async reviewId => {
   const { data } = await apiClient.delete(`/api/reviews/${reviewId}/like`);
   return data.data;
 };
@@ -35,7 +35,7 @@ export const getItemReviews = async (itemId, page = 1, limit = 10) => {
 /**
  * Get average metrics for an item from the backend.
  */
-export const getItemAverageMetrics = async (itemId) => {
+export const getItemAverageMetrics = async itemId => {
   const { data } = await apiClient.get(`/api/items/${itemId}/metrics`);
   return (data.data ?? []).reduce((acc, row) => {
     acc[row.metric_name] = { average: row.avg_rating, totalReviews: row.total_reviews };
@@ -46,7 +46,7 @@ export const getItemAverageMetrics = async (itemId) => {
 /**
  * Get all reviews written by a user.
  */
-export const getUserReviews = async (userId) => {
+export const getUserReviews = async userId => {
   const { data } = await apiClient.get(`/api/reviews/user/${userId}`);
   return (data.data?.reviews ?? []).map(r => ({
     id: r.id,

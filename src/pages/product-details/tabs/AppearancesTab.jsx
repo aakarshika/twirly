@@ -6,11 +6,11 @@ import { OtherChart } from './OtherChart';
 import { useAuth } from '../../../contexts/AuthContext';
 import { MessageSquare, Play, ThumbsUp } from 'lucide-react';
 
-const AppearancesTab = ({ item, comparisonSets }) => {
+const AppearancesTab = ({ _item, comparisonSets }) => {
   const { currentTheme } = useTheme();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [selectedChart, setSelectedChart] = useState('radar');
+  const [selectedChart, _setSelectedChart] = useState('radar');
   const [userVotedSets, setUserVotedSets] = useState({});
 
   useEffect(() => {
@@ -18,7 +18,7 @@ const AppearancesTab = ({ item, comparisonSets }) => {
       if (!user || !comparisonSets?.length) return;
 
       const votesMap = {};
-      await Promise.all(comparisonSets.map(async (set) => {
+      await Promise.all(comparisonSets.map(async set => {
         try {
           const { data } = await apiClient.get('/api/votes/check', { params: { setId: set.id } });
           votesMap[set.id] = !!data.data;
@@ -33,7 +33,7 @@ const AppearancesTab = ({ item, comparisonSets }) => {
   }, [user, comparisonSets]);
 
   return (
-    <div className="space-y-4" style={{color: currentTheme.colors.text}}>
+    <div className="space-y-4" style={{ color: currentTheme.colors.text }}>
       {/* <div className="flex justify-end mb-4">
         <div className="flex flex-row justify-end mb-4">
           <h2 className="text-sm font-semibold mr-4">Visuals:</h2>
@@ -49,9 +49,9 @@ const AppearancesTab = ({ item, comparisonSets }) => {
           ))}
         </div>
       </div> */}
-      {comparisonSets?.map((set) => (
-        <div 
-          key={set.id} 
+      {comparisonSets?.map(set => (
+        <div
+          key={set.id}
           className="flex flex-col p-6 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors"
           style={{ backgroundColor: currentTheme.colors.card }}
           onClick={() => navigate(`/compare/${set.id}`)}
@@ -81,25 +81,25 @@ const AppearancesTab = ({ item, comparisonSets }) => {
 
           {userVotedSets[set.id] && (
             <div className="m-2 rounded-lg p-4">
-              <OtherChart 
+              <OtherChart
                 selectedChart={selectedChart}
                 data={[{
                   setTitle: set.title,
-                  aspects: [{name: set.name, description: set.description}],
+                  aspects: [{ name: set.name, description: set.description }],
                   items: set.allitems.map(item => ({
                     id: item.items.id,
                     name: item.items.name,
                     item_color_string: item.items.item_color_string,
                     metrics: {
-                      [set.name]: item.items.votes?.length / set.votes?.length * 100
-                    }
+                      [set.name]: item.items.votes?.length / set.votes?.length * 100,
+                    },
                     // metrics: set.comparison_set_aspects.reduce((acc, aspect) => {
                     //   const totalVotes = aspect.votes?.length;
                     //   const itemVotes = aspect.votes.filter(vote => vote.item_id === item.items.id)?.length;
                     //   acc[aspect.metric_name] = (itemVotes / totalVotes) * 100;
                     //   return acc;
                     // }, {})
-                  }))
+                  })),
                 }]}
               />
             </div>
@@ -124,4 +124,4 @@ const AppearancesTab = ({ item, comparisonSets }) => {
   );
 };
 
-export default AppearancesTab; 
+export default AppearancesTab;

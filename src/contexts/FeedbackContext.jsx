@@ -25,7 +25,7 @@ export const FeedbackProvider = ({ children }) => {
     feedbackList,
     setFeedbackList,
     loading,
-    setLoading
+    setLoading,
   };
 
   return (
@@ -33,4 +33,4 @@ export const FeedbackProvider = ({ children }) => {
       {children}
     </FeedbackContext.Provider>
   );
-}; 
+};

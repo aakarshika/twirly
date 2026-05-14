@@ -1,7 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Check, Circle, Pencil, ThumbsUp, Upload, X, Plus, Search, Info } from 'lucide-react';
+import { Check, Circle, Pencil, Upload, X, Plus, Search } from 'lucide-react';
 import { HexColorPicker } from 'react-colorful';
-import VoteStats from './VoteStats/VoteStats';
 import './ComparisonItemCard.css';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useAuth } from '../../../contexts/AuthContext';
@@ -13,7 +12,7 @@ const ItemCardEditable = ({
   item,
   newHeight = '35vh',
   onSave,
-  onCancel
+  onCancel,
 }) => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
@@ -26,7 +25,7 @@ const ItemCardEditable = ({
     name: item?.name || '',
     image_url: item?.image_url || '',
     item_color_string: item?.item_color_string || randomPastelColorHex(),
-    categories: item?.categories || []
+    categories: item?.categories || [],
   });
   const [categorySearch, setCategorySearch] = useState('');
   const [categoryResults, setCategoryResults] = useState([]);
@@ -35,19 +34,19 @@ const ItemCardEditable = ({
   const [showColorPicker, setShowColorPicker] = useState(false);
 
   // Convert RGB to hex
-  const rgbToHex = (rgb) => {
+  const rgbToHex = rgb => {
     // If it's already a hex color, return it
     if (rgb.startsWith('#')) return rgb;
-    
+
     // Extract RGB values
     const rgbValues = rgb.match(/\d+/g);
     if (!rgbValues || rgbValues.length < 3) return '#ffffff';
-    
+
     // Convert to hex
     const r = parseInt(rgbValues[0]).toString(16).padStart(2, '0');
     const g = parseInt(rgbValues[1]).toString(16).padStart(2, '0');
     const b = parseInt(rgbValues[2]).toString(16).padStart(2, '0');
-    
+
     return `#${r}${g}${b}`;
   };
 
@@ -83,21 +82,21 @@ const ItemCardEditable = ({
   }, [categorySearch]);
 
   // Add category handlers
-  const handleCategorySelect = (category) => {
+  const handleCategorySelect = category => {
     if (!itemData.categories?.find(c => c.id === category.id)) {
       setItemData(prev => ({
         ...prev,
-        categories: [...(prev.categories || []), category]
+        categories: [...(prev.categories || []), category],
       }));
     }
     setShowCategorySearch(false);
     setCategorySearch('');
   };
 
-  const handleCategoryRemove = (categoryId) => {
+  const handleCategoryRemove = categoryId => {
     setItemData(prev => ({
       ...prev,
-      categories: prev.categories?.filter(c => c.id !== categoryId) || []
+      categories: prev.categories?.filter(c => c.id !== categoryId) || [],
     }));
   };
 
@@ -126,7 +125,7 @@ const ItemCardEditable = ({
       setCategoryResults(allCategories.slice(0, 10));
     } else {
       const filtered = allCategories.filter(cat =>
-        cat.name.toLowerCase().includes(categorySearch.toLowerCase())
+        cat.name.toLowerCase().includes(categorySearch.toLowerCase()),
       );
       setCategoryResults(filtered);
     }
@@ -142,7 +141,7 @@ const ItemCardEditable = ({
     }
   };
 
-  const handleImageChange = async (e) => {
+  const handleImageChange = async e => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -169,10 +168,10 @@ const ItemCardEditable = ({
     setItemData(prev => ({ ...prev, image_url: '' }));
   };
 
-  const handleColorChange = (e) => {
+  const handleColorChange = e => {
     setItemData(prev => ({
       ...prev,
-      item_color_string: e.target.value
+      item_color_string: e.target.value,
     }));
   };
 
@@ -186,7 +185,7 @@ const ItemCardEditable = ({
       const productData = {
         ...itemData,
         item_color_string: color,
-        category_ids: itemData.categories?.map(c => c.id) || []
+        category_ids: itemData.categories?.map(c => c.id) || [],
       };
 
       if (item.id) {
@@ -195,7 +194,7 @@ const ItemCardEditable = ({
         if (onSave) {
             onSave({
             ...productData,
-            id: item.id
+            id: item.id,
             });
         }
       } else {
@@ -205,7 +204,7 @@ const ItemCardEditable = ({
             onSave(itemNew);
         }
       }
-      
+
     } catch (err) {
       console.error('Error saving product:', err);
       setError(err.message || 'Failed to save product');
@@ -220,10 +219,10 @@ const ItemCardEditable = ({
     <div className="flex flex-col gap-4" >
       <div
         className="comparison-item-card rounded-lg"
-        style={{ 
+        style={{
           height: newHeight,
           border: '4px solid ' + color,
-          backgroundColor: color?.substring(0, color.length - 1) + ', 0.2)'
+          backgroundColor: color?.substring(0, color.length - 1) + ', 0.2)',
         }}
       >
         <div className="card-container">
@@ -260,7 +259,7 @@ const ItemCardEditable = ({
                 className="text-fallback"
                 style={{
                   background: color?.substring(0, color.length - 1) + ', 0.2)',
-                  color: '#000'
+                  color: '#000',
                 }}
               >
                 <input
@@ -280,8 +279,8 @@ const ItemCardEditable = ({
                 <div className="text-fallback-content p-2 items-center">
                     {/* multiline input */}
                     {/* multi line placeholder */}
-                    
-                  <div 
+
+                  <div
                     className="flex flex-col items-center justify-center px-4 py-2 rounded-sm text-white mb-4"
                     onClick={() => fileInputRef.current?.click()}
                     style={{
@@ -291,9 +290,9 @@ const ItemCardEditable = ({
                     <Upload size={16} />
                     <span>Upload Image</span>
                   </div>
-                  <textarea 
-                    type="text" 
-                    className="w-full h-full text-fallback-title items-center text-center" 
+                  <textarea
+                    type="text"
+                    className="w-full h-full text-fallback-title items-center text-center"
                     rows={3}
                     style={{
                       color: 'black',
@@ -306,12 +305,12 @@ const ItemCardEditable = ({
                       fontWeight: '700',
                     }}
                     autoFocus
-                    value={itemData.name} 
+                    value={itemData.name}
                     placeholder="What do you wish to compare?"
-                    onChange={(e) => setItemData(prev => ({ ...prev, name: e.target.value }))} 
+                    onChange={e => setItemData(prev => ({ ...prev, name: e.target.value }))}
                   />
                 </div>
-                <div 
+                <div
                   className="flex items-center gap-2 content-overlay"
                   style={{
                     cursor: 'pointer',
@@ -324,13 +323,13 @@ const ItemCardEditable = ({
           </div>
 
           {itemData.image_url && (
-            <div 
-              className="absolute bottom-0 left-0 right-0 p-4 content-overlay" 
+            <div
+              className="absolute bottom-0 left-0 right-0 p-4 content-overlay"
               style={{ backgroundColor: color }}
             >
-              <input 
-                type="text" 
-                className="w-full text-fallback-title" 
+              <input
+                type="text"
+                className="w-full text-fallback-title"
                 style={{
                   color: 'black',
                   backgroundColor: 'transparent',
@@ -341,12 +340,12 @@ const ItemCardEditable = ({
                   fontSize: '1.5rem',
                   fontWeight: '700',
                 }}
-                value={itemData.name} 
-                onChange={(e) => setItemData(prev => ({ ...prev, name: e.target.value }))} 
+                value={itemData.name}
+                onChange={e => setItemData(prev => ({ ...prev, name: e.target.value }))}
               />
-              <div 
-                className="flex items-center gap-2" 
-                style={{ cursor: 'pointer' }} 
+              <div
+                className="flex items-center gap-2"
+                style={{ cursor: 'pointer' }}
               >
               </div>
             </div>
@@ -356,35 +355,35 @@ const ItemCardEditable = ({
 
       <div className="flex items-center justify-start">
         <div className="relative">
-          <div 
+          <div
             ref={colorButtonRef}
             className="px-2 py-1 rounded-full shadow cursor-pointer flex items-center gap-2"
             onClick={handleColorClick}
             style={{
               backgroundColor: 'white',
               border: '1px solid ' + color,
-              color: color
+              color: color,
             }}
           >
             <Circle size={16} fill={color} />
-            Change 
+            Change
           </div>
           {showColorPicker && (
-            <div 
+            <div
               className="absolute left-0 top-full mt-2 z-50"
               style={{
                 backgroundColor: 'white',
                 padding: '10px',
                 borderRadius: '8px',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+                boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
               }}
             >
               <HexColorPicker
                 color={rgbToHex(itemData.item_color_string)}
-                onChange={(newColor) => {
+                onChange={newColor => {
                   setItemData(prev => ({
                     ...prev,
-                    item_color_string: newColor
+                    item_color_string: newColor,
                   }));
                 }}
               />
@@ -400,7 +399,7 @@ const ItemCardEditable = ({
             className="flex flex-wrap gap-2 p-2 rounded border"
             style={{
               backgroundColor: currentTheme.colors.background,
-              border: `1px solid ${currentTheme.colors.border}`
+              border: `1px solid ${currentTheme.colors.border}`,
             }}
           >
 
@@ -443,13 +442,13 @@ const ItemCardEditable = ({
                   <input
                     type="text"
                     value={categorySearch}
-                    onChange={(e) => setCategorySearch(e.target.value)}
+                    onChange={e => setCategorySearch(e.target.value)}
                     placeholder="Search categories..."
                     className="w-full p-2 pl-8 rounded border"
                     style={{
                       backgroundColor: currentTheme.colors.background,
                       color: currentTheme.colors.text,
-                      border: `1px solid ${currentTheme.colors.border}`
+                      border: `1px solid ${currentTheme.colors.border}`,
                     }}
                     autoFocus
                   />
@@ -461,12 +460,12 @@ const ItemCardEditable = ({
                 </div>
                 <div className="mt-2 max-h-48 overflow-y-auto">
                   {!categoryResults.some(c => c.name.toLowerCase().trim() === categorySearch.toLowerCase().trim()) && categorySearch.length > 0 && (
-                    <div 
+                    <div
                       onClick={handleCreateCategory}
                       className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900 cursor-pointer rounded flex items-center gap-2 text-blue-600 dark:text-blue-400"
                     >
                       <Plus size={16} />
-                      <span>Create "{categorySearch}"</span>
+                      <span>Create &quot;{categorySearch}&quot;</span>
                     </div>
                   )}
                   {categoryResults.map(category => (
@@ -492,18 +491,18 @@ const ItemCardEditable = ({
           style={{
             backgroundColor: 'gray',
             opacity: loading ? 0.7 : 1,
-            cursor: loading ? 'not-allowed' : 'pointer'
+            cursor: loading ? 'not-allowed' : 'pointer',
           }}>
           <X size={16} fill={'white'} />
           <span>Cancel</span>
         </div>
-        <div 
+        <div
           className="px-4 py-2 rounded-lg text-white font-semibold shadow flex items-center gap-2"
           onClick={handleSave}
           style={{
             backgroundColor: currentTheme.colors.primary,
             opacity: loading ? 0.7 : 1,
-            cursor: loading ? 'not-allowed' : 'pointer'
+            cursor: loading ? 'not-allowed' : 'pointer',
           }}
         >
           {loading ? (
@@ -527,4 +526,4 @@ const ItemCardEditable = ({
   );
 };
 
-export default ItemCardEditable; 
+export default ItemCardEditable;

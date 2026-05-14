@@ -14,7 +14,7 @@ export const useComparisonAspectData = (aspectId, setId) => {
     totalVotes: 0,
     userVoted: false,
     votedItemId: null,
-    comparisonMetrics: []
+    comparisonMetrics: [],
   });
 
   const fetchData = async () => {
@@ -69,7 +69,7 @@ export const useComparisonAspectData = (aspectId, setId) => {
     }
   };
 
-  const handleVote = async (itemId) => {
+  const handleVote = async itemId => {
     if (!user || !aspectId) return false;
 
     try {
@@ -90,7 +90,7 @@ export const useComparisonAspectData = (aspectId, setId) => {
         totalVotes: prev.totalVotes + 1,
         items: prev.items.map(i => ({ ...i, voteCount: i.id === itemId ? i.voteCount + 1 : i.voteCount })),
         comparisonMetrics: prev.comparisonMetrics.map(m =>
-          m.id === parseInt(aspectId) ? { ...m, userVoted: true } : m
+          m.id === parseInt(aspectId) ? { ...m, userVoted: true } : m,
         ),
       }));
 
@@ -123,7 +123,7 @@ export const useComparisonAspectData = (aspectId, setId) => {
         totalVotes: prev.totalVotes - 1,
         items: prev.items.map(i => ({ ...i, voteCount: i.id === data.votedItemId ? i.voteCount - 1 : i.voteCount })),
         comparisonMetrics: prev.comparisonMetrics.map(m =>
-          m.id === parseInt(aspectId) ? { ...m, userVoted: false } : m
+          m.id === parseInt(aspectId) ? { ...m, userVoted: false } : m,
         ),
       }));
 

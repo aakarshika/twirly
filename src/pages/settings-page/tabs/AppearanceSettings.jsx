@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { Palette, Sun, Moon, Monitor,  Layout, Save, Pencil } from 'lucide-react';
+import { Palette, Layout, Save, Pencil } from 'lucide-react';
 import Button from '../../../components/common/Button';
 
 const AppearanceSettings = () => {
@@ -13,45 +13,45 @@ const AppearanceSettings = () => {
     layout: 'default',
     animations: true,
     reduceMotion: false,
-    highContrast: false
+    highContrast: false,
   });
 
   // Update appearanceSettings when currentTheme changes
   useEffect(() => {
     setAppearanceSettings(prev => ({
       ...prev,
-      theme: currentTheme.name
+      theme: currentTheme.name,
     }));
   }, [currentTheme]);
 
-  const handleThemeChange = (theme) => {
+  const handleThemeChange = theme => {
     setAppearanceSettings(prev => ({
       ...prev,
-      theme
+      theme,
     }));
     changeTheme(theme);
   };
 
-  const handleFontSizeChange = (size) => {
+  const handleFontSizeChange = size => {
     setAppearanceSettings(prev => ({
       ...prev,
-      fontSize: size
+      fontSize: size,
     }));
     // TODO: Implement font size change
   };
 
-  const handleLayoutChange = (layout) => {
+  const handleLayoutChange = layout => {
     setAppearanceSettings(prev => ({
       ...prev,
-      layout
+      layout,
     }));
     // TODO: Implement layout change
   };
 
-  const handleToggle = (setting) => {
+  const handleToggle = setting => {
     setAppearanceSettings(prev => ({
       ...prev,
-      [setting]: !prev[setting]
+      [setting]: !prev[setting],
     }));
   };
 
@@ -63,7 +63,7 @@ const AppearanceSettings = () => {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h2 
+        <h2
           className="text-md font-semibold"
           style={{ color: currentTheme.colors.text }}
         >
@@ -81,14 +81,14 @@ const AppearanceSettings = () => {
 
       <div className="space-y-6">
         {/* Theme Selection */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4 flex items-center space-x-2"
             style={{ color: currentTheme.colors.text }}
           >
@@ -103,9 +103,9 @@ const AppearanceSettings = () => {
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   currentTheme.name === theme.name ? 'bg-opacity-20' : 'hover:bg-opacity-5'
                 }`}
-                style={{ 
+                style={{
                   backgroundColor: currentTheme.name === theme.name ? currentTheme.colors.primary : 'transparent',
-                  color: currentTheme.name === theme.name ? currentTheme.colors.background : currentTheme.colors.text
+                  color: currentTheme.name === theme.name ? currentTheme.colors.background : currentTheme.colors.text,
                 }}
               >
                 {theme.name}
@@ -115,14 +115,14 @@ const AppearanceSettings = () => {
         </div>
 
         {/* Font Size */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4 flex items-center space-x-2"
             style={{ color: currentTheme.colors.text }}
           >
@@ -131,16 +131,16 @@ const AppearanceSettings = () => {
             <span className="text-sm text-gray-500 pl-2">Coming soon...</span>
           </h3>
           <div className="flex items-center space-x-4">
-            {['small', 'medium', 'large'].map((size) => (
+            {['small', 'medium', 'large'].map(size => (
               <button
                 key={size}
                 onClick={() => handleFontSizeChange(size)}
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   appearanceSettings.fontSize === size ? 'bg-opacity-20' : 'hover:bg-opacity-5'
                 }`}
-                style={{ 
+                style={{
                   backgroundColor: appearanceSettings.fontSize === size ? currentTheme.colors.primary : 'transparent',
-                  color: appearanceSettings.fontSize === size ? currentTheme.colors.background : currentTheme.colors.text
+                  color: appearanceSettings.fontSize === size ? currentTheme.colors.background : currentTheme.colors.text,
                 }}
               >
                 {size.charAt(0).toUpperCase() + size.slice(1)}
@@ -150,14 +150,14 @@ const AppearanceSettings = () => {
         </div>
 
         {/* Layout */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4 flex items-center space-x-2"
             style={{ color: currentTheme.colors.text }}
           >
@@ -166,16 +166,16 @@ const AppearanceSettings = () => {
             <span className="text-sm text-gray-500 pl-2">Coming soon...</span>
             </h3>
           <div className="flex items-center space-x-4">
-            {['default', 'compact', 'spacious'].map((layout) => (
+            {['default', 'compact', 'spacious'].map(layout => (
               <button
                 key={layout}
                 onClick={() => handleLayoutChange(layout)}
                 className={`px-4 py-2 rounded-lg transition-colors ${
                   appearanceSettings.layout === layout ? 'bg-opacity-20' : 'hover:bg-opacity-5'
                 }`}
-                style={{ 
+                style={{
                   backgroundColor: appearanceSettings.layout === layout ? currentTheme.colors.primary : 'transparent',
-                  color: appearanceSettings.layout === layout ? currentTheme.colors.background : currentTheme.colors.text
+                  color: appearanceSettings.layout === layout ? currentTheme.colors.background : currentTheme.colors.text,
                 }}
               >
                 {layout.charAt(0).toUpperCase() + layout.slice(1)}
@@ -185,14 +185,14 @@ const AppearanceSettings = () => {
         </div>
 
         {/* Accessibility */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
           >
@@ -211,21 +211,21 @@ const AppearanceSettings = () => {
                   checked={appearanceSettings.animations}
                   onChange={() => handleToggle('animations')}
                 />
-                <div 
+                <div
                   className="w-11 h-6 rounded-full peer"
-                  style={{ 
-                    backgroundColor: appearanceSettings.animations 
-                      ? currentTheme.colors.primary 
-                      : currentTheme.colors.border
+                  style={{
+                    backgroundColor: appearanceSettings.animations
+                      ? currentTheme.colors.primary
+                      : currentTheme.colors.border,
                   }}
                 >
-                  <div 
+                  <div
                     className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{ 
+                    style={{
                       backgroundColor: currentTheme.colors.background,
-                      transform: appearanceSettings.animations 
-                        ? 'translateX(5px)' 
-                        : 'translateX(0)'
+                      transform: appearanceSettings.animations
+                        ? 'translateX(5px)'
+                        : 'translateX(0)',
                     }}
                   />
                 </div>
@@ -243,21 +243,21 @@ const AppearanceSettings = () => {
                   checked={appearanceSettings.reduceMotion}
                   onChange={() => handleToggle('reduceMotion')}
                 />
-                <div 
+                <div
                   className="w-11 h-6 rounded-full peer"
-                  style={{ 
-                    backgroundColor: appearanceSettings.reduceMotion 
-                      ? currentTheme.colors.primary 
-                      : currentTheme.colors.border
+                  style={{
+                    backgroundColor: appearanceSettings.reduceMotion
+                      ? currentTheme.colors.primary
+                      : currentTheme.colors.border,
                   }}
                 >
-                  <div 
+                  <div
                     className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{ 
+                    style={{
                       backgroundColor: currentTheme.colors.background,
-                      transform: appearanceSettings.reduceMotion 
-                        ? 'translateX(5px)' 
-                        : 'translateX(0)'
+                      transform: appearanceSettings.reduceMotion
+                        ? 'translateX(5px)'
+                        : 'translateX(0)',
                     }}
                   />
                 </div>
@@ -275,21 +275,21 @@ const AppearanceSettings = () => {
                   checked={appearanceSettings.highContrast}
                   onChange={() => handleToggle('highContrast')}
                 />
-                <div 
+                <div
                   className="w-11 h-6 rounded-full peer"
-                  style={{ 
-                    backgroundColor: appearanceSettings.highContrast 
-                      ? currentTheme.colors.primary 
-                      : currentTheme.colors.border
+                  style={{
+                    backgroundColor: appearanceSettings.highContrast
+                      ? currentTheme.colors.primary
+                      : currentTheme.colors.border,
                   }}
                 >
-                  <div 
+                  <div
                     className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{ 
+                    style={{
                       backgroundColor: currentTheme.colors.background,
-                      transform: appearanceSettings.highContrast 
-                        ? 'translateX(5px)' 
-                        : 'translateX(0)'
+                      transform: appearanceSettings.highContrast
+                        ? 'translateX(5px)'
+                        : 'translateX(0)',
                     }}
                   />
                 </div>
@@ -302,4 +302,4 @@ const AppearanceSettings = () => {
   );
 };
 
-export default AppearanceSettings; 
+export default AppearanceSettings;

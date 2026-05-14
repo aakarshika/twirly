@@ -1,19 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useTheme } from '../../contexts/ThemeContext';
-import { useHeader } from '../../contexts/HeaderContext';
 import BarChart from './comparison-sections/BarChart';
-import { useComparisonDetails } from '../../hooks/useComparisonDetails';
 import apiClient from '../../lib/apiClient';
 import { useAuth } from '../../contexts/AuthContext';
 import ComparisonCirclesView from './ComparisonCirclesView';
-import Trending from '../trending-page/Trending';
-import { Globe2, TrendingUp } from 'lucide-react';
 
-const PollScreen = ({items, currentSetId, currentSet, celebratingResults}) => {
-  const navigate = useNavigate();
+const PollScreen = ({ items, currentSetId, currentSet, celebratingResults }) => {
   const { user } = useAuth();
-  
+
   const [comparisonMetrics, setComparisonMetrics] = useState([]);
   const [userVotedAll, setUserVotedAll] = useState(false);
   const [processedItems, setProcessedItems] = useState([]);
@@ -26,7 +19,7 @@ const PollScreen = ({items, currentSetId, currentSet, celebratingResults}) => {
       const comparisonSetAspects = resp.data ?? [];
 
       const totalVotesAcrossAspects = comparisonSetAspects.reduce(
-        (total, aspect) => total + (aspect.total_votes ?? 0), 0
+        (total, aspect) => total + (aspect.total_votes ?? 0), 0,
       );
 
       const itemsWithVotes = items.map(item => {
@@ -56,14 +49,14 @@ const PollScreen = ({items, currentSetId, currentSet, celebratingResults}) => {
   }, [currentSetId, user]);
 
   return (
-    <div 
+    <div
       className="min-h-screen w-full flex flex-col"
     >
       <div className="">
         {processedItems && processedItems.length > 0 && (
           <div className="w-full flex flex-col items-center">
-            <ComparisonCirclesView 
-              items={processedItems} 
+            <ComparisonCirclesView
+              items={processedItems}
               comparisonMetrics={comparisonMetrics}
               comparison={currentSet}
               userVotedAll={userVotedAll}
@@ -71,12 +64,12 @@ const PollScreen = ({items, currentSetId, currentSet, celebratingResults}) => {
             />
           </div>
         )}
-        
+
         {userVotedAll && processedItems && processedItems.length > 0 && (
           <div className="w-full">
             <div className="w-full">
-              <BarChart 
-                items={processedItems} 
+              <BarChart
+                items={processedItems}
                 comparisonMetrics={comparisonMetrics}
               />
             </div>
@@ -87,4 +80,4 @@ const PollScreen = ({items, currentSetId, currentSet, celebratingResults}) => {
   );
 };
 
-export default PollScreen; 
+export default PollScreen;

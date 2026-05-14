@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
-const LoadingOrError = ({type, error}) => {
-  const { currentTheme } = useTheme();
+import React from 'react';
+const LoadingOrError = ({ type, error }) => {
   if (type == "loading") {
     return (
       <div className="p-4">
         <div className="animate-pulse space-y-4">
-          {[1, 2, 3].map((i) => (
+          {[1, 2, 3].map(i => (
             <div key={i} className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg" />
           ))}
         </div>

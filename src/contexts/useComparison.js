@@ -1,13 +1,11 @@
 // File: src/contexts/ComparisonContext.jsx
 
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { initialItemSets, getDefaultMetrics } from '../data/itemSets';
-import { castVote, getVoteCount, hasUserVoted, revertVote } from '../services/voting';
-import { submitReview, likeReview, getItemReviews } from '../services/reviews';
+import { submitReview, likeReview } from '../services/reviews';
 import apiClient from '../lib/apiClient';
 import { useAuth } from '../contexts/AuthContext';
-import { COMPARISON_COLOR_SET } from '../lib/constants';
-export const useComparison = (id) => {
+export const useComparison = id => {
 
   const [items, setItems] = useState([]);
   const [currentSetIndex, setCurrentSetIndex] = useState(0);
@@ -19,19 +17,19 @@ export const useComparison = (id) => {
   const [completedSets, setCompletedSets] = useState([]);
   const [votedItemId, setVotedItemId] = useState(null);
   const [isInitialized, setIsInitialized] = useState(false);
-  
+
   // Review state
   const [activeReviewItem, setActiveReviewItem] = useState(null);
   const [activeDetailsItem, setActiveDetailsItem] = useState(null);
   const [showCombinedReviewModal, setShowCombinedReviewModal] = useState(false);
-  
+
   // Custom comparison state
   const [customMode, setCustomMode] = useState(false);
   const [customItems, setCustomItems] = useState([
     { name: "", description: "", category: "Custom" },
     { name: "", description: "", category: "Custom" },
     { name: "", description: "", category: "Custom" },
-    { name: "", description: "", category: "Custom" }
+    { name: "", description: "", category: "Custom" },
   ]);
 
   const [comparisons, setComparisons] = useState([]);
@@ -68,14 +66,14 @@ export const useComparison = (id) => {
   const loadNextSet = () => {
     // Store the results from the current set
     setCompletedSets(prev => [
-      ...prev, 
+      ...prev,
       {
         category: items[0].category,
         items: [...items],
-        winner: [...items].sort((a, b) => b.votes - a.votes)[0]
-      }
+        winner: [...items].sort((a, b) => b.votes - a.votes)[0],
+      },
     ]);
-    
+
     // Move to the next set
     const nextIndex = (currentSetIndex + 1) % initialItemSets.length;
     setCurrentSetIndex(nextIndex);
@@ -99,53 +97,53 @@ export const useComparison = (id) => {
   };
 
   // Handle review submission
-  const handleReviewSubmit = async (reviewData) => {
+  const handleReviewSubmit = async reviewData => {
     if (activeReviewItem && reviewData.text.trim()) {
       try {
         // Submit review to database
-        const { review, metrics } = await submitReview(
+        const { review } = await submitReview(
           activeReviewItem,
           user.id,
           reviewData.text,
-          reviewData.metrics
+          reviewData.metrics,
         );
 
         // Update local state with the new review
-        setItems(prevItems => 
+        setItems(prevItems =>
           prevItems.map(item => {
             if (item.id === activeReviewItem) {
               // Calculate updated metrics based on new review
               const updatedMetrics = { ...item.metrics };
               const reviewCount = item.reviews.length;
-              
+
               Object.keys(reviewData.metrics).forEach(key => {
                 const currentTotal = updatedMetrics[key] * reviewCount;
                 const newTotal = currentTotal + reviewData.metrics[key];
-                updatedMetrics[key] = reviewCount > 0 
-                  ? newTotal / (reviewCount + 1) 
+                updatedMetrics[key] = reviewCount > 0
+                  ? newTotal / (reviewCount + 1)
                   : reviewData.metrics[key];
               });
-              
+
               return {
                 ...item,
                 reviews: [
-                  ...item.reviews, 
+                  ...item.reviews,
                   {
                     id: review.id,
                     text: review.text,
                     metrics: reviewData.metrics,
                     timestamp: review.created_at,
                     likes: review.likes,
-                    username: user?.user_metadata?.username || 'Someone'
-                  }
+                    username: user?.user_metadata?.username || 'Someone',
+                  },
                 ],
-                metrics: updatedMetrics
+                metrics: updatedMetrics,
               };
             }
             return item;
-          })
+          }),
         );
-        
+
         setActiveReviewItem(null);
       } catch (error) {
         console.error('Error submitting review:', error);
@@ -161,7 +159,7 @@ export const useComparison = (id) => {
       const updatedReview = await likeReview(reviewId, user.id);
 
       // Update local state
-      setItems(prevItems => 
+      setItems(prevItems =>
         prevItems.map(item => {
           if (item.id === itemId) {
             const updatedReviews = item.reviews.map(review => {
@@ -173,7 +171,7 @@ export const useComparison = (id) => {
             return { ...item, reviews: updatedReviews };
           }
           return item;
-        })
+        }),
       );
     } catch (error) {
       console.error('Error liking review:', error);
@@ -191,7 +189,7 @@ export const useComparison = (id) => {
   // Submit custom items
   const handleCustomSubmit = () => {
     const validItems = customItems.filter(item => item.name.trim());
-    
+
     if (validItems.length < 2) {
       return false; // Not enough valid items
     }
@@ -204,7 +202,7 @@ export const useComparison = (id) => {
       category: item.category || "Custom",
       votes: 0,
       reviews: [],
-      metrics: getDefaultMetrics(item.category || "Custom")
+      metrics: getDefaultMetrics(item.category || "Custom"),
     }));
 
     setItems(newItems);
@@ -229,11 +227,11 @@ export const useComparison = (id) => {
                 votes: comp.votes.map(vote =>
                   vote.user_id === user.id
                     ? { ...vote, item_id: itemId }
-                    : vote
+                    : vote,
                 ),
               }
-            : comp
-        )
+            : comp,
+        ),
       );
     } catch (err) {
       setError(err.response?.data?.error?.message ?? err.message);
@@ -252,14 +250,13 @@ export const useComparison = (id) => {
         prevComparisons.map(comp =>
           comp.id === setId
             ? { ...comp, comments: [...comp.comments, resp.data] }
-            : comp
-        )
+            : comp,
+        ),
       );
     } catch (err) {
       setError(err.response?.data?.error?.message ?? err.message);
     }
   };
-
 
   return {
         // Items and voting
@@ -281,7 +278,7 @@ export const useComparison = (id) => {
         setCurrentSet,
         votedItemId,
         setVotedItemId,
-        
+
         // Reviews
         activeReviewItem,
         setActiveReviewItem,
@@ -289,7 +286,7 @@ export const useComparison = (id) => {
         setActiveDetailsItem,
         handleReviewSubmit,
         handleReviewLike,
-        
+
         // Custom items
         customMode,
         setCustomMode,
@@ -309,6 +306,6 @@ export const useComparison = (id) => {
 
         // Show combined review modal
         showCombinedReviewModal,
-        setShowCombinedReviewModal
+        setShowCombinedReviewModal,
       };
 };

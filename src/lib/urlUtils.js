@@ -10,13 +10,13 @@ export const getCurrentUrl = () => {
     const path = window.location.pathname;
     const search = window.location.search;
     const hash = window.location.hash;
-    
+
     // Use your production URL here
     const baseUrl = import.meta.env.VITE_BASE_URL;
-    
+
     return `${baseUrl}${path}${search}${hash}`;
   }
-  
+
   // For web platform, use the current URL
   return window.location.href;
 };
@@ -35,4 +35,4 @@ export const getCurrentPath = () => {
  */
 export const getCurrentSearchParams = () => {
   return new URLSearchParams(window.location.search);
-}; 
+};

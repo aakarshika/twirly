@@ -39,14 +39,14 @@ function transformSet(s) {
   };
 }
 
-export const useComparisonSets = (paramId) => {
+export const useComparisonSets = paramId => {
   const { user, userPreferences } = useAuth();
   const [allCategories, setAllCategories] = useState([]);
   const [comparisonSets, setComparisonSets] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [selectedTag, setSelectedTag] = useState('user_home_feed_91819');
   const [categoryId, setCategoryId] = useState(null);
-  const [categoryIds, setCategoryIds] = useState(null);
+  const [_categoryIds, setCategoryIds] = useState(null);
   const isInitialLoad = useRef(true);
 
   const getPercentAndWinner = (items, totalVotes) => {
@@ -75,7 +75,7 @@ export const useComparisonSets = (paramId) => {
   };
 
   /** Fetch a single set by id (for initial URL-based navigation). */
-  const fetchSetById = async (id) => {
+  const fetchSetById = async id => {
     try {
       const { data } = await apiClient.get(`/api/sets/${id}`, {
         params: { userId: user?.id || undefined },
@@ -173,8 +173,8 @@ export const useComparisonSets = (paramId) => {
 
         const filtered = allImportantCategories.filter(
           cat => !userCategoryPreferences.some(
-            up => up.category_name?.toLowerCase() === cat.name?.toLowerCase()
-          )
+            up => up.category_name?.toLowerCase() === cat.name?.toLowerCase(),
+          ),
         );
 
         setAllCategories([
@@ -189,7 +189,7 @@ export const useComparisonSets = (paramId) => {
     fetchCategories();
   }, [user]);
 
-  const handleVote = async (itemId) => {
+  const handleVote = async itemId => {
     if (!user || !comparisonSets[currentIndex]) return;
     const currentSet = comparisonSets[currentIndex];
     if (currentSet.hasVoted) return;
@@ -203,7 +203,7 @@ export const useComparisonSets = (paramId) => {
       setComparisonSets(prev => prev.map((set, i) =>
         i === currentIndex
           ? { ...set, hasVoted: true, votedItemId: itemId, voteId, ...updateSetVotes(set, itemId, true) }
-          : set
+          : set,
       ));
 
       await userActivityService.logActivity({
@@ -235,7 +235,7 @@ export const useComparisonSets = (paramId) => {
         i === currentIndex
           ? { ...set, hasVoted: false, votedItemId: null, voteId: null,
               ...updateSetVotes(set, currentSet.votedItemId, false) }
-          : set
+          : set,
       ));
 
       await userActivityService.logActivity({
@@ -251,7 +251,7 @@ export const useComparisonSets = (paramId) => {
     }
   };
 
-  const handleLikeComparisonSet = async (setId) => {
+  const handleLikeComparisonSet = async setId => {
     if (!user) return;
     const currentSet = comparisonSets[currentIndex];
     const newHasLiked = !currentSet.hasLiked;
@@ -266,7 +266,7 @@ export const useComparisonSets = (paramId) => {
       setComparisonSets(prev => prev.map((set, i) =>
         i === currentIndex
           ? { ...set, hasLiked: newHasLiked, likeCount: newHasLiked ? set.likeCount + 1 : set.likeCount - 1 }
-          : set
+          : set,
       ));
     } catch (error) {
       console.error('Error liking comparison set:', error);

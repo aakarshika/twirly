@@ -4,7 +4,7 @@ import { userActivityService, ACTIVITY_TYPES, ENTITY_TYPES } from '../services/u
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-export const useComments = (setId) => {
+export const useComments = setId => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -42,7 +42,7 @@ export const useComments = (setId) => {
     setPage(prev => prev + 1);
   };
 
-  const handleSubmitComment = async (text) => {
+  const handleSubmitComment = async text => {
     if (!text.trim() || !user?.id) return;
     try {
       const comment = await comparisonSetService.postComment(setId, user.id, text);
@@ -70,7 +70,7 @@ export const useComments = (setId) => {
     }
   };
 
-  const handleLikeComment = async (commentId) => {
+  const handleLikeComment = async commentId => {
     if (!user?.id) return;
     try {
       const comment = comments.find(c => c.id === commentId);
@@ -98,7 +98,7 @@ export const useComments = (setId) => {
     }
   };
 
-  const handleLikeReply = async (replyId) => {
+  const handleLikeReply = async replyId => {
     if (!user?.id) return;
     try {
       const reply = comments.flatMap(c => c.replies || []).find(r => r.id === replyId);
@@ -155,7 +155,7 @@ export const useComments = (setId) => {
                 reactions: [],
               }],
             }
-          : c
+          : c,
       ));
     } catch (err) {
       console.error('Error submitting reply:', err);

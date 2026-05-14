@@ -6,11 +6,11 @@ import { getPublicUrl } from '../../lib/utils';
 import { formatDate } from 'date-fns';
 
 const NAV_ITEMS = [
-  { id: 'home', label: 'Home', icon: Home, path: '/', match: (p) => p === '/' },
-  { id: 'search', label: 'Search', icon: Search, path: '/search', match: (p) => p.startsWith('/search') },
-  { id: 'create', label: 'Create Comparison', icon: PlusCircle, path: '/new-comparison?load_draft=true', match: (p) => p.startsWith('/new-comparison') },
-  { id: 'activity', label: 'Activity', icon: Bell, path: '/activity', match: (p) => p.startsWith('/activity') },
-  { id: 'profile', label: 'Profile', icon: User, path: '/dashboard', match: (p) => p.startsWith('/dashboard') },
+  { id: 'home', label: 'Home', icon: Home, path: '/', match: p => p === '/' },
+  { id: 'search', label: 'Search', icon: Search, path: '/search', match: p => p.startsWith('/search') },
+  { id: 'create', label: 'Create Comparison', icon: PlusCircle, path: '/new-comparison?load_draft=true', match: p => p.startsWith('/new-comparison') },
+  { id: 'activity', label: 'Activity', icon: Bell, path: '/activity', match: p => p.startsWith('/activity') },
+  { id: 'profile', label: 'Profile', icon: User, path: '/dashboard', match: p => p.startsWith('/dashboard') },
 ];
 
 const SETTINGS_TABS = [
@@ -39,7 +39,7 @@ const MobileDrawer = ({ isOpen, onClose, userData, onLogout, settingsExpanded, s
     let listenerHandle;
     CapacitorApp.addListener('backButton', () => {
       onClose();
-    }).then((handle) => {
+    }).then(handle => {
       listenerHandle = handle;
     });
 
@@ -55,12 +55,12 @@ const MobileDrawer = ({ isOpen, onClose, userData, onLogout, settingsExpanded, s
 
   if (!isOpen) return null;
 
-  const navItemStyle = (active) => ({
+  const navItemStyle = active => ({
     color: active ? 'rgb(var(--primary-fg))' : 'rgb(var(--text))',
     backgroundColor: active ? 'rgb(var(--primary))' : 'transparent',
   });
 
-  const go = (path) => {
+  const go = path => {
     navigate(path);
     onClose();
   };
@@ -163,7 +163,7 @@ const MobileDrawer = ({ isOpen, onClose, userData, onLogout, settingsExpanded, s
           <div>
             <button
               type="button"
-              onClick={() => setSettingsExpanded((v) => !v)}
+              onClick={() => setSettingsExpanded(v => !v)}
               className="flex items-center justify-between gap-3 px-3 py-3 rounded-md text-sm font-medium w-full text-left transition-colors"
               style={{ color: 'rgb(var(--text))' }}
             >

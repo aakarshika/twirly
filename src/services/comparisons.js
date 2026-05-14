@@ -19,7 +19,7 @@ function toApiBody(comparisonData) {
   return body;
 }
 
-export const createComparison = async (comparisonData) => {
+export const createComparison = async comparisonData => {
   const { data } = await apiClient.post('/api/comparisons', toApiBody(comparisonData));
   return data.data;
 };
@@ -36,12 +36,12 @@ export const getComparisons = async (categoryId = null) => {
   return data.data;
 };
 
-export const getUserComparisons = async (userId) => {
+export const getUserComparisons = async userId => {
   const { data } = await apiClient.get(`/api/comparisons/user/${userId}`);
   return data.data;
 };
 
-export const getComparison = async (id) => {
+export const getComparison = async id => {
   const { data } = await apiClient.get(`/api/comparisons/${id}`);
   return data.data;
 };
@@ -56,6 +56,6 @@ export const getUnpublishedComparison = async () => {
   }
 };
 
-export const deleteComparisonSet = async (setId) => {
+export const deleteComparisonSet = async setId => {
   await apiClient.delete(`/api/comparisons/${setId}`);
 };

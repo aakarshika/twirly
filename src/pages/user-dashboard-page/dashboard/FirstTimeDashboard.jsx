@@ -13,33 +13,33 @@ const FirstTimeDashboard = ({ onComplete }) => {
       title: "Welcome to Your Dashboard! 🎉",
       description: "Let's take a quick tour of what you can do here.",
       icon: "🎯",
-      position: "center"
+      position: "center",
     },
     {
       title: "Create Comparisons",
       description: "Start by creating your first comparison. Compare products, get opinions, and help others make better decisions.",
       icon: <Plus className="w-6 h-6" />,
       position: "top-right",
-      action: () => navigate('/new-comparison')
+      action: () => navigate('/new-comparison'),
     },
     {
       title: "Track Your Activity",
       description: "See your votes, reviews, and how others engage with your content.",
       icon: <TrendingUp className="w-6 h-6" />,
-      position: "center"
+      position: "center",
     },
     {
       title: "Engage with Community",
       description: "Vote on comparisons, leave reviews, and help others make informed decisions.",
       icon: <ThumbsUp className="w-6 h-6" />,
-      position: "center"
+      position: "center",
     },
     {
       title: "Share Your Opinions",
       description: "Write reviews and share your experiences with products you've used.",
       icon: <MessageSquare className="w-6 h-6" />,
-      position: "center"
-    }
+      position: "center",
+    },
   ];
 
   const handleNext = () => {
@@ -57,17 +57,17 @@ const FirstTimeDashboard = ({ onComplete }) => {
   const currentStepData = steps[currentStep];
 
   return (
-    <div className='fixed h-full w-full z-50 '
+    <div className="fixed h-full w-full z-50 "
     style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)' }}
     >
-    <div 
+    <div
       className="flex min-h-screen items-center justify-center"
     >
-      <div 
+      <div
         className="relative max-w-md w-full mx-4 p-6 rounded-xl shadow-2xl transform transition-all duration-300"
-        style={{ 
+        style={{
           backgroundColor: currentTheme.colors.card,
-          color: currentTheme.colors.text
+          color: currentTheme.colors.text,
         }}
       >
         <button
@@ -92,8 +92,8 @@ const FirstTimeDashboard = ({ onComplete }) => {
               <div
                 key={index}
                 className={`w-2 h-2 rounded-full ${
-                  index === currentStep 
-                    ? 'bg-indigo-600' 
+                  index === currentStep
+                    ? 'bg-indigo-600'
                     : 'bg-gray-300'
                 }`}
               />
@@ -102,9 +102,9 @@ const FirstTimeDashboard = ({ onComplete }) => {
           <button
             onClick={handleNext}
             className="flex items-center px-4 py-2 rounded-lg transition-colors"
-            style={{ 
+            style={{
               backgroundColor: currentTheme.colors.primary,
-              color: currentTheme.colors.buttonText
+              color: currentTheme.colors.buttonText,
             }}
           >
             {currentStep === steps.length - 1 ? 'Get Started' : 'Next'}
@@ -117,4 +117,4 @@ const FirstTimeDashboard = ({ onComplete }) => {
   );
 };
 
-export default FirstTimeDashboard; 
+export default FirstTimeDashboard;

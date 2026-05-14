@@ -7,19 +7,19 @@ const StatCard = ({ title, value, icon }) => {
   const { currentTheme } = useTheme();
 
   return (
-    <div 
+    <div
       className="flex-1 p-4 rounded-lg"
       style={{ backgroundColor: currentTheme.colors.background }}
     >
       <div className="flex items-center justify-between">
         <div>
-          <p 
+          <p
             className="text-sm"
             style={{ color: currentTheme.colors.textSecondary }}
           >
             {title}
           </p>
-          <p 
+          <p
             className="text-2xl font-bold mt-1"
             style={{ color: currentTheme.colors.text }}
           >
@@ -40,35 +40,35 @@ const ActivityStats = ({ votesCount, reviewsCount, productsCount, comparisonsCou
   const { currentTheme } = useTheme();
 
   const stats = [
-    { 
-      title: 'Products', 
-      value: productsCount || 0, 
+    {
+      title: 'Products',
+      value: productsCount || 0,
       icon: <Package size={20} style={{ color: currentTheme.colors.primary }} />,
-      link: '/dashboard/products'
+      link: '/dashboard/products',
     },
-    { 
-      title: 'Comparisons', 
-      value: comparisonsCount || 0, 
+    {
+      title: 'Comparisons',
+      value: comparisonsCount || 0,
       icon: <BarChart2 size={20} style={{ color: currentTheme.colors.primary }} />,
-      link: '/dashboard/comparisons'
+      link: '/dashboard/comparisons',
     },
-    { 
-      title: 'Reviews', 
-      value: reviewsCount || 0, 
+    {
+      title: 'Reviews',
+      value: reviewsCount || 0,
       icon: <MessageSquare size={20} style={{ color: currentTheme.colors.primary }} />,
-      link: '/dashboard/comments'
+      link: '/dashboard/comments',
     },
-    { 
-      title: 'Votes', 
-      value: votesCount || 0, 
+    {
+      title: 'Votes',
+      value: votesCount || 0,
       icon: <Vote size={20} style={{ color: currentTheme.colors.primary }} />,
-      link: '/dashboard/votes'
+      link: '/dashboard/votes',
     },
-    { 
-      title: 'Likes', 
-      value: likesCount || 0, 
-      icon: <ThumbsUp size={20} style={{ color: currentTheme.colors.primary }} />
-    }
+    {
+      title: 'Likes',
+      value: likesCount || 0,
+      icon: <ThumbsUp size={20} style={{ color: currentTheme.colors.primary }} />,
+    },
   ];
 
   return (
@@ -87,4 +87,4 @@ const ActivityStats = ({ votesCount, reviewsCount, productsCount, comparisonsCou
   );
 };
 
-export default ActivityStats; 
+export default ActivityStats;

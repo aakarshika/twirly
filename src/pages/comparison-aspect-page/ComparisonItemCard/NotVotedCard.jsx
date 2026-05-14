@@ -4,22 +4,21 @@ import './ComparisonItemCard.css';
 
 const NotVotedCard = ({
   item,
-  newHeight = '20vh'
+  newHeight = '20vh',
 }) => {
   const {
     titleRef,
     itemImage,
-    color
   } = useVotedCard({
-    item
+    item,
   });
 
   return (
     <div
       className="comparison-item-card rounded-lg"
-      style={{ 
+      style={{
         height: newHeight,
-        backgroundColor: 'rgba(255, 255, 255, 0.4)'
+        backgroundColor: 'rgba(255, 255, 255, 0.4)',
       }}
     >
       <div className="card-container">
@@ -36,7 +35,7 @@ const NotVotedCard = ({
               className="text-fallback"
               style={{
                 background: 'rgba(22, 22, 22, 0.5)',
-                color: '#fff'
+                color: '#fff',
               }}
             >
               <div className="text-fallback-content flex items-center justify-center">
@@ -47,8 +46,8 @@ const NotVotedCard = ({
         </div>
 
         {itemImage && (
-          <div 
-            className=" p-4 content-overlay flex items-center justify-center" 
+          <div
+            className=" p-4 content-overlay flex items-center justify-center"
             style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}
           >
             <h3 className="item-name text-center text-white">{item.name}</h3>
@@ -59,4 +58,4 @@ const NotVotedCard = ({
   );
 };
 
-export default NotVotedCard; 
+export default NotVotedCard;

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from '../../../../contexts/ThemeContext';
+
 import { getUserReviews } from '../../../../services/reviews';
 import { useAuth } from '../../../../contexts/AuthContext';
 import ReviewCard from './ReviewCard';
 import { useLoading } from '../../../../contexts/LoadingContext';
 
 const ReviewsTab = () => {
-  const { currentTheme } = useTheme();
   const { user } = useAuth();
   const [reviews, setReviews] = useState([]);
   const [error, setError] = useState(null);
@@ -42,11 +41,11 @@ const ReviewsTab = () => {
 
   return (
     <div className="space-y-4">
-      {reviews.map((review) => (
+      {reviews.map(review => (
         <ReviewCard key={review.id} review={review} />
       ))}
     </div>
   );
 };
 
-export default ReviewsTab; 
+export default ReviewsTab;

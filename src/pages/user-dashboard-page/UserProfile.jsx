@@ -66,9 +66,9 @@ const UserProfile = () => {
 
   if (!userData) {
     return (
-      <div 
+      <div
         className="min-h-screen p-4 md:p-8 flex items-center justify-center"
-        style={{ 
+        style={{
           position: 'relative',
           top: isHeaderVisible ? '64px' : '0px',
         }}
@@ -81,9 +81,9 @@ const UserProfile = () => {
   }
 
   return (
-    <motion.div 
+    <motion.div
       className="min-h-screen p-4 md:p-8"
-      style={{ 
+      style={{
         position: 'relative',
         top: isHeaderVisible ? '64px' : '0px',
       }}
@@ -94,8 +94,8 @@ const UserProfile = () => {
     >
       <ProfileHeader userData={userData} isPublic={true} />
       <div className="mt-8">
-        <ContentTabs 
-          activeTab={activeTab} 
+        <ContentTabs
+          activeTab={activeTab}
           setActiveTab={setActiveTab}
           userId={userData.profile.user_id}
           username={userData.profile.display_name}
@@ -106,4 +106,4 @@ const UserProfile = () => {
   );
 };
 
-export default UserProfile; 
+export default UserProfile;

@@ -1,14 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import Reply from './Reply';
 import CommentForm from './CommentForm';
-import { useComments } from '../../../hooks/useComments';
 import CommentHeader from './CommentHeader';
-const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPreferences, handleReply }) => {
+const Comment = ({ comment, onLike, _onReply, _isVisible, items, users, userPreferences, handleReply }) => {
   const [isReplying, setIsReplying] = useState(comment.replies?.length > 0);
   const [isReplySectionExpanded, setIsReplySectionExpanded] = useState(comment.replies?.length > 0);
   const [newComment, setNewComment] = useState('');
 
-  const user = userPreferences;
   const onSubmitComment = () => {
     // console.log('onSubmitReply', newComment, comment.id);
     handleReply(comment.id, newComment);
@@ -38,7 +36,7 @@ const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPre
         numReplies={comment.replies?.length}
         items={items}
       />
-      <div className='pl-5'>
+      <div className="pl-5">
       {isReplying && isReplySectionExpanded && (
             <CommentForm
               newComment={newComment}
@@ -54,13 +52,13 @@ const Comment = ({ comment, onLike, onReply,  isVisible,   items, users, userPre
             />
       )}
       </div>
-      <div className='pl-5'>
+      <div className="pl-5">
       {isReplySectionExpanded && comment.replies?.map(reply => (
-        <Reply 
-          key={reply.id} 
-          reply={reply} 
+        <Reply
+          key={reply.id}
+          reply={reply}
           onLike={onLike}
-          onReply={(r) => {
+          onReply={r => {
             // console.log('onReply', r, newComment);
             setNewComment(newComment + ' @[' + r.user.display_name + '](' + r.user.user_id + ') ');
           }}

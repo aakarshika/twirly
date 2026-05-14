@@ -14,7 +14,7 @@ vi.mock('./votes.queries.js', () => ({
 const mocks = await import('./votes.queries.js');
 const {
   listUserVotes, checkVote, voteCount, createVote,
-  changeVote, deleteVote, deleteVoteBySetId,
+  deleteVote, deleteVoteBySetId,
 } = await import('./votes.controller.js');
 
 const user = { id: 'u1' };

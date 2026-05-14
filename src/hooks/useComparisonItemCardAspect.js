@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 export const useComparisonItemCardAspect = ({
   item,
@@ -7,10 +6,9 @@ export const useComparisonItemCardAspect = ({
   handleVote,
   handleRevertVote,
   votedItemId,
-  totalVotes,
-  itemReviews
+  _totalVotes,
+  itemReviews,
 }) => {
-  const navigate = useNavigate();
   const [imageError, setImageError] = useState(true);
   const [showStartAnimation, setShowStartAnimation] = useState(false);
 
@@ -36,22 +34,21 @@ export const useComparisonItemCardAspect = ({
     setShowStartAnimation(true);
     const timer = setTimeout(() => {
       setShowStartAnimation(false);
-    }, 500); 
+    }, 500);
     return () => clearTimeout(timer);
   }, [userVoted]);
 
-
-  const onVoteCasted = async (e) => {
+  const onVoteCasted = async _e => {
     if (userVoted) return;
     await handleVote(item.id);
   };
 
-  const handleRevertClick = async (e) => {
+  const handleRevertClick = async _e => {
     await handleRevertVote();
   };
 
   const isVotedItem = userVoted && votedItemId === item.id;
-  
+
   // Properly handle itemReviews data
   const itemReviewData = itemReviews && itemReviews[item.id] ? itemReviews[item.id] : { reviews: [], metrics: {} };
   const reviewCount = itemReviewData.reviews ? itemReviewData.reviews.length : 0;
@@ -63,6 +60,6 @@ export const useComparisonItemCardAspect = ({
     itemReviewData,
     reviewCount,
     onVoteCasted,
-    handleRevertClick
+    handleRevertClick,
   };
-}; 
+};

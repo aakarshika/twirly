@@ -14,7 +14,7 @@ const SearchBar = ({ searchComplete }) => {
   const { currentTheme } = useTheme();
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = event => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowResults(false);
       }
@@ -45,7 +45,7 @@ const SearchBar = ({ searchComplete }) => {
     return () => clearTimeout(searchTimeout);
   }, [query]);
 
-  const handleSearch = (e) => {
+  const handleSearch = e => {
     e.preventDefault();
     if (query.trim()) {
       searchComplete(false);
@@ -54,7 +54,7 @@ const SearchBar = ({ searchComplete }) => {
     }
   };
 
-  const handleResultClick = (result) => {
+  const handleResultClick = result => {
     setShowResults(false);
     searchComplete(false);
     // Navigate based on result type
@@ -77,7 +77,7 @@ const SearchBar = ({ searchComplete }) => {
     const allResults = [
       ...results.sets.map(set => ({ ...set, type: 'comparison' })),
       ...results.items.map(item => ({ ...item, type: 'item' })),
-      ...results.users.map(user => ({ ...user, type: 'user' }))
+      ...results.users.map(user => ({ ...user, type: 'user' })),
     ].slice(0, 5); // Show top 5 results
 
     if (isLoading) {
@@ -89,7 +89,7 @@ const SearchBar = ({ searchComplete }) => {
     }
 
     return (
-      <div 
+      <div
       style={{ transition: 'all 0.3s ease-in-out' }}>
         {allResults.map((result, index) => (
           <button
@@ -98,7 +98,7 @@ const SearchBar = ({ searchComplete }) => {
             className="w-full px-4 py-2 text-left hover:bg-gray-100"
             style={{
               color: currentTheme.colors.text,
-              backgroundColor: 'transparent'
+              backgroundColor: 'transparent',
             }}
           >
             <div className="flex items-center">
@@ -115,7 +115,7 @@ const SearchBar = ({ searchComplete }) => {
             className="w-full text-center text-sm font-medium"
             style={{ color: currentTheme.colors.primary }}
           >
-            See all results for "{query}"
+            See all results for &quot;{query}&quot;
           </button>
         </div>
       </div>
@@ -128,7 +128,7 @@ const SearchBar = ({ searchComplete }) => {
         {(<input
           type="text"
           value={query}
-          onChange={(e) => {
+          onChange={e => {
             setQuery(e.target.value);
             setShowResults(true);
           }}
@@ -138,7 +138,7 @@ const SearchBar = ({ searchComplete }) => {
           style={{
             backgroundColor: currentTheme.colors.card,
             borderColor: currentTheme.colors.border,
-            color: currentTheme.colors.text
+            color: currentTheme.colors.text,
           }}
           placeholder="Search..."
         />)}
@@ -161,7 +161,7 @@ const SearchBar = ({ searchComplete }) => {
           style={{
             backgroundColor: currentTheme.colors.card,
             borderColor: currentTheme.colors.border,
-            border: '1px solid'
+            border: '1px solid',
           }}
         >
           {renderResults()}
@@ -171,4 +171,4 @@ const SearchBar = ({ searchComplete }) => {
   );
 };
 
-export default SearchBar; 
+export default SearchBar;

@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import apiClient from '../lib/apiClient';
 import { useAuth } from '../contexts/AuthContext';
 import { userActivityService, ACTIVITY_TYPES, ENTITY_TYPES } from '../services/userActivityService';
 
-export const useComparisonAspectDetails = (id) => {
+export const useComparisonAspectDetails = id => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -50,17 +50,17 @@ export const useComparisonAspectDetails = (id) => {
     }
   };
 
-  const fetchComparison = async (compId) => {
+  const fetchComparison = async compId => {
     const { data: resp } = await apiClient.get(`/api/sets/aspects/${compId}`);
     return resp.data;
   };
 
-  const fetchRemainingAspects = async (aspectId) => {
+  const fetchRemainingAspects = async aspectId => {
     const { data: resp } = await apiClient.get(`/api/sets/aspects/${aspectId}/remaining`);
     return resp.data ?? [];
   };
 
-  const handleVote = async (itemId) => {
+  const handleVote = async itemId => {
     try {
       const { data: resp } = await apiClient.post('/api/votes', { setId: id, itemId });
 
@@ -79,7 +79,7 @@ export const useComparisonAspectDetails = (id) => {
     }
   };
 
-  const handleLikeComparisonAspectSet = async (aspectId, type) => {
+  const handleLikeComparisonAspectSet = async (aspectId, _type) => {
     try {
       const hasLiked = currentAspectSet?.userReaction === 'like';
 

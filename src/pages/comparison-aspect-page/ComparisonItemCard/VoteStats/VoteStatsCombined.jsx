@@ -2,9 +2,9 @@ import React from 'react';
 import './VoteStats.css';
 import { MessagesSquare, Star } from 'lucide-react';
 
-const VoteStatsCombined = ({ votes, totalVotes, color, isVotedItem, reviewCount, itemReviewData }) => {
-  const percentage = totalVotes > 0 ? (votes / totalVotes) * 100 : 0;
-  
+const VoteStatsCombined = ({ votes, totalVotes, _color, _isVotedItem, reviewCount, itemReviewData }) => {
+  const _percentage = totalVotes > 0 ? (votes / totalVotes) * 100 : 0;
+
   return (
     <div className="vote-stats-container">
       {reviewCount > 0 && (
@@ -34,4 +34,4 @@ const VoteStatsCombined = ({ votes, totalVotes, color, isVotedItem, reviewCount,
   );
 };
 
-export default VoteStatsCombined; 
+export default VoteStatsCombined;

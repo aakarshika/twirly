@@ -15,4 +15,4 @@ const ProgressBar = ({ duration = SHOW_RESULTS_DURATION }) => {
   );
 };
 
-export default ProgressBar; 
+export default ProgressBar;

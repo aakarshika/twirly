@@ -1,13 +1,11 @@
-import React, { useState, useRef } from 'react';
-import { Heart, MessageSquare } from 'lucide-react';
+import React from 'react';
 import './Reply.css';
 import CommentHeader from './CommentHeader';
-const Reply = ({ reply, onLike, onReply, appendText, items }) => {
-
+const Reply = ({ reply, onLike, onReply, _appendText, items }) => {
 
   return (
-    <div className="flex">    
-      <div className="w-1 h-auto bg-gray-200 dark:bg-gray-700 mr-2" style={{ background: 'lightgray'}}></div>
+    <div className="flex">
+      <div className="w-1 h-auto bg-gray-200 dark:bg-gray-700 mr-2" style={{ background: 'lightgray' }}></div>
       <div className="w-full ">
 
         <CommentHeader

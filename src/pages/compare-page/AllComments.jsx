@@ -25,10 +25,10 @@ const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, u
     }
   };
 
-  const isLiked = (reactions) =>
+  const isLiked = reactions =>
     reactions?.some(r => r.user_id === user?.id && r.reaction_type === 'like');
 
-  const getLikeCount = (reactions) =>
+  const getLikeCount = reactions =>
     reactions?.filter(r => r.reaction_type === 'like').length || 0;
 
   return (
@@ -90,7 +90,7 @@ const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, u
 
       {showReplies && comment.replies?.length > 0 && (
         <div className="ml-6 mt-3 space-y-3">
-          {comment.replies.map((reply) => (
+          {comment.replies.map(reply => (
             <div key={reply.id} className="bg-bg rounded-lg p-2">
               <div className="flex items-center gap-2" onClick={() => navigate(`/user/${reply.user?.display_name}`)}>
                 <Avatar
@@ -232,7 +232,7 @@ const AllComments = ({ commentsCollapsed, setCommentsCollapsed, setId, items, us
             userPreferences={userPreferences}
           />
         </div>
-        {comments.map((comment) => (
+        {comments.map(comment => (
           <Comment
             key={comment.id}
             comment={comment}

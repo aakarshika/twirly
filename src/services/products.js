@@ -1,11 +1,11 @@
 import apiClient from '../lib/apiClient';
 
-export const getProduct = async (productId) => {
+export const getProduct = async productId => {
   const { data } = await apiClient.get(`/api/products/${productId}`);
   return data.data;
 };
 
-export const getUserProducts = async (userId) => {
+export const getUserProducts = async userId => {
   const { data } = await apiClient.get(`/api/products/user/${userId}`);
   return data.data;
 };
@@ -41,7 +41,7 @@ export const updateProduct = async (productId, productData, _userId) => {
   return { ...p, image_url: p.image_url, item_color_string: p.item_color_string };
 };
 
-export const deleteProduct = async (productId) => {
+export const deleteProduct = async productId => {
   await apiClient.delete(`/api/products/${productId}`);
 };
 
@@ -52,7 +52,7 @@ export const searchCategories = async (query = '', limit = 20) => {
   return data.data;
 };
 
-export const createCategory = async (name) => {
+export const createCategory = async name => {
   const { data } = await apiClient.post('/api/categories', { name });
   return data.data;
 };

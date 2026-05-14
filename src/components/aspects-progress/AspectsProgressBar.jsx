@@ -1,23 +1,16 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PartyPopper, Target, ChevronRight, ChevronDown, ChevronUp, FileQuestion } from 'lucide-react';
-import { useHeader } from '../../contexts/HeaderContext';
+import { PartyPopper, Target } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import AspectBox from './AspectBox';
-import { changeColorAlpha } from '../../lib/utils';
-import { SHOW_RESULTS_DURATION } from '../../lib/constants';
-import ProgressBar from './ProgressBar';
 
 const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVotedAll, currentSet, celebratingAspectId, currentAspect }) => {
   const scrollContainerRef = useRef(null);
-  const isResultsPage = location.pathname.includes('results');
   const [sortedMetrics, setSortedMetrics] = useState([]);
-  const [scale, setScale] = useState(1);
   const { currentTheme } = useTheme();
-  const [showAspectRoutes, setShowAspectRoutes] = useState(true);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [is2line, setIs2line] = useState(false);
-  const [nextUnvotedAspect, setNextUnvotedAspect] = useState(null);
+  const [, setNextUnvotedAspect] = useState(null);
   const [highlightHeading, setHighlightHeading] = useState(false);
 
   useEffect(() => {
@@ -43,29 +36,32 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
     }
   }, [comparisonMetrics, sortedMetrics, isInitialLoad]);
 
-  const scrollToAspect = (index) => {
+  const showAspectRoutes = sortedMetrics.length > 0;
+  const scale = 1;
+
+  const scrollToAspect = index => {
     if (!scrollContainerRef.current) return;
-    
+
     const aspectWidth = 240; // 200px width + 40px margins
     const containerWidth = scrollContainerRef.current.clientWidth;
     const targetPosition = index * aspectWidth;
-    
+
     // Calculate the center position
     const centerPosition = targetPosition - (containerWidth / 2) + (aspectWidth / 2);
-    
+
     scrollContainerRef.current.scrollTo({
       left: Math.max(0, centerPosition),
-      behavior: 'smooth'
+      behavior: 'smooth',
     });
   };
 
   useEffect(() => {
     if (!scrollContainerRef.current || sortedMetrics.length === 0) return;
-    
-    const currentIndex = currentAspect 
+
+    const currentIndex = currentAspect
       ? sortedMetrics.findIndex(metric => metric.id === currentAspect.id)
       : sortedMetrics.length;
-      
+
     if (currentIndex !== -1) {
       setTimeout(() => scrollToAspect(currentIndex), 100);
     }
@@ -115,18 +111,18 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
         <motion.div
           animate={{ height: highlightHeading ? '300px' : 'auto' }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
-          className='flex flex-row justify-center items-center'
+          className="flex flex-row justify-center items-center"
           style={{ cursor: 'pointer' }}
         >
-          <div className='flex flex-col rounded-lg justify-start py-2 px-2'>
+          <div className="flex flex-col rounded-lg justify-start py-2 px-2">
             <div className={`flex ${highlightHeading ? 'flex-col p-5' : 'flex-row'} items-center justify-center overflow-wrap`}>
-              <motion.span 
-                className='text-4xl p-2'
+              <motion.span
+                className="text-4xl p-2"
                 animate={{ scale: highlightHeading ? [1, 1.2, 1] : [1, 1, 1] }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               >?</motion.span>
-              <motion.span 
-                className='text-md md:text-lg lg:text-2xl text-center text-gray-500 font-bold pr-4'
+              <motion.span
+                className="text-md md:text-lg lg:text-2xl text-center text-gray-500 font-bold pr-4"
                 transition={{ duration: 0.3, ease: "easeInOut" }}
               >{(currentSet?.name || '').replace('?', '')}</motion.span>
             </div>
@@ -142,8 +138,8 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
           >
             <div className="flex ml-10 items-center justify-center "style={{ color: currentTheme.colors.secondary }}>
               <span className="text-md font-semibold mr-10" >
-                <span className='text-lg'> based 
-                  <Target className='w-3 h-3 ml-1 inline-block rounded-full'  />n
+                <span className="text-lg"> based
+                  <Target className="w-3 h-3 ml-1 inline-block rounded-full"  />n
                 </span>
               </span>
                   <h2 className="text-md mr-10" >
@@ -162,13 +158,13 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
                 scrollbarWidth: 'none',
                 msOverflowStyle: 'none',
                 WebkitOverflowScrolling: 'touch',
-                scrollBehavior: 'smooth'
+                scrollBehavior: 'smooth',
               }}
             >
               <div className="flex items-center" style={{ minWidth: 'max-content' }}>
                 {/* Left padding */}
                 <div style={{ width: 'calc(50% - 120px)' }} />
-                
+
                 {/* Aspects container */}
                 <div className="flex items-center space-x-6">
                   {sortedMetrics.map((aspect, index) => (
@@ -197,7 +193,7 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
                   ))}
                   <motion.div
                     key={'results'}
-                    className='flex flex-col items-center justify-center'
+                    className="flex flex-col items-center justify-center"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
@@ -227,4 +223,4 @@ const AspectsProgressBar = ({ items, comparisonMetrics, onAspectClick, userVoted
   );
 };
 
-export default AspectsProgressBar; 
+export default AspectsProgressBar;

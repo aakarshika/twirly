@@ -22,7 +22,7 @@ export const comparisonsRouter = Router();
 
 // Static-path routes must come before /:id to avoid param capture
 comparisonsRouter.get('/unpublished',        requireAuth, getUnpublishedHandler);
-comparisonsRouter.get('/user/:userId',       getUserSetsHandler);
+comparisonsRouter.get('/user/:userId',       requireAuth, getUserSetsHandler);
 comparisonsRouter.get('/',                   getAllSetsHandler);
 comparisonsRouter.get('/:id',                optionalAuth, getSetHandler);
 

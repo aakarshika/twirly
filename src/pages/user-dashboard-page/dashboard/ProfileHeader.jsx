@@ -1,26 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { Pencil, User, Coins, Sparkles, Trophy, HeartHandshake } from 'lucide-react';
+import { Pencil, Sparkles, HeartHandshake } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getPublicUrl } from '../../../lib/utils';
 import Avatar from '../../../components/common/Avatar';
 import { karmaService } from '../../../services/karmaService';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { formatDate } from 'date-fns';
 
-const FloatingShape = ({ delay, children }) => (
+const _FloatingShape = ({ delay, children }) => (
   <motion.div
     initial={{ y: 0, x: 0 }}
     animate={{
       y: [0, -15, 0],
       x: [0, 10, 0],
-      rotate: [0, 5, 0]
+      rotate: [0, 5, 0],
     }}
     transition={{
       duration: 4,
       delay,
       repeat: Infinity,
-      ease: "easeInOut"
+      ease: "easeInOut",
     }}
     className="absolute"
   >
@@ -32,7 +32,7 @@ const KarmaBox = ({ points, isLoading, theme }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
 
-  const getKarmaLevel = (points) => {
+  const getKarmaLevel = points => {
     if (points >= 1000) return { level: 'Legend', color: 'from-purple-500 to-pink-500' };
     if (points >= 500) return { level: 'Pro', color: 'from-blue-500 to-teal-500' };
     if (points >= 100) return { level: 'Rising Star', color: 'from-green-500 to-emerald-500' };
@@ -64,19 +64,19 @@ const KarmaBox = ({ points, isLoading, theme }) => {
         className="flex flex-col items-center p-4 rounded-2xl backdrop-blur-md w-full md:w-[200px]"
         style={{
           background: `linear-gradient(135deg, ${theme.colors.primary}20, ${theme.colors.primary}10)`,
-          border: `1px solid ${theme.colors.primary}30`
+          border: `1px solid ${theme.colors.primary}30`,
         }}
       >
-        <div className='flex flex-row items-center justify-center'>
+        <div className="flex flex-row items-center justify-center">
         <motion.div
           animate={{
             rotate: isHovered ? 360 : 0,
-            scale: isHovered ? 1.2 : 1
+            scale: isHovered ? 1.2 : 1,
           }}
           transition={{ duration: 0.5 }}
           className="mb-2 inline-block"
         >
-          <HeartHandshake className='inline-block' size={24} style={{ color: theme.colors.primary }} />
+          <HeartHandshake className="inline-block" size={24} style={{ color: theme.colors.primary }} />
         </motion.div>
 
         <div className="text-center">
@@ -126,7 +126,6 @@ const ProfileHeader = ({ userData, isPublic = false }) => {
     fetchKarmaPoints();
   }, [userData?.profile?.user_id]);
 
-
   const isNewUser = () => {
     if (!userData?.profile?.created_at) return false;
     const createdDate = new Date(userData.profile.created_at);
@@ -161,7 +160,7 @@ const ProfileHeader = ({ userData, isPublic = false }) => {
                         className="absolute right-0 top-0 p-2 rounded-full text-sm font-medium"
                         style={{
                           backgroundColor: currentTheme.colors.primary,
-                          color: 'white'
+                          color: 'white',
                         }}
                       >
                         <Pencil size={14} />
@@ -180,7 +179,7 @@ const ProfileHeader = ({ userData, isPublic = false }) => {
                           WebkitOverflowScrolling: 'touch',
                           scrollBehavior: 'smooth',
                           width: '100%',
-                          display: 'block'
+                          display: 'block',
                        }}>
                        <div className="inline-block whitespace-nowrap text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 bg-clip-text text-transparent cursor-grab active:cursor-grabbing">
                         {userData?.profile?.display_name}
@@ -230,7 +229,7 @@ const ProfileHeader = ({ userData, isPublic = false }) => {
                     style={{
                       backgroundColor: currentTheme.colors.success + '20',
                       border: `1px solid ${currentTheme.colors.success}`,
-                      color: currentTheme.colors.success
+                      color: currentTheme.colors.success,
                     }}
                   >
                     <Sparkles size={16} />
@@ -246,4 +245,4 @@ const ProfileHeader = ({ userData, isPublic = false }) => {
   );
 };
 
-export default ProfileHeader; 
+export default ProfileHeader;

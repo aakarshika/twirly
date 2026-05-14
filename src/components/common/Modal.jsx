@@ -5,7 +5,7 @@ import { X } from 'lucide-react';
 
 /**
  * A reusable modal component
- * 
+ *
  * @param {Object} props - Component props
  * @param {boolean} props.isOpen - Whether the modal is visible
  * @param {function} props.onClose - Function to call when closing the modal
@@ -27,61 +27,61 @@ const Modal = ({
   className = '',
 }) => {
   const modalRef = useRef(null);
-  
+
   // Handle escape key press
   useEffect(() => {
-    const handleEscKey = (event) => {
+    const handleEscKey = event => {
       if (event.key === 'Escape' && isOpen) {
         onClose();
       }
     };
-    
+
     document.addEventListener('keydown', handleEscKey);
-    
+
     // Prevent body scrolling when modal is open
     if (isOpen) {
       document.body.style.overflow = 'hidden';
     }
-    
+
     return () => {
       document.removeEventListener('keydown', handleEscKey);
       document.body.style.overflow = 'visible';
     };
   }, [isOpen, onClose]);
-  
+
   // Close when clicking outside the modal
-  const handleOutsideClick = (e) => {
+  const handleOutsideClick = e => {
     if (closeOnOutsideClick && modalRef.current && !modalRef.current.contains(e.target)) {
       onClose();
     }
   };
-  
+
   // Size classes
   const sizeClasses = {
     sm: 'max-w-sm',
     md: 'max-w-lg',
     lg: 'max-w-2xl',
     xl: 'max-w-4xl',
-    full: 'max-w-full mx-4'
+    full: 'max-w-full mx-4',
   };
-  
+
   if (!isOpen) return null;
-  
+
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50"
       onClick={handleOutsideClick}
     >
-      <div 
+      <div
         ref={modalRef}
         className={`bg-gray-900 border border-gray-800 rounded-lg ${sizeClasses[size]} w-full max-h-[90vh] overflow-y-auto ${className}`}
       >
         {(title || showCloseButton) && (
           <div className="border-b border-gray-800 px-6 py-4 flex items-center justify-between">
             {title && <h3 className="text-xl font-bold">{title}</h3>}
-            
+
             {showCloseButton && (
-              <button 
+              <button
                 onClick={onClose}
                 className="p-1 rounded-full hover:bg-gray-800 transition-colors"
                 aria-label="Close"
@@ -91,7 +91,7 @@ const Modal = ({
             )}
           </div>
         )}
-        
+
         <div className="p-6">
           {children}
         </div>

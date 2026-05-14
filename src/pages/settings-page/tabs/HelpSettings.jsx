@@ -10,64 +10,64 @@ const HelpSettings = () => {
     contactPreferences: {
       email: true,
       inApp: true,
-      phone: false
+      phone: false,
     },
     helpTopics: [
       {
         id: '1',
         title: 'Getting Started',
         description: 'Learn the basics of using our platform',
-        icon: <BookOpen size={20} />
+        icon: <BookOpen size={20} />,
       },
       {
         id: '2',
         title: 'Account Management',
         description: 'Manage your account settings and preferences',
-        icon: <HelpCircle size={20} />
+        icon: <HelpCircle size={20} />,
       },
       {
         id: '3',
         title: 'Billing & Subscriptions',
         description: 'Information about payments and subscriptions',
-        icon: <HelpCircle size={20} />
+        icon: <HelpCircle size={20} />,
       },
       {
         id: '4',
         title: 'Privacy & Security',
         description: 'Learn about our security measures and privacy policy',
-        icon: <HelpCircle size={20} />
-      }
+        icon: <HelpCircle size={20} />,
+      },
     ],
     faqs: [
       {
         id: '1',
         question: 'How do I change my password?',
-        answer: 'You can change your password in the Security Settings section.'
+        answer: 'You can change your password in the Security Settings section.',
       },
       {
         id: '2',
         question: 'How do I update my billing information?',
-        answer: 'You can update your billing information in the Billing Settings section.'
+        answer: 'You can update your billing information in the Billing Settings section.',
       },
       {
         id: '3',
         question: 'How do I contact support?',
-        answer: 'You can contact support through the Help Center or by emailing support@example.com.'
-      }
-    ]
+        answer: 'You can contact support through the Help Center or by emailing support@example.com.',
+      },
+    ],
   });
 
-  const handleContactPreferenceToggle = (preference) => {
+  const handleContactPreferenceToggle = preference => {
     setHelpSettings(prev => ({
       ...prev,
       contactPreferences: {
         ...prev.contactPreferences,
-        [preference]: !prev.contactPreferences[preference]
-      }
+        [preference]: !prev.contactPreferences[preference],
+      },
     }));
   };
 
-  const handleSearch = (e) => {
+  const handleSearch = e => {
     e.preventDefault();
     // TODO: Implement search functionality
     // console.log('Searching for:', searchQuery);
@@ -81,7 +81,7 @@ const HelpSettings = () => {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h2 
+        <h2
           className="text-md font-semibold"
           style={{ color: currentTheme.colors.text }}
         >
@@ -99,28 +99,28 @@ const HelpSettings = () => {
 
       <div className="space-y-6">
         {/* Search Bar */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
           <form onSubmit={handleSearch} className="relative">
             <input
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={e => setSearchQuery(e.target.value)}
               placeholder="Search for help..."
               className="w-full p-4 pl-12 rounded-lg"
-              style={{ 
+              style={{
                 backgroundColor: currentTheme.colors.background,
                 color: currentTheme.colors.text,
-                border: `1px solid ${currentTheme.colors.border}`
+                border: `1px solid ${currentTheme.colors.border}`,
               }}
             />
-            <Search 
-              size={20} 
+            <Search
+              size={20}
               className="absolute left-4 top-1/2 transform -translate-y-1/2"
               style={{ color: currentTheme.colors.text }}
             />
@@ -128,14 +128,14 @@ const HelpSettings = () => {
         </div>
 
         {/* Help Topics */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
           >
@@ -146,9 +146,9 @@ const HelpSettings = () => {
               <div
                 key={topic.id}
                 className="p-4 rounded-lg cursor-pointer hover:bg-opacity-5"
-                style={{ 
+                style={{
                   backgroundColor: currentTheme.colors.background,
-                  border: `1px solid ${currentTheme.colors.border}`
+                  border: `1px solid ${currentTheme.colors.border}`,
                 }}
               >
                 <div className="flex items-center space-x-3">
@@ -168,14 +168,14 @@ const HelpSettings = () => {
         </div>
 
         {/* FAQs */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
           >
@@ -186,9 +186,9 @@ const HelpSettings = () => {
               <div
                 key={faq.id}
                 className="p-4 rounded-lg"
-                style={{ 
+                style={{
                   backgroundColor: currentTheme.colors.background,
-                  border: `1px solid ${currentTheme.colors.border}`
+                  border: `1px solid ${currentTheme.colors.border}`,
                 }}
               >
                 <h4 className="font-medium mb-2" style={{ color: currentTheme.colors.text }}>
@@ -203,14 +203,14 @@ const HelpSettings = () => {
         </div>
 
         {/* Contact Preferences */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4 flex items-center space-x-2"
             style={{ color: currentTheme.colors.text }}
           >
@@ -230,21 +230,21 @@ const HelpSettings = () => {
                   checked={helpSettings.contactPreferences.email}
                   onChange={() => handleContactPreferenceToggle('email')}
                 />
-                <div 
+                <div
                   className="w-11 h-6 rounded-full peer"
-                  style={{ 
-                    backgroundColor: helpSettings.contactPreferences.email 
-                      ? currentTheme.colors.primary 
-                      : currentTheme.colors.border
+                  style={{
+                    backgroundColor: helpSettings.contactPreferences.email
+                      ? currentTheme.colors.primary
+                      : currentTheme.colors.border,
                   }}
                 >
-                  <div 
+                  <div
                     className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{ 
+                    style={{
                       backgroundColor: currentTheme.colors.background,
-                      transform: helpSettings.contactPreferences.email 
-                        ? 'translateX(5px)' 
-                        : 'translateX(0)'
+                      transform: helpSettings.contactPreferences.email
+                        ? 'translateX(5px)'
+                        : 'translateX(0)',
                     }}
                   />
                 </div>
@@ -263,21 +263,21 @@ const HelpSettings = () => {
                   checked={helpSettings.contactPreferences.inApp}
                   onChange={() => handleContactPreferenceToggle('inApp')}
                 />
-                <div 
+                <div
                   className="w-11 h-6 rounded-full peer"
-                  style={{ 
-                    backgroundColor: helpSettings.contactPreferences.inApp 
-                      ? currentTheme.colors.primary 
-                      : currentTheme.colors.border
+                  style={{
+                    backgroundColor: helpSettings.contactPreferences.inApp
+                      ? currentTheme.colors.primary
+                      : currentTheme.colors.border,
                   }}
                 >
-                  <div 
+                  <div
                     className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{ 
+                    style={{
                       backgroundColor: currentTheme.colors.background,
-                      transform: helpSettings.contactPreferences.inApp 
-                        ? 'translateX(5px)' 
-                        : 'translateX(0)'
+                      transform: helpSettings.contactPreferences.inApp
+                        ? 'translateX(5px)'
+                        : 'translateX(0)',
                     }}
                   />
                 </div>
@@ -296,21 +296,21 @@ const HelpSettings = () => {
                   checked={helpSettings.contactPreferences.phone}
                   onChange={() => handleContactPreferenceToggle('phone')}
                 />
-                <div 
+                <div
                   className="w-11 h-6 rounded-full peer"
-                  style={{ 
-                    backgroundColor: helpSettings.contactPreferences.phone 
-                      ? currentTheme.colors.primary 
-                      : currentTheme.colors.border
+                  style={{
+                    backgroundColor: helpSettings.contactPreferences.phone
+                      ? currentTheme.colors.primary
+                      : currentTheme.colors.border,
                   }}
                 >
-                  <div 
+                  <div
                     className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{ 
+                    style={{
                       backgroundColor: currentTheme.colors.background,
-                      transform: helpSettings.contactPreferences.phone 
-                        ? 'translateX(5px)' 
-                        : 'translateX(0)'
+                      transform: helpSettings.contactPreferences.phone
+                        ? 'translateX(5px)'
+                        : 'translateX(0)',
                     }}
                   />
                 </div>
@@ -323,4 +323,4 @@ const HelpSettings = () => {
   );
 };
 
-export default HelpSettings; 
+export default HelpSettings;

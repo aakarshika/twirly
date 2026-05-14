@@ -1,13 +1,9 @@
 import React from 'react';
 import { useBetaTesting } from '../../contexts/BetaTestingContext';
-import { Monitor, MessageSquare } from 'lucide-react';
 
 const BetaTestingControls = () => {
   const {
     isBetaMode,
-    showPerformanceMonitor,
-    togglePerformanceMonitor,
-    openBetaFeedback,
   } = useBetaTesting();
 
   if (!isBetaMode) return null;
@@ -35,4 +31,4 @@ const BetaTestingControls = () => {
   );
 };
 
-export default BetaTestingControls; 
+export default BetaTestingControls;

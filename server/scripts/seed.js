@@ -9,7 +9,6 @@
  */
 
 import pg from 'pg';
-import { randomUUID } from 'node:crypto';
 
 const DB_URL = process.env.DATABASE_URL ?? 'postgresql://twirly:twirly@localhost:5432/twirly';
 const API_BASE = process.env.BETTER_AUTH_URL ?? 'http://localhost:4000';
@@ -108,7 +107,7 @@ async function seedCategories() {
 
 // ─── 4. Items ────────────────────────────────────────────────────────────────
 
-function buildItems(catIds) {
+function buildItems(_catIds) {
   return [
     // Tech
     { name: 'iPhone 15 Pro',           category: 'Tech & Gadgets',           color: '#1C1C1E', description: "Apple's flagship smartphone with titanium design and A17 Pro chip." },
@@ -158,10 +157,7 @@ async function seedItems(catIds) {
 
 // ─── 5. Comparison sets + items + aspects ────────────────────────────────────
 
-function buildSets(catIds, itemIds, userId) {
-  const now = new Date();
-  const future = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); // 30 days out
-
+function buildSets(_catIds, _itemIds, _userId) {
   return [
     {
       name: 'iPhone 15 Pro vs Galaxy S24 Ultra',
@@ -482,7 +478,7 @@ async function main() {
   const itemIds = await seedItems(catIds);
 
   console.log('\n7. Comparison sets + aspects');
-  const { setIds, aspectIds } = await seedSets(catIds, itemIds, seedUserId);
+  const { setIds } = await seedSets(catIds, itemIds, seedUserId);
 
   console.log('\n8. Votes');
   await seedVotes(setIds, itemIds, seedUserId);

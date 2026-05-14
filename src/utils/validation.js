@@ -40,7 +40,7 @@ export const productSchema = z.object({
 });
 
 // Sanitize HTML input
-export const sanitizeHTML = (input) => {
+export const sanitizeHTML = input => {
   const div = document.createElement('div');
   div.textContent = input;
   return div.innerHTML;
@@ -52,12 +52,12 @@ export const validateAndSanitize = (schema, data) => {
     const validated = schema.parse(data);
     return { success: true, data: validated };
   } catch (error) {
-    return { 
-      success: false, 
+    return {
+      success: false,
       errors: error.errors.map(err => ({
         path: err.path.join('.'),
-        message: err.message
-      }))
+        message: err.message,
+      })),
     };
   }
-}; 
+};

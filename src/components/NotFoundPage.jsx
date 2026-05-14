@@ -11,7 +11,7 @@ const NotFoundPage = () => {
   const { currentTheme } = useTheme();
 
   return (
-    <div 
+    <div
       className="min-h-screen flex flex-col items-center justify-center p-4"
       style={{ backgroundColor: currentTheme.colors.background }}
     >
@@ -29,7 +29,7 @@ const NotFoundPage = () => {
         {/* Uh oh message */}
         <div className="space-y-2">
           <p className="text-lg" style={{ color: currentTheme.colors.primary }}>
-            Looks like you've ventured into uncharted territory. Let's get you back on track!
+            Looks like you&apos;ve ventured into uncharted territory. Let&apos;s get you back on track!
           </p>
         </div>
 
@@ -46,8 +46,8 @@ const NotFoundPage = () => {
               '&:hover': {
                 backgroundColor: currentTheme.colors.primary + '20',
                 borderColor: currentTheme.colors.primary,
-                color: currentTheme.colors.primary
-              }
+                color: currentTheme.colors.primary,
+              },
             }}
           >
             <ArrowLeft className="w-4 h-4" />
@@ -60,8 +60,8 @@ const NotFoundPage = () => {
               backgroundColor: currentTheme.colors.primary,
               color: currentTheme.colors.background,
               '&:hover': {
-                backgroundColor: currentTheme.colors.primary + 'E6'
-              }
+                backgroundColor: currentTheme.colors.primary + 'E6',
+              },
             }}
           >
             <Home className="w-4 h-4" />
@@ -73,4 +73,4 @@ const NotFoundPage = () => {
   );
 };
 
-export default NotFoundPage; 
+export default NotFoundPage;

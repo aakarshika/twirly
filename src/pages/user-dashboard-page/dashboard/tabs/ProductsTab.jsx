@@ -1,64 +1,63 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../../../contexts/ThemeContext';
 import ProductList from '../ProductList';
-import { useNavigate } from 'react-router-dom';
+
 import ItemCardEditable from '../../../comparison-aspect-page/ComparisonItemCard/ItemCardEditable';
 
 const ProductsTab = ({ userId, isPublic }) => {
   const { currentTheme } = useTheme();
   const [products, setProducts] = useState([]);
-  const navigate = useNavigate();
   const [addProductModalOpen, setAddProductModalOpen] = useState(false);
 
-  const handleProductUpdate = (updatedProduct) => {
+  const handleProductUpdate = updatedProduct => {
     // console.log('updatedProduct', updatedProduct);
-    setProducts(products.map(product => 
-      product.id === updatedProduct.id ? updatedProduct : product
+    setProducts(products.map(product =>
+      product.id === updatedProduct.id ? updatedProduct : product,
     ));
     // console.log('products', products);
   };
 
-  const handleProductDelete = (productId) => {
+  const handleProductDelete = productId => {
     // console.log('productId', productId);
     setProducts(products.filter(product => product.id !== productId));
     // console.log('products', products);
   };
 
   return (
-    <div 
+    <div
       className="rounded-lg"
       style={{ backgroundColor: currentTheme.colors.cardBackground }}
     >
-      <div className="flex justify-between items-center mb-6" 
+      <div className="flex justify-between items-center mb-6"
           style={{ color: currentTheme.colors.text,backgroundColor: currentTheme.colors.cardBackground }}>
-        
+
         {(!isPublic && <button
           onClick={() => {
             setAddProductModalOpen(true);
           }}
           className="px-4 py-2 rounded-lg font-medium"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.primary,
-            color: currentTheme.colors.buttonText
+            color: currentTheme.colors.buttonText,
           }}
         >
           Add Product
         </button>)}
       </div>
-      
-      <ProductList 
-        products={products} 
-        setProducts={setProducts} 
-        userId={userId} 
-        isPublic={isPublic} 
+
+      <ProductList
+        products={products}
+        setProducts={setProducts}
+        userId={userId}
+        isPublic={isPublic}
         onUpdate={handleProductUpdate}
         onDelete={handleProductDelete}
       />
 
-      {addProductModalOpen && 
-      <ItemCardEditable 
+      {addProductModalOpen &&
+      <ItemCardEditable
         item={{}}
-        onSave={(item) => {
+        onSave={item => {
           setProducts([item, ...products]);
           setAddProductModalOpen(false);
         }}
@@ -68,4 +67,4 @@ const ProductsTab = ({ userId, isPublic }) => {
   );
 };
 
-export default ProductsTab; 
+export default ProductsTab;

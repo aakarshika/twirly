@@ -1,20 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../../contexts/ThemeContext';
-import { Check, Pencil, Trash2, X } from 'lucide-react';
+import { Check, Trash2 } from 'lucide-react';
 
-const AspectForm = ({ 
-  aspect, 
-  isEditing, 
-  onUpdate, 
-  onDelete, 
-  onCancel, 
-  onSave, 
-  aspectData, 
-  setAspectData 
+const AspectForm = ({
+  aspect,
+  isEditing,
+  _onUpdate,
+  onDelete,
+  _onCancel,
+  onSave,
+  aspectData,
+  setAspectData,
 }) => {
   const { currentTheme } = useTheme();
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
-  
+
   const placeholders = [
     "✨ how bright the screen is",
     "🎯 how fast the processor is",
@@ -27,13 +27,13 @@ const AspectForm = ({
     "your heart's desire",
     "what you've been dreaming of",
     "what you've been wishing for",
-    
+
   ];
 
   useEffect(() => {
     if (isEditing) {
       const interval = setInterval(() => {
-        setCurrentPlaceholder((prev) => (prev + 1) % placeholders.length);
+        setCurrentPlaceholder(prev => (prev + 1) % placeholders.length);
       }, 3000);
       return () => clearInterval(interval);
     }
@@ -41,12 +41,12 @@ const AspectForm = ({
 
   if (!isEditing) {
     return (
-      <div className="w-full flex flex-row justify-between items-center text-sm rounded-md py-1 px-2 transition-all duration-300 hover:scale-[1.02] backdrop-blur-sm" 
-        style={{ 
-          color: 'whitesmoke', 
+      <div className="w-full flex flex-row justify-between items-center text-sm rounded-md py-1 px-2 transition-all duration-300 hover:scale-[1.02] backdrop-blur-sm"
+        style={{
+          color: 'whitesmoke',
 
           background: `${currentTheme.colors.secondary}90`,          border: `1px solid ${currentTheme.colors.primary}30`,
-          boxShadow: `0 4px 15px ${currentTheme.colors.primary}20`
+          boxShadow: `0 4px 15px ${currentTheme.colors.primary}20`,
         }}>
         <span className="font-medium">{aspect.metric_name}</span>
         <div className="flex flex-row gap-2 items-center">
@@ -55,7 +55,7 @@ const AspectForm = ({
             className="p-2 hover:scale-110 transition-all duration-200 rounded-full"
             style={{
               background: `${currentTheme.colors.secondary}90`,
-              color: 'whitesmoke'
+              color: 'whitesmoke',
             }}
           >
             <Trash2 size={16} />
@@ -66,16 +66,16 @@ const AspectForm = ({
   }
 
   return (
-    <div className="flex justify-between items-center text-sm rounded-md py-1 px-1 backdrop-blur-sm animate-fadeIn" 
-      style={{ 
+    <div className="flex justify-between items-center text-sm rounded-md py-1 px-1 backdrop-blur-sm animate-fadeIn"
+      style={{
       }}>
       <div className="flex flex-row w-full">
         <input
           type="text"
           autoFocus
           value={aspectData.metric_name}
-          onChange={(e) => setAspectData(prev => ({ ...prev, metric_name: e.target.value }))}
-          onKeyDown={(e) => {
+          onChange={e => setAspectData(prev => ({ ...prev, metric_name: e.target.value }))}
+          onKeyDown={e => {
             if (e.key === 'Enter') {
               onSave(aspect.id);
             }
@@ -85,7 +85,7 @@ const AspectForm = ({
             backgroundColor: `${currentTheme.colors.secondary}90`,
             color: 'rgb(255, 255, 255)',
             border: `1px solid ${currentTheme.colors.secondary}90`,
-            backdropFilter: 'blur(10px)'
+            backdropFilter: 'blur(10px)',
           }}
           placeholder={placeholders[currentPlaceholder]}
         />
@@ -109,7 +109,7 @@ const AspectForm = ({
               color: currentTheme.colors.buttonText,
               backgroundColor: aspectData.metric_name ? `${currentTheme.colors.secondary}90` : `${currentTheme.colors.secondary}50`,
               border: `1px solid ${currentTheme.colors.secondary}90`,
-              backdropFilter: 'blur(10px)'
+              backdropFilter: 'blur(10px)',
             }}
           >
             <Check size={16} />
@@ -120,4 +120,4 @@ const AspectForm = ({
   );
 };
 
-export default AspectForm; 
+export default AspectForm;

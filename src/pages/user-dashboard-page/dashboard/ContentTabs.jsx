@@ -4,27 +4,25 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import ProductsTab from './tabs/ProductsTab';
 import ComparisonsTab from './tabs/ComparisonsTab';
-import ReviewsTab from './tabs/ReviewsTab';
 import VotesTab from './tabs/VotesTab';
 import CommentsTab from './tabs/CommentsTab';
 import OverviewTab from './tabs/OverviewTab';
 import { getUserProfile } from '../../../services/users';
-import { 
-  ChartBarSquareIcon, 
-  ChatBubbleLeftRightIcon, 
-  CubeIcon, 
+import {
+  ChartBarSquareIcon,
+  ChatBubbleLeftRightIcon,
+  CubeIcon,
   StarIcon,
   HeartIcon,
-  UserGroupIcon
 } from '@heroicons/react/24/solid';
 
 const TabIcon = ({ icon: Icon, isActive, theme }) => (
   <motion.div
     whileHover={{ scale: 1.1, rotate: 5 }}
     className={`p-2 rounded-full ${isActive ? 'bg-opacity-100' : 'bg-opacity-20'}`}
-    style={{ 
+    style={{
       backgroundColor: isActive ? theme.colors.primary : theme.colors.primary + '20',
-      color: isActive ? theme.colors.buttonText : theme.colors.primary
+      color: isActive ? theme.colors.buttonText : theme.colors.primary,
     }}
   >
     <Icon className="w-5 h-5" />
@@ -58,58 +56,58 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
   }, [tab, activeTab, setActiveTab]);
 
   const tabs = isPublic ? [
-    { 
-      id: 'comparisons', 
-      label: 'Comparisons', 
+    {
+      id: 'comparisons',
+      label: 'Comparisons',
       icon: CubeIcon,
-      count: userData?.comparisons_count || 0
+      count: userData?.comparisons_count || 0,
     },
-    { 
-      id: 'products', 
-      label: 'Items', 
+    {
+      id: 'products',
+      label: 'Items',
       icon: StarIcon,
-      count: userData?.products_count || 0
+      count: userData?.products_count || 0,
     },
-    { 
-      id: 'comments', 
-      label: 'Comments', 
+    {
+      id: 'comments',
+      label: 'Comments',
       icon: ChatBubbleLeftRightIcon,
-      count: userData?.reviews_count || 0
+      count: userData?.reviews_count || 0,
     },
   ] : [
-    { 
-      id: 'overview', 
-      label: 'Overview', 
+    {
+      id: 'overview',
+      label: 'Overview',
       icon: ChartBarSquareIcon,
-      count: null
+      count: null,
     },
-    { 
-      id: 'comparisons', 
-      label: 'Comparisons', 
+    {
+      id: 'comparisons',
+      label: 'Comparisons',
       icon: CubeIcon,
-      count: userData?.comparisons_count || 0
+      count: userData?.comparisons_count || 0,
     },
-    { 
-      id: 'products', 
-      label: 'Items', 
+    {
+      id: 'products',
+      label: 'Items',
       icon: StarIcon,
-      count: userData?.products_count || 0
+      count: userData?.products_count || 0,
     },
-    { 
-      id: 'comments', 
-      label: 'Comments', 
+    {
+      id: 'comments',
+      label: 'Comments',
       icon: ChatBubbleLeftRightIcon,
-      count: userData?.reviews_count || 0
+      count: userData?.reviews_count || 0,
     },
-    { 
-      id: 'votes', 
-      label: 'Votes', 
+    {
+      id: 'votes',
+      label: 'Votes',
       icon: HeartIcon,
-      count: userData?.votes_count || 0
-    }
+      count: userData?.votes_count || 0,
+    },
   ];
 
-  const handleTabClick = (tabId) => {
+  const handleTabClick = tabId => {
     setActiveTab(tabId);
     if (isPublic) {
       navigate(`/user/${username}/${tabId}`);
@@ -148,9 +146,9 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
               activeTab === tab.id ? 'text-white' : 'text-gray-600'
             }`}
             style={{
-              backgroundColor: activeTab === tab.id 
+              backgroundColor: activeTab === tab.id
                 ? currentTheme.colors.primary
-                : currentTheme.colors.cardBackground
+                : currentTheme.colors.cardBackground,
             }}
           >
             <div className="flex items-center justify-center gap-1 md:gap-2">
@@ -163,12 +161,12 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
                     animate={{ scale: 1 }}
                     className="text-[10px] md:text-xs font-medium px-1.5 py-0.5 rounded-full"
                     style={{
-                      backgroundColor: activeTab === tab.id 
+                      backgroundColor: activeTab === tab.id
                         ? currentTheme.colors.buttonText + '20'
                         : currentTheme.colors.primary + '20',
-                      color: activeTab === tab.id 
+                      color: activeTab === tab.id
                         ? currentTheme.colors.buttonText
-                        : currentTheme.colors.primary
+                        : currentTheme.colors.primary,
                     }}
                   >
                     {tab.count}
@@ -188,9 +186,9 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
           className="w-full md:p-6 rounded-2xl"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.cardBackground,
-            boxShadow: `0 4px 6px -1px ${currentTheme.colors.primary}10`
+            boxShadow: `0 4px 6px -1px ${currentTheme.colors.primary}10`,
           }}
         >
           {renderTabContent()}
@@ -200,4 +198,4 @@ const ContentTabs = ({ activeTab, setActiveTab, userId, username, isPublic = tru
   );
 };
 
-export default ContentTabs; 
+export default ContentTabs;

@@ -1,7 +1,6 @@
 import createError from 'http-errors';
 import { z } from 'zod';
 import {
-  getComparisonSetById,
   getFullComparison,
   getAllComparisons,
   getUserComparisons,

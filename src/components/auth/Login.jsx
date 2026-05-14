@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, Link, Navigate, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate, Link, Navigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { User, Lock } from 'lucide-react';
-import { isNativePlatform } from '../../config/auth';
-import { changeColorAlpha } from '../../lib/utils';
+
 import TwirlingTwirlyLogo from './TwirlingTwirlyLogo';
 export default function Login({ onGoToSignup, onGoHome, source }) {
   const [email, setEmail] = useState('');
@@ -15,7 +14,6 @@ export default function Login({ onGoToSignup, onGoHome, source }) {
   const navigate = useNavigate();
   const { user, signIn, signInWithGoogle, error: authError } = useAuth();
   const { currentTheme } = useTheme();
-
 
   const validateForm = () => {
     if (!email) {
@@ -33,7 +31,7 @@ export default function Login({ onGoToSignup, onGoHome, source }) {
     return true;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
     setError('');
 
@@ -57,7 +55,7 @@ export default function Login({ onGoToSignup, onGoHome, source }) {
     }
   };
 
-  const handleSocialLogin = async (provider) => {
+  const handleSocialLogin = async provider => {
     setError('');
     setLoading(true);
     try {
@@ -82,9 +80,9 @@ export default function Login({ onGoToSignup, onGoHome, source }) {
     <div className="mx-12">
       <div className="">
         <div className=""
-             style={{ 
+             style={{
              }}>
-              {source === 'MOBILE' && (<div className="flex flex-col items-center justify-center" onClick={onGoHome}>   
+              {source === 'MOBILE' && (<div className="flex flex-col items-center justify-center" onClick={onGoHome}>
                 <TwirlingTwirlyLogo />
               </div>)}
           <div className="">
@@ -109,7 +107,7 @@ export default function Login({ onGoToSignup, onGoHome, source }) {
                     id="email"
                     type="email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={e => setEmail(e.target.value)}
                     className="pl-10 w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-offset-2 transition-colors"
                     style={{
                       backgroundColor: currentTheme.colors.background,
@@ -134,7 +132,7 @@ export default function Login({ onGoToSignup, onGoHome, source }) {
                     id="password"
                     type="password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={e => setPassword(e.target.value)}
                     className="pl-10 w-full px-4 py-2 rounded-lg border focus:ring-2 focus:ring-offset-2 transition-colors"
                     style={{
                       backgroundColor: currentTheme.colors.background,
@@ -153,7 +151,7 @@ export default function Login({ onGoToSignup, onGoHome, source }) {
                   id="remember-me"
                   type="checkbox"
                   checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
+                  onChange={e => setRememberMe(e.target.checked)}
                   className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm"
@@ -184,7 +182,7 @@ export default function Login({ onGoToSignup, onGoHome, source }) {
                 backgroundColor: currentTheme.colors.primary,
                 color: currentTheme.colors.buttonText,
                 marginTop: '66px',
-                opacity: loading ? 0.7 : 1
+                opacity: loading ? 0.7 : 1,
               }}
             >
               {loading ? 'Logging in...' : 'LOGIN'}
@@ -196,7 +194,7 @@ export default function Login({ onGoToSignup, onGoHome, source }) {
               <div className="w-full border-t" style={{ borderColor: currentTheme.colors.border }}></div>
             </div>
             <div className="flex justify-center text-sm">
-              <span className="px-2" style={{color: currentTheme.colors.textSecondary }}>
+              <span className="px-2" style={{ color: currentTheme.colors.textSecondary }}>
                 OR
               </span>
             </div>
@@ -251,4 +249,4 @@ export default function Login({ onGoToSignup, onGoHome, source }) {
       </div>
     </div>
   );
-} 
+}

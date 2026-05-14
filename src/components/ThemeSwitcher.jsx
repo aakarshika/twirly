@@ -5,7 +5,7 @@ const ThemeSwitcher = () => {
   const { currentTheme, changeTheme, themes } = useTheme();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleThemeChange = (themeName) => {
+  const handleThemeChange = themeName => {
     changeTheme(themeName);
     setIsOpen(false);
   };
@@ -54,4 +54,4 @@ const ThemeSwitcher = () => {
   );
 };
 
-export default ThemeSwitcher; 
+export default ThemeSwitcher;

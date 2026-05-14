@@ -37,7 +37,7 @@ const ExploreSimilar = ({ currentSetId }) => {
   if (loading && similarSets.length === 0) {
     return (
       <div className="flex justify-center py-4">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2" 
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2"
              style={{ borderColor: currentTheme.colors.primary }}></div>
       </div>
     );
@@ -57,8 +57,8 @@ const ExploreSimilar = ({ currentSetId }) => {
 
   return (
     <div className="space-y-4">
-      {similarSets.map((set) => (
-        <div 
+      {similarSets.map(set => (
+        <div
           key={`similar-set-${set.set_id}`}
           className="transition-transform duration-200 hover:scale-[1.02]"
         >
@@ -70,8 +70,8 @@ const ExploreSimilar = ({ currentSetId }) => {
           <button
             onClick={() => setPage(prev => prev + 1)}
             className="px-4 py-2 rounded-full font-semibold transition-all duration-200 hover:scale-105"
-            style={{ 
-              color: currentTheme.colors.text
+            style={{
+              color: currentTheme.colors.text,
             }}
           >
             Load More
@@ -82,4 +82,4 @@ const ExploreSimilar = ({ currentSetId }) => {
   );
 };
 
-export default ExploreSimilar; 
+export default ExploreSimilar;

@@ -2,15 +2,15 @@ import React from 'react';
 import { Camera } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 
-const Avatar = ({ 
-  profileImageUrl, 
-  displayName, 
-  username, 
-  size = 'md', 
-  isEditable = false, 
+const Avatar = ({
+  profileImageUrl,
+  displayName,
+  username,
+  size = 'md',
+  isEditable = false,
   onAvatarChange,
   className = '',
-  onClick
+  onClick,
 }) => {
   const { currentTheme } = useTheme();
 
@@ -19,22 +19,22 @@ const Avatar = ({
     xs: 'w-6 h-6',
     sm: 'w-8 h-8',
     md: 'w-16 h-16',
-    lg: 'w-32 h-32'
+    lg: 'w-32 h-32',
   };
   const fontSize = {
     sm: 'text-sm',
     md: 'text-md',
-    lg: 'text-lg'
+    lg: 'text-lg',
   };
 
   const sizeClass = sizeClasses[size] || sizeClasses.md;
 
   return (
     <div className="relative">
-      <div 
+      <div
         onClick={onClick}
         className={`${sizeClass} rounded-full bg-cover bg-center overflow-hidden ${className}`}
-        style={{ 
+        style={{
           backgroundColor: currentTheme.colors.border,
         }}
       >
@@ -43,7 +43,7 @@ const Avatar = ({
             src={profileImageUrl}
             alt="Profile"
             className="w-full h-full object-cover"
-            onError={(e) => {
+            onError={e => {
               console.error('Error loading image:', e);
             }}
           />
@@ -56,11 +56,11 @@ const Avatar = ({
         )}
       </div>
       {isEditable && (
-        <label 
+        <label
           className="absolute bottom-0 right-0 p-2 rounded-full cursor-pointer"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.primary,
-            color: currentTheme.colors.background
+            color: currentTheme.colors.background,
           }}
         >
           <Camera size={16} />
@@ -76,4 +76,4 @@ const Avatar = ({
   );
 };
 
-export default Avatar; 
+export default Avatar;

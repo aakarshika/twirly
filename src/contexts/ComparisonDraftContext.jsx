@@ -18,67 +18,67 @@ export const ComparisonDraftProvider = ({ children }) => {
     category_id: null,
     items: [],
     aspects: [],
-    isPublished: false
+    isPublished: false,
   });
 
-  const updateItem = (item) => {
+  const updateItem = item => {
     item.user_id = user.id;
     setDraft(prev => ({
       ...prev,
-      items: prev.items.map(i => i.id === item.id ? item : i)
+      items: prev.items.map(i => i.id === item.id ? item : i),
     }));
   };
 
-  const addItem = (item) => {
+  const addItem = item => {
     // console.log(item);
     if (!draft.items.find(i => i.id === item.id)) {
       setDraft(prev => ({
         ...prev,
-        items: [...prev.items, item]
+        items: [...prev.items, item],
       }));
     }
     // console.log(draft.items);
   };
 
-  const addCategory = (category) => {
+  const addCategory = category => {
     setDraft(prev => ({
       ...prev,
-      category_id: category.id
+      category_id: category.id,
     }));
   };
 
-  const removeItem = (itemId) => {
+  const removeItem = itemId => {
     setDraft(prev => ({
       ...prev,
-      items: prev.items.filter(item => item.id !== itemId)
+      items: prev.items.filter(item => item.id !== itemId),
     }));
   };
 
-  const addAspect = (aspect) => {
+  const addAspect = aspect => {
     setDraft(prev => ({
       ...prev,
-      aspects: [...prev.aspects, aspect]
+      aspects: [...prev.aspects, aspect],
     }));
   };
 
-  const updateAspect = (aspect) => {
+  const updateAspect = aspect => {
     setDraft(prev => ({
       ...prev,
-      aspects: prev.aspects.map(a => a.id === aspect.id ? aspect : a)
+      aspects: prev.aspects.map(a => a.id === aspect.id ? aspect : a),
     }));
   };
 
-  const removeAspect = (aspectId) => {
+  const removeAspect = aspectId => {
     setDraft(prev => ({
       ...prev,
-      aspects: prev.aspects.filter(aspect => aspect.id !== aspectId)
+      aspects: prev.aspects.filter(aspect => aspect.id !== aspectId),
     }));
   };
 
-  const updateDraft = (updates) => {
+  const updateDraft = updates => {
     setDraft(prev => ({
       ...prev,
-      ...updates
+      ...updates,
     }));
   };
 
@@ -89,7 +89,7 @@ export const ComparisonDraftProvider = ({ children }) => {
       category_id: null,
       items: [],
       aspects: [],
-      isPublished: false
+      isPublished: false,
     });
   };
 
@@ -103,7 +103,7 @@ export const ComparisonDraftProvider = ({ children }) => {
     updateItem,
     updateDraft,
     clearDraft,
-    updateAspect
+    updateAspect,
   };
 
   return (
@@ -111,4 +111,4 @@ export const ComparisonDraftProvider = ({ children }) => {
       {children}
     </ComparisonDraftContext.Provider>
   );
-}; 
+};

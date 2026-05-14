@@ -35,6 +35,7 @@ import NotFoundPage from '../components/NotFoundPage';
 import { App } from '@capacitor/app';
 import { authService } from '../services/authService';
 import TikTokScroll from '../components/TikTokScroll';
+import ActivityPage from './activity-page/ActivityPage';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -59,9 +60,9 @@ const ProtectedRoute = ({ children }) => {
         const [prefs, cats, notif] = await Promise.all([
           userService.getUserPreferences(user.id),
           userService.getUserCategoryPreferences(user.id),
-          userService.getUserNotificationSettings(user.id)
+          userService.getUserNotificationSettings(user.id),
         ]);
-        
+
         if (mounted) {
           const isComplete = prefs && prefs.display_name && cats.length > 0 && notif.created_at !== notif.updated_at;
           setIsOnboardingComplete(isComplete);
@@ -107,7 +108,7 @@ const ProtectedRoute = ({ children }) => {
 };
 
 // Add this component before MainRoutingPage
-const ScrollToTop = () => {
+const _ScrollToTop = () => {
   const { pathname } = useLocation();
   const isTrendingPage = pathname === '/';
 
@@ -175,7 +176,7 @@ const MainRoutingPage = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  const isPublicRoute = PUBLIC_PATHS.some((p) => location.pathname.includes(p));
+  const isPublicRoute = PUBLIC_PATHS.some(p => location.pathname.includes(p));
   const isComparePage = location.pathname.startsWith('/compare');
 
   // Top bar height: 56px mobile/tablet, 64px desktop (expressed via Tailwind)
@@ -239,7 +240,7 @@ const MainRoutingPage = () => {
                     <Route path="/item/:itemId" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>} />
                     <Route path="/item/:itemId/:tab" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>} />
                     <Route path="/settings/*" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                    <Route path="/activity" element={<Navigate to="/dashboard" replace />} />
+                    <Route path="/activity" element={<ProtectedRoute><ActivityPage /></ProtectedRoute>} />
                     <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
                     <Route path="/dashboard/:tab" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
                     <Route path="/user/:username" element={<UserProfile />} />

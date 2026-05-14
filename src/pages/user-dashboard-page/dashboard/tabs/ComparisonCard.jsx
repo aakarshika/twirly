@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../../../contexts/ThemeContext';
-import { Plus, Trash2, ExternalLink, MessageSquare, ThumbsUp, Settings } from 'lucide-react';
 import { useAuth } from '../../../../contexts/AuthContext';
+import { Trash2, Settings } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { getPublicUrlItems } from '../../../../lib/utils';
 
-const ComparisonItem = ({ item, user, getVoteCount, getCommentCount }) => {
+const ComparisonItem = ({ item, user, _getVoteCount, _getCommentCount }) => {
   const itemImage = item.image_url && item.image_url.startsWith('http') ? item.image_url : getPublicUrlItems(item.image_url);
   const { currentTheme } = useTheme();
-  const [imgSrc, setImgSrc] = useState(itemImage);
   const [imageError, setImageError] = useState(false);
 
   return (
@@ -16,7 +15,7 @@ const ComparisonItem = ({ item, user, getVoteCount, getCommentCount }) => {
       className="flex items-center space-x-3 p-3 rounded-lg"
       style={{
         backgroundColor: currentTheme.colors.background,
-        border: `1px solid ${currentTheme.colors.border}`
+        border: `1px solid ${currentTheme.colors.border}`,
       }}
     >
       <div className="relative">
@@ -24,7 +23,7 @@ const ComparisonItem = ({ item, user, getVoteCount, getCommentCount }) => {
           src={itemImage}
           alt={item.name}
           className="w-24 h-24 object-cover"
-          onError={(e) => {
+          onError={e => {
             e.target.style.display = 'none';
             e.target.nextSibling.style.display = 'flex';
             setImageError(true);
@@ -50,7 +49,7 @@ const ComparisonItem = ({ item, user, getVoteCount, getCommentCount }) => {
               className="text-xs px-2 py-0.5 rounded"
               style={{
                 backgroundColor: currentTheme.colors.primary + '20',
-                color: currentTheme.colors.primary
+                color: currentTheme.colors.primary,
               }}
             >
               Your Product
@@ -66,7 +65,7 @@ const ComparisonItem = ({ item, user, getVoteCount, getCommentCount }) => {
               className="text-xs px-2 py-0.5 rounded"
               style={{
                 backgroundColor: currentTheme.colors.background,
-                color: currentTheme.colors.textSecondary
+                color: currentTheme.colors.textSecondary,
               }}
             >
               ${item.price.toFixed(2)}
@@ -83,7 +82,7 @@ const ComparisonCard = ({ comparison, onDelete, isPublic }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const getVoteCount = (itemId) => {
+  const getVoteCount = itemId => {
     if (!comparison?.votes) return 0;
     return comparison.votes.filter(vote => vote.item_id === itemId).length;
   };
@@ -93,12 +92,12 @@ const ComparisonCard = ({ comparison, onDelete, isPublic }) => {
     return comparison.comparison_set_comments.length;
   };
 
-  const handleComparisonClick = (comparison) => {
+  const handleComparisonClick = comparison => {
     navigate(`/compare/${comparison.id}`);
   };
 
   // Define the number of placeholders needed
-  const placeholdersNeeded = 3 - (comparison?.items?.length || 0);
+  const _placeholdersNeeded = 3 - (comparison?.items?.length || 0);
 
   return (
     <div
@@ -106,11 +105,11 @@ const ComparisonCard = ({ comparison, onDelete, isPublic }) => {
       style={{
         backgroundColor: currentTheme.colors.card,
         border: `1px solid ${currentTheme.colors.border}`,
-        color: currentTheme.colors.text
+        color: currentTheme.colors.text,
       }}
     >
       <div className="p-4 flex-grow">
-        <div className="flex justify-between items-start mb-4" 
+        <div className="flex justify-between items-start mb-4"
       onClick={() => handleComparisonClick(comparison)}>
           <h3
             className="font-medium text-lg"
@@ -131,7 +130,7 @@ const ComparisonCard = ({ comparison, onDelete, isPublic }) => {
           </div>
           {(!isPublic && <div className="flex space-x-2">
             <button
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 navigate(`/edit-comparison/${comparison.id}`);
               }}
@@ -141,7 +140,7 @@ const ComparisonCard = ({ comparison, onDelete, isPublic }) => {
               <Settings size={18} style={{ color: currentTheme.colors.textSecondary }} />
             </button>
             <button
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 onDelete(comparison.id);
               }}
@@ -154,7 +153,7 @@ const ComparisonCard = ({ comparison, onDelete, isPublic }) => {
         </div>
 
         <div className="space-y-3">
-          {comparison?.items?.map((setItem) => {
+          {comparison?.items?.map(setItem => {
             // console.log(setItem, comparison.id + "_" + setItem.item_id);
             return (
             <ComparisonItem
@@ -164,7 +163,7 @@ const ComparisonCard = ({ comparison, onDelete, isPublic }) => {
               getVoteCount={getVoteCount}
               getCommentCount={getCommentCount}
             />
-          )})}
+          );})}
         </div>
       </div>
     </div>

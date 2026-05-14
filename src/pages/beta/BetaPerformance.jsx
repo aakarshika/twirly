@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
 import { useBetaTesting } from '../../contexts/BetaTestingContext';
 import { getPerformanceReport } from '../../utils/analytics';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 const BetaPerformance = () => {
-  const { currentTheme } = useTheme();
   const { isBetaMode } = useBetaTesting();
   const [performanceData, setPerformanceData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -47,7 +45,7 @@ const BetaPerformance = () => {
   return (
     <div className="p-4" style={{ paddingTop: '104px' }}>
       <h1 className="text-2xl font-bold mb-6" style={{ color: 'var(--color-text)' }}>Performance Monitor</h1>
-      
+
       {/* App Launch Time */}
       <div className="mb-8">
         <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text)' }}>App Launch Time</h2>
@@ -103,4 +101,4 @@ const BetaPerformance = () => {
   );
 };
 
-export default BetaPerformance; 
+export default BetaPerformance;

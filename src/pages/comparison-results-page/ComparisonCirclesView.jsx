@@ -1,23 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import ComparisonCircle from './ComparisonCircle';
-import CenterStage from './CenterStage';
 import {
     findWinner,
     findRunnerUp,
     countTotalVotes,
-    calculateProcessedItems
+    calculateProcessedItems,
 } from '../../services/comparisonService';
 import Avatar from '../../components/common/Avatar';
-import { changeColorAlpha, getPublicUrl } from '../../lib/utils';
+import { getPublicUrl } from '../../lib/utils';
 import { useNavigate } from 'react-router-dom';
-
-
-import { motion, AnimatePresence } from 'framer-motion';
-import { useHeader } from '../../contexts/HeaderContext';
 import { formatDistanceToNow } from 'date-fns';
 
-
-const List = ({displayItems, isMobile, winner, runnerUp, comparison, totalVotes, celebratingResults, userVotedAll}) => {
+const List = ({ displayItems, isMobile, winner, runnerUp, comparison, totalVotes, celebratingResults, userVotedAll }) => {
     const [displayItemssss, setDisplayItemssss] = useState(displayItems && displayItems.length > 0 ? displayItems.slice(0, 1) : []);
     const [winnerAnnouncement, setWinnerAnnouncement] = useState(false);
     const [runnerUpAnnouncement, setRunnerUpAnnouncement] = useState(false);
@@ -49,7 +43,7 @@ const List = ({displayItems, isMobile, winner, runnerUp, comparison, totalVotes,
                 'grid-cols-2'
             }`}
             style={{
-              gap: '1vh'
+              gap: '1vh',
             }}
           >
             {winnerAnnouncement && (
@@ -72,7 +66,7 @@ const List = ({displayItems, isMobile, winner, runnerUp, comparison, totalVotes,
             )}
             {displayItemssss.map((item, i) => (
               <div key={item.id} className="">
-                
+
                 <ComparisonCircle
                                 item={item}
                                 index={i}
@@ -98,8 +92,7 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
     const winner = userVotedAll ? findWinner(displayItems) : null;
     const runnerUp = userVotedAll ? findRunnerUp(displayItems) : null;
     const totalVotes = userVotedAll ? countTotalVotes(comparisonMetrics) : null;
-    const {isHeaderVisible} = useHeader();
-    const [scale, setScale] = useState(1);
+    const [, setScale] = useState(1);
     const [lastScrollY, setLastScrollY] = useState(0);
     // Add scroll event listener for scaling
     useEffect(() => {
@@ -118,7 +111,7 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
     return (
         <div className="w-full">
             <div className="">
-                <div className='flex flex-col'>
+                <div className="flex flex-col">
                     {!userVotedAll && (
                         <div className="text-center text-sm text-text-muted">
                             Vote all to view results
@@ -126,7 +119,7 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
                     )}
                     {/* Desktop Layout */}
                     <div className="hidden sm:block">
-                        <List 
+                        <List
                             displayItems={displayItems}
                             winner={winner}
                             runnerUp={runnerUp}
@@ -140,7 +133,7 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
 
                     {/* Mobile Layout */}
                     <div className="sm:hidden">
-                        <List 
+                        <List
                             displayItems={displayItems}
                             winner={winner}
                             runnerUp={runnerUp}
@@ -154,7 +147,7 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
                 </div>
 
                 <div className="flex items-center gap-3 mb-4 pl-4">
-                    <Avatar 
+                    <Avatar
                         profileImageUrl={comparison.user?.profile_image_url ? getPublicUrl(comparison.user?.profile_image_url) : null}
                         displayName={comparison.user?.display_name}
                         username={comparison.user?.username}
@@ -175,11 +168,11 @@ const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVoted
                 {/* <div className='flex flex-row items-center justify-start'>
                 <h4 className='text-md text-gray-500 p-2 w-full' style={{backgroundColor: changeColorAlpha(currentTheme.colors.background, 0.2)}}>
                     Results
-                </h4> 
+                </h4>
                 </div> */}
             </div>
         </div>
     );
 };
 
-export default ComparisonCirclesView; 
+export default ComparisonCirclesView;

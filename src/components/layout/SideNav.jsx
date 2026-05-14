@@ -6,11 +6,11 @@ import { getPublicUrl } from '../../lib/utils';
 import { formatDate } from 'date-fns';
 
 const NAV_ITEMS = [
-  { id: 'home', label: 'Home', icon: Home, path: '/', match: (p) => p === '/' },
-  { id: 'search', label: 'Search', icon: Search, path: '/search', match: (p) => p.startsWith('/search') },
-  { id: 'create', label: 'Create Comparison', icon: PlusCircle, path: '/new-comparison?load_draft=true', match: (p) => p.startsWith('/new-comparison') },
-  { id: 'activity', label: 'Activity', icon: Bell, path: '/activity', match: (p) => p.startsWith('/activity') },
-  { id: 'profile', label: 'Profile', icon: User, path: '/dashboard', match: (p) => p.startsWith('/dashboard') },
+  { id: 'home', label: 'Home', icon: Home, path: '/', match: p => p === '/' },
+  { id: 'search', label: 'Search', icon: Search, path: '/search', match: p => p.startsWith('/search') },
+  { id: 'create', label: 'Create Comparison', icon: PlusCircle, path: '/new-comparison?load_draft=true', match: p => p.startsWith('/new-comparison') },
+  { id: 'activity', label: 'Activity', icon: Bell, path: '/activity', match: p => p.startsWith('/activity') },
+  { id: 'profile', label: 'Profile', icon: User, path: '/dashboard', match: p => p.startsWith('/dashboard') },
 ];
 
 const SETTINGS_TABS = [
@@ -31,12 +31,12 @@ const SideNav = ({ userData, onLogout }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [settingsExpanded, setSettingsExpanded] = useState(
-    location.pathname.startsWith('/settings')
+    location.pathname.startsWith('/settings'),
   );
 
   const profile = userData?.profile;
 
-  const navItemStyle = (active) => ({
+  const navItemStyle = active => ({
     color: active ? 'rgb(var(--primary-fg))' : 'rgb(var(--text))',
     backgroundColor: active ? 'rgb(var(--primary))' : 'transparent',
   });
@@ -60,7 +60,7 @@ const SideNav = ({ userData, onLogout }) => {
           className="px-4 py-5 border-b cursor-pointer"
           style={{ borderColor: 'rgb(var(--border))' }}
           onClick={() => navigate('/dashboard')}
-          onKeyDown={(e) => e.key === 'Enter' || e.key === ' ' ? navigate('/dashboard') : undefined}
+          onKeyDown={e => e.key === 'Enter' || e.key === ' ' ? navigate('/dashboard') : undefined}
         >
           <div className="flex items-center gap-3">
             <Avatar
@@ -115,7 +115,7 @@ const SideNav = ({ userData, onLogout }) => {
             type="button"
             aria-expanded={settingsExpanded}
             aria-controls="sidenav-settings-submenu"
-            onClick={() => setSettingsExpanded((v) => !v)}
+            onClick={() => setSettingsExpanded(v => !v)}
             className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-md text-sm font-medium w-full text-left transition-colors hover:bg-surface-elevated"
             style={{ color: 'rgb(var(--text))' }}
           >

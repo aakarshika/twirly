@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { CreditCard, DollarSign, Receipt, Save, Plus, Trash2 } from 'lucide-react';
+import { CreditCard, DollarSign, Receipt, Plus, Trash2 } from 'lucide-react';
 import Button from '../../../components/common/Button';
 
 const BillingSettings = () => {
@@ -9,7 +9,7 @@ const BillingSettings = () => {
     subscription: {
       plan: 'free',
       status: 'active',
-      nextBillingDate: '2024-04-01'
+      nextBillingDate: '2024-04-01',
     },
     paymentMethods: [
       {
@@ -17,8 +17,8 @@ const BillingSettings = () => {
         type: 'visa',
         last4: '4242',
         expiry: '12/25',
-        isDefault: true
-      }
+        isDefault: true,
+      },
     ],
     billingHistory: [
       {
@@ -26,18 +26,18 @@ const BillingSettings = () => {
         date: '2024-03-01',
         amount: '$9.99',
         status: 'paid',
-        description: 'Monthly Subscription'
-      }
-    ]
+        description: 'Monthly Subscription',
+      },
+    ],
   });
 
-  const handlePlanChange = (plan) => {
+  const handlePlanChange = plan => {
     setBillingSettings(prev => ({
       ...prev,
       subscription: {
         ...prev.subscription,
-        plan
-      }
+        plan,
+      },
     }));
   };
 
@@ -46,30 +46,25 @@ const BillingSettings = () => {
     // console.log('Adding new payment method');
   };
 
-  const handleRemovePaymentMethod = (id) => {
+  const handleRemovePaymentMethod = _id => {
     // TODO: Implement payment method removal
     // console.log('Removing payment method:', id);
   };
 
-  const handleSetDefaultPaymentMethod = (id) => {
+  const handleSetDefaultPaymentMethod = id => {
     setBillingSettings(prev => ({
       ...prev,
       paymentMethods: prev.paymentMethods.map(method => ({
         ...method,
-        isDefault: method.id === id
-      }))
+        isDefault: method.id === id,
+      })),
     }));
-  };
-
-  const handleSave = () => {
-    // TODO: Implement save functionality with Supabase
-    // console.log('Saving billing settings:', billingSettings);
   };
 
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h2 
+        <h2
           className="text-md font-semibold"
           style={{ color: currentTheme.colors.text }}
         >
@@ -89,14 +84,14 @@ const BillingSettings = () => {
 
       <div className="space-y-6">
         {/* Subscription Plan */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4 flex items-center space-x-2"
             style={{ color: currentTheme.colors.text }}
           >
@@ -112,9 +107,9 @@ const BillingSettings = () => {
                   : 'hover:bg-opacity-5 hover:bg-current'
               }`}
 
-              style={{ 
+              style={{
                 backgroundColor: billingSettings.subscription.plan === 'free' ? currentTheme.colors.primary : 'transparent',
-                color: billingSettings.subscription.plan === 'free' ? currentTheme.colors.background : currentTheme.colors.text
+                color: billingSettings.subscription.plan === 'free' ? currentTheme.colors.background : currentTheme.colors.text,
               }}
             >
               <span className="text-xl font-semibold">Free</span>
@@ -128,9 +123,9 @@ const BillingSettings = () => {
                   : 'hover:bg-opacity-5 hover:bg-current'
               }`}
 
-              style={{ 
+              style={{
                 backgroundColor: billingSettings.subscription.plan === 'pro' ? currentTheme.colors.primary : 'transparent',
-                color: billingSettings.subscription.plan === 'pro' ? currentTheme.colors.background : currentTheme.colors.text
+                color: billingSettings.subscription.plan === 'pro' ? currentTheme.colors.background : currentTheme.colors.text,
               }}
               >
               <span className="text-xl font-semibold">Pro</span>
@@ -143,10 +138,10 @@ const BillingSettings = () => {
                   ? 'bg-opacity-10 bg-current'
                   : 'hover:bg-opacity-5 hover:bg-current'
               }`}
-              
-              style={{ 
+
+              style={{
                 backgroundColor: billingSettings.subscription.plan === 'enterprise' ? currentTheme.colors.primary : 'transparent',
-                color: billingSettings.subscription.plan === 'enterprise' ? currentTheme.colors.background : currentTheme.colors.text
+                color: billingSettings.subscription.plan === 'enterprise' ? currentTheme.colors.background : currentTheme.colors.text,
               }}
             >
               <span className="text-xl font-semibold">Enterprise</span>
@@ -161,15 +156,15 @@ const BillingSettings = () => {
         </div>
 
         {/* Payment Methods */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 
+            <h3
               className="text-lg font-medium flex items-center space-x-2"
               style={{ color: currentTheme.colors.text }}
             >
@@ -190,9 +185,9 @@ const BillingSettings = () => {
               <div
                 key={method.id}
                 className="flex items-center justify-between p-4 rounded-lg"
-                style={{ 
+                style={{
                   backgroundColor: currentTheme.colors.background,
-                  border: `1px solid ${currentTheme.colors.border}`
+                  border: `1px solid ${currentTheme.colors.border}`,
                 }}
               >
                 <div className="flex items-center space-x-4">
@@ -235,14 +230,14 @@ const BillingSettings = () => {
         </div>
 
         {/* Billing History */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4 flex items-center space-x-2"
             style={{ color: currentTheme.colors.text }}
           >
@@ -254,9 +249,9 @@ const BillingSettings = () => {
               <div
                 key={record.id}
                 className="flex items-center justify-between p-4 rounded-lg"
-                style={{ 
+                style={{
                   backgroundColor: currentTheme.colors.background,
-                  border: `1px solid ${currentTheme.colors.border}`
+                  border: `1px solid ${currentTheme.colors.border}`,
                 }}
               >
                 <div>
@@ -271,7 +266,7 @@ const BillingSettings = () => {
                   <p className="font-medium" style={{ color: currentTheme.colors.text }}>
                     {record.amount}
                   </p>
-                  <p 
+                  <p
                     className={`text-sm ${
                       record.status === 'paid' ? 'text-green-500' : 'text-red-500'
                     }`}
@@ -288,4 +283,4 @@ const BillingSettings = () => {
   );
 };
 
-export default BillingSettings; 
+export default BillingSettings;

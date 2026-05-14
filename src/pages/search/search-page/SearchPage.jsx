@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import { searchService } from '../../../services/searchService';
 import { Link } from 'react-router-dom';
 import { getPublicUrl } from '../../../lib/utils';
-import { useHeader } from '../../../contexts/HeaderContext';
 import ItemCard from '../../../components/common/common-cards/ItemCard';
 import TrendingCard from '../../../components/common/common-cards/TrendingCard';
 import { useLoading } from '../../../contexts/LoadingContext';
@@ -15,7 +14,6 @@ const SearchPage = () => {
   const [searchInput, setSearchInput] = useState(query);
   const [activeTab, setActiveTab] = useState('all');
   const [results, setResults] = useState({ sets: [], items: [], users: [] });
-  const { isHeaderVisible } = useHeader();
   const { setLoading, setError: setGlobalError } = useLoading();
 
   useEffect(() => {
@@ -37,7 +35,16 @@ const SearchPage = () => {
     fetchResults();
   }, [query]);
 
-  const handleSearch = (e) => {
+  useEffect(() => {
+    const trimmed = searchInput.trim();
+    if (!trimmed) return;
+    const timer = setTimeout(() => {
+      setSearchParams({ q: trimmed });
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  const handleSearch = e => {
     e.preventDefault();
     if (searchInput.trim()) {
       setSearchParams({ q: searchInput.trim() });
@@ -147,7 +154,7 @@ const SearchPage = () => {
             <input
               type="text"
               value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
+              onChange={e => setSearchInput(e.target.value)}
               className="w-full px-4 py-3 pl-12 rounded-lg border border-border bg-transparent text-text placeholder:text-text-muted focus:outline-none focus:border-primary"
               placeholder="Search..."
             />

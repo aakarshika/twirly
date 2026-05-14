@@ -105,10 +105,10 @@ const Trending = () => {
   // Filtered view (client-side when we have data; server-side re-fetch when switching to a new category)
   const visibleSets = useMemo(() => {
     if (selectedCategory === null) return sets;
-    return sets.filter((s) => s.category_id === selectedCategory);
+    return sets.filter(s => s.category_id === selectedCategory);
   }, [sets, selectedCategory]);
 
-  const handleCategorySelect = async (id) => {
+  const handleCategorySelect = async id => {
     setSelectedCategory(id);
     if (id === null) {
       fetchTrending();
@@ -148,7 +148,7 @@ const Trending = () => {
           <EmptyState onCreateClick={() => navigate('/new-comparison?load_draft=true')} />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 px-4 pb-4">
-            {visibleSets.map((set) => (
+            {visibleSets.map(set => (
               <TrendingCard key={set.set_id} set={set} />
             ))}
             {/* Subtle loading indicator when refreshing with existing data */}

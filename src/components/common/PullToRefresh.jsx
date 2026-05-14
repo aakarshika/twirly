@@ -19,13 +19,13 @@ const PullToRefresh = ({ onRefresh, children, scrollableRef }) => {
     return window.scrollY === 0;
   };
 
-  const handleTouchStart = useCallback((e) => {
+  const handleTouchStart = useCallback(e => {
     if (isAtTop()) {
       startY.current = e.touches[0].clientY;
     }
   }, [scrollableRef]);
 
-  const handleTouchMove = useCallback((e) => {
+  const handleTouchMove = useCallback(e => {
     if (isAtTop() && startY.current > 0) {
       const currentY = e.touches[0].clientY;
       const distance = currentY - startY.current;
@@ -73,7 +73,7 @@ const PullToRefresh = ({ onRefresh, children, scrollableRef }) => {
           transform: `translateY(${pullDistance}px)`,
           top: '-60px',
           zIndex: 50,
-          transition: 'transform 0.1s ease-out'
+          transition: 'transform 0.1s ease-out',
         }}
       >
         {pullDistance > 0 && (
@@ -84,7 +84,7 @@ const PullToRefresh = ({ onRefresh, children, scrollableRef }) => {
               style={{
                 transform: `rotate(${pullDistance}deg)`,
                 color: 'var(--color-primary)',
-                transition: 'transform 0.1s ease-out'
+                transition: 'transform 0.1s ease-out',
               }}
             />
             <span style={{ color: 'var(--color-text)' }}>
@@ -96,7 +96,7 @@ const PullToRefresh = ({ onRefresh, children, scrollableRef }) => {
       <div
         style={{
           transform: `translateY(${pullDistance}px)`,
-          transition: 'transform 0.1s ease-out'
+          transition: 'transform 0.1s ease-out',
         }}
       >
         {children}
@@ -105,4 +105,4 @@ const PullToRefresh = ({ onRefresh, children, scrollableRef }) => {
   );
 };
 
-export default PullToRefresh; 
+export default PullToRefresh;

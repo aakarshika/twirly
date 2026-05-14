@@ -52,7 +52,7 @@ export const getCategoryDistribution = async () => {
   }
 };
 
-const formatTimestamp = (isoString) => {
+const formatTimestamp = isoString => {
   if (!isoString) return 'Unknown';
   const hoursAgo = (Date.now() - new Date(isoString).getTime()) / (1000 * 60 * 60);
   if (hoursAgo < 1) return 'Less than an hour ago';

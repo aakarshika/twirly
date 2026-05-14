@@ -1,14 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Star, 
-  Heart, 
-  Circle, 
-  Square, 
+import {
+  Star,
+  Heart,
+  Circle,
+  Square,
   Triangle,
   Sparkles,
   Moon,
-  Sun
+  Sun,
 } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 const BackgroundImage = () => {
@@ -148,21 +148,21 @@ const BackgroundImage = () => {
   const generateGridIcons = () => {
     const numCols = 8; // Number of columns in the grid
     const numRows = Math.ceil(icons.length / numCols); // Calculate rows needed
-    
+
     return icons.map(({ Icon, color }, index) => {
       const col = index % numCols;
       const row = Math.floor(index / numCols);
-      
+
       // Calculate position with some padding
       const x = (col * (100 / (numCols - 1)) + (5 * (row%2 == 1))); // Distribute across width
       const y = (row * (100 / (numRows - 1)) + (5 * (col%2 == 0))); // Distribute across height
-      
+
       // Vary the size slightly for visual interest
       const size = Math.random() * 15 + 25; // Sizes: 20, 30, or 40
-      
+
       // Alternate rotation directions for visual interest
       const rotation = (index % 2 === 0 ? 15 : -15);
-      
+
       return (
         <motion.div
           key={index}
@@ -172,7 +172,7 @@ const BackgroundImage = () => {
             duration: 2,
             delay: Math.random() * 2,
             repeat: Infinity,
-            repeatType: "reverse"
+            repeatType: "reverse",
           }}
           style={{
             position: 'absolute',
@@ -196,8 +196,8 @@ const BackgroundImage = () => {
         left: 0,
         right: 0,
         bottom: 0,
-        background:   ['Light', 'Sunset', 'Ocean', 'Forest'].includes(currentTheme.name) ? 
-        'linear-gradient(135deg,rgb(255, 255, 255) 0%,rgb(236, 246, 255) 50%,rgb(230, 251, 250) 100%)' 
+        background:   ['Light', 'Sunset', 'Ocean', 'Forest'].includes(currentTheme.name) ?
+        'linear-gradient(135deg,rgb(255, 255, 255) 0%,rgb(236, 246, 255) 50%,rgb(230, 251, 250) 100%)'
         : 'linear-gradient(135deg,rgb(47, 47, 81) 0%,rgb(26, 50, 89) 50%,rgb(86, 53, 127) 100%)',
         overflow: 'hidden',
         zIndex: 0, // Ensure background stays behind all content
@@ -208,4 +208,4 @@ const BackgroundImage = () => {
   );
 };
 
-export default BackgroundImage; 
+export default BackgroundImage;

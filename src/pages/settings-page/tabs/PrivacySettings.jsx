@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../../../contexts/ThemeContext';
-import { Eye, EyeOff, Lock, Globe, User, Shield, MessageSquare, Mail } from 'lucide-react';
+import { Eye, Lock, Globe, User, Shield, MessageSquare, Mail } from 'lucide-react';
 import Button from '../../../../components/common/Button';
 
 const PrivacySettings = () => {
@@ -15,31 +15,31 @@ const PrivacySettings = () => {
     dataSharing: {
       analytics: true,
       marketing: false,
-      thirdParty: false
-    }
+      thirdParty: false,
+    },
   });
 
-  const handleToggle = (setting) => {
+  const handleToggle = setting => {
     setPrivacySettings(prev => ({
       ...prev,
-      [setting]: !prev[setting]
+      [setting]: !prev[setting],
     }));
   };
 
-  const handleDataSharingToggle = (category) => {
+  const handleDataSharingToggle = category => {
     setPrivacySettings(prev => ({
       ...prev,
       dataSharing: {
         ...prev.dataSharing,
-        [category]: !prev.dataSharing[category]
-      }
+        [category]: !prev.dataSharing[category],
+      },
     }));
   };
 
-  const handleProfileVisibilityChange = (visibility) => {
+  const handleProfileVisibilityChange = visibility => {
     setPrivacySettings(prev => ({
       ...prev,
-      profileVisibility: visibility
+      profileVisibility: visibility,
     }));
   };
 
@@ -51,7 +51,7 @@ const PrivacySettings = () => {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h2 
+        <h2
           className="text-md text-gray-500 font-semibold"
           style={{ color: currentTheme.colors.text }}
         >
@@ -68,14 +68,14 @@ const PrivacySettings = () => {
 
       <div className="space-y-6">
         {/* Profile Visibility */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4 flex items-center space-x-2"
             style={{ color: currentTheme.colors.text }}
           >
@@ -113,14 +113,14 @@ const PrivacySettings = () => {
         </div>
 
         {/* Personal Information */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4 flex items-center space-x-2"
             style={{ color: currentTheme.colors.text }}
           >
@@ -140,21 +140,21 @@ const PrivacySettings = () => {
                   checked={privacySettings.showEmail}
                   onChange={() => handleToggle('showEmail')}
                 />
-                <div 
+                <div
                   className="w-11 h-6 rounded-full peer"
-                  style={{ 
-                    backgroundColor: privacySettings.showEmail 
-                      ? currentTheme.colors.primary 
-                      : currentTheme.colors.border
+                  style={{
+                    backgroundColor: privacySettings.showEmail
+                      ? currentTheme.colors.primary
+                      : currentTheme.colors.border,
                   }}
                 >
-                  <div 
+                  <div
                     className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{ 
+                    style={{
                       backgroundColor: currentTheme.colors.background,
-                      transform: privacySettings.showEmail 
-                        ? 'translateX(5px)' 
-                        : 'translateX(0)'
+                      transform: privacySettings.showEmail
+                        ? 'translateX(5px)'
+                        : 'translateX(0)',
                     }}
                   />
                 </div>
@@ -173,21 +173,21 @@ const PrivacySettings = () => {
                   checked={privacySettings.showLocation}
                   onChange={() => handleToggle('showLocation')}
                 />
-                <div 
+                <div
                   className="w-11 h-6 rounded-full peer"
-                  style={{ 
-                    backgroundColor: privacySettings.showLocation 
-                      ? currentTheme.colors.primary 
-                      : currentTheme.colors.border
+                  style={{
+                    backgroundColor: privacySettings.showLocation
+                      ? currentTheme.colors.primary
+                      : currentTheme.colors.border,
                   }}
                 >
-                  <div 
+                  <div
                     className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{ 
+                    style={{
                       backgroundColor: currentTheme.colors.background,
-                      transform: privacySettings.showLocation 
-                        ? 'translateX(5px)' 
-                        : 'translateX(0)'
+                      transform: privacySettings.showLocation
+                        ? 'translateX(5px)'
+                        : 'translateX(0)',
                     }}
                   />
                 </div>
@@ -197,14 +197,14 @@ const PrivacySettings = () => {
         </div>
 
         {/* Activity Settings */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4 flex items-center space-x-2"
             style={{ color: currentTheme.colors.text }}
           >
@@ -224,21 +224,21 @@ const PrivacySettings = () => {
                   checked={privacySettings.showActivity}
                   onChange={() => handleToggle('showActivity')}
                 />
-                <div 
+                <div
                   className="w-11 h-6 rounded-full peer"
-                  style={{ 
-                    backgroundColor: privacySettings.showActivity 
-                      ? currentTheme.colors.primary 
-                      : currentTheme.colors.border
+                  style={{
+                    backgroundColor: privacySettings.showActivity
+                      ? currentTheme.colors.primary
+                      : currentTheme.colors.border,
                   }}
                 >
-                  <div 
+                  <div
                     className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{ 
+                    style={{
                       backgroundColor: currentTheme.colors.background,
-                      transform: privacySettings.showActivity 
-                        ? 'translateX(5px)' 
-                        : 'translateX(0)'
+                      transform: privacySettings.showActivity
+                        ? 'translateX(5px)'
+                        : 'translateX(0)',
                     }}
                   />
                 </div>
@@ -257,21 +257,21 @@ const PrivacySettings = () => {
                   checked={privacySettings.allowMentions}
                   onChange={() => handleToggle('allowMentions')}
                 />
-                <div 
+                <div
                   className="w-11 h-6 rounded-full peer"
-                  style={{ 
-                    backgroundColor: privacySettings.allowMentions 
-                      ? currentTheme.colors.primary 
-                      : currentTheme.colors.border
+                  style={{
+                    backgroundColor: privacySettings.allowMentions
+                      ? currentTheme.colors.primary
+                      : currentTheme.colors.border,
                   }}
                 >
-                  <div 
+                  <div
                     className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{ 
+                    style={{
                       backgroundColor: currentTheme.colors.background,
-                      transform: privacySettings.allowMentions 
-                        ? 'translateX(5px)' 
-                        : 'translateX(0)'
+                      transform: privacySettings.allowMentions
+                        ? 'translateX(5px)'
+                        : 'translateX(0)',
                     }}
                   />
                 </div>
@@ -290,21 +290,21 @@ const PrivacySettings = () => {
                   checked={privacySettings.allowMessages}
                   onChange={() => handleToggle('allowMessages')}
                 />
-                <div 
+                <div
                   className="w-11 h-6 rounded-full peer"
-                  style={{ 
-                    backgroundColor: privacySettings.allowMessages 
-                      ? currentTheme.colors.primary 
-                      : currentTheme.colors.border
+                  style={{
+                    backgroundColor: privacySettings.allowMessages
+                      ? currentTheme.colors.primary
+                      : currentTheme.colors.border,
                   }}
                 >
-                  <div 
+                  <div
                     className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{ 
+                    style={{
                       backgroundColor: currentTheme.colors.background,
-                      transform: privacySettings.allowMessages 
-                        ? 'translateX(5px)' 
-                        : 'translateX(0)'
+                      transform: privacySettings.allowMessages
+                        ? 'translateX(5px)'
+                        : 'translateX(0)',
                     }}
                   />
                 </div>
@@ -314,14 +314,14 @@ const PrivacySettings = () => {
         </div>
 
         {/* Data Sharing */}
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4 flex items-center space-x-2"
             style={{ color: currentTheme.colors.text }}
           >
@@ -340,21 +340,21 @@ const PrivacySettings = () => {
                   checked={privacySettings.dataSharing.analytics}
                   onChange={() => handleDataSharingToggle('analytics')}
                 />
-                <div 
+                <div
                   className="w-11 h-6 rounded-full peer"
-                  style={{ 
-                    backgroundColor: privacySettings.dataSharing.analytics 
-                      ? currentTheme.colors.primary 
-                      : currentTheme.colors.border
+                  style={{
+                    backgroundColor: privacySettings.dataSharing.analytics
+                      ? currentTheme.colors.primary
+                      : currentTheme.colors.border,
                   }}
                 >
-                  <div 
+                  <div
                     className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{ 
+                    style={{
                       backgroundColor: currentTheme.colors.background,
-                      transform: privacySettings.dataSharing.analytics 
-                        ? 'translateX(5px)' 
-                        : 'translateX(0)'
+                      transform: privacySettings.dataSharing.analytics
+                        ? 'translateX(5px)'
+                        : 'translateX(0)',
                     }}
                   />
                 </div>
@@ -372,21 +372,21 @@ const PrivacySettings = () => {
                   checked={privacySettings.dataSharing.marketing}
                   onChange={() => handleDataSharingToggle('marketing')}
                 />
-                <div 
+                <div
                   className="w-11 h-6 rounded-full peer"
-                  style={{ 
-                    backgroundColor: privacySettings.dataSharing.marketing 
-                      ? currentTheme.colors.primary 
-                      : currentTheme.colors.border
+                  style={{
+                    backgroundColor: privacySettings.dataSharing.marketing
+                      ? currentTheme.colors.primary
+                      : currentTheme.colors.border,
                   }}
                 >
-                  <div 
+                  <div
                     className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{ 
+                    style={{
                       backgroundColor: currentTheme.colors.background,
-                      transform: privacySettings.dataSharing.marketing 
-                        ? 'translateX(5px)' 
-                        : 'translateX(0)'
+                      transform: privacySettings.dataSharing.marketing
+                        ? 'translateX(5px)'
+                        : 'translateX(0)',
                     }}
                   />
                 </div>
@@ -404,21 +404,21 @@ const PrivacySettings = () => {
                   checked={privacySettings.dataSharing.thirdParty}
                   onChange={() => handleDataSharingToggle('thirdParty')}
                 />
-                <div 
+                <div
                   className="w-11 h-6 rounded-full peer"
-                  style={{ 
-                    backgroundColor: privacySettings.dataSharing.thirdParty 
-                      ? currentTheme.colors.primary 
-                      : currentTheme.colors.border
+                  style={{
+                    backgroundColor: privacySettings.dataSharing.thirdParty
+                      ? currentTheme.colors.primary
+                      : currentTheme.colors.border,
                   }}
                 >
-                  <div 
+                  <div
                     className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{ 
+                    style={{
                       backgroundColor: currentTheme.colors.background,
-                      transform: privacySettings.dataSharing.thirdParty 
-                        ? 'translateX(5px)' 
-                        : 'translateX(0)'
+                      transform: privacySettings.dataSharing.thirdParty
+                        ? 'translateX(5px)'
+                        : 'translateX(0)',
                     }}
                   />
                 </div>
@@ -431,4 +431,4 @@ const PrivacySettings = () => {
   );
 };
 
-export default PrivacySettings; 
+export default PrivacySettings;

@@ -6,7 +6,7 @@ import {
   LineElement,
   Filler,
   Tooltip,
-  Legend
+  Legend,
 } from 'chart.js';
 import { Radar } from 'react-chartjs-2';
 import { COMPARISON_COLOR_SET_2 } from '../../../lib/constants';
@@ -17,14 +17,14 @@ ChartJS.register(
   LineElement,
   Filler,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const RadarChart = ({ data }) => {
   if (!data || !data[0]) return null;
 
   const { aspects, items } = data[0];
-  
+
   const chartData = {
     labels: aspects.map(aspect => (aspect.name).split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')),
     datasets: items.map((item, index) => ({
@@ -36,22 +36,22 @@ const RadarChart = ({ data }) => {
       pointBackgroundColor: COMPARISON_COLOR_SET_2[index] +`, 1)`,
       pointBorderColor: '#fff',
       pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: COMPARISON_COLOR_SET_2[index] +`, 1)`
-    }))
+      pointHoverBorderColor: COMPARISON_COLOR_SET_2[index] +`, 1)`,
+    })),
   };
 
   const options = {
     scales: {
       r: {
         angleLines: {
-          display: true
+          display: true,
         },
         suggestedMin: 0,
         suggestedMax: 100,
         ticks: {
-          display: false
-        }
-      }
+          display: false,
+        },
+      },
     },
     plugins: {
       legend: {
@@ -59,9 +59,9 @@ const RadarChart = ({ data }) => {
       },
       title: {
         display: true,
-        text: data[0].setTitle
-      }
-    }
+        text: data[0].setTitle,
+      },
+    },
   };
 
   return (
@@ -71,4 +71,4 @@ const RadarChart = ({ data }) => {
   );
 };
 
-export default RadarChart; 
+export default RadarChart;

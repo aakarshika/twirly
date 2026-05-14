@@ -3,12 +3,12 @@ import { getPublicUrlItems } from '../lib/utils';
 
 export const useVotedCard = ({
   item,
-  handleRevertClick,
-  handleItemClick,
-  totalVotes,
-  itemReviewData,
-  reviewCount,
-  isVotedItem
+  _handleRevertClick,
+  _handleItemClick,
+  _totalVotes,
+  _itemReviewData,
+  _reviewCount,
+  _isVotedItem,
 }) => {
   const titleRef = useRef(null);
   const itemImage = item.image_url && item.image_url.startsWith('https://') ? item.image_url : getPublicUrlItems(item.image_url);
@@ -17,7 +17,7 @@ export const useVotedCard = ({
     if (titleRef.current) {
       const titleElement = titleRef.current;
       const wordCount = item.name.trim().split(/\s+/).length;
-      
+
       if (wordCount > 10) {
         titleElement.style.fontSize = '0.6rem';
       } else {
@@ -34,6 +34,6 @@ export const useVotedCard = ({
   return {
     titleRef,
     itemImage,
-    color
+    color,
   };
-}; 
+};

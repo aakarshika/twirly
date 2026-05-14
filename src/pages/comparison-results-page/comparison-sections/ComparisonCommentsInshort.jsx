@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useComments } from '../../../hooks/useComments';
-import { useTheme } from '../../../contexts/ThemeContext';
 import Button from '../../../components/common/Button';
-import Comment from '../../../components/common/comments/Comment'
+import Comment from '../../../components/common/comments/Comment';
 import apiClient from '../../../lib/apiClient';
 import { useEffect } from 'react';
 import LoadingOrError from '../../../components/common/LoadingOrError';
 
-const ComparisonCommentsInshort = ({ aspectSetId, items, aspectSet }) => {
+const ComparisonCommentsInshort = ({ aspectSetId, items, _aspectSet }) => {
   const { user } = useAuth();
   const {
     comments,
@@ -24,12 +23,11 @@ const ComparisonCommentsInshort = ({ aspectSetId, items, aspectSet }) => {
     fetchComments,
     handleReply,
     setPage,
-    hasMore
+    hasMore,
   } = useComments(aspectSetId, user?.id);
-  const { currentTheme } = useTheme();
   const [newComment, setNewComment] = useState('');
   const [userPreferences, setUserPreferences] = useState(null);
-  const [users, setUsers] = useState([]);
+  const [users, _setUsers] = useState([]);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -48,7 +46,7 @@ const ComparisonCommentsInshort = ({ aspectSetId, items, aspectSet }) => {
     fetchProfileData();
   }, [user]);
 
-  const onSubmitComment = () => {
+  const _onSubmitComment = () => {
     // console.log('onSubmitComment', newComment);
     handleSubmitComment(newComment);
     setNewComment('');
@@ -75,11 +73,11 @@ const ComparisonCommentsInshort = ({ aspectSetId, items, aspectSet }) => {
   return (
     <div className="space-y-2" >
       <div className="text-center w-full" >
-        {comments.map((comment) => {
+        {comments.map(comment => {
           const toggleVisibility = () => {
             setCommentVisibility(prev => ({
               ...prev,
-              [comment.id]: !prev[comment.id]
+              [comment.id]: !prev[comment.id],
             }));
           };
           return (
@@ -94,10 +92,10 @@ const ComparisonCommentsInshort = ({ aspectSetId, items, aspectSet }) => {
             users={users}
             handleReply={handleReply}
             userPreferences={userPreferences}
-            
+
           />
           </div>
-        )})}
+        );})}
 
         {hasMore && (
           <div className="text-start ml-4 mb-4" style={{ backgroundColor: 'white', borderRadius: '4px' }}>

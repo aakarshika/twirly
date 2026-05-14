@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '../../contexts/ThemeContext';
-import { AspectsProgressBar } from '../aspects-progress';
 import NotVotedCard from '../../pages/comparison-aspect-page/ComparisonItemCard/NotVotedCard';
 
 const ComparePageSkeleton = () => {
@@ -46,22 +45,22 @@ const ComparePageSkeleton = () => {
         className="text-white"
       >
         <div className="w-full mb-4">
-    <div className=" rounded-lg animate-pulse" style={{ height: '150px', backgroundColor: currentTheme.colors.background, opacity: 0.3}} />
+    <div className=" rounded-lg animate-pulse" style={{ height: '150px', backgroundColor: currentTheme.colors.background, opacity: 0.3 }} />
          </div>
 
       </motion.div>
     </div>
   </div>
-  
+
   <div className="flex-grow md:px-60 lg:px-60">
       <div className="flex-grow">
          {/* Main Content Skeleton */}
          <div className="flex-grow md:px-60 lg:px-60">
            {/* Items Grid Skeleton */}
            <div className="grid grid-cols-2 gap-4 m-4">
-             {[1, 2,3,4].map((i) => (
-              <div key={"not-voted-card-" + i}  style={{ opacity: 0.3}} >
-              <NotVotedCard item={{name: ' '}} />
+             {[1, 2,3,4].map(i => (
+              <div key={"not-voted-card-" + i}  style={{ opacity: 0.3 }} >
+              <NotVotedCard item={{ name: ' ' }} />
               </div>
              ))}
            </div>
@@ -74,4 +73,4 @@ const ComparePageSkeleton = () => {
   );
 };
 
-export default ComparePageSkeleton; 
+export default ComparePageSkeleton;

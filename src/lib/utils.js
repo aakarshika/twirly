@@ -3,7 +3,7 @@ import { twMerge } from 'tailwind-merge';
 
 /**
  * Combines multiple class names, resolving Tailwind CSS conflicts using tailwind-merge
- * 
+ *
  * @param {...string} inputs - Class names or conditional class expressions
  * @returns {string} - Merged class string with resolved Tailwind conflicts
  */
@@ -11,10 +11,9 @@ export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
-
 /**
  * Truncate a string to a specified length with ellipsis
- * 
+ *
  * @param {string} str - String to truncate
  * @param {number} length - Maximum length before truncation
  * @returns {string} - Truncated string
@@ -26,7 +25,7 @@ export function truncate(str, length) {
 
 /**
  * Generate a random ID
- * 
+ *
  * @param {number} length - Length of the ID
  * @returns {string} - Random ID
  */
@@ -36,7 +35,7 @@ export function generateId(length = 8) {
 
 /**
  * Calculate the average of an array of numbers
- * 
+ *
  * @param {Array<number>} values - Array of numbers
  * @returns {number} - Average value
  */
@@ -47,7 +46,7 @@ export function calculateAverage(values) {
 
 /**
  * Create a delay using Promise
- * 
+ *
  * @param {number} ms - Milliseconds to delay
  * @returns {Promise} - Promise that resolves after the delay
  */
@@ -57,7 +56,7 @@ export function delay(ms) {
 
 /**
  * Check if an object is empty
- * 
+ *
  * @param {Object} obj - Object to check
  * @returns {boolean} - Whether the object is empty
  */
@@ -67,7 +66,7 @@ export function isEmpty(obj) {
 
 /**
  * Deep clone an object
- * 
+ *
  * @param {Object} obj - Object to clone
  * @returns {Object} - Cloned object
  */
@@ -77,7 +76,7 @@ export function deepClone(obj) {
 
 /**
  * Get the top-rated metric from a metrics object
- * 
+ *
  * @param {Object} metrics - Metrics object with key-value pairs
  * @returns {Object|null} - Object with name and value of the top metric
  */
@@ -85,13 +84,13 @@ export function getTopMetric(metrics) {
   if (!metrics || Object.keys(metrics).length === 0) {
     return null;
   }
-  
+
   const entries = Object.entries(metrics);
   const [topName, topValue] = entries.reduce(
     (highest, current) => current[1] > highest[1] ? current : highest,
-    entries[0]
+    entries[0],
   );
-  
+
   return { name: topName, value: topValue };
 }
 
@@ -120,7 +119,6 @@ export function randomPastelColorHex() {
   return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
 }
 
-
 export function getRGB(color) {
   if (!color) return 'rgba(0, 0, 0, 0)';
   //detect and convert hex to rgb:
@@ -131,14 +129,13 @@ export function getRGB(color) {
   return rgbc;
 }
 
-
 export function changeColorAlpha(c, amount) {
   if (!c) return 'rgba(0, 0, 0, 0)';
   const color = getRGB(c);
   return color?.substring(0, color?.length - 1) + ', '+ amount + ')';
 }
 
-//how to darken an rgb color by some percentage? it should add more black to the color. 
+//how to darken an rgb color by some percentage? it should add more black to the color.
 export function darkenColor(c, amount) {
   if (!c) return 'rgba(0, 0, 0, 0)';
   const color = getRGB(c)?.substring(4, getRGB(c)?.length - 1);

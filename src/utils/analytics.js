@@ -28,12 +28,12 @@ export const initPerformanceTracking = () => {
       const response = await originalFetch(...args);
       const duration = performance.now() - start;
       const url = args[0];
-      
+
       if (!performanceMetrics.apiCalls[url]) {
         performanceMetrics.apiCalls[url] = [];
       }
       performanceMetrics.apiCalls[url].push(duration);
-      
+
       return response;
     } catch (error) {
       const duration = performance.now() - start;
@@ -52,7 +52,7 @@ export const initPerformanceTracking = () => {
 export const trackScreenTransition = (from, to) => {
   const transitionTime = performance.now();
   performanceMetrics.screenTransitions[`${from}->${to}`] = transitionTime;
-  
+
   // Log to analytics
   Sentry.addBreadcrumb({
     category: 'navigation',
@@ -126,4 +126,4 @@ export const trackEngagement = (action, duration) => {
     data: { duration },
     level: 'info',
   });
-}; 
+};

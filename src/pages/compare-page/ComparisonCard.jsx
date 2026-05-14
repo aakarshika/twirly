@@ -45,7 +45,7 @@ const ComparisonCard = ({
           gridCollapsed={!isCommentsCollapsed}
           setData={setData}
           localOptions={setData.set_items}
-          handleVote={(itemId) => {
+          handleVote={itemId => {
             if (setHasUserInteracted) setHasUserInteracted(false);
             handleVote(itemId);
           }}

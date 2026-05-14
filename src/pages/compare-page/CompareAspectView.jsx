@@ -2,40 +2,34 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { motion } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
 import ComparisonItemCardAspect from '../comparison-aspect-page/ComparisonItemCard/ComparisonItemCardAspect';
 import ComparisonSetAspectsCommentsSection from '../comparison-aspect-page/ComparisonSetAspectsCommentsSection';
 import { useComparisonAspectData } from '../../hooks/useComparisonAspectData';
 import { SHOW_RESULTS_DURATION } from '../../lib/constants';
 import { changeColorAlpha } from '../../lib/utils';
-import { userService } from '../../services/userService';
-import { useAuth } from '../../contexts/AuthContext';
 import NotVotedCard from '../comparison-aspect-page/ComparisonItemCard/NotVotedCard';
 
-const CompareAspectView = ({ 
-  onVoteChange, 
-  onNextClick, 
-  celebratingAspectId, 
-  isResultsPage, 
-  currentAspect, 
-  nextUnvotedAspect,
+const CompareAspectView = ({
+  onVoteChange,
+  onNextClick,
+  celebratingAspectId,
+  _isResultsPage,
+  currentAspect,
+  _nextUnvotedAspect,
   userVotedAll,
-  aspectVotes // New prop for vote state
+  aspectVotes, // New prop for vote state
 }) => {
   const { id: setId } = useParams();
   const { currentTheme } = useTheme();
-  const { user } = useAuth();
-  const [isCelebrating, setIsCelebrating] = useState(false);
-  
+  const [, setIsCelebrating] = useState(false);
+
   const {
-    currentSet,
     currentAspectSet,
     items,
     totalVotes,
     handleVote,
     handleRevertVote,
-    loading,
-    error
+    error,
   } = useComparisonAspectData(currentAspect?.id, setId);
 
   // Use vote state from props instead of hook
@@ -51,9 +45,8 @@ const CompareAspectView = ({
     }
   }, [celebratingAspectId, currentAspect?.id]);
 
-
   // Wrap the vote handlers to notify parent
-  const handleVoteWithUpdate = async (itemId) => {
+  const handleVoteWithUpdate = async itemId => {
     try {
       // console.log('CompareAspectView: handleVoteWithUpdate called with itemId:', itemId);
       const success = await handleVote(itemId);
@@ -92,8 +85,8 @@ const CompareAspectView = ({
       <div className="text-center p-4">
         <h2 className="text-xl font-bold mb-2">Error</h2>
         <p className="text-gray-600">{error}</p>
-        <button 
-          onClick={() => refetch()}
+        <button
+          onClick={() => window.location.reload()}
           className="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark"
         >
           Try Again
@@ -110,14 +103,14 @@ const CompareAspectView = ({
              <div className="flex-grow md:px-60 lg:px-60">
                {/* Items Grid Skeleton */}
                <div className="grid grid-cols-2 gap-4 m-4">
-                 {[1, 2,3,4].map((i) => (
-                  <div key={"not-voted-card-" + i}  style={{ opacity: 0.3}} >
-                  <NotVotedCard item={{name: ' '}} />
+                 {[1, 2,3,4].map(i => (
+                  <div key={"not-voted-card-" + i}  style={{ opacity: 0.3 }} >
+                  <NotVotedCard item={{ name: ' ' }} />
                   </div>
                  ))}
                </div>
              </div>
-    
+
           </div>
       </div>
     );
@@ -137,7 +130,7 @@ const CompareAspectView = ({
                 'grid-cols-2'
             }`}
             style={{
-              gap: '1vh'
+              gap: '1vh',
             }}
           >
             {items.map((item, i) => (
@@ -158,8 +151,8 @@ const CompareAspectView = ({
           </div>
         </div>
 
-        <div className='flex-row mt-2'>
-          <div 
+        <div className="flex-row mt-2">
+          <div
             className={`flex flex-col w-full items-center justify-center ml-10`}
             onClick={handleNextClick}
             style={{
@@ -167,7 +160,7 @@ const CompareAspectView = ({
               color: 'white',
             }}
           >
-            <h2 className='text-md p-1 text-center' style={{ color: 'rgb(255, 255, 255)' }}>
+            <h2 className="text-md p-1 text-center" style={{ color: 'rgb(255, 255, 255)' }}>
               {userVotedAll ? 'Results' : celebratingAspectId ? 'Next Aspect...' : 'Next Aspect'}
             </h2>
             {celebratingAspectId && (
@@ -176,16 +169,16 @@ const CompareAspectView = ({
                 style={{ backgroundColor: changeColorAlpha(currentTheme.colors.secondary, 0.2) }}
                 initial={{ width: "0%" }}
                 animate={{ width: "100%" }}
-                transition={{ 
-                  duration: SHOW_RESULTS_DURATION-1.5, 
-                  ease: "linear"
+                transition={{
+                  duration: SHOW_RESULTS_DURATION-1.5,
+                  ease: "linear",
                 }}
               />
             )}
           </div>
-          <div className='flex flex-col items-center justify-center bg-gray-300 mr-4'>
+          <div className="flex flex-col items-center justify-center bg-gray-300 mr-4">
             {celebratingAspectId && (
-              <h2 className='text-md p-1' style={{ color: 'rgb(255, 255, 255)' }}>Cancel</h2>
+              <h2 className="text-md p-1" style={{ color: 'rgb(255, 255, 255)' }}>Cancel</h2>
             )}
           </div>
         </div>
@@ -208,4 +201,4 @@ const CompareAspectView = ({
   );
 };
 
-export default CompareAspectView; 
+export default CompareAspectView;

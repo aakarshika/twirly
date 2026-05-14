@@ -2,14 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import apiClient from '../../lib/apiClient';
-import ProductHeader from './ProductHeader';
 import QuickStats from './QuickStats';
-import ProductTabs from './ProductTabs';
-import { useAuth } from '../../contexts/AuthContext';
-import { useHeader } from '../../contexts/HeaderContext';
 import CommentAppearancesTab from './tabs/CommentAppearancesTab';
 import AppearancesTab from './tabs/AppearancesTab';
-import { changeColorAlpha } from '../../lib/utils';
 import { motion, useAnimation } from 'framer-motion';
 import { useLoading } from '../../contexts/LoadingContext';
 import PullToRefresh from '../../components/common/PullToRefresh';
@@ -18,22 +13,12 @@ const ProductDetails = () => {
   const { itemId } = useParams();
   const { currentTheme } = useTheme();
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [item, setItem] = useState(null);
-  const [reviews, setReviews] = useState([]);
+  const [reviews] = useState([]);
   const [comparisonSets, setComparisonSets] = useState([]);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('mentions');
-  const [showReviewForm, setShowReviewForm] = useState(false);
-  const { isHeaderVisible } = useHeader();
   const { setLoading, setError: setGlobalError } = useLoading();
   const controls = useAnimation();
-
-  // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
-  const [hasMoreReviews, setHasMoreReviews] = useState(true);
-  const [loadingMoreReviews, setLoadingMoreReviews] = useState(false);
-  const REVIEWS_PER_PAGE = 3;
 
   const fetchProductDetails = async () => {
     try {
@@ -84,7 +69,7 @@ const ProductDetails = () => {
 
   if (!item) {
     return (
-      <div 
+      <div
         className="min-h-screen flex flex-col items-center justify-center transition-all duration-300 ease-in-out"
         style={{ backgroundColor: 'var(--color-background)' }}
       >
@@ -97,16 +82,16 @@ const ProductDetails = () => {
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
-      <motion.div 
-        className="overflow-x-hidden" 
+      <motion.div
+        className="overflow-x-hidden"
         style={{ color: currentTheme.colors.text }}
         drag="x"
         dragConstraints={{ left: 0, right: 0 }}
         onDragEnd={handleSwipeRight}
         animate={controls}
       >
-        <div className='max-w-7xl mx-auto w-full  z-10'>
-          <div className='' >
+        <div className="max-w-7xl mx-auto w-full  z-10">
+          <div className="" >
             <motion.div className="absolute inset-0 overflow-hidden pointer-events-none"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -131,19 +116,19 @@ const ProductDetails = () => {
           <div className="px-4 md:px-6 lg:px-8" >
             <div className="space-y-8">
               <QuickStats comparisonSets={comparisonSets} reviews={reviews} item={item} />
-              
+
               <div className="space-y-6">
                 <AppearancesTab
                   comparisonSets={comparisonSets}
                   item={item}
                 />
                 <div className="border-b transition-colors duration-200" style={{ borderColor: 'var(--color-border)' }}>
-                  <h4 className="p-4 text-lg font-semibold transition-colors duration-200" 
+                  <h4 className="p-4 text-lg font-semibold transition-colors duration-200"
                       style={{ color: 'var(--color-text)' }}>
                     Review Mentions
                   </h4>
                 </div>
-                <CommentAppearancesTab 
+                <CommentAppearancesTab
                   comparisonSets={comparisonSets}
                   item={item}
                 />
@@ -156,4 +141,4 @@ const ProductDetails = () => {
   );
 };
 
-export default ProductDetails; 
+export default ProductDetails;

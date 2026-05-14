@@ -1,28 +1,28 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../../../contexts/ThemeContext';
 import { getUserComments } from '../../../../services/comments';
-import { useAuth } from '../../../../contexts/AuthContext';
-import { splitAndJoin } from '../../../../lib/utils';
 import { renderTextWithMentions } from '../../../../lib/commentUtils';
 import { formatDistanceToNow } from 'date-fns';
 
 const CommentCard = ({ comment }) => {
+  const navigate = useNavigate();
   const { currentTheme } = useTheme();
   // console.log(comment);
   return (
-    <div 
+    <div
       className="rounded-lg overflow-hidden"
       style={{ backgroundColor: currentTheme.colors.card, color: currentTheme.colors.text }}
     >
       <div className="p-4">
-        
+
       <div className="flex justify-between items-start mb-4">
           <div
             onClick={() => {
               navigate(`/compare/${comment?.comparison_sets?.id}`);
             }}
           >
-            <h3 
+            <h3
               className="font-semibold text-lg"
               style={{ color: currentTheme.colors.text }}
             >
@@ -31,7 +31,7 @@ const CommentCard = ({ comment }) => {
 
           </div>
           <div className="flex items-center space-x-2">
-            <span 
+            <span
               className="text-sm"
               style={{ color: currentTheme.colors.text }}
             >
@@ -39,7 +39,7 @@ const CommentCard = ({ comment }) => {
             </span>
           </div>
         </div>
-        
+
         <p className="text-sm text-gray-700 dark:text-gray-300" style={{ textAlign: 'start' }}>
         <span dangerouslySetInnerHTML={{ __html: renderTextWithMentions(comment.text, []) }} />
       </p>
@@ -48,8 +48,7 @@ const CommentCard = ({ comment }) => {
   );
 };
 
-const CommentsTab = ({ userId, isPublic }) => {
-  const { currentTheme } = useTheme();
+const CommentsTab = ({ userId, _isPublic }) => {
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -97,7 +96,7 @@ const CommentsTab = ({ userId, isPublic }) => {
     <div>
 
       <div className="space-y-4">
-        {comments.map((comment) => (
+        {comments.map(comment => (
           <CommentCard key={comment.id} comment={comment} />
         ))}
       </div>
@@ -105,4 +104,4 @@ const CommentsTab = ({ userId, isPublic }) => {
   );
 };
 
-export default CommentsTab; 
+export default CommentsTab;

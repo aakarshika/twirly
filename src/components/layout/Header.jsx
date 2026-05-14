@@ -30,7 +30,7 @@ const Header = () => {
     if (!user) return;
     getUserProfile(user.id)
       .then(setUserData)
-      .catch((err) => console.error('Header: failed to load profile', err));
+      .catch(err => console.error('Header: failed to load profile', err));
   }, [user?.id]);
 
   // Hide/show header on scroll
@@ -68,7 +68,7 @@ const Header = () => {
   return (
     <>
       <TopBar
-        onMenuClick={() => setIsDrawerOpen((v) => !v)}
+        onMenuClick={() => setIsDrawerOpen(v => !v)}
         isDrawerOpen={isDrawerOpen}
       />
 

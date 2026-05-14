@@ -6,7 +6,6 @@ import ComparisonCard from '../pages/compare-page/ComparisonCard';
 import { Home, TrendingUp } from 'lucide-react';
 import { splitAndJoin } from '../lib/utils';
 
-
 const TikTokScroll = () => {
   const { id: currentId } = useParams();
   const navigate = useNavigate();
@@ -16,9 +15,9 @@ const TikTokScroll = () => {
   const containerRef = useRef(null);
   const lastScrollTime = useRef(Date.now());
   const controls = useAnimation();
+  const [_dragX, setDragX] = useState(0);
   const [dragY, setDragY] = useState(0);
   const [currentSelectedTag, setCurrentSelectedTag] = useState('user_home_feed_91819');
-  const [dragX, setDragX] = useState(0);
   const [isCommentsCollapsed, setIsCommentsCollapsed] = useState(true);
 
   const {
@@ -76,7 +75,7 @@ const TikTokScroll = () => {
     if (currentIndex > 0) { setCurrentIndex(currentIndex - 1); setHasUserInteracted(true); }
   };
 
-  const loadNewBatchByCategory = (tag) => {
+  const loadNewBatchByCategory = tag => {
     const cat = allCategories.find(c => c.name.toLowerCase().trim() === tag.toLowerCase().trim());
     setCategoryId(cat?.userCat ? cat?.id : null);
     setCategoryIds(cat && !cat.userCat ? cat?.included_categories : null);
@@ -117,12 +116,12 @@ const TikTokScroll = () => {
     }
   };
 
-  const prevTag = (list) => {
+  const prevTag = list => {
     const idx = list.indexOf(currentSelectedTag);
     if (idx > 0) setCurrentSelectedTag(list[idx - 1]);
   };
 
-  const nextTag = (list) => {
+  const nextTag = list => {
     const idx = list.indexOf(currentSelectedTag);
     if (idx < list.length - 1) setCurrentSelectedTag(list[idx + 1]);
   };

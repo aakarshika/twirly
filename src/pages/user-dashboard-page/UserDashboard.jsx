@@ -4,21 +4,15 @@ import ProfileHeader from './dashboard/ProfileHeader';
 import ContentTabs from './dashboard/ContentTabs';
 import { getUserProfile } from '../../services/users';
 import { useAuth } from '../../contexts/AuthContext';
-import { useHeader } from '../../contexts/HeaderContext';
 import FirstTimeDashboard from './dashboard/FirstTimeDashboard';
 import { useDataFetching } from '../../hooks/useDataFetching';
-import LoadingScreen from '../../components/common/LoadingScreen';
-import ErrorScreen from '../../components/common/ErrorScreen';
 import PullToRefresh from '../../components/common/PullToRefresh';
-import { motion, useAnimation } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 const UserDashboard = () => {
   const { currentTheme } = useTheme();
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
-  const { isHeaderVisible } = useHeader();
   const [userData, setUserData] = useState(null);
   const [showFirstTimeDashboard, setShowFirstTimeDashboard] = useState(false);
 
@@ -26,10 +20,10 @@ const UserDashboard = () => {
     'userDashboard',
     async () => {
       if (!user) return;
-      
+
       const userProfile = await getUserProfile(user.id);
       setUserData(userProfile);
-      
+
       const isFirstTime = !localStorage.getItem('dashboard_tour_completed');
       setShowFirstTimeDashboard(isFirstTime);
     },
@@ -38,8 +32,8 @@ const UserDashboard = () => {
       useGlobalLoading: true,
       loadingMessage: 'Loading your dashboard...',
       useGlobalError: true,
-      retryFunction: () => window.location.reload()
-    }
+      retryFunction: () => window.location.reload(),
+    },
   );
 
   const handleRefresh = async () => {
@@ -51,7 +45,6 @@ const UserDashboard = () => {
     setShowFirstTimeDashboard(false);
   };
 
-
   if (isLoading) {
     return null; // Loading screen is now handled by LoadingContext
   }
@@ -62,7 +55,7 @@ const UserDashboard = () => {
 
   if (!userData) {
     return (
-      <div 
+      <div
         className="min-h-screen p-4 md:p-8 lg:p-32 flex flex-col items-center justify-center overflow-x-hidden"
         style={{ backgroundColor: currentTheme.colors.background }}
       >
@@ -75,10 +68,10 @@ const UserDashboard = () => {
 
   return (
     <PullToRefresh onRefresh={handleRefresh}>
-      <motion.div 
+      <motion.div
         className=""
-        style={{ 
-          color: currentTheme.colors.text
+        style={{
+          color: currentTheme.colors.text,
         }}
       >
         {showFirstTimeDashboard && (
@@ -88,8 +81,8 @@ const UserDashboard = () => {
           <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
             <ProfileHeader userData={userData} isPublic={false} />
             <div className="md:mt-4 lg:mt-8">
-              <ContentTabs 
-                activeTab={activeTab} 
+              <ContentTabs
+                activeTab={activeTab}
                 setActiveTab={setActiveTab}
                 userId={user.id}
                 username={user.username}
@@ -103,4 +96,4 @@ const UserDashboard = () => {
   );
 };
 
-export default UserDashboard; 
+export default UserDashboard;

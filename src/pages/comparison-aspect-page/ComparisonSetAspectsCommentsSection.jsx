@@ -1,21 +1,18 @@
 import React, { useState } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { ChartArea, MessageSquare, MessageSquareMore, X } from 'lucide-react';
+import { MessageSquareMore, X } from 'lucide-react';
 import Button from '../../components/common/Button';
 import CommentForm from '../../components/common/comments/CommentForm';
 import Comment from '../../components/common/comments/Comment';
-import CommentHeader from '../../components/common/comments/CommentHeader';
 import LoadingOrError from '../../components/common/LoadingOrError';
-import { useNavigate } from 'react-router-dom';
 import { useComparisonSetAspectsComments } from '../../hooks/useComparisonSetAspectsComments';
 import { changeColorAlpha } from '../../lib/utils';
 
-const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet, handleLikeComparisonAspectSet }) => {
+const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, _aspectSet, _handleLikeComparisonAspectSet }) => {
   const { currentTheme } = useTheme();
-  const navigate = useNavigate();
   const [newComment, setNewComment] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
-  
+
   const {
     comments,
     loading,
@@ -28,7 +25,7 @@ const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet, ha
     handleReply,
     hasMore,
     userPreferences,
-    users
+    users,
   } = useComparisonSetAspectsComments(aspectSetId);
 
   const onSubmitComment = () => {
@@ -49,7 +46,7 @@ const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet, ha
       <div className="cursor-pointer" onClick={() => setIsExpanded(true)} style={{ opacity: 0.8, backgroundColor: changeColorAlpha(currentTheme.colors.background, 0.5) }}>
         <div className="rounded-lg p-1 hover:bg-gray-100 transition-colors">
 
-        <div className='flex flex-row items-start justify-start'>
+        <div className="flex flex-row items-start justify-start">
       <h4 className="text-md text-gray-500 items-center">
         <span style={{ color: currentTheme.colors.primary }}><MessageSquareMore  className="w-5 h-5 inline-block" /> </span> Comments <span className="text-gray-500 text-xs ml-2" style={{ color: currentTheme.colors.primary }}>{comments.length}</span>
         </h4>
@@ -75,14 +72,14 @@ const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet, ha
 
   return (
     <div className="relative">
-      <button 
+      <button
         onClick={() => setIsExpanded(false)}
         className="absolute top-0 right-0 p-2 hover:bg-gray-100 rounded-full"
       >
         <X size={20} />
       </button>
-      
-      <div className='flex flex-row items-start justify-start'>
+
+      <div className="flex flex-row items-start justify-start">
       <h4 className="text-md font-medium text-gray-600 mb-2  items-center">
       <span style={{ color: currentTheme.colors.primary }}><MessageSquareMore size={14} className="mr-1 inline-block" /> </span> Comments <span className="text-gray-500 text-xs ml-2" style={{ color: currentTheme.colors.primary }}>{comments.length}</span>
       </h4>
@@ -98,11 +95,11 @@ const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet, ha
       />
 
       <div className="mt-4">
-        {comments.map((comment) => {
+        {comments.map(comment => {
           const toggleVisibility = () => {
             setCommentVisibility(prev => ({
               ...prev,
-              [comment.id]: !prev[comment.id]
+              [comment.id]: !prev[comment.id],
             }));
           };
           return (
@@ -124,8 +121,8 @@ const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, aspectSet, ha
 
       {hasMore && (
         <div className="flex justify-center mt-4">
-          <Button 
-            onClick={loadMore} 
+          <Button
+            onClick={loadMore}
             disabled={loading}
             className="px-6 py-2 bg-amber-400 text-black font-medium rounded-md hover:bg-amber-300 transition-colors"
           >

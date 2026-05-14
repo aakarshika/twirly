@@ -1,18 +1,17 @@
-import { Heart, Share2Icon, ThumbsUp } from 'lucide-react';
+import { Heart, Share2Icon } from 'lucide-react';
 import React, { useState } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { Share } from '@capacitor/share';
 import { getCurrentUrl } from '../../lib/urlUtils';
 
-const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, voteButtonClicked }) => {
+const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, _voteButtonClicked }) => {
   const hasLiked = setData.hasLiked;
-  const hasVoted = setData.hasVoted;
   const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
 
   const handleShare = async () => {
     // Get the current URL using our utility function
     const currentUrl = getCurrentUrl();
-    
+
     try {
       // Try Capacitor Share API first
       await Share.share({
@@ -28,7 +27,7 @@ const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, voteButt
           await navigator.share({
             title: 'Check out this poll!',
             text: 'I found this interesting comparison on Twirly.',
-            url: currentUrl
+            url: currentUrl,
           });
         } else {
           // Final fallback to clipboard
@@ -47,13 +46,13 @@ const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, voteButt
   };
 
   return (
-    <div className='flex flex-col'>
-      {setData.end_date && (<div className='flex flex-row font-normal text-text-muted justify-between mx-4'>
-        <span className='text-sm font-normal'>
+    <div className="flex flex-col">
+      {setData.end_date && (<div className="flex flex-row font-normal text-text-muted justify-between mx-4">
+        <span className="text-sm font-normal">
         <span className="font-normal">{totalVotes} Voters</span>
         </span>
-        <span className='text-sm font-normal'>{'Ends in '}
-          <span className='text-sm font-normal'>
+        <span className="text-sm font-normal">{'Ends in '}
+          <span className="text-sm font-normal">
             {formatDistanceToNow(setData.end_date, { addSuffix: false })}</span></span>
       </div>)}
       <div className="flex text-sm flex-row justify-between gap-2 p-2 bg-bg">
@@ -75,7 +74,7 @@ const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, voteButt
             style={{ cursor: 'pointer' }}
           >
             <span className="inline-block mr-2">
-              <Share2Icon className='text-text-muted' size={20} />
+              <Share2Icon className="text-text-muted" size={20} />
             </span>
             <span className="font-semibold">Share</span>
           </div>
@@ -90,4 +89,4 @@ const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, voteButt
   );
 };
 
-export default CompareButtons; 
+export default CompareButtons;

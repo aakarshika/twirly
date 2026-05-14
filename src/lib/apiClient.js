@@ -10,15 +10,15 @@ export const apiClient = axios.create({
 });
 
 apiClient.interceptors.response.use(
-  (res) => res,
-  (err) => {
+  res => res,
+  err => {
     const payload = err?.response?.data?.error;
     if (payload?.message) {
       err.message = payload.message;
       err.code = payload.code;
     }
     return Promise.reject(err);
-  }
+  },
 );
 
 export default apiClient;

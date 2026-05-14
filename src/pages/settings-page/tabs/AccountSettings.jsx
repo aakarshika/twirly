@@ -12,14 +12,14 @@ const AccountSettings = () => {
     fullName: 'John Doe',
     bio: 'Product enthusiast and reviewer',
     location: 'San Francisco, CA',
-    website: 'https://johndoe.com'
+    website: 'https://johndoe.com',
   });
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -31,7 +31,7 @@ const AccountSettings = () => {
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h2 
+        <h2
           className="text-md font-semibold"
           style={{ color: currentTheme.colors.text }}
         >
@@ -60,7 +60,7 @@ const AccountSettings = () => {
       <div className="flex items-start space-x-8">
         {/* Profile Picture */}
         <div className="relative">
-          <div 
+          <div
             className="w-32 h-32 rounded-full overflow-hidden"
             style={{ backgroundColor: currentTheme.colors.background }}
           >
@@ -82,7 +82,7 @@ const AccountSettings = () => {
         <div className="flex-1 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label 
+              <label
                 className="block text-sm font-medium mb-2"
                 style={{ color: currentTheme.colors.text }}
               >
@@ -95,16 +95,16 @@ const AccountSettings = () => {
                 onChange={handleInputChange}
                 disabled={!isEditing}
                 className="w-full p-2 rounded"
-                style={{ 
+                style={{
                   backgroundColor: currentTheme.colors.background,
                   color: currentTheme.colors.text,
-                  border: `1px solid ${currentTheme.colors.border}`
+                  border: `1px solid ${currentTheme.colors.border}`,
                 }}
               />
             </div>
 
             <div>
-              <label 
+              <label
                 className="block text-sm font-medium mb-2"
                 style={{ color: currentTheme.colors.text }}
               >
@@ -117,7 +117,7 @@ const AccountSettings = () => {
             </div>
 
             <div>
-              <label 
+              <label
                 className="block text-sm font-medium mb-2"
                 style={{ color: currentTheme.colors.text }}
               >
@@ -130,16 +130,16 @@ const AccountSettings = () => {
                 onChange={handleInputChange}
                 disabled={!isEditing}
                 className="w-full p-2 rounded"
-                style={{ 
+                style={{
                   backgroundColor: currentTheme.colors.background,
                   color: currentTheme.colors.text,
-                  border: `1px solid ${currentTheme.colors.border}`
+                  border: `1px solid ${currentTheme.colors.border}`,
                 }}
               />
             </div>
 
             <div>
-              <label 
+              <label
                 className="block text-sm font-medium mb-2"
                 style={{ color: currentTheme.colors.text }}
               >
@@ -152,17 +152,17 @@ const AccountSettings = () => {
                 onChange={handleInputChange}
                 disabled={!isEditing}
                 className="w-full p-2 rounded"
-                style={{ 
+                style={{
                   backgroundColor: currentTheme.colors.background,
                   color: currentTheme.colors.text,
-                  border: `1px solid ${currentTheme.colors.border}`
+                  border: `1px solid ${currentTheme.colors.border}`,
                 }}
               />
             </div>
           </div>
 
           <div>
-            <label 
+            <label
               className="block text-sm font-medium mb-2"
               style={{ color: currentTheme.colors.text }}
             >
@@ -175,16 +175,16 @@ const AccountSettings = () => {
               disabled={!isEditing}
               rows={3}
               className="w-full p-2 rounded"
-              style={{ 
+              style={{
                 backgroundColor: currentTheme.colors.background,
                 color: currentTheme.colors.text,
-                border: `1px solid ${currentTheme.colors.border}`
+                border: `1px solid ${currentTheme.colors.border}`,
               }}
             />
           </div>
 
           <div>
-            <label 
+            <label
               className="block text-sm font-medium mb-2"
               style={{ color: currentTheme.colors.text }}
             >
@@ -197,10 +197,10 @@ const AccountSettings = () => {
               onChange={handleInputChange}
               disabled={!isEditing}
               className="w-full p-2 rounded"
-              style={{ 
+              style={{
                 backgroundColor: currentTheme.colors.background,
                 color: currentTheme.colors.text,
-                border: `1px solid ${currentTheme.colors.border}`
+                border: `1px solid ${currentTheme.colors.border}`,
               }}
             />
           </div>
@@ -210,4 +210,4 @@ const AccountSettings = () => {
   );
 };
 
-export default AccountSettings; 
+export default AccountSettings;

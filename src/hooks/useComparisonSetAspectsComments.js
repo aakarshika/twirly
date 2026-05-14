@@ -3,10 +3,10 @@ import { useAuth } from '../contexts/AuthContext';
 import { useComments } from './useComments';
 import apiClient from '../lib/apiClient';
 
-export const useComparisonSetAspectsComments = (aspectSetId) => {
+export const useComparisonSetAspectsComments = aspectSetId => {
   const { user } = useAuth();
   const [userPreferences, setUserPreferences] = useState(null);
-  const [users, setUsers] = useState([]);
+  const [users, _setUsers] = useState([]);
   const {
     comments,
     loading,
@@ -21,7 +21,7 @@ export const useComparisonSetAspectsComments = (aspectSetId) => {
     fetchComments,
     handleReply,
     setPage,
-    hasMore
+    hasMore,
   } = useComments(aspectSetId, user?.id);
 
   useEffect(() => {

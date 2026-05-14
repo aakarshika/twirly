@@ -5,11 +5,11 @@ import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
 const Heading = ({ setData, gridCollapsed }) => {
-  const navigate = useNavigate(); 
-  const question = (setData?.name).endsWith('?') ? setData?.name.slice(0, -1) : setData?.name;
+  const navigate = useNavigate();
+  const question = setData?.name?.endsWith('?') ? setData?.name.slice(0, -1) : setData?.name;
   return (
-  <motion.div className="flex flex-col px-4 pt-4" 
-  animate={{backgroundColor: gridCollapsed ?  'rgba(0, 0, 0, 0.05)' : 'transparent'}}
+  <motion.div className="flex flex-col px-4 pt-4"
+  animate={{ backgroundColor: gridCollapsed ?  'rgba(0, 0, 0, 0.05)' : 'transparent' }}
   >
     <div className="flex gap-2"  >
       {/* <span className="w-4 h-4 rounded-full bg-green-300 inline-block" /> */}
@@ -33,11 +33,11 @@ const Heading = ({ setData, gridCollapsed }) => {
         ))}
       </div>
     <div className="flex items-center gap-2">
-      <motion.span initial={{ opacity: 0, scale: 0, rotate: 180 }} animate={{ opacity: 1, scale: 1, rotate: 0 }} 
+      <motion.span initial={{ opacity: 0, scale: 0, rotate: 180 }} animate={{ opacity: 1, scale: 1, rotate: 0 }}
       transition={{ duration: 0.5 }} className="ml-2 text-2xl">?</motion.span>
       <span className="ml-2 font-medium">{question}</span>
       </div>
   </motion.div>
-)};
+);};
 
-export default Heading; 
+export default Heading;

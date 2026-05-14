@@ -1,22 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
-import { useTheme } from '../../../contexts/ThemeContext';
 import apiClient from '../../../lib/apiClient';
 import { Heart, MessageSquare } from 'lucide-react';
 import Button from '../../../components/common/Button';
-import { getPublicUrl } from '../../../lib/utils';
-import { renderTextWithMentions } from '../../../lib/commentUtils';
 import Avatar from '../../../components/common/Avatar';
 
 const CommentAppearancesTab = ({ comparisonSets, item }) => {
   const { user } = useAuth();
-  const { currentTheme } = useTheme();
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [itemColorCoding, setItemColorCoding] = useState([]);
 
   useEffect(() => {
     if (comparisonSets?.length > 0) {
@@ -54,12 +49,34 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
     await fetchComments();
   };
 
+  const handleLikeComment = async commentId => {
+    const comment = comments.find(c => c.id === commentId);
+    if (!comment) return;
+    const alreadyLiked = comment.reactions?.some(r => r.user_id === user?.id && r.reaction_type === 'like');
+    try {
+      if (alreadyLiked) {
+        await apiClient.delete(`/api/comments/${commentId}/react`);
+        setComments(prev => prev.map(c => c.id === commentId
+          ? { ...c, reactions: (c.reactions ?? []).filter(r => !(r.user_id === user?.id && r.reaction_type === 'like')) }
+          : c,
+        ));
+      } else {
+        await apiClient.post(`/api/comments/${commentId}/react`, { reactionType: 'like' });
+        setComments(prev => prev.map(c => c.id === commentId
+          ? { ...c, reactions: [...(c.reactions ?? []), { user_id: user?.id, reaction_type: 'like' }] }
+          : c,
+        ));
+      }
+    } catch (err) {
+      console.error('Failed to toggle comment like:', err);
+    }
+  };
 
   if (loading && page === 1) {
     return (
       <div className="p-4">
         <div className="animate-pulse space-y-4">
-          {[1, 2, 3].map((i) => (
+          {[1, 2, 3].map(i => (
             <div key={i} className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg" />
           ))}
         </div>
@@ -85,7 +102,7 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
 
   return (
     <div className="space-y-4">
-      {comments.map((comment) => (
+      {comments.map(comment => (
         <div key={comment.id} className="rounded-lg p-4 shadow">
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-2">
@@ -99,7 +116,7 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
                   {comment.display_name || 'Anonymous'}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  @ '{comment.set_name}'
+                  @ &apos;{comment.set_name}&apos;
                 </p>
               </div>
             </div>
@@ -141,4 +158,4 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
   );
 };
 
-export default CommentAppearancesTab; 
+export default CommentAppearancesTab;

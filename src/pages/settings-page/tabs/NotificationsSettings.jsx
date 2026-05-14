@@ -11,22 +11,22 @@ const NotificationsSettings = () => {
       votes: true,
       comments: true,
       mentions: true,
-      followers: true
+      followers: true,
     },
     push: {
       newComparisons: true,
       votes: true,
       comments: true,
       mentions: true,
-      followers: true
+      followers: true,
     },
     inApp: {
       newComparisons: true,
       votes: true,
       comments: true,
       mentions: true,
-      followers: true
-    }
+      followers: true,
+    },
   });
 
   const handleToggle = (type, category) => {
@@ -34,8 +34,8 @@ const NotificationsSettings = () => {
       ...prev,
       [type]: {
         ...prev[type],
-        [category]: !prev[type][category]
-      }
+        [category]: !prev[type][category],
+      },
     }));
   };
 
@@ -49,13 +49,13 @@ const NotificationsSettings = () => {
     { id: 'votes', label: 'Votes', icon: <ThumbsUp size={16} /> },
     { id: 'comments', label: 'Comments', icon: <MessageSquare size={16} /> },
     { id: 'mentions', label: 'Mentions', icon: <Mail size={16} /> },
-    { id: 'followers', label: 'New Followers', icon: <UserPlus size={16} /> }
+    { id: 'followers', label: 'New Followers', icon: <UserPlus size={16} /> },
   ];
 
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h2 
+        <h2
           className="text-md text-gray-500 font-semibold"
           style={{ color: currentTheme.colors.text }}
         >
@@ -71,14 +71,14 @@ const NotificationsSettings = () => {
       </div>
 
       <div className="space-y-6">
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
           >
@@ -98,21 +98,21 @@ const NotificationsSettings = () => {
                     checked={notificationPreferences.email[id]}
                     onChange={() => handleToggle('email', id)}
                   />
-                  <div 
+                  <div
                     className="w-11 h-6 rounded-full peer"
-                    style={{ 
-                      backgroundColor: notificationPreferences.email[id] 
-                        ? currentTheme.colors.primary 
-                        : currentTheme.colors.border
+                    style={{
+                      backgroundColor: notificationPreferences.email[id]
+                        ? currentTheme.colors.primary
+                        : currentTheme.colors.border,
                     }}
                   >
-                    <div 
+                    <div
                       className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                      style={{ 
+                      style={{
                         backgroundColor: currentTheme.colors.background,
-                        transform: notificationPreferences.email[id] 
-                          ? 'translateX(5px)' 
-                          : 'translateX(0)'
+                        transform: notificationPreferences.email[id]
+                          ? 'translateX(5px)'
+                          : 'translateX(0)',
                       }}
                     />
                   </div>
@@ -122,14 +122,14 @@ const NotificationsSettings = () => {
           </div>
         </div>
 
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
           >
@@ -149,21 +149,21 @@ const NotificationsSettings = () => {
                     checked={notificationPreferences.push[id]}
                     onChange={() => handleToggle('push', id)}
                   />
-                  <div 
+                  <div
                     className="w-11 h-6 rounded-full peer"
-                    style={{ 
-                      backgroundColor: notificationPreferences.push[id] 
-                        ? currentTheme.colors.primary 
-                        : currentTheme.colors.border
+                    style={{
+                      backgroundColor: notificationPreferences.push[id]
+                        ? currentTheme.colors.primary
+                        : currentTheme.colors.border,
                     }}
                   >
-                    <div 
+                    <div
                       className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                      style={{ 
+                      style={{
                         backgroundColor: currentTheme.colors.background,
-                        transform: notificationPreferences.push[id] 
-                          ? 'translateX(5px)' 
-                          : 'translateX(0)'
+                        transform: notificationPreferences.push[id]
+                          ? 'translateX(5px)'
+                          : 'translateX(0)',
                       }}
                     />
                   </div>
@@ -173,14 +173,14 @@ const NotificationsSettings = () => {
           </div>
         </div>
 
-        <div 
+        <div
           className="p-6 rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-medium mb-4"
             style={{ color: currentTheme.colors.text }}
           >
@@ -200,21 +200,21 @@ const NotificationsSettings = () => {
                     checked={notificationPreferences.inApp[id]}
                     onChange={() => handleToggle('inApp', id)}
                   />
-                  <div 
+                  <div
                     className="w-11 h-6 rounded-full peer"
-                    style={{ 
-                      backgroundColor: notificationPreferences.inApp[id] 
-                        ? currentTheme.colors.primary 
-                        : currentTheme.colors.border
+                    style={{
+                      backgroundColor: notificationPreferences.inApp[id]
+                        ? currentTheme.colors.primary
+                        : currentTheme.colors.border,
                     }}
                   >
-                    <div 
+                    <div
                       className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                      style={{ 
+                      style={{
                         backgroundColor: currentTheme.colors.background,
-                        transform: notificationPreferences.inApp[id] 
-                          ? 'translateX(5px)' 
-                          : 'translateX(0)'
+                        transform: notificationPreferences.inApp[id]
+                          ? 'translateX(5px)'
+                          : 'translateX(0)',
                       }}
                     />
                   </div>
@@ -228,4 +228,4 @@ const NotificationsSettings = () => {
   );
 };
 
-export default NotificationsSettings; 
+export default NotificationsSettings;

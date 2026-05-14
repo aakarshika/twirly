@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../../contexts/ThemeContext';
-import { Plus, Trash2, ExternalLink, MessageSquare, ThumbsUp, Settings, X } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { getUserComparisons, deleteComparisonSet } from '../../../../services/comparisons';
-import { useAuth } from '../../../../contexts/AuthContext';
 import ComparisonCard from './ComparisonCard';
 import { useNavigate } from 'react-router-dom';
 
@@ -35,7 +34,7 @@ const ComparisonsTab = ({ userId, isPublic }) => {
     }
   };
 
-  const handleDelete = async (setId) => {
+  const handleDelete = async setId => {
     if (!window.confirm('Are you sure you want to delete this comparison?')) return;
 
     try {
@@ -69,9 +68,9 @@ const ComparisonsTab = ({ userId, isPublic }) => {
         {(!isPublic && <button
           onClick={() => navigate('/new-comparison')}
           className="flex items-center space-x-2 px-4 py-2 rounded-lg font-medium"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.primary,
-            color: currentTheme.colors.buttonText
+            color: currentTheme.colors.buttonText,
           }}
         >
           <Plus size={16} />
@@ -80,22 +79,22 @@ const ComparisonsTab = ({ userId, isPublic }) => {
       </div>
 
       {comparisons.length === 0 ? (
-        <div 
+        <div
           className="p-8 text-center rounded-lg"
-          style={{ 
+          style={{
             backgroundColor: currentTheme.colors.cardBackground,
-            border: `1px solid ${currentTheme.colors.border}`
+            border: `1px solid ${currentTheme.colors.border}`,
           }}
         >
           <p style={{ color: currentTheme.colors.textSecondary }}>
-            You haven't created any comparisons yet. Create one to get started!
+            You haven&apos;t created any comparisons yet. Create one to get started!
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {comparisons.map((comparison) => (
-            <ComparisonCard 
-              key={comparison.id} 
+          {comparisons.map(comparison => (
+            <ComparisonCard
+              key={comparison.id}
               comparison={comparison}
               onDelete={handleDelete}
               isPublic={isPublic}
@@ -104,9 +103,8 @@ const ComparisonsTab = ({ userId, isPublic }) => {
         </div>
       )}
 
-
     </div>
   );
 };
 
-export default ComparisonsTab; 
+export default ComparisonsTab;
