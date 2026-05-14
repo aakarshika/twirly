@@ -8,7 +8,6 @@ import { getPublicUrl } from '../../../lib/utils';
 import { useHeader } from '../../../contexts/HeaderContext';
 import ItemCard from '../../../components/common/common-cards/ItemCard';
 import TrendingCard from '../../../components/common/common-cards/TrendingCard';
-import TrendingCardCommon from '../../../components/common/common-cards/TrendingCardCommon';
 import { useLoading } from '../../../contexts/LoadingContext';
 
 const SearchPage = () => {
@@ -72,7 +71,7 @@ const SearchPage = () => {
   const renderComparisonCard = (comparison, index) => {
     return (
       <div key={'comparison' + comparison.aspect_set_id + index}>
-        <TrendingCardCommon set={comparison} from={'search'} />
+        <TrendingCard set={comparison} />
       </div>
     )
   };

@@ -1,209 +1,115 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Dot, MessageSquare, ThumbsUp, Users } from 'lucide-react';
-import { useTheme } from '../../../contexts/ThemeContext';
-import { useAuth } from '../../../contexts/AuthContext';
-import { supabase } from '../../../lib/supabase';
-import { changeColorAlpha, getPublicUrl, getPublicUrlItems, splitAndJoin } from '../../../lib/utils';
-import { userActivityService, ACTIVITY_TYPES, ENTITY_TYPES } from '../../../services/userActivityService';
+import { MessageSquare, Users } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import Avatar from '../Avatar';
+import { getPublicUrl } from '../../../lib/utils';
 
-const TrendingCard = ({set, from}) => {
-    const {user} = useAuth();
-    const navigate = useNavigate();
-    const [loading, setLoading] = useState(false);
-    const [userVoted, setUserVoted] = useState(false);
-    const [votedItems, setVotedItems] = useState([]);
-    const [imageErrors, setImageErrors] = useState({});
-    const [currentMetricIndex, setCurrentMetricIndex] = useState(0);
+const ItemCell = ({ item }) => {
+  const [imgError, setImgError] = React.useState(false);
+  const showImage = item.image_url && !imgError;
 
-    const { currentTheme } = useTheme();
-
-
-    const handleSetClick = async (set, event) => {
-        try {
-            // Get the exact card element that was clicked
-            const cardElement = event.currentTarget;
-            const cardRect = cardElement.getBoundingClientRect();
-            const cardTop = cardRect.top + window.scrollY;
-
-            // Save both scroll position and card position
-            sessionStorage.setItem('trending_scroll_position', window.scrollY.toString());
-            sessionStorage.setItem('trending_card_position', cardTop.toString());
-
-            // Log the aspect set view activity
-            await userActivityService.logActivity({
-                userId: user.id,
-                activityType: ACTIVITY_TYPES.COMPARISON_SET_VIEW,
-                entityType: ENTITY_TYPES.COMPARISON_SET,
-                entityId: set.set_id,
-                pageName: '/trending',
-                metadata: { 
-                    setId: set.set_id,
-                    setTitle: set.name
-                }
-            });
-
-            navigate(`/compare/${set.set_id}`);
-        } catch (error) {
-            console.error('Error logging aspect set view:', error);
-            navigate(`/compare/${set.set_id}`);
-        }
-    };
-    
-    useEffect(() => {
-        const getUserVoted = async () => {
-            try {
-                setLoading(true);
-                const { data, error } = await supabase
-                    .from('votes')
-                    .select(`
-                        *
-                    `)
-                    .eq('user_id', user.id)
-                    .eq('set_id', set.set_id);
-
-                if (error) {
-                    throw error;
-                }
-                setUserVoted(data.length > 0);
-                set.voted = data;
-                setVotedItems(data && data.length > 0 ? data : null);
-            } catch (error) {
-                console.error('Error fetching search results:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        getUserVoted();
-    }, [user, set]);
-
-    const handleImageError = (itemId) => {
-        setImageErrors(prev => ({
-            ...prev,
-            [itemId]: true
-        }));
-    };
-
-    return (
+  return (
+    <div className="relative overflow-hidden bg-surface h-full">
+      {showImage ? (
+        <img
+          src={item.image_url}
+          alt={item.name}
+          className="w-full h-full object-cover"
+          onError={() => setImgError(true)}
+        />
+      ) : (
         <div
-            className='rounded-lg'
-            key={set.id}
-            onClick={(e) => handleSetClick(set, e)}
-            style={{ backgroundColor: 'rgba(255, 255, 255, 0.6)' }}
-        >
-            <div className="p-4">
-                <div className="mb-2">
-                    <span className="font-medium" style={{ color: currentTheme.colors.text }}>
-                        {set.name}
-                    </span>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                    {set.comparison_set_items?.slice(0, 4).map((it, index) => {
-                        const item = it.items;
-                        const itemImage = !item.image_url || (item.image_url && item.image_url.startsWith('http')) ? item.image_url : getPublicUrlItems(item.image_url);
-                        const hasImageError = imageErrors[item.id];
-                        
-                        return (
-                            <div
-                                key={item.id}
-                                className={`relative rounded-lg overflow-hidden text-black `}
-                            >
-                                {itemImage && !hasImageError ? (
-                                    <img
-                                        src={itemImage}
-                                        alt={item.name}
-                                        className="w-full h-24 object-cover"
-                                        onError={() => handleImageError(item.id)}
-                                    />
-                                ) : (
-                                    <div className="w-full h-24" />
-                                )}
-                                {((!itemImage) || hasImageError) && (
-                                    <div
-                                        className="absolute inset-0 flex text-center items-center justify-center text-lg font-bold pl-1 pr-1"
-                                        style={{ 
-                                            color: currentTheme.colors.text, 
-                                            backgroundColor: !userVoted ? currentTheme.colors.card : changeColorAlpha(item.item_color_string, 0.5) 
-                                        }}
-                                    >
-                                        {item.name}
-                                    </div>
-                                )}
-                                {itemImage && !hasImageError && (index < 2 || userVoted) && (
-                                    <div 
-                                        className="bg-black bg-opacity-50 p-1 flex items-center justify-center" 
-                                        style={{ 
-                                            backgroundColor: !userVoted ? currentTheme.colors.card : item.item_color_string, 
-                                            color: currentTheme.colors.text 
-                                        }}
-                                    >
-                                        <p className="text-sm truncate text-center">{item.name}</p>
-                                    </div>
-                                )}
-                                {votedItems?.some(votedItem => votedItem.item_id === item.id) && (
-                                    <div 
-                                        className="absolute top-0 right-0 bg-gray-100 bg-opacity-50 p-1 rounded-full m-1" 
-                                        style={{ color: currentTheme.colors.text }}
-                                    >
-                                        <ThumbsUp size={16} className="m-1" />
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
-                <div className="flex items-center justify-between mt-4" style={{ color: currentTheme.colors.text }}>
-                    <div className="flex">
-                        <Avatar
-                            profileImageUrl={set.user?.profile_image_url ? getPublicUrl(set.user?.profile_image_url) : null}
-                            displayName={set.user?.display_name}
-                            size="sm"
-                            className="mr-2"
-                        />
-                        <div className="items-start">
-                            <div className="flex flex-col">
-                                <span 
-                                    className="text-sm"
-                                    style={{textAlign: 'start', color: currentTheme.colors.text}}
-                                    onClick={() => {
-                                        navigate(`/user/${set.user?.display_name}`);
-                                    }}
-                                >
-                                    {set.user?.display_name || 'Anonymous'}
-                                </span>
-                                {set.end_date && (<div className="flex items-center">
-                                    <span className="text-xs ">
-                                        {'Ends '} <span className='font-semibold'>{formatDistanceToNow(new Date(set.end_date), { addSuffix: true })}</span>
-                                    </span>
-                                </div>)}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center space-x-4" style={{ color: currentTheme.colors.text }}>
-                        {(set.total_comments || 0) > 0 && (
-                            <div className="flex items-center">
-                                <MessageSquare size={16} className="mr-1" />
-                                <span className="text-xs" style={{ color: currentTheme.colors.textSecondary }}>
-                                    {set.total_comments || 0}
-                                </span>
-                            </div>
-                        )}
-                        {(set.total_votes || 0) > 0 && (
-                            <div className="flex items-center">
-                                <Users size={16} className="mr-1" />
-                                <span className="text-xs" style={{ color: currentTheme.colors.textSecondary }}>
-                                    {set.total_votes || 0}
-                                </span>
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
+          className="w-full h-full flex items-center justify-center p-2"
+          style={{ backgroundColor: item.item_color_string || 'rgb(var(--surface-elevated))' }}
+        />
+      )}
+      {/* Name overlay */}
+      <div
+        className="absolute bottom-0 left-0 right-0 px-2 py-1"
+        style={{ backgroundColor: 'rgb(0 0 0 / 0.45)' }}
+      >
+        <p className="text-white text-xs font-medium truncate">{item.name}</p>
+      </div>
+    </div>
+  );
 };
 
-export default TrendingCard; 
+const TrendingCard = ({ set }) => {
+  const navigate = useNavigate();
+  const items = (set.items || []).slice(0, 2);
+
+  const handleClick = () => navigate(`/compare/${set.set_id}`);
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      className="w-full text-left rounded-lg overflow-hidden bg-surface border border-border hover:border-primary/40 transition-all duration-150 active:scale-[0.98]"
+    >
+      {/* A vs B items */}
+      <div className="grid grid-cols-2 h-32">
+        {items.length >= 2 ? (
+          items.map((item) => <ItemCell key={item.id} item={item} />)
+        ) : (
+          <div
+            className="col-span-2 flex items-center justify-center h-32"
+            style={{ backgroundColor: 'rgb(var(--surface-elevated))' }}
+          >
+            <span className="text-text-muted text-xs">No preview</span>
+          </div>
+        )}
+      </div>
+
+      {/* Set name + category */}
+      <div className="px-3 pt-2 pb-1">
+        <p className="font-semibold text-sm text-text line-clamp-2 leading-snug">{set.set_name}</p>
+        {set.category_name && (
+          <span className="text-[11px] font-medium text-primary mt-0.5 inline-block">
+            {set.category_name}
+          </span>
+        )}
+      </div>
+
+      {/* Footer: creator + stats + end date */}
+      <div className="flex items-center justify-between px-3 pb-3 pt-1">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <Avatar
+            profileImageUrl={set.creator_image_url ? getPublicUrl(set.creator_image_url) : null}
+            displayName={set.creator_display_name}
+            username={set.creator_username}
+            size="xs"
+            onAvatarChange={() => {}}
+          />
+          <div className="min-w-0">
+            <p className="text-[11px] text-text-muted truncate">
+              {set.creator_display_name || 'Anonymous'}
+            </p>
+            {set.end_date && (
+              <p className="text-[10px] text-text-muted truncate">
+                Ends {formatDistanceToNow(new Date(set.end_date), { addSuffix: true })}
+              </p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 shrink-0 ml-2">
+          {set.total_votes > 0 && (
+            <span className="flex items-center gap-0.5 text-[11px] text-text-muted">
+              <Users size={11} />
+              {set.total_votes}
+            </span>
+          )}
+          {set.total_comments > 0 && (
+            <span className="flex items-center gap-0.5 text-[11px] text-text-muted">
+              <MessageSquare size={11} />
+              {set.total_comments}
+            </span>
+          )}
+        </div>
+      </div>
+    </button>
+  );
+};
+
+export default TrendingCard;

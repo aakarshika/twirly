@@ -1,179 +1,167 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { useTheme } from '../../contexts/ThemeContext';
-import { useAuth } from '../../contexts/AuthContext';
-import { useHeader } from '../../contexts/HeaderContext';
-import { MessageSquare, Square, TrendingUp, Users } from 'lucide-react';
-import { COMPARISON_COLOR_SET } from '../../lib/constants';
-import { randomPastelColor, splitAndJoin } from '../../lib/utils';
-import TrendingCard from '../../components/common/common-cards/TrendingCard';
-import TrendingCardCommon from '../../components/common/common-cards/TrendingCardCommon';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { PlusCircle, RefreshCw } from 'lucide-react';
 import { useTrending } from '../../contexts/TrendingContext';
+import TrendingCard from '../../components/common/common-cards/TrendingCard';
 import PullToRefresh from '../../components/common/PullToRefresh';
 
-const ITEMS_PER_PAGE = 10;
+const SkeletonCard = () => (
+  <div className="rounded-lg overflow-hidden bg-surface border border-border animate-pulse">
+    <div className="h-32 bg-surface-elevated" />
+    <div className="px-3 pt-2 pb-3 space-y-2">
+      <div className="h-3 bg-surface-elevated rounded w-3/4" />
+      <div className="h-2.5 bg-surface-elevated rounded w-1/3" />
+      <div className="h-2 bg-surface-elevated rounded w-1/2 mt-3" />
+    </div>
+  </div>
+);
+
+const EmptyState = ({ onCreateClick }) => (
+  <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
+    <div
+      className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
+      style={{ backgroundColor: 'rgb(var(--surface-elevated))' }}
+    >
+      <PlusCircle size={28} style={{ color: 'rgb(var(--primary))' }} />
+    </div>
+    <p className="font-semibold text-text mb-1">No comparisons yet</p>
+    <p className="text-sm text-text-muted mb-6">Be the first to spark a debate!</p>
+    <button
+      type="button"
+      onClick={onCreateClick}
+      className="px-5 py-2 rounded-md text-sm font-medium transition-all hover:opacity-90"
+      style={{ backgroundColor: 'rgb(var(--primary))', color: 'rgb(var(--primary-fg))' }}
+    >
+      Create a comparison
+    </button>
+  </div>
+);
+
+const ErrorState = ({ onRetry }) => (
+  <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
+    <p className="text-danger font-medium mb-2">Failed to load comparisons</p>
+    <button
+      type="button"
+      onClick={onRetry}
+      className="flex items-center gap-1.5 text-sm text-text-muted hover:text-text transition-colors"
+    >
+      <RefreshCw size={14} />
+      Try again
+    </button>
+  </div>
+);
+
+const CategoryChips = ({ categories, selected, onSelect }) => (
+  <div className="flex gap-2 overflow-x-auto scrollbar-hide px-4 py-3">
+    <button
+      type="button"
+      onClick={() => onSelect(null)}
+      className="shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors"
+      style={{
+        backgroundColor: selected === null ? 'rgb(var(--primary))' : 'rgb(var(--surface-elevated))',
+        color: selected === null ? 'rgb(var(--primary-fg))' : 'rgb(var(--text-muted))',
+      }}
+    >
+      All
+    </button>
+    {categories.map(({ id, name }) => (
+      <button
+        key={id}
+        type="button"
+        onClick={() => onSelect(id)}
+        className="shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors"
+        style={{
+          backgroundColor: selected === id ? 'rgb(var(--primary))' : 'rgb(var(--surface-elevated))',
+          color: selected === id ? 'rgb(var(--primary-fg))' : 'rgb(var(--text-muted))',
+        }}
+      >
+        {name}
+      </button>
+    ))}
+  </div>
+);
 
 const Trending = () => {
-  const { user, trendingSets, loading, error, fetchMyFeedSets, myFeedSets } = useTrending();
-  const containerRef = useRef(null);
-  const [visibleItems, setVisibleItems] = useState([]);
-  const [page, setPage] = useState(1);
-  const observerRef = useRef(null);
-  const loadingRef = useRef(null);
-  const hasRestoredScroll = useRef(false);
-  const navigate = useNavigate(); 
-  // Initialize data
+  const { sets, loading, error, fetchTrending, fetchFiltered } = useTrending();
+  const navigate = useNavigate();
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  // Initial fetch
   useEffect(() => {
-    if (user && myFeedSets.length === 0) {
-      fetchMyFeedSets();
+    fetchTrending();
+  }, [fetchTrending]);
+
+  // Derive unique categories from loaded sets
+  const categories = useMemo(() => {
+    const seen = new Map();
+    for (const s of sets) {
+      if (s.category_id && s.category_name && !seen.has(s.category_id)) {
+        seen.set(s.category_id, { id: s.category_id, name: s.category_name });
+      }
     }
-  }, [user]);
+    return [...seen.values()];
+  }, [sets]);
 
-  useEffect(() => {
-    if (myFeedSets.length > 0) {
-        navigate(`/compare/${myFeedSets[0].set_id}`);
+  // Filtered view (client-side when we have data; server-side re-fetch when switching to a new category)
+  const visibleSets = useMemo(() => {
+    if (selectedCategory === null) return sets;
+    return sets.filter((s) => s.category_id === selectedCategory);
+  }, [sets, selectedCategory]);
+
+  const handleCategorySelect = async (id) => {
+    setSelectedCategory(id);
+    if (id === null) {
+      fetchTrending();
+    } else {
+      fetchFiltered({ categoryId: id });
     }
-  }, [myFeedSets]);
+  };
 
-  // // Handle lazy loading
-  // useEffect(() => {
-  //   const items = trendingSets.slice(0, page * ITEMS_PER_PAGE);
-  //   setVisibleItems(items);
+  const handleRefresh = async () => {
+    if (selectedCategory === null) {
+      await fetchTrending();
+    } else {
+      await fetchFiltered({ categoryId: selectedCategory });
+    }
+  };
 
-  //   // Set up intersection observer for infinite scroll
-  //   if (observerRef.current) {
-  //     observerRef.current.disconnect();
-  //   }
+  return (
+    <PullToRefresh onRefresh={handleRefresh}>
+      <div className="min-h-screen">
+        {/* Category filter chips */}
+        {(categories.length > 0 || loading) && (
+          <CategoryChips
+            categories={categories}
+            selected={selectedCategory}
+            onSelect={handleCategorySelect}
+          />
+        )}
 
-  //   observerRef.current = new IntersectionObserver(
-  //     (entries) => {
-  //       if (entries[0].isIntersecting && !loading && visibleItems.length < trendingSets.length) {
-  //         setPage(prev => prev + 1);
-  //       }
-  //     },
-  //     { threshold: 0.1 }
-  //   );
-
-  //   if (loadingRef.current) {
-  //     observerRef.current.observe(loadingRef.current);
-  //   }
-
-  //   return () => {
-  //     if (observerRef.current) {
-  //       observerRef.current.disconnect();
-  //     }
-  //   };
-  // }, [trendingSets, page, loading]);
-
-  // // Handle scroll position
-  // useEffect(() => {
-  //   if (!hasRestoredScroll.current && visibleItems.length > 0) {
-  //     const savedScroll = sessionStorage.getItem('trending_scroll_position');
-  //     const savedCardPosition = sessionStorage.getItem('trending_card_position');
-
-  //     if (savedScroll || savedCardPosition) {
-  //       // Add a small delay to ensure content is fully rendered
-  //       setTimeout(() => {
-  //         // If we have a card position, use that for more precise scrolling
-  //         if (savedCardPosition) {
-  //           const targetPosition = parseInt(savedCardPosition, 10);
-  //           window.scrollTo({
-  //             top: targetPosition,
-  //             behavior: 'instant'
-  //           });
-  //         } else if (savedScroll) {
-  //           // Fallback to general scroll position
-  //           window.scrollTo({
-  //             top: parseInt(savedScroll, 10),
-  //             behavior: 'instant'
-  //           });
-  //         }
-          
-  //         hasRestoredScroll.current = true;
-  //         // Clear the saved positions after restoring
-  //         sessionStorage.removeItem('trending_scroll_position');
-  //         sessionStorage.removeItem('trending_card_position');
-  //       }, 100); // Small delay to ensure content is rendered
-  //     }
-  //   }
-  // }, [visibleItems]);
-
-  // // Save scroll position when leaving
-  // useEffect(() => {
-  //   const handleBeforeUnload = () => {
-  //     if (window.scrollY > 0) {
-  //       sessionStorage.setItem('trending_scroll_position', window.scrollY.toString());
-  //     }
-  //   };
-
-  //   window.addEventListener('beforeunload', handleBeforeUnload);
-  //   return () => {
-  //     window.removeEventListener('beforeunload', handleBeforeUnload);
-  //     if (window.scrollY > 0) {
-  //       sessionStorage.setItem('trending_scroll_position', window.scrollY.toString());
-  //     }
-  //   };
-  // }, []);
-
-  // const handleRefresh = async () => {
-  //   setPage(1);
-  //   await fetchTrendingSets();
-  // };
-
-  // if (loading && trendingSets.length === 0) {
-  //   return null; // Loading screen is now handled by LoadingContext
-  // }
-
-  // if (error) {
-  //   return null; // Error screen is now handled by LoadingContext
-  // }
-
-  // return (
-  //   <PullToRefresh onRefresh={handleRefresh}>
-  //     <div 
-  //       ref={containerRef}
-  //       className="min-h-screen w-full max-w-7xl mx-auto"
-  //     >
-  //       <div className="flex p-4 md:p-6 lg:p-8 transition-all duration-200 mt-10">
-  //         <TrendingUp size={24} className="mr-2 transition-colors duration-200" 
-  //                    style={{ color: 'var(--color-primary)' }} />
-  //         <p className="text-md font-semibold transition-colors duration-200" 
-  //             style={{ color: 'var(--color-text)' }}>
-  //           Trending Comparisons
-  //         </p>
-  //       </div>
-  //       <div 
-  //         className="mx-auto transition-all duration-200 ease-in-out"
-  //       >
-  //         <div 
-  //           className="border-b transition-colors duration-200" 
-  //           style={{ borderColor: 'var(--color-border)' }}
-  //         >
-  //           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4 md:p-6 lg:p-8">
-  //             {visibleItems.map((set, index) => (
-  //               <div 
-  //                 key={`trending-set-${set.aspect_set_id}-${index}`}
-  //                 className="transition-transform duration-200 hover:scale-[1.02]"
-  //               >
-  //                 <TrendingCardCommon set={set} from={'trending'} />
-  //               </div>
-  //             ))}
-  //             {visibleItems.length < trendingSets.length && (
-  //               <div 
-  //                 key="loading-indicator"
-  //                 ref={loadingRef}
-  //                 className="flex justify-center py-4"
-  //               >
-  //                 <div className="animate-spin rounded-full h-8 w-8 border-b-2" 
-  //                      style={{ borderColor: 'var(--color-primary)' }}></div>
-  //               </div>
-  //             )}
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   </PullToRefresh>
-  // );
+        {/* Content */}
+        {loading && sets.length === 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 px-4 pb-4">
+            {Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} />)}
+          </div>
+        ) : error ? (
+          <ErrorState onRetry={handleRefresh} />
+        ) : visibleSets.length === 0 ? (
+          <EmptyState onCreateClick={() => navigate('/new-comparison?load_draft=true')} />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 px-4 pb-4">
+            {visibleSets.map((set) => (
+              <TrendingCard key={set.set_id} set={set} />
+            ))}
+            {/* Subtle loading indicator when refreshing with existing data */}
+            {loading && sets.length > 0 && (
+              <div className="col-span-full flex justify-center py-4">
+                <RefreshCw size={18} className="animate-spin text-text-muted" />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </PullToRefresh>
+  );
 };
 
-export default Trending; 
+export default Trending;

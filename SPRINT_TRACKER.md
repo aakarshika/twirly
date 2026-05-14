@@ -3,7 +3,7 @@
 **Purpose:** Live progress board for the work described in `SPRINT_PLAN.md`. Agents update this file after every task. **This file — not chat memory — is the source of truth for "what's done."**
 
 **Last updated:** 2026-05-14
-**Current sprint:** Sprint 4 (Chrome Redesign) — implementation complete; tests + manual smoke deferred per user direction.
+**Current sprint:** Sprint 5 (Trending / Home Feed) — implementation complete; tests + manual smoke deferred per user direction.
 
 **Branching strategy (revised 2026-05-14):** All sprint work lands on the `backend-add` branch as sequential commits. The original plan called for per-sprint branches; the user opted to consolidate to keep overhead down. Each sprint still gets its own commit(s) so history is clean, but there's a single eventual PR (or a small number of grouped PRs) rather than 15. Branch column below is now historical / informational.
 
@@ -196,18 +196,22 @@
 ## Sprint 5 — Trending / Home Feed
 
 **Branch:** `backend-add` (consolidated per revised strategy)
-**Status:** not started
+**Status:** implementation complete; tests + manual smoke deferred per user direction
 
 ### Backend
-- [ ] `server/src/features/trending/` — queries + controller + routes
-- [ ] `GET /api/trending?userId=` wraps `fetch_popular_aspect_sets_for_user($1)`
-- [ ] `GET /api/sets?userId=&filter=&categoryId=&limit=` wraps `get_filtered_sets(...)`
-- [ ] Mounted in `app.js`
+- [x] `server/src/db/migrations/0001_trending_tables.sql` — categories, items, comparison_sets, comparison_set_items, votes, comments, user_preferences, user_category_preferences (user_id TEXT → Better Auth)
+- [x] `server/src/db/schema/trending.js` — Drizzle schema for all Sprint 5 tables
+- [x] `server/src/features/trending/trending.queries.js` — `getTrendingSets` + `getFilteredSets` (raw SQL CTEs, no Supabase functions)
+- [x] `server/src/features/trending/trending.controller.js` — GET /api/trending, GET /api/sets
+- [x] `server/src/features/trending/trending.routes.js` — routes
+- [x] Mounted in `app.js`
 
 ### Frontend
-- [ ] Rewrite `src/contexts/TrendingContext.jsx` to apiClient
-- [ ] Rebuild `src/pages/trending-page/Trending.jsx` — kill auto-redirect, category chips, grid, pull-to-refresh, empty/loading/error states, card-tap → `/compare/:id`
-- [ ] Redesign `TrendingCard.jsx` + `TrendingCardCommon.jsx`
+- [x] Rewrite `src/contexts/TrendingContext.jsx` to apiClient; exposes `sets`, `loading`, `error`, `fetchTrending`, `fetchFiltered`
+- [x] Rebuild `src/pages/trending-page/Trending.jsx` — no auto-redirect, category chips (derived from data), responsive grid (1/2/3 col), pull-to-refresh, loading skeleton, empty state, error state, card-tap → `/compare/:id`
+- [x] Redesign `TrendingCard.jsx` — token-based, A vs B items grid (h-32, name overlay), creator strip, stats (votes/comments), end date
+- [x] Delete `TrendingCardCommon.jsx` — was a thin wrapper; TrendingCard now has border built in; updated all 2 callsites (ExploreSimilar, SearchPage)
+- [x] Update `TrendingSkeletonLoader.jsx` — token colors, `count` prop
 
 ### Tests
 - [ ] `trending.queries.test.js` — happy + error per function
@@ -222,10 +226,13 @@
 - [ ] No `supabase.rpc` calls in network tab
 
 ### Definition of Done
-- [ ] Sprint commit landed on `backend-add`
+- [ ] Sprint commit landed on `backend-add` ← next
+- [ ] All smoke deferred per user direction
 
 ### Carry-over
-- (none yet)
+- **Supabase function replacement:** `fetch_popular_aspect_sets_for_user` and `get_filtered_sets` are NOT used — replaced by direct SQL CTE queries in `trending.queries.js`. Cleaner and portable.
+- **Category filter strategy:** client-side re-filter when category chips tapped on the already-loaded set; server-side re-fetch only when switching to a category not in the current payload. Works for ≤100 sets; revisit if sets grow large.
+- **Migration must be applied manually** before the trending endpoints return data: `psql $DATABASE_URL -f server/src/db/migrations/0001_trending_tables.sql`
 
 ---
 

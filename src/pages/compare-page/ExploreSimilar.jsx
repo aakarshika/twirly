@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { supabase } from '../../lib/supabase';
-import TrendingCardCommon from '../../components/common/common-cards/TrendingCardCommon';
+import TrendingCard from '../../components/common/common-cards/TrendingCard';
 
 const ITEMS_PER_PAGE = 5;
 
@@ -96,7 +96,7 @@ const ExploreSimilar = ({ currentSetId }) => {
           key={`similar-set-${set.set_id}`}
           className="transition-transform duration-200 hover:scale-[1.02]"
         >
-          <TrendingCardCommon set={set} from={'similar'} />
+          <TrendingCard set={set} />
         </div>
       ))}
       {similarSets.length >= ITEMS_PER_PAGE && (

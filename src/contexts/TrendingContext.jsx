@@ -1,90 +1,53 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 import { useAuth } from './AuthContext';
-import { useLocation } from 'react-router-dom';
+import { apiClient } from '../lib/apiClient';
 
 const TrendingContext = createContext();
 
 export const useTrending = () => {
-  const context = useContext(TrendingContext);
-  if (!context) {
-    throw new Error('useTrending must be used within a TrendingProvider');
-  }
-  return context;
+  const ctx = useContext(TrendingContext);
+  if (!ctx) throw new Error('useTrending must be used within a TrendingProvider');
+  return ctx;
 };
 
 export const TrendingProvider = ({ children }) => {
-  const [trendingSets, setTrendingSets] = useState([]);
-  const [myFeedSets, setMyFeedSets] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [sets, setSets] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { user } = useAuth();
-  const location = useLocation();
 
-  const fetchTrendingSets = async () => {
-    if (!user) return;
-    
+  const fetchTrending = useCallback(async ({ limit = 20 } = {}) => {
+    setLoading(true);
+    setError(null);
     try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .rpc('fetch_popular_aspect_sets_for_user', { v_user_id: user.id })
-        .select(`
-          *,
-          user:user_preferences(*),
-          comparison_set_items (
-            items (
-              id,
-              name,
-              image_url,
-              item_color_string
-            )
-          )
-        `)
-        .limit(20);
-
-      if (error) throw error;
-      setTrendingSets(data);
+      const res = await apiClient.get('/api/trending', { params: { limit } });
+      setSets(res.data.data ?? []);
     } catch (err) {
-      console.error('Error fetching trending sets:', err);
-      setError(err.message);
+      setError(err.message || 'Failed to load trending');
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const fetchMyFeedSets  = async () => {
+  const fetchFiltered = useCallback(async ({ categoryId, excludeVoted = false, limit = 20 } = {}) => {
+    setLoading(true);
+    setError(null);
     try {
-      const { data, error } = await supabase
-        .rpc('get_filtered_sets', {
-          _user_id: user?.id,
-          _filter_type: 'user_home_feed_91819',
-          _category_id: null,
-          _category_ids: null,
-          _limit: 2
-        });
-
-      if (error) throw error;
-      if (!data || data.length === 0) return [];
-
-      setMyFeedSets(data);
+      const params = { limit };
+      if (categoryId) params.categoryId = categoryId;
+      if (excludeVoted && user) { params.excludeVoted = true; params.userId = user.id; }
+      const res = await apiClient.get('/api/sets', { params });
+      setSets(res.data.data ?? []);
     } catch (err) {
-      console.error('Error fetching filtered sets:', err);
+      setError(err.message || 'Failed to load sets');
+    } finally {
+      setLoading(false);
     }
-  };
-
-  const value = {
-    trendingSets,
-    user,
-    loading,
-    error,
-    fetchTrendingSets,
-    fetchMyFeedSets,
-    myFeedSets
-  };
+  }, [user]);
 
   return (
-    <TrendingContext.Provider value={value}>
+    <TrendingContext.Provider value={{ sets, loading, error, fetchTrending, fetchFiltered }}>
       {children}
     </TrendingContext.Provider>
   );
-}; 
+};
