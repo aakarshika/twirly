@@ -1,3 +1,3 @@
-// Drizzle schema barrel.
-// Tables are added per-feature as each sprint touches them.
+// Drizzle schema barrel — add new schema files here as each sprint lands.
 export * from './auth.js';
+export * from './trending.js';

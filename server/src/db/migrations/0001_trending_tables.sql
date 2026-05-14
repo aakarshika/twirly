@@ -1,82 +1,81 @@
--- Sprint 5: Trending / Home Feed tables
--- user_id columns use TEXT to match Better Auth's "user" table (id TEXT)
-
-CREATE TABLE IF NOT EXISTS categories (
-  id   SERIAL PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT now()
+CREATE TABLE "categories" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" varchar(100) NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now()
 );
-
-CREATE TABLE IF NOT EXISTS items (
-  id                 SERIAL PRIMARY KEY,
-  name               VARCHAR(255) NOT NULL,
-  description        TEXT,
-  image_url          TEXT,
-  item_color_string  VARCHAR(50),
-  category_id        INTEGER REFERENCES categories(id) ON DELETE SET NULL,
-  created_at         TIMESTAMPTZ DEFAULT now()
+--> statement-breakpoint
+CREATE TABLE "comparison_set_comments" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"set_id" integer NOT NULL,
+	"user_id" text NOT NULL,
+	"content" text NOT NULL,
+	"parent_id" integer,
+	"created_at" timestamp with time zone DEFAULT now()
 );
-
-CREATE TABLE IF NOT EXISTS comparison_sets (
-  id           SERIAL PRIMARY KEY,
-  name         VARCHAR(255) NOT NULL,
-  user_id      TEXT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
-  category_id  INTEGER REFERENCES categories(id) ON DELETE SET NULL,
-  is_published BOOLEAN NOT NULL DEFAULT true,
-  start_date   TIMESTAMPTZ,
-  end_date     TIMESTAMPTZ,
-  created_at   TIMESTAMPTZ DEFAULT now()
+--> statement-breakpoint
+CREATE TABLE "comparison_set_items" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"set_id" integer NOT NULL,
+	"item_id" integer NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now()
 );
-
-CREATE TABLE IF NOT EXISTS comparison_set_items (
-  id         SERIAL PRIMARY KEY,
-  set_id     INTEGER NOT NULL REFERENCES comparison_sets(id) ON DELETE CASCADE,
-  item_id    INTEGER NOT NULL REFERENCES items(id) ON DELETE CASCADE,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  UNIQUE (set_id, item_id)
+--> statement-breakpoint
+CREATE TABLE "comparison_sets" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" varchar(255) NOT NULL,
+	"user_id" text NOT NULL,
+	"category_id" integer,
+	"is_published" boolean DEFAULT true NOT NULL,
+	"start_date" timestamp with time zone,
+	"end_date" timestamp with time zone,
+	"created_at" timestamp with time zone DEFAULT now()
 );
-
-CREATE TABLE IF NOT EXISTS votes (
-  id         SERIAL PRIMARY KEY,
-  user_id    TEXT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
-  item_id    INTEGER NOT NULL REFERENCES items(id) ON DELETE CASCADE,
-  set_id     INTEGER NOT NULL REFERENCES comparison_sets(id) ON DELETE CASCADE,
-  created_at TIMESTAMPTZ DEFAULT now(),
-  UNIQUE (user_id, set_id)
+--> statement-breakpoint
+CREATE TABLE "items" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"name" varchar(255) NOT NULL,
+	"description" text,
+	"image_url" text,
+	"item_color_string" varchar(50),
+	"category_id" integer,
+	"created_at" timestamp with time zone DEFAULT now()
 );
-
-CREATE TABLE IF NOT EXISTS comparison_set_comments (
-  id         SERIAL PRIMARY KEY,
-  set_id     INTEGER NOT NULL REFERENCES comparison_sets(id) ON DELETE CASCADE,
-  user_id    TEXT NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
-  content    TEXT NOT NULL,
-  parent_id  INTEGER REFERENCES comparison_set_comments(id) ON DELETE CASCADE,
-  created_at TIMESTAMPTZ DEFAULT now()
+--> statement-breakpoint
+CREATE TABLE "user_category_preferences" (
+	"user_id" text NOT NULL,
+	"category_id" integer NOT NULL,
+	CONSTRAINT "user_category_preferences_user_id_category_id_pk" PRIMARY KEY("user_id","category_id")
 );
-
-CREATE TABLE IF NOT EXISTS user_preferences (
-  user_id           TEXT PRIMARY KEY REFERENCES "user"(id) ON DELETE CASCADE,
-  display_name      VARCHAR(255),
-  username          VARCHAR(100) UNIQUE,
-  profile_image_url TEXT,
-  bio               TEXT,
-  created_at        TIMESTAMPTZ DEFAULT now(),
-  updated_at        TIMESTAMPTZ DEFAULT now()
+--> statement-breakpoint
+CREATE TABLE "user_preferences" (
+	"user_id" text PRIMARY KEY NOT NULL,
+	"display_name" varchar(255),
+	"username" varchar(100),
+	"profile_image_url" text,
+	"bio" text,
+	"created_at" timestamp with time zone DEFAULT now(),
+	"updated_at" timestamp with time zone DEFAULT now(),
+	CONSTRAINT "user_preferences_username_unique" UNIQUE("username")
 );
-
-CREATE TABLE IF NOT EXISTS user_category_preferences (
-  user_id     TEXT    NOT NULL REFERENCES "user"(id) ON DELETE CASCADE,
-  category_id INTEGER NOT NULL REFERENCES categories(id) ON DELETE CASCADE,
-  PRIMARY KEY (user_id, category_id)
+--> statement-breakpoint
+CREATE TABLE "votes" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"user_id" text NOT NULL,
+	"item_id" integer NOT NULL,
+	"set_id" integer NOT NULL,
+	"created_at" timestamp with time zone DEFAULT now()
 );
-
--- Indexes
-CREATE INDEX IF NOT EXISTS idx_cs_user_id       ON comparison_sets(user_id);
-CREATE INDEX IF NOT EXISTS idx_cs_published      ON comparison_sets(is_published, created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_cs_category_id    ON comparison_sets(category_id);
-CREATE INDEX IF NOT EXISTS idx_csi_set_id        ON comparison_set_items(set_id);
-CREATE INDEX IF NOT EXISTS idx_votes_set_id      ON votes(set_id);
-CREATE INDEX IF NOT EXISTS idx_votes_user_set    ON votes(user_id, set_id);
-CREATE INDEX IF NOT EXISTS idx_comments_set_id   ON comparison_set_comments(set_id);
-CREATE INDEX IF NOT EXISTS idx_up_username       ON user_preferences(username);
-CREATE INDEX IF NOT EXISTS idx_ucp_user_id       ON user_category_preferences(user_id);
+--> statement-breakpoint
+ALTER TABLE "comparison_set_comments" ADD CONSTRAINT "comparison_set_comments_set_id_comparison_sets_id_fk" FOREIGN KEY ("set_id") REFERENCES "public"."comparison_sets"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "comparison_set_comments" ADD CONSTRAINT "comparison_set_comments_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "comparison_set_items" ADD CONSTRAINT "comparison_set_items_set_id_comparison_sets_id_fk" FOREIGN KEY ("set_id") REFERENCES "public"."comparison_sets"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "comparison_set_items" ADD CONSTRAINT "comparison_set_items_item_id_items_id_fk" FOREIGN KEY ("item_id") REFERENCES "public"."items"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "comparison_sets" ADD CONSTRAINT "comparison_sets_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "comparison_sets" ADD CONSTRAINT "comparison_sets_category_id_categories_id_fk" FOREIGN KEY ("category_id") REFERENCES "public"."categories"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "items" ADD CONSTRAINT "items_category_id_categories_id_fk" FOREIGN KEY ("category_id") REFERENCES "public"."categories"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "user_category_preferences" ADD CONSTRAINT "user_category_preferences_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "user_category_preferences" ADD CONSTRAINT "user_category_preferences_category_id_categories_id_fk" FOREIGN KEY ("category_id") REFERENCES "public"."categories"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "user_preferences" ADD CONSTRAINT "user_preferences_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "votes" ADD CONSTRAINT "votes_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "votes" ADD CONSTRAINT "votes_item_id_items_id_fk" FOREIGN KEY ("item_id") REFERENCES "public"."items"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "votes" ADD CONSTRAINT "votes_set_id_comparison_sets_id_fk" FOREIGN KEY ("set_id") REFERENCES "public"."comparison_sets"("id") ON DELETE cascade ON UPDATE no action;
