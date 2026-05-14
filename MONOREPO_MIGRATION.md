@@ -3,7 +3,7 @@
 > Source of truth for the pnpm-workspaces migration. Tick boxes as work lands.
 >
 > Branch: `backend-add` (per project convention — sequential commits, single PR to `main`)
-> Last updated: 2026-05-14 (M1 + M2 + M3 + M4 complete; native-side `pod install` / Xcode build / gradle sync deferred to user since macOS/Android dev tools aren't installed on this machine)
+> Last updated: 2026-05-14 (M1 + M2 + M3 + M4 + M5 complete; native-side `pod install` / Xcode build / gradle sync deferred to user since macOS/Android dev tools aren't installed on this machine)
 > Status legend: `[ ]` not started · `[~]` in progress · `[x]` done · `[!]` blocked
 
 ## Goal
@@ -115,19 +115,22 @@ Highest-risk sprint. One focused session.
 - [x] Lint green via `pnpm -r lint`; `make dev` healthy on `:5734` + `:8734`
 - [x] Commit: `chore(native): move ios/ and android/ under native/, repath Podfile`
 
-### Sprint M5 — Introduce `packages/shared/`
+### Sprint M5 — Introduce `packages/shared/` ✅
 
-- [ ] `mkdir -p packages/shared/src`
-- [ ] Update `pnpm-workspace.yaml`: `packages: ["apps/*", "packages/*"]`
-- [ ] Create `packages/shared/package.json` (`"name": "@twirly/shared"`, exports map, zod dep)
-- [ ] Add `"@twirly/shared": "workspace:*"` to both `apps/web/package.json` and `apps/api/package.json`
-- [ ] Extract Zod schemas for `comments`, `products`, `votes`, `reviews` to `packages/shared/src/schemas/`
-- [ ] Move comparison-size constant (4-way default) to `packages/shared/src/constants.js`
-- [ ] Define error-code enum in `packages/shared/src/error-codes.js`
-- [ ] Wire server `*.schema.js` to re-export from `@twirly/shared`
-- [ ] Wire `apiClient` to read codes from `@twirly/shared/error-codes`
-- [ ] Smoke test: vitest passes, build succeeds, lint green
-- [ ] Commit: `feat(shared): introduce @twirly/shared with zod schemas and error codes`
+- [x] `mkdir -p packages/shared/src/schemas`
+- [x] Update `pnpm-workspace.yaml`: `packages: ["apps/*", "packages/*"]`
+- [x] Create `packages/shared/package.json` (`"name": "@twirly/shared"`, exports map for `.`, `./schemas/{comments,products,votes,reviews}`, `./error-codes`, zod dep)
+- [x] Add `"@twirly/shared": "workspace:*"` to both `apps/web/package.json` and `apps/api/package.json`
+- [x] Extract Zod schemas for `comments`, `products`, `votes`, `reviews` to `packages/shared/src/schemas/`
+- [x] Define `ERROR_CODES` (`INTERNAL_ERROR`, `REQUEST_ERROR`, `NOT_FOUND`) in `packages/shared/src/error-codes.js`
+- [x] Wire server `*.schema.js` files to re-export from `@twirly/shared/schemas/<feature>` (preserves colocated discoverability for server devs)
+- [x] Wire `apps/api/src/middleware/errorHandler.js` to import `ERROR_CODES` from `@twirly/shared/error-codes`
+- [ ] **Deferred — no current consumer.** Wiring `apiClient` to read codes from `@twirly/shared/error-codes` was scoped out: the frontend error handler currently branches on HTTP status, not `error.code`. Pre-wiring would be premature abstraction. Revisit when frontend gains code-aware behavior.
+- [ ] **Deferred — would introduce new code, not centralize existing.** Comparison-size constant: the "4-way default" isn't a single named constant in the codebase — it's implicit in DB schemas + a 4-element color array. Inventing a new constant violates the "no premature abstraction" rule.
+- [x] Smoke test: `pnpm --filter @twirly/api test` → 234/234 pass (including the existing `errorHandler.test.js` whose string assertions match because `ERROR_CODES` values equal the previous literal strings)
+- [x] Smoke test: `pnpm --filter @twirly/web build` → 7.85s, clean
+- [x] Lint green via `pnpm -r lint`
+- [x] Commit: `feat(shared): introduce @twirly/shared with zod schemas and error codes`
 
 ### Sprint M6 — Cleanup, docs, acceptance gate
 

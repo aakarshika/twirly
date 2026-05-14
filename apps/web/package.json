@@ -13,6 +13,7 @@
     "format": "prettier --write \"src/**/*.{js,jsx}\""
   },
   "dependencies": {
+    "@twirly/shared": "workspace:*",
     "@heroicons/react": "^2.2.0",
     "@sentry/react": "^9.17.0",
     "@sentry/tracing": "^7.120.3",

@@ -1,3 +1,4 @@
+import { ERROR_CODES } from '@twirly/shared/error-codes';
 import { logger } from '../lib/logger.js';
 
 export function errorHandler(err, req, res, _next) {
@@ -10,7 +11,7 @@ export function errorHandler(err, req, res, _next) {
   res.status(status).json({
     error: {
       message: err.expose ? err.message : status >= 500 ? 'Internal server error' : err.message,
-      code: err.code ?? (status >= 500 ? 'INTERNAL_ERROR' : 'REQUEST_ERROR'),
+      code: err.code ?? (status >= 500 ? ERROR_CODES.INTERNAL_ERROR : ERROR_CODES.REQUEST_ERROR),
     },
   });
 }
@@ -19,6 +20,7 @@ export function notFoundHandler(req, res, next) {
   next(Object.assign(new Error(`Not found: ${req.method} ${req.originalUrl}`), {
     status: 404,
     expose: true,
-    code: 'NOT_FOUND',
+    code: ERROR_CODES.NOT_FOUND,
   }));
 }
+

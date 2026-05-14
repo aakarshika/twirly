@@ -42,6 +42,9 @@ importers:
       '@aws-sdk/client-s3':
         specifier: ^3.700.0
         version: 3.1047.0
+      '@twirly/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       better-auth:
         specifier: ^1.2.7
         version: 1.6.11(drizzle-kit@0.31.10)(drizzle-orm@0.45.2(kysely@0.28.17)(pg@8.20.0))(pg@8.20.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(vitest@2.1.9(@types/node@25.8.0)(terser@5.47.1))
@@ -118,6 +121,9 @@ importers:
       '@sentry/tracing':
         specifier: ^7.120.3
         version: 7.120.4
+      '@twirly/shared':
+        specifier: workspace:*
+        version: link:../../packages/shared
       axios:
         specifier: ^1.8.4
         version: 1.16.1
@@ -233,6 +239,12 @@ importers:
       vite:
         specifier: ^5.0.8
         version: 5.4.21(@types/node@25.8.0)(terser@5.47.1)
+
+  packages/shared:
+    dependencies:
+      zod:
+        specifier: ^3.24.4
+        version: 3.25.76
 
 packages:
 
