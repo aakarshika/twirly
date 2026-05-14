@@ -1,7 +1,9 @@
 # Twirly — Backend Refactor Plan
 
-> **Status:** Planning only — no implementation yet
+> **Status:** Implemented over Sprints 1–15 (committed to `backend-add`). This document is the original blueprint and is preserved for the decision record.
 > **Goal:** Replace direct Supabase client calls with a Node.js REST API backed by proven libraries. The React frontend stays structurally unchanged; only the data-fetching layer changes.
+>
+> **Path-rename note (Sprint 16, 2026-05-14):** This document was written before the pnpm monorepo restructure. Paths that say `server/...` are now `apps/api/...` in the working tree. Paths under `src/server/sql/` are now `apps/api/sql/` (already updated inline). When using this doc as reference, mentally substitute `server/` → `apps/api/`. The current authoritative layout is in `CLAUDE.md` and `MONOREPO_MIGRATION.md`.
 
 ---
 

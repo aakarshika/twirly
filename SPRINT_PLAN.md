@@ -2,6 +2,8 @@
 
 **Purpose:** A single execution roadmap that interleaves the backend refactor (`REFACTOR_PLAN.md`) and the UI redesign (`UI_REDESIGN_PLAN.md`) into shippable, conflict-minimizing slices. Agents working on Twirly **must** follow this plan in order and update `SPRINT_TRACKER.md` as they go.
 
+> **Path-rename note (Sprint 16, 2026-05-14):** This document describes Sprints 1–15, which were executed against the original `root + server/` layout. The repo was subsequently restructured into a pnpm monorepo (`apps/web/`, `apps/api/`, `packages/shared/`, `native/`). References to `server/` and `src/` here are preserved as the historical record of those sprints; the current layout is documented in `CLAUDE.md` and `MONOREPO_MIGRATION.md`.
+
 **Created:** 2026-05-14
 **Owners:** Shivam (product), agents (implementation)
 

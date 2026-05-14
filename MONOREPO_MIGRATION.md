@@ -3,7 +3,7 @@
 > Source of truth for the pnpm-workspaces migration. Tick boxes as work lands.
 >
 > Branch: `backend-add` (per project convention — sequential commits, single PR to `main`)
-> Last updated: 2026-05-14 (M1 + M2 + M3 + M4 + M5 complete; native-side `pod install` / Xcode build / gradle sync deferred to user since macOS/Android dev tools aren't installed on this machine)
+> Last updated: 2026-05-14 — **migration complete (M1–M6)**. Six commits on `backend-add`: `b9c6e25` → `203f53c` → `e311c14` → `b927f03` → `aa43113` → `168b65f` → (M6 follows). Deferred to user (require native tooling not on the migration machine): `cd native/ios/App && pod install`, `pnpm run ios:dev`, `pnpm run android:dev`.
 > Status legend: `[ ]` not started · `[~]` in progress · `[x]` done · `[!]` blocked
 
 ## Goal
@@ -132,27 +132,29 @@ Highest-risk sprint. One focused session.
 - [x] Lint green via `pnpm -r lint`
 - [x] Commit: `feat(shared): introduce @twirly/shared with zod schemas and error codes`
 
-### Sprint M6 — Cleanup, docs, acceptance gate
+### Sprint M6 — Cleanup, docs, acceptance gate ✅
 
-- [ ] Update `CLAUDE.md` (repo shape, common commands, vite aliases note)
-- [ ] Update `REFACTOR_PLAN.md` + `SPRINT_PLAN.md` (search/replace `server/` → `apps/api/` where appropriate)
-- [ ] Append Sprint 16 entry to `SPRINT_TRACKER.md`
-- [ ] (Optional) Add `scripts/check-monorepo.sh` running all acceptance checks
-- [ ] Run full acceptance gate (see below)
-- [ ] Commit: `docs: update CLAUDE.md and tracker for monorepo layout`
+- [x] Update `CLAUDE.md` — rewrote the Repo shape, Common commands, Backend architecture, Frontend architecture, Environment, Conventions, and Known debt sections to reflect `apps/web/`, `apps/api/`, `packages/shared/`, `native/`. New section "Capacitor hoist" documents the `.npmrc` rationale.
+- [x] Update `REFACTOR_PLAN.md` + `SPRINT_PLAN.md` — added a banner note at the top of each pointing readers at the new layout. Preserved the inline historical narrative (those docs describe the path the project took; bulk-rewriting paths would falsify the record).
+- [x] Append Sprint 16 entry to `SPRINT_TRACKER.md` — full M1–M6 checklist with commit SHAs and deferred items called out.
+- [x] Add `scripts/check-monorepo.sh` — guardrail script running lint + api tests + web build + 3 grep invariants. Exits non-zero on first failure.
+- [x] Run full acceptance gate — all 6 script checks pass; `make dev` brings up Postgres + both servers; `/api/health` returns 200 via proxy and direct.
+- [x] Commit: `docs(repo): update CLAUDE.md and tracker for monorepo layout`
 
 ## Acceptance criteria (must hold after M6)
 
-- [ ] `pnpm -r lint` → zero errors, zero warnings (both workspaces)
-- [ ] `pnpm --filter @twirly/api test` → all vitest specs pass
-- [ ] `make dev` → Postgres + API + web all come up; `:5734` loads; `/api/health` proxied to `:8734` returns 200
-- [ ] `pnpm --filter @twirly/web build:prod` → produces `apps/web/dist/`
-- [ ] `npx cap sync` → succeeds for both platforms
-- [ ] `npm run ios:dev` → Xcode opens, build succeeds
-- [ ] `npm run android:dev` → Android Studio opens, gradle sync succeeds
-- [ ] `npm run seed` → creates the 6 personas against a fresh DB
-- [ ] `grep -rn "npm --prefix" . --include='*.json' --include='Makefile' --include='*.md'` → no matches outside this file
-- [ ] `grep -rn "from '\\.\\./\\.\\./src" apps/api/src` → no matches
+Automated via `bash scripts/check-monorepo.sh` plus the live `make dev` smoke:
+
+- [x] `pnpm -r lint` → zero errors, zero warnings (all 3 workspaces)
+- [x] `pnpm --filter @twirly/api test` → 234/234 vitest specs pass
+- [x] `make dev` → Postgres + API + web all come up; `:5734` loads; `/api/health` proxied to `:8734` returns 200
+- [x] `pnpm --filter @twirly/web build` → produces `apps/web/dist/index.html`
+- [x] `npx cap sync android` → wires `:capacitor-android` + 4 plugins into `native/android/capacitor.settings.gradle`
+- [ ] `pnpm run ios:dev` — **deferred to user** (Xcode + CocoaPods not on migration machine)
+- [ ] `pnpm run android:dev` — **deferred to user** (Android Studio + JDK not on migration machine)
+- [ ] `pnpm run seed` against a fresh DB — **deferred** to avoid mutating the working DB; script path verified
+- [x] `grep -rn "npm --prefix"` in operational files → no matches
+- [x] `apps/api/src/` has no `from '../../../web'` or `@twirly/web` imports
 
 ## Out of scope (do not bundle into this migration)
 

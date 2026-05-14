@@ -3,7 +3,7 @@
 **Purpose:** Live progress board for the work described in `SPRINT_PLAN.md`. Agents update this file after every task. **This file — not chat memory — is the source of truth for "what's done."**
 
 **Last updated:** 2026-05-14
-**Current sprint:** Sprint 15 (QA & Native Polish — in progress)
+**Current sprint:** Sprint 16 (Monorepo Migration — complete; see `MONOREPO_MIGRATION.md` for the M1–M6 sub-sprint detail)
 
 **Branching strategy (revised 2026-05-14):** All sprint work lands on the `backend-add` branch as sequential commits. The original plan called for per-sprint branches; the user opted to consolidate to keep overhead down. Each sprint still gets its own commit(s) so history is clean, but there's a single eventual PR (or a small number of grouped PRs) rather than 15. Branch column below is now historical / informational.
 
@@ -674,8 +674,48 @@
 
 ---
 
+## ✓ Sprint 16 — Monorepo Migration (committed 2026-05-14)
+
+**Branch:** `backend-add` (six atomic commits, all on this branch).
+**Sub-tracker:** `MONOREPO_MIGRATION.md` carries the full M1–M6 plan with gotchas + acceptance criteria.
+
+**Goal:** Restructure the repo from `root = frontend / server/ = backend / ios/ + android/ at root` into a pnpm workspaces monorepo where `apps/web` and `apps/api` are peers, `packages/shared/` holds cross-app code, and `native/ios + native/android` host the Capacitor shells. The Express API is no longer treated as subordinate to the web app — it's the API for all three clients (web, iOS, Android).
+
+### Sub-sprints
+
+- [x] **M1** — pnpm workspaces adopted (`server/` stays in place; package manager swap only). Commit `b9c6e25`.
+- [x] **M2** — `git mv server apps/api`; workspace + seed script repointed. Commit `203f53c`.
+- [x] **M3** — `git mv src apps/web/src` + index.html/public/configs; root slimmed to orchestration; `.npmrc` with `public-hoist-pattern[]=@capacitor/*`; capacitor.config.json webDir → `apps/web/dist`; vercel.json rewired for monorepo. Commit `e311c14`.
+- [x] **M3 fixup** — relocated stale Supabase-era PLpgSQL tree from `apps/web/src/server/` (where M3 inadvertently left it) to `apps/api/sql/`; updated 10 path refs across `REFACTOR_PLAN.md`, `docs/`, and `devSeedScripts/setup-db.sh`. Commit `b927f03`.
+- [x] **M4** — `git mv ios native/ios` + `git mv android native/android`; hand-edited Podfile path depth (`../../node_modules` → `../../../node_modules`); `cap sync android` regenerated `capacitor.settings.gradle`; `@capacitor/*` deps relocated to root so `cap sync` finds plugins via root package.json. Commit `aa43113`.
+- [x] **M5** — `packages/shared/` workspace; 4 Zod schemas (`comments/products/votes/reviews`) + `ERROR_CODES` enum live there; server `*.schema.js` files thinned to re-exports; `errorHandler.js` consumes shared codes. Commit `168b65f`.
+- [x] **M6** — Docs sweep (`CLAUDE.md` rewritten for monorepo shape; banner notes on `REFACTOR_PLAN.md` + `SPRINT_PLAN.md` for the path rename); Sprint 16 entry added here; acceptance gate.
+
+### Outcome
+
+- Single `pnpm-lock.yaml` at root; no leftover `package-lock.json` anywhere.
+- `make dev` brings up Postgres + both servers; `/api/health` 200 via Vite proxy + direct.
+- `pnpm --filter @twirly/api test` → 234/234 pass.
+- `pnpm --filter @twirly/web build:prod` → `apps/web/dist/` clean.
+- `npx cap sync android` → wires all 5 modules (platform + 4 plugins).
+- `pnpm -r lint` → green across all three workspaces.
+
+### Deferred (require native dev tooling not present on the migration machine)
+
+- `cd native/ios/App && pod install` — regenerates `Podfile.lock` with the bumped `../../../node_modules/...` paths.
+- `pnpm run ios:dev` — full Xcode build verification.
+- `pnpm run android:dev` — full Android Studio gradle sync + build.
+
+These are tooling-dependent, not migration-blocking. The Podfile path math is verified (7 substitutions, all `../../node_modules/` → `../../../node_modules/`). Run `pod install` before the next iOS build.
+
+### Carry-over
+
+- **None blocking.** Future opportunities to share more in `@twirly/shared` (e.g., frontend `apiClient` could branch on `ERROR_CODES` once consumer logic exists) are documented in `MONOREPO_MIGRATION.md`'s deferred section.
+
+---
+
 ## Cross-sprint open items
 
-A running list of items called out during a sprint that don't belong to the current scope. Triage at the start of Sprint 15.
+A running list of items called out during a sprint that don't belong to the current scope.
 
 - (none yet)
