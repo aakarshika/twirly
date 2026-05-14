@@ -3,7 +3,7 @@
 **Purpose:** Live progress board for the work described in `SPRINT_PLAN.md`. Agents update this file after every task. **This file — not chat memory — is the source of truth for "what's done."**
 
 **Last updated:** 2026-05-14
-**Current sprint:** Sprint 4 (Chrome Redesign) — about to start. Sprints 1–3 implementation committed; tests + manual smoke deferred until end of redesign per user direction.
+**Current sprint:** Sprint 4 (Chrome Redesign) — implementation complete; tests + manual smoke deferred per user direction.
 
 **Branching strategy (revised 2026-05-14):** All sprint work lands on the `backend-add` branch as sequential commits. The original plan called for per-sprint branches; the user opted to consolidate to keep overhead down. Each sprint still gets its own commit(s) so history is clean, but there's a single eventual PR (or a small number of grouped PRs) rather than 15. Branch column below is now historical / informational.
 
@@ -156,20 +156,20 @@
 ## Sprint 4 — Chrome Redesign
 
 **Branch:** `backend-add` (consolidated per revised strategy)
-**Status:** not started
+**Status:** implementation complete; tests + manual smoke deferred per user direction
 
 ### Decisions to make at start
 - [x] **Bottom-tab items (5):** Home (`/`) · Search (`/search`) · Create (`/new-comparison?load_draft=true`) · Activity (`/activity`) · Profile (`/dashboard`). Activity replaces the proposed "Notifications" — it pairs cleanly with the activity backend coming in Sprint 13 and gives users a feed of votes/comments on their content.
 - [x] **Swipe-back gesture at `MainRoutingPage.jsx:129`:** **Keep + improve.** User rule: this redesign only enhances existing functionality — no feature removals. Re-enable the commented-out gesture and tune for smoothness in this sprint.
 
 ### Frontend
-- [ ] Split `Header.jsx` → `TopBar.jsx`, `BottomTabs.jsx`, `SideNav.jsx`, `MobileDrawer.jsx`
-- [ ] BottomTabs: 5 items, 56px + safe-area-bottom, theme-aware active indicator
-- [ ] TopBar: contextual title + back + page actions
-- [ ] MobileDrawer: token-driven; `@capacitor/app` `backButton` listener closes drawer
-- [ ] Tablet (768–1023): centered ~480px column; mobile chrome retained
-- [ ] Desktop (≥1024): collapsible SideNav + top header with logo/search/CTA; no bottom tabs
-- [ ] `MainRoutingPage.jsx` — adjust offsets for new breakpoints
+- [x] Split `Header.jsx` → `TopBar.jsx`, `BottomTabs.jsx`, `SideNav.jsx`, `MobileDrawer.jsx`
+- [x] BottomTabs: 5 items, 56px + safe-area-bottom, theme-aware active indicator (primary fill on create, primary icon color on others)
+- [x] TopBar: contextual title + back button (non-root tabs) + menu trigger; desktop: logo + search + Create CTA
+- [x] MobileDrawer: token-driven; `@capacitor/app` `backButton` listener closes drawer; backdrop overlay; route-change auto-close
+- [x] Tablet (768–1023): mobile chrome retained (BottomTabs + TopBar, `lg:hidden` / `hidden lg:flex` breakpoint strategy)
+- [x] Desktop (≥1024): `SideNav` (profile card + nav + settings expandable + beta); `TopBar` desktop strip (logo + search + Create CTA); no bottom tabs
+- [x] `MainRoutingPage.jsx` — `lg:pl-64` for SideNav; `pt-14 lg:pt-16` for TopBar height; swipe-back re-enabled with `delta: 60`, skips compare + root tabs
 
 ### Tests
 - [ ] Render tests for each new layout component (smoke only)
@@ -184,11 +184,12 @@
 
 ### Definition of Done
 - [x] Decisions on the two open questions recorded (see "Decisions to make at start" above)
-- [ ] All smoke checked
+- [ ] All smoke checked — deferred per user direction
 - [ ] Sprint commit landed on `backend-add`
 
 ### Carry-over
-- (none yet)
+- **Tablet content centering (480px column):** Deferred — would require per-page wrapper changes and risks breaking existing layouts. Flagged for Sprint 15 (QA) review.
+- **`Header.css` still on disk:** The old `Header.css` file is no longer imported anywhere (`.scrollbar-hide` moved to `globals.css`, other rules no longer needed). Safe to delete in Sprint 14 cleanup.
 
 ---
 
