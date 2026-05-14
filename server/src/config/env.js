@@ -21,6 +21,8 @@ const schema = z.object({
   AWS_REGION: z.string().optional(),
   AWS_ACCESS_KEY_ID: z.string().optional(),
   AWS_SECRET_ACCESS_KEY: z.string().optional(),
+
+  ADMIN_USER_IDS: z.string().optional(),
 });
 
 const parsed = schema.safeParse(process.env);

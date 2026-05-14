@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { UserGroupIcon, ChatBubbleOvalLeftIcon } from '@heroicons/react/24/solid';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../../lib/supabase';
+import apiClient from '../../../lib/apiClient';
 import { OtherChart } from './OtherChart';
 import { useAuth } from '../../../contexts/AuthContext';
 import { MessageSquare, Play, ThumbsUp } from 'lucide-react';
@@ -16,21 +15,17 @@ const AppearancesTab = ({ item, comparisonSets }) => {
 
   useEffect(() => {
     const fetchUserVotes = async () => {
-      if (!user || !comparisonSets) return;
-      
+      if (!user || !comparisonSets?.length) return;
+
       const votesMap = {};
-      for (const set of comparisonSets) {
-        const { data: userVoted, error: userVotedError } = await supabase
-          .from('votes')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('set_id', set.id);
-        
-        if (!userVotedError) {
-          votesMap[set.id] = userVoted?.length > 0;
+      await Promise.all(comparisonSets.map(async (set) => {
+        try {
+          const { data } = await apiClient.get('/api/votes/check', { params: { setId: set.id } });
+          votesMap[set.id] = !!data.data;
+        } catch {
+          votesMap[set.id] = false;
         }
-      }
-      // console.log('votesMap', votesMap);
+      }));
       setUserVotedSets(votesMap);
     };
 

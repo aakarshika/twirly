@@ -3,3 +3,4 @@ export * from './auth.js';
 export * from './trending.js';
 export * from './karma.js';
 export * from './comments.js';
+export * from './reviews.js';

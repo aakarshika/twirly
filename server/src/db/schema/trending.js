@@ -9,12 +9,14 @@ export const categories = pgTable('categories', {
 
 export const items = pgTable('items', {
   id: serial('id').primaryKey(),
+  userId: text('user_id').references(() => user.id, { onDelete: 'set null' }),
   name: varchar('name', { length: 255 }).notNull(),
   description: text('description'),
   imageUrl: text('image_url'),
   itemColorString: varchar('item_color_string', { length: 50 }),
   categoryId: integer('category_id').references(() => categories.id, { onDelete: 'set null' }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
 });
 
 export const comparisonSets = pgTable('comparison_sets', {
@@ -66,3 +68,30 @@ export const userCategoryPreferences = pgTable('user_category_preferences', {
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   categoryId: integer('category_id').notNull().references(() => categories.id, { onDelete: 'cascade' }),
 }, (t) => [primaryKey({ columns: [t.userId, t.categoryId] })]);
+
+export const itemCategories = pgTable('item_categories', {
+  itemId: integer('item_id').notNull().references(() => items.id, { onDelete: 'cascade' }),
+  categoryId: integer('category_id').notNull().references(() => categories.id, { onDelete: 'cascade' }),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+}, (t) => [primaryKey({ columns: [t.itemId, t.categoryId] })]);
+
+export const userNotificationSettings = pgTable('user_notification_settings', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  emailNotifications: boolean('email_notifications').notNull().default(true),
+  pushNotifications: boolean('push_notifications').notNull().default(true),
+  commentNotifications: boolean('comment_notifications').notNull().default(true),
+  marketingEmails: boolean('marketing_emails').notNull().default(false),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+});
+
+export const comparisonSetAspects = pgTable('comparison_set_aspects', {
+  id: serial('id').primaryKey(),
+  setId: integer('set_id').notNull().references(() => comparisonSets.id, { onDelete: 'cascade' }),
+  metricName: varchar('metric_name', { length: 255 }).notNull(),
+  description: text('description'),
+  weight: integer('weight').notNull().default(1),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
+});

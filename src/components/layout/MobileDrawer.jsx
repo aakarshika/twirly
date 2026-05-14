@@ -76,6 +76,10 @@ const MobileDrawer = ({ isOpen, onClose, userData, onLogout, settingsExpanded, s
 
       {/* Drawer panel */}
       <div
+        id="mobile-drawer"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Navigation menu"
         className="fixed right-0 top-0 bottom-0 z-[100] w-80 max-w-[85vw] flex flex-col overflow-y-auto scrollbar-hide"
         style={{
           backgroundColor: 'rgb(var(--surface))',
@@ -89,6 +93,7 @@ const MobileDrawer = ({ isOpen, onClose, userData, onLogout, settingsExpanded, s
           <span className="font-semibold text-sm" style={{ color: 'rgb(var(--text))' }}>Menu</span>
           <button
             type="button"
+            aria-label="Close menu"
             onClick={onClose}
             className="flex items-center justify-center min-w-[44px] min-h-[44px]"
             style={{ color: 'rgb(var(--text))' }}

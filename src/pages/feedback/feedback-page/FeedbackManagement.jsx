@@ -4,7 +4,6 @@ import { feedbackService } from '../../../services/feedbackService';
 import { useAuth } from '../../../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { FiImage, FiTrash2, FiExternalLink, FiEdit2, FiChevronDown, FiChevronUp } from 'react-icons/fi';
-import { supabase } from '../../../lib/supabase';
 import { useLoading } from '../../../contexts/LoadingContext';
 import { formatDistanceToNow } from 'date-fns';
 const ADMIN_EMAILS = ['aakarshika93@gmail.com', 'great.shivam19@gmail.com'];
@@ -69,23 +68,9 @@ const FeedbackManagement = () => {
 
   const handleEdit = async (updatedFeedback) => {
     try {
-      const { data, error } = await supabase
-        .from('feedback')
-        .update({
-          name: updatedFeedback.name,
-          type: updatedFeedback.type,
-          priority: updatedFeedback.priority,
-          message: updatedFeedback.message,
-          status: updatedFeedback.status,
-          page_route: updatedFeedback.page_route,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', updatedFeedback.id);
-
-      if (error) throw error;
-
-      setFeedbackList(prev => 
-        prev.map(item => 
+      await feedbackService.updateFeedbackStatus(updatedFeedback.id, updatedFeedback.status);
+      setFeedbackList(prev =>
+        prev.map(item =>
           item.id === updatedFeedback.id ? { ...item, ...updatedFeedback } : item
         )
       );

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
 import { useTheme } from '../../contexts/ThemeContext';
+import apiClient from '../../lib/apiClient';
 import ProductHeader from './ProductHeader';
 import QuickStats from './QuickStats';
 import ProductTabs from './ProductTabs';
@@ -38,42 +38,20 @@ const ProductDetails = () => {
   const fetchProductDetails = async () => {
     try {
       setLoading('global', true, 'Loading product details...');
-      
-      // Fetch item details with company, category, and metrics
-      const { data: itemData, error: itemError } = await supabase
-        .from('items')
-        .select(`
-          *,
-          categories!item_categories (*),
-          item_metric_averages (*)
-        `)
-        .eq('id', itemId)
-        .single();
 
-      if (itemError) throw itemError;
+      const [itemResp, setsResp] = await Promise.all([
+        apiClient.get(`/api/items/${itemId}`),
+        apiClient.get(`/api/items/${itemId}/sets`),
+      ]);
+
+      const itemData = itemResp.data.data;
       if (!itemData) {
         setError('Item not found');
         setGlobalError('global', 'Item not found');
         return;
       }
       setItem(itemData);
-
-
-      // Fetch comparison sets where this item appears
-      const { data: setsData, error: setsError } = await supabase
-        .from('comparison_sets')
-        .select(`
-          *,
-          currentitem:comparison_set_items!inner(items(*)),
-          allitems:comparison_set_items(items(*)),
-          comparison_set_comments(*)
-        `)
-        .eq('comparison_set_items.item_id', itemId);
-
-      if (setsError) throw setsError;
-      
-
-      setComparisonSets(setsData);
+      setComparisonSets(setsResp.data.data ?? []);
     } catch (err) {
       console.error('Error fetching product details:', err);
       setError(err.message);

@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const baseURL = import.meta.env.VITE_API_URL || '/api';
+// Services use absolute paths like /api/users/me — baseURL must be origin-only (no /api suffix)
+const baseURL = import.meta.env.VITE_API_URL || '';
 
 export const apiClient = axios.create({
   baseURL,
@@ -19,3 +20,5 @@ apiClient.interceptors.response.use(
     return Promise.reject(err);
   }
 );
+
+export default apiClient;

@@ -4,7 +4,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import { initialItemSets, getDefaultMetrics } from '../data/itemSets';
 import { castVote, getVoteCount, hasUserVoted, revertVote } from '../services/voting';
 import { submitReview, likeReview, getItemReviews } from '../services/reviews';
-import { supabase } from '../lib/supabase';
+import apiClient from '../lib/apiClient';
 import { useAuth } from '../contexts/AuthContext';
 import { COMPARISON_COLOR_SET } from '../lib/constants';
 export const useComparison = (id) => {
@@ -220,34 +220,7 @@ export const useComparison = (id) => {
     }
 
     try {
-      const { data: existingVote, error: voteError } = await supabase
-        .from('votes')
-        .select('*')
-        .eq('set_id', setId)
-        .single();
-
-      if (voteError && voteError.code !== 'PGRST116') {
-        throw voteError;
-      }
-
-      if (existingVote) {
-        // Update existing vote
-        const { error: updateError } = await supabase
-          .from('votes')
-          .update({ item_id: itemId })
-          .eq('id', existingVote.id);
-
-        if (updateError) throw updateError;
-      } else {
-        // Create new vote
-        const { error: insertError } = await supabase
-          .from('votes')
-          .insert([{ set_id: setId, item_id: itemId }]);
-
-        if (insertError) throw insertError;
-      }
-
-      // Update local state
+      await apiClient.post('/api/votes', { setId, itemId });
       setComparisons(prevComparisons =>
         prevComparisons.map(comp =>
           comp.id === setId
@@ -263,7 +236,7 @@ export const useComparison = (id) => {
         )
       );
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.error?.message ?? err.message);
     }
   };
 
@@ -274,27 +247,16 @@ export const useComparison = (id) => {
     }
 
     try {
-      const { data, error } = await supabase
-        .from('comparison_set_comments')
-        .insert([{ set_id: setId, text }])
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Update local state
+      const { data: resp } = await apiClient.post('/api/comments', { setId, content: text });
       setComparisons(prevComparisons =>
         prevComparisons.map(comp =>
           comp.id === setId
-            ? {
-                ...comp,
-                comments: [...comp.comments, data],
-              }
+            ? { ...comp, comments: [...comp.comments, resp.data] }
             : comp
         )
       );
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.error?.message ?? err.message);
     }
   };
 

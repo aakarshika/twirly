@@ -48,6 +48,7 @@ const BottomTabs = () => {
 
   return (
     <nav
+      aria-label="Main navigation"
       className="fixed bottom-0 left-0 right-0 lg:hidden z-50 bg-surface border-t border-border"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
@@ -58,6 +59,8 @@ const BottomTabs = () => {
             <button
               key={id}
               type="button"
+              aria-label={label}
+              aria-current={active ? 'page' : undefined}
               onClick={() => navigate(path)}
               className={cn(
                 'flex flex-col items-center justify-center gap-0.5 flex-1 min-h-[44px] py-1.5 transition-colors',

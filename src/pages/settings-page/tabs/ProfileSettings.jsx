@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
-import { supabase } from '../../../lib/supabase';
+import { apiClient } from '../../../lib/apiClient';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { User, Mail, Phone, MapPin, Globe, Camera, Save, Twitter, Instagram, Facebook } from 'lucide-react';
+import { User, Mail, Phone, Save, Twitter, Instagram, Facebook } from 'lucide-react';
 import Button from '../../../components/common/Button';
 import Avatar from '../../../components/common/Avatar';
 import { useLoading } from '../../../contexts/LoadingContext';
@@ -39,36 +39,15 @@ const ProfileSettings = () => {
         setLoading('global', true, 'Loading profile...');
         setError(null);
 
-        // Fetch user preferences
-        const { data: profile, error: profileError } = await supabase
-          .from('user_preferences')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
+        const { data } = await apiClient.get(`/users/${user.id}`);
+        const profile = data.data;
 
-        if (profileError) throw profileError;
-
-        // If there's a profile image URL, get the public URL
         if (profile?.profile_image_url) {
-          // Extract just the file path from the URL if it's a full URL
-          const filePath = profile.profile_image_url.includes('storage/v1/object/public/profile-pics/')
-            ? profile.profile_image_url.split('storage/v1/object/public/profile-pics/')[1]
-            : profile.profile_image_url;
-
-          const { data: { publicUrl } } = supabase.storage
-            .from('profile-pics')
-            .getPublicUrl(filePath);
-          setAvatarPreview(publicUrl);
-          setProfileData(prev => ({
-            ...prev,
-            profileImageUrl: filePath
-          }));
+          setAvatarPreview(profile.profile_image_url);
+          setProfileData(prev => ({ ...prev, profileImageUrl: profile.profile_image_url }));
         }
 
-        setProfileData(prev => ({
-          ...prev,
-          ...profile
-        }));
+        setProfileData(prev => ({ ...prev, ...profile }));
       } catch (err) {
         console.error('Error fetching profile data:', err);
         setError(err.message);
@@ -103,23 +82,11 @@ const ProfileSettings = () => {
   };
 
   const validateUsername = async (value) => {
-    if (!validateUsernameInput(value)) {
-      return false;
-    }
+    if (!validateUsernameInput(value)) return false;
 
     try {
-      const { data, error } = await supabase
-        .from('user_preferences')
-        .select('id')
-        .eq('display_name', value)
-        .neq('user_id', user.id)
-        .single();
-
-      if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned" error
-        throw error;
-      }
-
-      if (data) {
+      const { data } = await apiClient.get('/users/check-username', { params: { username: value } });
+      if (!data.data?.available) {
         setUsernameError('Username is already taken');
         return false;
       }
@@ -164,56 +131,17 @@ const ProfileSettings = () => {
     if (!file) return;
 
     try {
-      // Create a unique file name using timestamp
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-      // Create path with user ID (UUID) as folder name
-      const filePath = `${user.id}/${fileName}`;
-      // console.log('Uploading file to path:', filePath);
+      const form = new FormData();
+      form.append('file', file);
+      const { data: uploadData } = await apiClient.post('/uploads?bucket=profile-pics', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
 
-      // Upload the file to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('profile-pics')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true
-        });
+      const url = uploadData.data.url;
+      setProfileData(prev => ({ ...prev, profileImageUrl: url }));
+      setAvatarPreview(url);
 
-      if (uploadError) throw uploadError;
-
-      // Get the public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('profile-pics')
-        .getPublicUrl(filePath);
-      // console.log('Generated public URL after upload:', publicUrl);
-
-      // Update both the file path and the avatar preview
-      setProfileData(prev => ({
-        ...prev,
-        profileImageUrl: filePath
-      }));
-      setAvatarPreview(publicUrl);
-
-      // First, check if user preferences exist
-      const { data: existingPreferences } = await supabase
-        .from('user_preferences')
-        .select('id')
-        .eq('user_id', user.id)
-        .single();
-
-      // Update or insert user preferences
-      const { error: updateError } = await supabase
-        .from('user_preferences')
-        .upsert({
-          id: existingPreferences?.id,
-          user_id: user.id,
-          profile_image_url: filePath // Store just the file path, not the full URL
-        }, {
-          onConflict: 'user_id'
-        });
-
-      if (updateError) throw updateError;
-
+      await apiClient.put('/users/me', { profile_image_url: url });
     } catch (err) {
       console.error('Error uploading profile picture:', err);
       setError(err.message);
@@ -223,21 +151,15 @@ const ProfileSettings = () => {
   const handleSave = async () => {
     try {
       setLoading('global', true, 'Saving profile...');
-      const { error } = await supabase
-        .from('user_preferences')
-        .upsert({
-          id: profileData?.id,
-          user_id: user.id,
-          username: profileData.username,
-          display_name: profileData.display_name,
-          bio: profileData.bio,
-          profile_image_url: profileData.profileImageUrl // Store just the file path
-        });
-
-      if (error) throw error;
+      await apiClient.put('/users/me', {
+        username: profileData.username,
+        display_name: profileData.display_name,
+        bio: profileData.bio,
+        profile_image_url: profileData.profileImageUrl,
+      });
       setIsEditing(false);
     } catch (err) {
-      if(err.code === '23505') {
+      if (err.code === '409' || err.response?.status === 409) {
         setUsernameError('Username already taken');
       } else {
         console.error('Error saving profile:', err);
@@ -247,14 +169,6 @@ const ProfileSettings = () => {
     } finally {
       setLoading('global', false);
     }
-  };
-
-  const getPublicUrl = (filePath) => {
-    if (!filePath) return null;
-    const { data: { publicUrl } } = supabase.storage
-      .from('profile-pics')
-      .getPublicUrl(filePath);
-    return publicUrl;
   };
 
   if (error) {

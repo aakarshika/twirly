@@ -29,6 +29,48 @@
       "when": 1778764204818,
       "tag": "0003_married_toro",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1747267200000,
+      "tag": "0004_sprint9_reviews",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1747353600000,
+      "tag": "0005_sprint10_products",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1747440000000,
+      "tag": "0006_sprint11_aspects",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1747526400000,
+      "tag": "0007_sprint12_users",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1747612800000,
+      "tag": "0008_sprint13_feedback",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1747699200000,
+      "tag": "0009_aspect_reactions",
+      "breakpoints": true
     }
   ]
 }

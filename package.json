@@ -39,7 +39,6 @@
     "@heroicons/react": "^2.2.0",
     "@sentry/react": "^9.17.0",
     "@sentry/tracing": "^7.120.3",
-    "@supabase/supabase-js": "^2.49.4",
     "axios": "^1.8.4",
     "better-auth": "^1.6.11",
     "chart.js": "^4.4.9",
@@ -63,7 +62,6 @@
     "react-swipeable": "^7.0.2",
     "recharts": "^2.15.3",
     "sonner": "^2.0.3",
-    "supabase": "^2.22.12",
     "tailwind-merge": "^2.6.0",
     "zod": "^3.24.4"
   },

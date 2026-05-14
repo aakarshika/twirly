@@ -31,10 +31,10 @@ const OverviewTab = ({ userId, isPublic }) => {
           activityTrends
         ] = await Promise.all([
           getUserProfile(userId),
-          getWeeklyActivity(userId),
-          getCategoryDistribution(userId),
-          getRecentActivities(userId),
-          getActivityTrends(userId)
+          getWeeklyActivity(),
+          getCategoryDistribution(),
+          getRecentActivities(),
+          getActivityTrends()
         ]);
 
         setUserData(userProfile);

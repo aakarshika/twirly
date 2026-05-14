@@ -3,7 +3,7 @@ import { useTheme } from '../../../contexts/ThemeContext';
 import { Shield, Lock, Key, Save } from 'lucide-react';
 import Button from '../../../components/common/Button';
 import { useAuth } from '../../../contexts/AuthContext';
-import { supabase } from '../../../lib/supabase';
+import { authClient } from '../../../lib/authClient';
 import { useNavigate } from 'react-router-dom';
 
 const SecuritySettings = () => {
@@ -50,12 +50,12 @@ const SecuritySettings = () => {
         return;
       }
 
-      // Update password using Supabase
-      const { error } = await supabase.auth.updateUser({
-        password: securitySettings.password.new
+      const result = await authClient.changePassword({
+        currentPassword: securitySettings.password.current,
+        newPassword: securitySettings.password.new,
       });
 
-      if (error) throw error;
+      if (result.error) throw new Error(result.error.message);
 
       // Clear form and show success message
       setSecuritySettings(prev => ({

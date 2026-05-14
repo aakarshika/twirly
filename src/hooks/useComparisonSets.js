@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import apiClient from '../lib/apiClient';
 import { userActivityService, ACTIVITY_TYPES, ENTITY_TYPES } from '../services/userActivityService';
@@ -31,8 +30,8 @@ function transformSet(s) {
     hasVoted: !!s.has_voted,
     votedItemId: s.voted_item_id ?? null,
     voteId: s.vote_id ?? null,
-    hasLiked: false,  // Sprint 8: comparison_set_comment_reactions not yet migrated
-    likeCount: 0,
+    hasLiked: !!s.has_liked,
+    likeCount: s.total_likes ?? 0,
     totalVotes,
     end_date: s.end_date,
     created_at: s.created_at,
@@ -159,34 +158,32 @@ export const useComparisonSets = (paramId) => {
     reload();
   }, [selectedTag, user]);
 
-  // Category fetch — still uses Supabase (Sprint 12 will migrate user/preference endpoints)
   useEffect(() => {
     if (!user) return;
 
     const fetchCategories = async () => {
-      const { data: userCategoryPreferences } = await supabase
-        .from('user_category_preferences')
-        .select('*, categories(*)')
-        .eq('user_id', user?.id);
+      try {
+        const [prefResp, popularResp] = await Promise.all([
+          apiClient.get('/api/users/me/category-preferences'),
+          apiClient.get('/api/categories/popular', { params: { limit: 10 } }),
+        ]);
 
-      const { data: allImportantCategories } = await supabase
-        .from('top_category_groups')
-        .select('*')
-        .order('set_count', { ascending: false })
-        .limit(10);
+        const userCategoryPreferences = prefResp.data.data ?? [];
+        const allImportantCategories = popularResp.data.data ?? [];
 
-      const filtered = (allImportantCategories ?? []).filter(
-        cat => !(userCategoryPreferences ?? []).some(
-          up => up.categories?.name?.toLowerCase() === cat.category_group?.toLowerCase()
-        )
-      );
-      setAllCategories([
-        ...(userCategoryPreferences ?? []).map(item => ({ ...item.categories, userCat: true })),
-        ...filtered.map(cat => ({
-          ...cat, name: cat.category_group,
-          included_categories: cat.included_categories, userCat: false,
-        })),
-      ]);
+        const filtered = allImportantCategories.filter(
+          cat => !userCategoryPreferences.some(
+            up => up.category_name?.toLowerCase() === cat.name?.toLowerCase()
+          )
+        );
+
+        setAllCategories([
+          ...userCategoryPreferences.map(item => ({ ...item, userCat: true })),
+          ...filtered.map(cat => ({ ...cat, userCat: false })),
+        ]);
+      } catch (err) {
+        console.error('Error fetching categories:', err);
+      }
     };
 
     fetchCategories();
@@ -254,24 +251,16 @@ export const useComparisonSets = (paramId) => {
     }
   };
 
-  // Sprint 8 carry-over: comparison_set_comment_reactions not yet in backend schema.
-  // handleLikeComparisonSet stays on Supabase until Sprint 8 migrates comments/reactions.
   const handleLikeComparisonSet = async (setId) => {
     if (!user) return;
-    try {
-      const currentSet = comparisonSets[currentIndex];
-      const newHasLiked = !currentSet.hasLiked;
+    const currentSet = comparisonSets[currentIndex];
+    const newHasLiked = !currentSet.hasLiked;
 
+    try {
       if (newHasLiked) {
-        await supabase
-          .from('comparison_set_comment_reactions')
-          .insert([{ set_id: setId, user_id: user.id, reaction_type: 'like' }]);
+        await apiClient.post(`/api/comparisons/${setId}/like`);
       } else {
-        await supabase
-          .from('comparison_set_comment_reactions')
-          .delete()
-          .eq('set_id', setId)
-          .eq('user_id', user.id);
+        await apiClient.delete(`/api/comparisons/${setId}/like`);
       }
 
       setComparisonSets(prev => prev.map((set, i) =>

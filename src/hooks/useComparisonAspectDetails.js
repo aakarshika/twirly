@@ -1,244 +1,152 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
-import { getVoteCount, hasUserVoted } from '../services/voting';
-import { getItemReviews, getItemAverageMetrics } from '../services/reviews';
+import apiClient from '../lib/apiClient';
 import { useAuth } from '../contexts/AuthContext';
 import { userActivityService, ACTIVITY_TYPES, ENTITY_TYPES } from '../services/userActivityService';
 
 export const useComparisonAspectDetails = (id) => {
-  
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [currentSet, setCurrentSet] = useState(null);
   const [currentAspectSet, setCurrentAspectSet] = useState(null);
   const [items, setItems] = useState([]);
-  const [reviews, setReviews] = useState([]);
-  const [averageMetrics, setAverageMetrics] = useState([]);
   const [totalVotes, setTotalVotes] = useState(0);
   const [userVoted, setUserVoted] = useState(false);
   const [votedItemId, setVotedItemId] = useState(null);
+
   const fetchComparisonDetails = async () => {
     try {
       setLoading(true);
-      // console.log('id fetchComparisonDetails', id);
       const comparisonId = parseInt(id);
-      if (isNaN(comparisonId)) {
-        throw new Error('Invalid comparison aspect set ID');
-      }
-      
-      const defaultMetrics = {
-        quality: 3.5,
-        value: 3.5,
-        design: 3.5,
-        performance: 3.5
-      };
-      // console.log('comparisonId', comparisonId);
-      const { data, error } = await supabase
-        .from('comparison_set_aspects')
-        .select(`
-          *,
-          reactions:comparison_set_comment_reactions(reaction_type, user_id),
-          comparison_sets(
-            *,
-            user:user_preferences(*),
-            comparison_set_items(
-              *,
-              items(*,votes(*))
-            )
-          )
-        `)
-        .eq('id', comparisonId)
-        .eq('comparison_sets.comparison_set_items.items.votes.set_id', comparisonId)
-        .single();
+      if (isNaN(comparisonId)) throw new Error('Invalid comparison aspect set ID');
 
-      if (error) throw error;
-      if (!data) throw new Error('Comparison not found');
+      const { data: resp } = await apiClient.get(`/api/sets/aspects/${comparisonId}`);
+      const aspectData = resp.data;
+      if (!aspectData) throw new Error('Comparison not found');
 
-      setCurrentSet(data.comparison_sets);
-      setCurrentAspectSet({...data, userReaction: data.reactions.find(r => r.user_id === user.id)?.reaction_type});
-      setItems(data.comparison_sets.comparison_set_items);
-      setTotalVotes(data.comparison_sets.comparison_set_items.reduce((acc, item) => acc + item.items.votes.length, 0));
-      
-      // Only check user votes if user is logged in
+      const parentSet = aspectData.comparison_sets;
+      setCurrentSet(parentSet);
+
+      const userReaction = Array.isArray(aspectData.reactions)
+        ? aspectData.reactions.find(r => r.user_id === user?.id)?.reaction_type
+        : null;
+      setCurrentAspectSet({ ...aspectData, userReaction });
+
+      const rawItems = Array.isArray(parentSet?.comparison_set_items) ? parentSet.comparison_set_items : [];
+      setItems(rawItems);
+
+      const aspectVotes = Array.isArray(aspectData.votes) ? aspectData.votes : [];
+      setTotalVotes(aspectVotes.length);
+
       if (user) {
-        const userVoted = data.comparison_sets.comparison_set_items.some(item => 
-          item.items.votes.some(vote => vote.user_id === user.id)
-        );
-        const votedItemId = data.comparison_sets.comparison_set_items.find(item => 
-          item.items.votes.some(vote => vote.user_id === user.id)
-        )?.items.id;
-
-        setUserVoted(userVoted);
-        setVotedItemId(votedItemId);
-      } else {
-        setUserVoted(false);
-        setVotedItemId(null);
+        const userVote = aspectVotes.find(v => v.user_id === user.id);
+        setUserVoted(!!userVote);
+        setVotedItemId(userVote?.item_id ?? null);
       }
-
-    } catch (error) {
-      setError(error.message);
+    } catch (err) {
+      setError(err.response?.data?.error?.message ?? err.message);
     } finally {
       setLoading(false);
     }
   };
+
   const fetchComparison = async (compId) => {
-    const { data, error } = await supabase
-      .from('comparison_set_aspects')
-      .select('*')
-      .eq('id', compId)
-      .single();
-    return data;
-  } 
-  const fetchRemainingAspects = async (id) => {
-    const { data, error } = await supabase
-      .from('comparison_set_aspects')
-      .select(`set:comparison_sets(
-        *,
-        allAspects:comparison_set_aspects(
-          *,
-          votes(*)
-        )
-      )`)
-      .eq('id', id)
-      .single();
-    if (error) throw error;
-    const remainingAspects = data.set.allAspects.filter(aspect => aspect.id != id && (!aspect.votes.some(vote => vote.user_id === user.id)));
-    return remainingAspects;
+    const { data: resp } = await apiClient.get(`/api/sets/aspects/${compId}`);
+    return resp.data;
   };
-  
-  //handle vote - update votes table using user id, item id and set id = comparisonId
+
+  const fetchRemainingAspects = async (aspectId) => {
+    const { data: resp } = await apiClient.get(`/api/sets/aspects/${aspectId}/remaining`);
+    return resp.data ?? [];
+  };
+
   const handleVote = async (itemId) => {
     try {
-      const { data, error } = await supabase
-        .from('votes')
-        .insert({
-          user_id: user.id,
-          item_id: itemId,
-          set_id: id
-        })
-        .select();
-      if (error) throw error;
+      const { data: resp } = await apiClient.post('/api/votes', { setId: id, itemId });
 
-      // Log the vote activity
       await userActivityService.logActivity({
-        userId: user.id,
         activityType: ACTIVITY_TYPES.VOTE,
         entityType: ENTITY_TYPES.VOTE,
-        entityId: data[0].id,
+        entityId: resp.data?.id ?? id,
         pageName: `/comparison-aspect-page/${id}`,
-        metadata: { 
-          itemId,
-          aspectSetId: id,
-          itemName: items.find(item => item.items.id === itemId)?.items.name
-        }
+        metadata: { itemId, aspectSetId: id },
       });
-
-      // console.log('Vote inserted:', data);  
-    } catch (error) {
-      console.error('Error voting:', error);
+    } catch (err) {
+      console.error('Error voting:', err);
     } finally {
       setUserVoted(true);
       setVotedItemId(itemId);
-      setItems(items.map(item => item.items.id === itemId ? {...item, items: {...item.items, votes: [...item.items.votes, {user_id: user.id, item_id: itemId, set_id: id}]}} : item));
-      setTotalVotes(items.reduce((acc, item) => acc + item.items.votes.length, 0));
     }
   };
-  const handleLikeComparisonAspectSet = async (id, type) => {
-    try {
-      const hasLiked = currentAspectSet.reactions?.find(r => r.user_id === user.id)?.reaction_type === 'like';
-      
-      if (hasLiked) {
-        await supabase
-          .from('comparison_set_comment_reactions')
-          .delete()
-          .eq('aspect_set_id', id)
-          .eq('user_id', user.id);
 
-        // Log the unlike activity
+  const handleLikeComparisonAspectSet = async (aspectId, type) => {
+    try {
+      const hasLiked = currentAspectSet?.userReaction === 'like';
+
+      if (hasLiked) {
+        await apiClient.delete(`/api/sets/aspects/${aspectId}/reactions`);
         await userActivityService.logActivity({
-          userId: user.id,
           activityType: ACTIVITY_TYPES.UNLIKE_ASPECT_SET,
           entityType: ENTITY_TYPES.ASPECT_SET,
-          entityId: id,
-          pageName: `/comparison-aspect-page/${id}`,
-          metadata: { 
-            aspectSetId: id,
-            aspectSetTitle: currentAspectSet.title
-          }
+          entityId: aspectId,
+          pageName: `/comparison-aspect-page/${aspectId}`,
         });
       } else {
-        await supabase
-          .from('comparison_set_comment_reactions')
-          .insert([{ aspect_set_id: id, user_id: user.id, reaction_type: 'like' }]);
-
-        // Log the like activity
+        await apiClient.post(`/api/sets/aspects/${aspectId}/reactions`, { reactionType: 'like' });
         await userActivityService.logActivity({
-          userId: user.id,
           activityType: ACTIVITY_TYPES.LIKE_ASPECT_SET,
           entityType: ENTITY_TYPES.ASPECT_SET,
-          entityId: id,
-          pageName: `/comparison-aspect-page/${id}`,
-          metadata: { 
-            aspectSetId: id,
-            aspectSetTitle: currentAspectSet.title
-          }
+          entityId: aspectId,
+          pageName: `/comparison-aspect-page/${aspectId}`,
         });
       }
 
-      setCurrentAspectSet(prev => ({...prev, 
+      setCurrentAspectSet(prev => ({
+        ...prev,
         userReaction: hasLiked ? null : 'like',
-        reactions: hasLiked ? prev.reactions.filter(r => r.user_id !== user.id) : [...prev.reactions, {user_id: user.id, reaction_type: 'like'}]
+        reactions: hasLiked
+          ? (prev.reactions ?? []).filter(r => r.user_id !== user?.id)
+          : [...(prev.reactions ?? []), { user_id: user?.id, reaction_type: 'like' }],
       }));
-    } catch (error) {
-      console.error('Error toggling like:', error);
+    } catch (err) {
+      console.error('Error toggling like:', err);
     }
   };
+
   const handleNext = () => {
     userActivityService.logActivity({
-      userId: user.id,
       activityType: ACTIVITY_TYPES.ASPECT_SET_NEXT,
       entityType: ENTITY_TYPES.ASPECT_SET,
       entityId: id,
-      pageName: `/comparison-aspect-page/${id}`
+      pageName: `/comparison-aspect-page/${id}`,
     });
   };
-  const handleRevertVote = async () => {
-    // console.log('revert vote ------??');
-    try {
-      const { data, error } = await supabase
-        .from('votes')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('item_id', votedItemId)
-        .eq('set_id', id)
-        .select();
-      if (error) throw error;
 
-      // Log the vote revert activity
+  const handleRevertVote = async () => {
+    try {
+      await apiClient.delete('/api/votes', { params: { setId: id } });
+
       await userActivityService.logActivity({
-        userId: user.id,
         activityType: ACTIVITY_TYPES.VOTE_REVERT,
         entityType: ENTITY_TYPES.VOTE,
-        entityId: data[0].id,
+        entityId: id,
         pageName: `/comparison-aspect-page/${id}`,
-        metadata: { 
-          itemId: votedItemId,
-          aspectSetId: id,
-          itemName: items.find(item => item.items.id === votedItemId)?.items.name
-        }
+        metadata: { itemId: votedItemId, aspectSetId: id },
       });
-
-      // console.log('Vote reverted:', data);
-    } catch (error) {
-      console.error('Error reverting vote:', error);
+    } catch (err) {
+      console.error('Error reverting vote:', err);
     } finally {
       setUserVoted(false);
       setVotedItemId(null);
-      setItems(items.map(item => ({...item, items: {...item.items, votes: item.items.votes.filter(vote => vote.user_id !== user.id)}})));
-      setTotalVotes(items.reduce((acc, item) => acc + item.items.votes.length, 0));
     }
   };
-  return { loading, error, items, currentSet, currentAspectSet, reviews, averageMetrics, totalVotes, userVoted, votedItemId, handleVote, handleRevertVote, fetchComparisonDetails, handleLikeComparisonAspectSet, handleNext, fetchRemainingAspects, fetchComparison };
-}; 
+
+  return {
+    loading, error, items, currentSet, currentAspectSet,
+    reviews: [], averageMetrics: [],
+    totalVotes, userVoted, votedItemId,
+    handleVote, handleRevertVote, fetchComparisonDetails,
+    handleLikeComparisonAspectSet, handleNext,
+    fetchRemainingAspects, fetchComparison,
+  };
+};

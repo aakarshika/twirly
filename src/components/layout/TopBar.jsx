@@ -49,6 +49,7 @@ const TopBar = ({ onMenuClick, isDrawerOpen }) => {
         {!isRootTab ? (
           <button
             type="button"
+            aria-label="Go back"
             onClick={() => navigate(-1)}
             className="flex items-center justify-center min-w-[44px] min-h-[44px]"
             style={{ color: 'rgb(var(--text))' }}
@@ -70,6 +71,9 @@ const TopBar = ({ onMenuClick, isDrawerOpen }) => {
         {/* Right: drawer trigger */}
         <button
           type="button"
+          aria-label={isDrawerOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={isDrawerOpen}
+          aria-controls="mobile-drawer"
           onClick={onMenuClick}
           className="flex items-center justify-center min-w-[44px] min-h-[44px]"
           style={{ color: isDrawerOpen ? 'rgb(var(--primary))' : 'rgb(var(--text))' }}

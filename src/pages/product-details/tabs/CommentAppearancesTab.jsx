@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import { useTheme } from '../../../contexts/ThemeContext';
-import { supabase } from '../../../lib/supabase';
+import apiClient from '../../../lib/apiClient';
 import { Heart, MessageSquare } from 'lucide-react';
 import Button from '../../../components/common/Button';
 import { getPublicUrl } from '../../../lib/utils';
@@ -27,47 +27,19 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
   // console.log("item",item);
 
   const fetchComments = async () => {
+    if (!item?.id) return;
     try {
       setLoading(true);
-      const limit = 10;
-      const offset = (page - 1) * limit;
-
-      // Get all comments from comparison sets that include this item
-      const { data, error, count } = await supabase
-      .rpc('fetch_filtered_comments', { search: item.id.toString() })
-      .select(`
-          *,
-          user:user_preferences(*),
-          reactions:comparison_set_comment_reactions(reaction_type, user_id),
-          replies:comparison_set_comment_replies(*,user:user_preferences(*)),
-          comparison_sets(
-            id,
-            name,
-            items:comparison_set_items(
-              item:items(*)
-            )
-          )
-        `, { count: 'exact' })
-        .like('replies.text', `%(${item.id})%`)
-        .order('created_at', { ascending: false })
-        .range(offset, offset + limit - 1);
-
-      if (error) throw error;
-      // console.log("data",data);
-      const filteredComments = data;
-      // console.log("filteredComments",filteredComments);
-
-      setComments(prev => page === 1 ? filteredComments : [...prev, ...filteredComments]);
-      const itemCoding = [];
-      data.forEach(c => {
-        c.comparison_sets.items.forEach(i => {
-            itemCoding.push(i.item);
-          });
+      const pageSize = 10;
+      const { data: resp } = await apiClient.get(`/api/items/${item.id}/comments`, {
+        params: { page, pageSize },
       });
-      setItemColorCoding(itemCoding);
-      setHasMore(count > offset + limit);
+      const { comments: newComments, total } = resp.data;
+
+      setComments(prev => page === 1 ? newComments : [...prev, ...newComments]);
+      setHasMore(total > page * pageSize);
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.error?.message ?? err.message);
     } finally {
       setLoading(false);
     }
@@ -118,16 +90,16 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
           <div className="flex items-start justify-between">
             <div className="flex items-center space-x-2">
               <Avatar
-                profileImageUrl={comment.user?.profile_image_url}
-                displayName={comment.user?.display_name}
+                profileImageUrl={comment.profile_image_url}
+                displayName={comment.display_name}
                 size={'sm'}
               />
               <div>
                 <p className="font-medium text-gray-900 dark:text-gray-100">
-                  {comment.user?.display_name || 'Anonymous'}
+                  {comment.display_name || 'Anonymous'}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
-                  @ '{comment.comparison_sets.name}'
+                  @ '{comment.set_name}'
                 </p>
               </div>
             </div>
@@ -150,30 +122,8 @@ const CommentAppearancesTab = ({ comparisonSets, item }) => {
             </div>
           </div>
           <p className="mt-2 text-gray-700 dark:text-gray-300" style={{ textAlign: 'start' }}>
-            <span dangerouslySetInnerHTML={{ __html: renderTextWithMentions(comment.text, itemColorCoding) }} />
+            {comment.content}
           </p>
-          {comment.replies?.length > 0 && (
-            <div className="mt-4 space-y-2">
-              {comment.replies.map((reply) => (
-                <div key={reply.id} className="ml-8 bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-                  <div className="flex items-center space-x-2">
-                    <Avatar
-                      profileImageUrl={reply.user?.profile_image_url}
-                      displayName={reply.user?.display_name}
-                      size={'xs'}
-                    />
-
-                    <p className="font-medium text-gray-900 dark:text-gray-100">
-                      {reply.user?.display_name || 'Anonymous'}
-                    </p>
-                  </div>
-                  <p className="mt-1 text-gray-700 dark:text-gray-300" style={{ textAlign: 'start' }}>
-                    <span dangerouslySetInnerHTML={{ __html: renderTextWithMentions(reply.text, itemColorCoding) }} />
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       ))}
       {hasMore && (

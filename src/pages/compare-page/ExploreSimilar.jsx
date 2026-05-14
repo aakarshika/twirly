@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
-import { supabase } from '../../lib/supabase';
+import apiClient from '../../lib/apiClient';
 import TrendingCard from '../../components/common/common-cards/TrendingCard';
 
 const ITEMS_PER_PAGE = 5;
@@ -18,49 +18,15 @@ const ExploreSimilar = ({ currentSetId }) => {
 
       try {
         setLoading(true);
-        const { data, error } = await supabase
-          .rpc('fetch_similar_sets', {
-            p_source_set_id: currentSetId,
-            p_limit: ITEMS_PER_PAGE,
-            p_offset: (page - 1) * ITEMS_PER_PAGE
-          });
-
-        if (error) throw error;
-
-        // Fetch additional data for each set
-        const setsWithDetails = await Promise.all(
-          (data || []).map(async (set) => {
-            const { data: setDetails } = await supabase
-              .from('comparison_sets')
-              .select(`
-                comparison_set_aspects (
-                  metric_name
-                ),
-                user:user_preferences(*),
-                comparison_set_items (
-                  items (
-                    id,
-                    name,
-                    image_url,
-                    item_color_string
-                  )
-                )
-              `)
-              .eq('id', set.set_id)
-              .single();
-
-            return {
-              ...set,
-              ...setDetails
-            };
-          })
-        );
-
-        setSimilarSets(prev => [...prev, ...setsWithDetails]);
+        const { data: resp } = await apiClient.get(`/api/sets/${currentSetId}/similar`, {
+          params: { limit: ITEMS_PER_PAGE, offset: (page - 1) * ITEMS_PER_PAGE },
+        });
+        const data = resp.data ?? [];
+        setSimilarSets(prev => [...prev, ...data]);
         setLoading(false);
       } catch (err) {
         console.error('Error fetching similar sets:', err);
-        setError(err.message);
+        setError(err.response?.data?.error?.message ?? err.message);
         setLoading(false);
       }
     };

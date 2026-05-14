@@ -67,19 +67,20 @@ const OnboardingFlow = () => {
       setSelectedNotifications(notif.notifications);
       setNotif(notif);
       
-      if (prefs.display_name && cats && cats.length > 0 && notif && notif.created_at !== notif.updated_at) {
+      // prefs is null for brand-new users who have no preferences row yet — start from step 1
+      if (prefs?.display_name && cats && cats.length > 0 && notif && notif.created_at !== notif.updated_at) {
         setOnboardingComplete(true);
-      }
-      else if (prefs.display_name && cats && cats.length > 0) {
+      } else if (prefs?.display_name && cats && cats.length > 0) {
         setCurrentStep(4);
-      } else if (prefs.display_name) {
+      } else if (prefs?.display_name) {
         setUsername(prefs.display_name);
         setCurrentStep(3);
       }
     } catch (err) {
       console.error('Error fetching preferences:', err);
       setError(err.message);
-      setGlobalError('global', err.message, () => window.location.reload());
+      // Don't reload on preference-load failure — just let the user start onboarding from step 1
+      setGlobalError('global', err.message, null);
     } finally {
       setLoading('global', false);
     }

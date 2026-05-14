@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { supabase } from '../../lib/supabase';
+import apiClient from '../../lib/apiClient';
 import ProfileHeader from './dashboard/ProfileHeader';
 import ContentTabs from './dashboard/ContentTabs';
 import { useHeader } from '../../contexts/HeaderContext';
@@ -23,37 +23,25 @@ const UserProfile = () => {
     const fetchUserData = async () => {
       try {
         setLoading('global', true, 'Loading profile...');
-        
-        // First get the user_id from the username
-        const { data: userPrefs, error: userError } = await supabase
-          .from('user_preferences')
-          .select('user_id, username, display_name, bio, profile_image_url, created_at')
-          .eq('display_name', username)
-          .single();
 
-        if (userError) throw userError;
+        const { data: resp } = await apiClient.get(`/api/users/by-username/${encodeURIComponent(username)}`);
+        const userPrefs = resp.data;
         if (!userPrefs) throw new Error('User not found');
 
-        // Then get the activity summary
-        const { data: activitySummary, error: summaryError } = await supabase
-          .from('user_activity_summary')
-          .select('total_votes, total_reviews, total_products, total_comparisons, total_likes_received')
-          .eq('user_id', userPrefs.user_id)
-          .single();
-
-        if (summaryError) throw summaryError;
+        const { data: profileResp } = await apiClient.get(`/api/users/${userPrefs.user_id}`);
+        const profile = profileResp.data;
 
         setUserData({
           profile: userPrefs,
-          votes_count: activitySummary.total_votes,
-          reviews_count: activitySummary.total_reviews,
-          products_count: activitySummary.total_products,
-          comparisons_count: activitySummary.total_comparisons,
-          likes_count: activitySummary.total_likes_received
+          votes_count: profile?.total_votes ?? 0,
+          reviews_count: profile?.total_reviews ?? 0,
+          products_count: profile?.total_products ?? 0,
+          comparisons_count: profile?.total_comparisons ?? 0,
+          likes_count: profile?.total_likes_received ?? 0,
         });
       } catch (err) {
         console.error('Error fetching user data:', err);
-        setError(err.message);
+        setError(err.response?.data?.error?.message ?? err.message);
         setGlobalError('global', err.message, () => window.location.reload());
       } finally {
         setLoading('global', false);

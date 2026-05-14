@@ -4,7 +4,6 @@ import ComparisonCommentsInshort from './ComparisonCommentsInshort';
 import Button from '../../../components/common/Button';
 import { Info, MessageSquareShare, Play, Share, Star, Target, ThumbsUp, MessageCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { supabase } from '../../../lib/supabase';
 import { useState } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
 import ComparisonSetAspectsCommentsSection from '../../comparison-aspect-page/ComparisonSetAspectsCommentsSection';

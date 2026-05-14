@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
+import { MotionConfig } from 'framer-motion';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { HeaderProvider } from './contexts/HeaderContext';
@@ -35,7 +36,9 @@ const App = () => {
             <HeaderProvider>
               <FeedbackProvider>
                 <BetaTestingProvider>
-                  <MainRoutingPage />
+                  <MotionConfig reducedMotion="user">
+                    <MainRoutingPage />
+                  </MotionConfig>
                 </BetaTestingProvider>
               </FeedbackProvider>
             </HeaderProvider>

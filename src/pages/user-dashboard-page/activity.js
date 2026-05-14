@@ -1,138 +1,62 @@
-import { supabase } from '../../lib/supabase';
+import apiClient from '../../lib/apiClient';
 
-/**
- * Get weekly activity data for a user
- * @param {string} userId - The ID of the user
- * @returns {Promise<Array>} Array of daily activity counts
- */
-export const getWeeklyActivity = async (userId) => {
+export const getWeeklyActivity = async () => {
   try {
-    const { data, error } = await supabase
-      .from('user_weekly_activity')
-      .select('*')
-      .eq('user_id', userId)
-      .order('date', { ascending: true });
-
-    if (error) throw error;
-    return data;
-  } catch (error) {
-    console.error('Error fetching weekly activity:', error);
-    throw error;
+    const { data: resp } = await apiClient.get('/api/activity/weekly');
+    return resp.data ?? [];
+  } catch (err) {
+    console.error('Error fetching weekly activity:', err);
+    throw err;
   }
 };
 
-/**
- * Get recent activities for a user
- * @param {string} userId - The ID of the user
- * @returns {Promise<Array>} Array of recent activities
- */
-export const getRecentActivities = async (userId) => {
+export const getRecentActivities = async (limit = 20) => {
   try {
-    const { data, error } = await supabase
-      .from('user_recent_activities')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-
-    // Format the data for display
-    return data.map(activity => ({
-      type: activity.activity_type,
-      description: activity.description || 'Voted on an item',
-      timestamp: formatTimestamp(activity.hours_ago)
+    const { data: resp } = await apiClient.get('/api/activity', { params: { limit } });
+    const rows = resp.data ?? [];
+    return rows.map(a => ({
+      type: a.activity_type,
+      description: a.metadata?.description || `${a.activity_type} on ${a.entity_type}`,
+      timestamp: formatTimestamp(a.created_at),
     }));
-  } catch (error) {
-    console.error('Error fetching recent activities:', error);
-    throw error;
+  } catch (err) {
+    console.error('Error fetching recent activities:', err);
+    throw err;
   }
 };
 
-/**
- * Get activity trends for a user
- * @param {string} userId - The ID of the user
- * @returns {Promise<Object>} Object containing trend data
- */
-export const getActivityTrends = async (userId) => {
+export const getActivityTrends = async () => {
   try {
-    const { data, error } = await supabase
-      .from('user_activity_trends')
-      .select('*')
-      .eq('user_id', userId)
-      .select();
-
-    if (error) throw error;
-    if (data.length > 0) {
-      return {
-        weeklyActivity: data[0].weekly_activity,
-        weeklyChange: data[0].weekly_change_percentage,
-        currentWeekActivity: data[0].current_week_activity,
-        previousWeekActivity: data[0].previous_week_activity
-      };
-    } else {
-      return {
-        weeklyActivity: 0,
-        weeklyChange: 0,
-        currentWeekActivity: 0,
-        previousWeekActivity: 0
-      };
-    }
-  } catch (error) {
-    console.error('Error fetching activity trends:', error);
-    throw error;
+    const { data: resp } = await apiClient.get('/api/activity/trends');
+    const d = resp.data ?? {};
+    return {
+      weeklyActivity: d.weeklyActivity ?? 0,
+      weeklyChange: d.weeklyChangePercentage ?? 0,
+      currentWeekActivity: d.currentWeekActivity ?? 0,
+      previousWeekActivity: d.previousWeekActivity ?? 0,
+    };
+  } catch (err) {
+    console.error('Error fetching activity trends:', err);
+    throw err;
   }
 };
 
-/**
- * Get category distribution for a user's items
- * @param {string} userId - The ID of the user
- * @returns {Promise<Array>} Array of category counts
- */
-export const getCategoryDistribution = async (userId) => {
+export const getCategoryDistribution = async () => {
   try {
-    const { data, error } = await supabase
-      .from('items')
-      .select(`
-        category_id,
-        categories!item_categories (
-          name
-        )
-      `)
-      .eq('user_id', userId);
-
-    if (error) throw error;
-
-    // Count items per category -- categories is a list of categories
-    const categoryCounts = data.reduce((acc, item) => {
-      item.categories.forEach(category => {
-        acc[category.name] = (acc[category.name] || 0) + 1;
-      });
-      return acc;
-    }, {});
-
-    // Convert to array format
-    return Object.entries(categoryCounts).map(([name, count]) => ({
-      label: name,
-      value: count
-    }));
-  } catch (error) {
-    console.error('Error fetching category distribution:', error);
-    throw error;
+    const { data: resp } = await apiClient.get('/api/users/me/category-preferences');
+    const prefs = resp.data ?? [];
+    return prefs.map(p => ({ label: p.category_name, value: 1 }));
+  } catch (err) {
+    console.error('Error fetching category distribution:', err);
+    throw err;
   }
 };
 
-/**
- * Format timestamp to human-readable format
- * @param {number} hoursAgo - Hours since the activity
- * @returns {string} Formatted timestamp
- */
-const formatTimestamp = (hoursAgo) => {
-  if (hoursAgo < 1) {
-    return 'Less than an hour ago';
-  } else if (hoursAgo < 24) {
-    return `${Math.floor(hoursAgo)} hours ago`;
-  } else {
-    const days = Math.floor(hoursAgo / 24);
-    return `${days} ${days === 1 ? 'day' : 'days'} ago`;
-  }
-}; 
+const formatTimestamp = (isoString) => {
+  if (!isoString) return 'Unknown';
+  const hoursAgo = (Date.now() - new Date(isoString).getTime()) / (1000 * 60 * 60);
+  if (hoursAgo < 1) return 'Less than an hour ago';
+  if (hoursAgo < 24) return `${Math.floor(hoursAgo)} hours ago`;
+  const days = Math.floor(hoursAgo / 24);
+  return `${days} ${days === 1 ? 'day' : 'days'} ago`;
+};

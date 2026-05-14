@@ -1,96 +1,45 @@
-import { supabase } from '../lib/supabaseClient';
-import { getCurrentPath } from '../lib/urlUtils';
+import { apiClient } from '../lib/apiClient';
 
-const FEEDBACK_BUCKET = 'feedback-images';
+async function uploadImage(file, bucket = 'feedback-images') {
+  const form = new FormData();
+  form.append('file', file);
+  const { data } = await apiClient.post(`/uploads?bucket=${bucket}`, form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data.data.url;
+}
 
 export const feedbackService = {
   async submitFeedback(feedback) {
-    let image_url = null;
+    let imageUrl = null;
 
-    // Upload image if present
     if (feedback.image) {
-      const fileExt = feedback.image.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from(FEEDBACK_BUCKET)
-        .upload(filePath, feedback.image);
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from(FEEDBACK_BUCKET)
-        .getPublicUrl(filePath);
-
-      image_url = publicUrl;
+      imageUrl = await uploadImage(feedback.image, 'feedback-images');
     }
 
-    // Submit feedback
-    const { data, error } = await supabase
-      .from('feedback')
-      .insert([{
-        name: feedback.name,
-        type: feedback.type,
-        priority: feedback.priority,
-        message: feedback.message,
-        image_url,
-        status: 'pending',
-        page_route: feedback.page_route || getCurrentPath(),
-        created_at: new Date()
-      }]);
+    const { data } = await apiClient.post('/feedback', {
+      name: feedback.name,
+      type: feedback.type,
+      priority: feedback.priority,
+      message: feedback.message,
+      imageUrl,
+      pageRoute: feedback.page_route ?? window.location.pathname,
+    });
 
-    if (error) throw error;
-    return data;
+    return data.data;
   },
 
   async getFeedbackList() {
-    const { data, error } = await supabase
-      .from('feedback')
-      .select('*')
-      .order('status', { ascending: true });
-
-    if (error) throw error;
-    return data;
+    const { data } = await apiClient.get('/feedback');
+    return data.data;
   },
 
   async updateFeedbackStatus(id, status) {
-    const { data, error } = await supabase
-      .from('feedback')
-      .update({ status })
-      .eq('id', id);
-
-    if (error) throw error;
-    return data;
+    const { data } = await apiClient.put(`/feedback/${id}/status`, { status });
+    return data.data;
   },
 
   async deleteFeedback(id) {
-    // First, get the feedback to check if it has an image
-    const { data: feedback, error: fetchError } = await supabase
-      .from('feedback')
-      .select('image_url')
-      .eq('id', id)
-      .single();
-
-    if (fetchError) throw fetchError;
-
-    // If there's an image, delete it from storage
-    if (feedback?.image_url) {
-      const imagePath = feedback.image_url.split('/').pop();
-      const { error: storageError } = await supabase.storage
-        .from(FEEDBACK_BUCKET)
-        .remove([imagePath]);
-
-      if (storageError) throw storageError;
-    }
-
-    // Delete the feedback record
-    const { error: deleteError } = await supabase
-      .from('feedback')
-      .delete()
-      .eq('id', id);
-
-    if (deleteError) throw deleteError;
-  }
-}; 
+    await apiClient.delete(`/feedback/${id}`);
+  },
+};

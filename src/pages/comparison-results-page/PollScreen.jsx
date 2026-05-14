@@ -4,7 +4,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { useHeader } from '../../contexts/HeaderContext';
 import BarChart from './comparison-sections/BarChart';
 import { useComparisonDetails } from '../../hooks/useComparisonDetails';
-import { supabase } from '../../lib/supabase';
+import apiClient from '../../lib/apiClient';
 import { useAuth } from '../../contexts/AuthContext';
 import ComparisonCirclesView from './ComparisonCirclesView';
 import Trending from '../trending-page/Trending';
@@ -20,38 +20,30 @@ const PollScreen = ({items, currentSetId, currentSet, celebratingResults}) => {
 
   const fetchSetMetrics = async () => {
     if (!currentSetId || !user) return;
-    
+
     try {
-      const { data: comparisonSetAspects, error } = await supabase
-        .from('comparison_set_aspects')
-        .select('*, votes(*)')
-        .eq('set_id', currentSetId);
+      const { data: resp } = await apiClient.get(`/api/sets/${currentSetId}/aspects`);
+      const comparisonSetAspects = resp.data ?? [];
 
-      if (error) throw error;
+      const totalVotesAcrossAspects = comparisonSetAspects.reduce(
+        (total, aspect) => total + (aspect.total_votes ?? 0), 0
+      );
 
-      // Calculate total votes across all aspects
-      const totalVotesAcrossAspects = comparisonSetAspects.reduce((total, aspect) => total + aspect.votes.length, 0);
-
-      // Process items with their total votes across all aspects
       const itemsWithVotes = items.map(item => {
         const itemVotes = comparisonSetAspects.reduce((total, aspect) => {
-          const aspectVotesForItem = aspect.votes.filter(vote => vote.item_id === item.id).length;
-          return total + aspectVotesForItem;
+          const aspectVotesList = Array.isArray(aspect.votes) ? aspect.votes : [];
+          return total + aspectVotesList.filter(v => v.item_id === item.id).length;
         }, 0);
-        
-        return {
-          ...item,
-          voteCount: itemVotes
-        };
+        return { ...item, voteCount: itemVotes };
       });
 
       const processedAspects = comparisonSetAspects.map(aspect => ({
         ...aspect,
-        userVoted: aspect.votes.some(vote => vote.user_id === user.id),
-        totalVotes: totalVotesAcrossAspects
+        userVoted: aspect.user_voted ?? false,
+        totalVotes: totalVotesAcrossAspects,
       }));
 
-      setUserVotedAll(processedAspects.every(aspect => aspect.userVoted));
+      setUserVotedAll(processedAspects.every(a => a.userVoted));
       setComparisonMetrics(processedAspects);
       setProcessedItems(itemsWithVotes);
     } catch (err) {

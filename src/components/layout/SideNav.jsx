@@ -43,6 +43,7 @@ const SideNav = ({ userData, onLogout }) => {
 
   return (
     <aside
+      aria-label="Site navigation"
       className="fixed left-0 top-0 bottom-0 hidden lg:flex flex-col z-40 w-64 overflow-y-auto scrollbar-hide"
       style={{
         paddingTop: '64px',
@@ -53,9 +54,13 @@ const SideNav = ({ userData, onLogout }) => {
       {/* Profile card */}
       {profile && (
         <div
+          role="button"
+          tabIndex={0}
+          aria-label="Go to your profile"
           className="px-4 py-5 border-b cursor-pointer"
           style={{ borderColor: 'rgb(var(--border))' }}
           onClick={() => navigate('/dashboard')}
+          onKeyDown={(e) => e.key === 'Enter' || e.key === ' ' ? navigate('/dashboard') : undefined}
         >
           <div className="flex items-center gap-3">
             <Avatar
@@ -86,13 +91,14 @@ const SideNav = ({ userData, onLogout }) => {
       )}
 
       {/* Main nav */}
-      <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5">
+      <nav aria-label="Main" className="flex-1 px-3 py-4 flex flex-col gap-0.5">
         {NAV_ITEMS.map(({ id, label, icon: Icon, path, match }) => {
           const active = match(location.pathname);
           return (
             <button
               key={id}
               type="button"
+              aria-current={active ? 'page' : undefined}
               onClick={() => navigate(path)}
               className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium w-full text-left transition-colors hover:bg-surface-elevated"
               style={navItemStyle(active)}
@@ -107,6 +113,8 @@ const SideNav = ({ userData, onLogout }) => {
         <div>
           <button
             type="button"
+            aria-expanded={settingsExpanded}
+            aria-controls="sidenav-settings-submenu"
             onClick={() => setSettingsExpanded((v) => !v)}
             className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-md text-sm font-medium w-full text-left transition-colors hover:bg-surface-elevated"
             style={{ color: 'rgb(var(--text))' }}
@@ -119,7 +127,7 @@ const SideNav = ({ userData, onLogout }) => {
           </button>
 
           {settingsExpanded && (
-            <div className="ml-7 mt-0.5 flex flex-col gap-0.5">
+            <div id="sidenav-settings-submenu" className="ml-7 mt-0.5 flex flex-col gap-0.5">
               {SETTINGS_TABS.map(({ id, label, icon }) => {
                 const active = location.pathname === `/settings/${id}`;
                 return (

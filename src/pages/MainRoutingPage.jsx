@@ -239,6 +239,7 @@ const MainRoutingPage = () => {
                     <Route path="/item/:itemId" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>} />
                     <Route path="/item/:itemId/:tab" element={<ProtectedRoute><ProductDetails /></ProtectedRoute>} />
                     <Route path="/settings/*" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+                    <Route path="/activity" element={<Navigate to="/dashboard" replace />} />
                     <Route path="/dashboard" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
                     <Route path="/dashboard/:tab" element={<ProtectedRoute><UserDashboard /></ProtectedRoute>} />
                     <Route path="/user/:username" element={<UserProfile />} />

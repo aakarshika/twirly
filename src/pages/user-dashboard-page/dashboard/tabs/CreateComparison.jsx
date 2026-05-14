@@ -385,7 +385,7 @@ const CreateComparison = () => {
                 </div>
               )})}
               {Array.from({ length: 4 - draft.items.length }).map((_, index) => (
-                <div className="flex flex-row  rounded-lg items-center justify-center" 
+                <div key={`empty-slot-${index}`} className="flex flex-row  rounded-lg items-center justify-center"
                 style={{ backgroundColor: currentTheme.colors.background, height: '100px'
                  }}>
                 <button

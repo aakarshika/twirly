@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import apiClient from '../lib/apiClient';
 import { useAuth } from '../contexts/AuthContext';
 import { userActivityService, ACTIVITY_TYPES, ENTITY_TYPES } from '../services/userActivityService';
 
@@ -18,90 +18,52 @@ export const useComparisonAspectData = (aspectId, setId) => {
   });
 
   const fetchData = async () => {
-    if (!aspectId || !setId || !user) {
-      // console.log('Missing required data:', { aspectId, setId, user });
+    if (!aspectId || !setId) {
       setLoading(false);
       return;
     }
-    
+
     try {
       setLoading(true);
-      // console.log('Fetching data for aspect:', aspectId, 'set:', setId);
-      
-      // First get the comparison set data
-      const { data: comparisonSetData, error: setError } = await supabase
-        .from('comparison_sets')
-        .select(`
-          *,
-          comparison_set_items(
-            id,
-            items(
-              *
-            )
-          )
-        `)
-        .eq('id', setId)
-        .single();
 
-      if (setError) throw setError;
-      if (!comparisonSetData) throw new Error('Comparison set not found');
+      const [setResp, aspectResp] = await Promise.all([
+        apiClient.get(`/api/sets/${setId}`),
+        apiClient.get(`/api/sets/aspects/${aspectId}`),
+      ]);
 
-      // Then get the aspect data with votes
-      const { data: aspectData, error: aspectError } = await supabase
-        .from('comparison_set_aspects')
-        .select(`
-          *,
-          votes(*)
-        `)
-        .eq('id', aspectId)
-        .single();
+      const setData = setResp.data.data;
+      const aspectData = aspectResp.data.data;
 
-      if (aspectError) throw aspectError;
-      if (!aspectData) throw new Error('Aspect not found');
+      const rawItems = Array.isArray(setData?.items) ? setData.items : [];
+      const aspectVotes = Array.isArray(aspectData?.votes) ? aspectData.votes : [];
 
-      // Process the data
-      const items = comparisonSetData.comparison_set_items.map(item => ({
-        ...item.items,
-        voteCount: aspectData.votes.filter(vote => vote.item_id === item.items.id).length || 0
+      const items = rawItems.map(item => ({
+        ...item,
+        voteCount: aspectVotes.filter(v => v.item_id === item.id).length,
       }));
-      
-      // Calculate user vote status
-      const userVote = aspectData.votes.find(vote => vote.user_id === user.id);
-      const userVoted = !!userVote;
-      const votedItemId = userVote?.item_id;
 
-      // Calculate total votes
-      const totalVotes = aspectData.votes.length;
+      const userVote = aspectVotes.find(v => v.user_id === user?.id);
 
-      // Get all aspects for metrics
-      const { data: allAspects, error: aspectsError } = await supabase
-        .from('comparison_set_aspects')
-        .select(`
-          *,
-          votes(*)
-        `)
-        .eq('set_id', setId);
-
-      if (aspectsError) throw aspectsError;
-
-      const comparisonMetrics = allAspects.map(aspect => ({
-        ...aspect,
-        userVoted: aspect.votes.some(vote => vote.user_id === user.id)
+      // Fetch all aspects for metrics
+      const aspectsResp = await apiClient.get(`/api/sets/${setId}/aspects`);
+      const allAspects = aspectsResp.data.data ?? [];
+      const comparisonMetrics = allAspects.map(a => ({
+        ...a,
+        userVoted: Array.isArray(a.votes) ? a.votes.some(v => v.user_id === user?.id) : a.user_voted,
       }));
 
       setData({
-        currentSet: comparisonSetData,
+        currentSet: setData,
         currentAspectSet: aspectData,
         items,
-        totalVotes,
-        userVoted,
-        votedItemId,
-        comparisonMetrics
+        totalVotes: aspectVotes.length,
+        userVoted: !!userVote,
+        votedItemId: userVote?.item_id ?? null,
+        comparisonMetrics,
       });
-
     } catch (err) {
       console.error('Error fetching comparison data:', err);
-      setError(err.message);
+      setError(err.response?.data?.error?.message ?? err.message);
     } finally {
       setLoading(false);
     }
@@ -111,52 +73,31 @@ export const useComparisonAspectData = (aspectId, setId) => {
     if (!user || !aspectId) return false;
 
     try {
-      const { data: voteData, error: voteError } = await supabase
-        .from('votes')
-        .insert({
-          user_id: user.id,
-          item_id: itemId,
-          set_id: aspectId
-        })
-        .select();
+      const { data: resp } = await apiClient.post('/api/votes', { setId: aspectId, itemId });
 
-      if (voteError) throw voteError;
-
-      // Log activity
       await userActivityService.logActivity({
-        userId: user.id,
         activityType: ACTIVITY_TYPES.VOTE,
         entityType: ENTITY_TYPES.VOTE,
-        entityId: voteData[0].id,
+        entityId: resp.data?.id ?? aspectId,
         pageName: `/compare-aspect-page/${aspectId}`,
-        metadata: { 
-          itemId,
-          aspectSetId: aspectId,
-          itemName: data.items.find(item => item.id === itemId)?.name
-        }
+        metadata: { itemId, aspectSetId: aspectId, itemName: data.items.find(i => i.id === itemId)?.name },
       });
 
-      // Update local state
       setData(prev => ({
         ...prev,
         userVoted: true,
         votedItemId: itemId,
         totalVotes: prev.totalVotes + 1,
-        items: prev.items.map(item => ({
-          ...item,
-          voteCount: item.id === itemId ? item.voteCount + 1 : item.voteCount
-        })),
-        comparisonMetrics: prev.comparisonMetrics.map(metric => 
-          metric.id === parseInt(aspectId)
-            ? { ...metric, userVoted: true }
-            : metric
-        )
+        items: prev.items.map(i => ({ ...i, voteCount: i.id === itemId ? i.voteCount + 1 : i.voteCount })),
+        comparisonMetrics: prev.comparisonMetrics.map(m =>
+          m.id === parseInt(aspectId) ? { ...m, userVoted: true } : m
+        ),
       }));
 
       return true;
     } catch (err) {
       console.error('Error voting:', err);
-      setError(err.message);
+      setError(err.response?.data?.error?.message ?? err.message);
       return false;
     }
   };
@@ -165,65 +106,38 @@ export const useComparisonAspectData = (aspectId, setId) => {
     if (!user || !aspectId || !data.votedItemId) return false;
 
     try {
-      const { data: deletedVote, error: deleteError } = await supabase
-        .from('votes')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('item_id', data.votedItemId)
-        .eq('set_id', aspectId)
-        .select();
+      await apiClient.delete('/api/votes', { params: { setId: aspectId } });
 
-      if (deleteError) throw deleteError;
-
-      // Log activity
       await userActivityService.logActivity({
-        userId: user.id,
         activityType: ACTIVITY_TYPES.VOTE_REVERT,
         entityType: ENTITY_TYPES.VOTE,
-        entityId: deletedVote[0].id,
+        entityId: aspectId,
         pageName: `/comparison-aspect-page/${aspectId}`,
-        metadata: { 
-          itemId: data.votedItemId,
-          aspectSetId: aspectId,
-          itemName: data.items.find(item => item.id === data.votedItemId)?.name
-        }
+        metadata: { itemId: data.votedItemId, aspectSetId: aspectId },
       });
 
-      // Update local state
       setData(prev => ({
         ...prev,
         userVoted: false,
         votedItemId: null,
         totalVotes: prev.totalVotes - 1,
-        items: prev.items.map(item => ({
-          ...item,
-          voteCount: item.id === data.votedItemId ? item.voteCount - 1 : item.voteCount
-        })),
-        comparisonMetrics: prev.comparisonMetrics.map(metric => 
-          metric.id === parseInt(aspectId)
-            ? { ...metric, userVoted: false }
-            : metric
-        )
+        items: prev.items.map(i => ({ ...i, voteCount: i.id === data.votedItemId ? i.voteCount - 1 : i.voteCount })),
+        comparisonMetrics: prev.comparisonMetrics.map(m =>
+          m.id === parseInt(aspectId) ? { ...m, userVoted: false } : m
+        ),
       }));
 
       return true;
     } catch (err) {
       console.error('Error reverting vote:', err);
-      setError(err.message);
+      setError(err.response?.data?.error?.message ?? err.message);
       return false;
     }
   };
 
   useEffect(() => {
     fetchData();
-  }, [aspectId, setId, user]);
+  }, [aspectId, setId]);
 
-  return {
-    ...data,
-    loading,
-    error,
-    handleVote,
-    handleRevertVote,
-    refetch: fetchData
-  };
-}; 
+  return { ...data, loading, error, handleVote, handleRevertVote, refetch: fetchData };
+};

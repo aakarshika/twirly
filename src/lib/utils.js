@@ -1,6 +1,5 @@
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { supabase } from './supabase';
 
 /**
  * Combines multiple class names, resolving Tailwind CSS conflicts using tailwind-merge
@@ -97,18 +96,10 @@ export function getTopMetric(metrics) {
 }
 
 export function getPublicUrlItems(filePath) {
-  if (!filePath) return null;
-  const { data: { publicUrl } } = supabase.storage
-    .from('product-pics')
-    .getPublicUrl(filePath);
-  return publicUrl;
+  return filePath ?? null;
 }
 export function getPublicUrl(filePath) {
-  if (!filePath) return null;
-  const { data: { publicUrl } } = supabase.storage
-    .from('profile-pics')
-    .getPublicUrl(filePath);
-  return publicUrl;
+  return filePath ?? null;
 }
 //function to split text by _ and join with a space with first letter uppercase
 export function splitAndJoin(text) {

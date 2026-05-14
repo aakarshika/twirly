@@ -3,6 +3,7 @@ import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import pinoHttp from 'pino-http';
+import path from 'path';
 
 import { env } from './config/env.js';
 import { logger } from './lib/logger.js';
@@ -16,12 +17,28 @@ import { pollsRouter } from './features/polls/polls.routes.js';
 import { votesRouter } from './features/votes/votes.routes.js';
 import { commentsRouter } from './features/comments/comments.routes.js';
 import { comparisonsRouter } from './features/comparisons/comparisons.routes.js';
+import { reviewsRouter } from './features/reviews/reviews.routes.js';
+import { itemsRouter } from './features/items/items.routes.js';
+import { productsRouter } from './features/products/products.routes.js';
+import { categoriesRouter } from './features/categories/categories.routes.js';
+import { usersRouter } from './features/users/users.routes.js';
+import { activityRouter } from './features/activity/activity.routes.js';
+import { feedbackRouter } from './features/feedback/feedback.routes.js';
+import { uploadsRouter } from './features/uploads/uploads.routes.js';
 
 export function createApp() {
   const app = express();
 
   app.disable('x-powered-by');
-  app.use(helmet());
+  app.use(helmet({
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        'style-src': ["'self'", "'unsafe-inline'"],
+        'img-src':   ["'self'", 'data:', 'https:'],
+      },
+    },
+  }));
   app.use(cors({ origin: env.FRONTEND_URL, credentials: true }));
   app.use(cookieParser());
   app.use(pinoHttp({ logger }));
@@ -40,6 +57,17 @@ export function createApp() {
   app.use('/api/votes', votesRouter);
   app.use('/api/comments', commentsRouter);
   app.use('/api/comparisons', comparisonsRouter);
+  app.use('/api/reviews', reviewsRouter);
+  app.use('/api/items', itemsRouter);
+  app.use('/api/products', productsRouter);
+  app.use('/api/categories', categoriesRouter);
+  app.use('/api/users', usersRouter);
+  app.use('/api/activity', activityRouter);
+  app.use('/api/feedback', feedbackRouter);
+  app.use('/api/uploads', uploadsRouter);
+
+  // Serve locally-uploaded files.
+  app.use('/uploads', express.static(path.resolve(env.UPLOAD_DIR)));
 
   app.use(notFoundHandler);
   app.use(errorHandler);

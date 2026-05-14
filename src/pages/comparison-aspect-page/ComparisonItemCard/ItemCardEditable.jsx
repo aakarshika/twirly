@@ -5,7 +5,7 @@ import VoteStats from './VoteStats/VoteStats';
 import './ComparisonItemCard.css';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useAuth } from '../../../contexts/AuthContext';
-import { supabase } from '../../../lib/supabase';
+import { apiClient } from '../../../lib/apiClient';
 import { createProduct, updateProduct, searchCategories, createCategory } from '../../../services/products';
 import { randomPastelColorHex } from '../../../lib/utils';
 
@@ -147,64 +147,26 @@ const ItemCardEditable = ({
     if (!file) return;
 
     try {
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 5 * 1024 * 1024) {
         setError('Image size should be less than 5MB');
         return;
       }
 
-      // Create a unique file name using timestamp
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-      // Create path with user ID (UUID) as folder name
-      const filePath = `${user.id}/${fileName}`;
+      const form = new FormData();
+      form.append('file', file);
+      const { data } = await apiClient.post('/uploads?bucket=product-pics', form, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
 
-      // Upload the file to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from('product-pics')
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: true
-        });
-
-      if (uploadError) throw uploadError;
-
-      // Get the public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('product-pics')
-        .getPublicUrl(filePath);
-
-      // Update both the file path and the image preview
-      setItemData(prev => ({
-        ...prev,
-        image_url: filePath // Store just the file path, not the full URL
-      }));
-
+      setItemData(prev => ({ ...prev, image_url: data.data.url }));
     } catch (err) {
       console.error('Error uploading product image:', err);
       setError(err.message || 'Failed to upload image');
     }
   };
 
-  const handleRemoveImage = async () => {
-    try {
-      if (itemData.image_url) {
-        // Delete the file from storage
-        const { error: deleteError } = await supabase.storage
-          .from('product-pics')
-          .remove([itemData.image_url]);
-
-        if (deleteError) throw deleteError;
-
-        // Update state
-        setItemData(prev => ({
-          ...prev,
-          image_url: ''
-        }));
-      }
-    } catch (err) {
-      console.error('Error removing image:', err);
-      setError(err.message || 'Failed to remove image');
-    }
+  const handleRemoveImage = () => {
+    setItemData(prev => ({ ...prev, image_url: '' }));
   };
 
   const handleColorChange = (e) => {
@@ -288,7 +250,7 @@ const ItemCardEditable = ({
 
             {itemData.image_url ? (
               <img
-                src={supabase.storage.from('product-pics').getPublicUrl(itemData.image_url).data.publicUrl}
+                src={itemData.image_url}
                 alt={itemData.name}
                 className="item-image"
                 loading="lazy"

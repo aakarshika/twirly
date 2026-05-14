@@ -1,71 +1,37 @@
-import { supabase } from '../lib/supabase';
+import apiClient from '../lib/apiClient';
 
 /**
- * Get user profile data
- * @param {string} userId - The ID of the user
- * @returns {Promise<Object>} The user's profile data with activity counts
+ * Get a user's profile + activity counts.
+ * Returns the nested shape { profile, votes_count, ... } that ProfileHeader + ContentTabs expect.
  */
 export const getUserProfile = async (userId) => {
-  try {
-    // 1. Get the user profile
-    const { data: profile, error: profileError } = await supabase
-      .from('user_preferences')
-      .select('*')
-      .eq('user_id', userId)
-      .single();
-
-    if (profileError) throw profileError;
-
-    // 2. Get the activity summary
-    const { data: activitySummary, error: summaryError } = await supabase
-      .from('user_activity_summary')
-      .select('total_votes, total_reviews, total_products, total_comparisons, total_likes_received')
-      .eq('user_id', userId)
-      .single();
-
-    if (summaryError) throw summaryError;
-
-    // Combine the data
-    return {
-      profile: profile,
-      votes_count: activitySummary.total_votes,
-      reviews_count: activitySummary.total_reviews,
-      products_count: activitySummary.total_products,
-      comparisons_count: activitySummary.total_comparisons,
-      likes_count: activitySummary.total_likes_received
-    };
-  } catch (error) {
-    console.error('Error fetching user profile:', error);
-    throw error;
-  }
+  const { data } = await apiClient.get(`/api/users/${userId}`);
+  const u = data.data;
+  if (!u) return null;
+  return {
+    profile: {
+      user_id:           u.user_id,
+      display_name:      u.display_name,
+      username:          u.username,
+      profile_image_url: u.profile_image_url,
+      bio:               u.bio,
+      created_at:        u.created_at,
+      updated_at:        u.updated_at,
+    },
+    votes_count:        u.total_votes,
+    reviews_count:      u.total_reviews,
+    products_count:     u.total_products,
+    comparisons_count:  u.total_comparisons,
+    likes_count:        u.total_likes_received,
+  };
 };
 
-/**
- * Update user profile data
- * @param {string} userId - The ID of the user
- * @param {Object} profileData - The profile data to update
- * @returns {Promise<Object>} The updated user profile
- */
-export const updateUserProfile = async (userId, profileData) => {
-  if (!userId) {
-    throw new Error('User ID is required');
-  }
-
-  try {
-    const { data, error } = await supabase
-      .from('user_preferences')
-      .upsert({
-        user_id: userId,
-        ...profileData,
-        updated_at: new Date().toISOString()
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
-  } catch (error) {
-    console.error('Error updating user profile:', error);
-    throw error;
-  }
-}; 
+export const updateUserProfile = async (profileData) => {
+  const { data } = await apiClient.put('/api/users/me', {
+    displayName:     profileData.display_name ?? profileData.displayName,
+    username:        profileData.username,
+    profileImageUrl: profileData.profile_image_url ?? profileData.profileImageUrl,
+    bio:             profileData.bio,
+  });
+  return data.data;
+};
