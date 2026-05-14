@@ -1,11 +1,6 @@
-import { supabase } from '../lib/supabase';
-import { Capacitor } from '@capacitor/core';
-import { Browser } from '@capacitor/browser';
-import { App } from '@capacitor/app';
-import { getRedirectUrl, isNativePlatform } from '../config/auth';
-
-// Create a service role client for admin operations
-const supabaseAdmin = supabase.auth.admin;
+import { authClient } from '../lib/authClient';
+import { apiClient } from '../lib/apiClient';
+import { getRedirectUrl } from '../config/auth';
 
 class AuthError extends Error {
   constructor(message, code) {
@@ -15,188 +10,124 @@ class AuthError extends Error {
   }
 }
 
+function rethrow(err, code) {
+  if (err instanceof AuthError) throw err;
+  throw new AuthError(err?.message || 'Auth error', code);
+}
+
+// Better Auth returns { data, error } from each call. Unwrap to the same shape
+// callers used to get from Supabase: { user, session }.
+function unwrap(result, code) {
+  if (result?.error) throw new AuthError(result.error.message, code);
+  return result?.data ?? null;
+}
+
 export const authService = {
-  // Get current session
   async getSession() {
     try {
-      const { data: { session }, error } = await supabase.auth.getSession();
-      if (error) throw new AuthError(error.message, 'SESSION_ERROR');
-      return session;
-    } catch (error) {
-      throw new AuthError(error.message, 'SESSION_ERROR');
+      const result = await authClient.getSession();
+      return unwrap(result, 'SESSION_ERROR');
+    } catch (err) {
+      rethrow(err, 'SESSION_ERROR');
     }
   },
 
-  // Get current user
   async getCurrentUser() {
     try {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (error) throw new AuthError(error.message, 'USER_ERROR');
-      return user;
-    } catch (error) {
-      throw new AuthError(error.message, 'USER_ERROR');
+      const data = await this.getSession();
+      return data?.user ?? null;
+    } catch (err) {
+      rethrow(err, 'USER_ERROR');
     }
   },
 
-  // Sign up with email and password
   async signUp(email, password) {
     try {
-      const redirectTo = getRedirectUrl();
-      const isNative = isNativePlatform();
-
-      // Set up app URL open listener for handling the callback
-      if (isNative) {
-        App.addListener('appUrlOpen', async ({ url }) => {
-          if (url.includes('auth/callback')) {
-            await this.handleAuthCallback(url);
-          }
-        });
-      }
-
-      const { data, error } = await supabase.auth.signUp({
+      const result = await authClient.signUp.email({
         email,
         password,
-        options: {
-          emailRedirectTo: redirectTo
-        }
+        // Better Auth requires `name` on email sign-up; default to the email
+        // localpart so the existing UI (which only collects email+password) keeps working.
+        name: email.split('@')[0],
       });
-      if (error) throw new AuthError(error.message, 'SIGNUP_ERROR');
-      return data;
-    } catch (error) {
-      throw new AuthError(error.message, 'SIGNUP_ERROR');
+      return unwrap(result, 'SIGNUP_ERROR');
+    } catch (err) {
+      rethrow(err, 'SIGNUP_ERROR');
     }
   },
 
-  // Handle auth callback from deep linking
-  async handleAuthCallback(url) {
-    try {
-      const params = new URLSearchParams(url.split('#')[1]);
-      const access_token = params.get('access_token');
-      const refresh_token = params.get('refresh_token');
-      
-      if (access_token && refresh_token) {
-        const { data: { session }, error } = await supabase.auth.setSession({
-          access_token,
-          refresh_token
-        });
-        
-        if (error) throw new AuthError(error.message, 'AUTH_CALLBACK_ERROR');
-        return session;
-      }
-    } catch (error) {
-      throw new AuthError(error.message, 'AUTH_CALLBACK_ERROR');
-    }
-  },
-
-  // Sign in with email and password
   async signIn(email, password) {
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-      if (error) throw new AuthError(error.message, 'SIGNIN_ERROR');
-      return data;
-    } catch (error) {
-      throw new AuthError(error.message, 'SIGNIN_ERROR');
+      const result = await authClient.signIn.email({ email, password });
+      return unwrap(result, 'SIGNIN_ERROR');
+    } catch (err) {
+      rethrow(err, 'SIGNIN_ERROR');
     }
   },
 
-  // Sign in with Google
   async signInWithGoogle() {
     try {
-      const isNative = isNativePlatform();
-      const redirectTo = getRedirectUrl();
-
-      // Set up app URL open listener for handling the callback
-      if (isNative) {
-        App.addListener('appUrlOpen', async ({ url }) => {
-          if (url.includes('auth/callback')) {
-            await this.handleAuthCallback(url);
-          }
-        });
-      }
-      
-      const options = {
+      const result = await authClient.signIn.social({
         provider: 'google',
-        options: {
-          redirectTo,
-          skipBrowserRedirect: isNative,
-          flowType: 'pkce'
-        }
-      };
-
-      const { data, error } = await supabase.auth.signInWithOAuth(options);
-      
-      if (error) throw new AuthError(error.message, 'GOOGLE_SIGNIN_ERROR');
-
-      if (isNative && data?.url) {
-        if (Capacitor.getPlatform() === 'ios') {
-          window.open(data.url, '_system');
-        } else {
-          await Browser.open({ 
-            url: data.url,
-            presentationStyle: 'fullscreen'
-          });
-        }
-      }
-      
-      return data;
-    } catch (error) {
-      throw new AuthError(error.message, 'GOOGLE_SIGNIN_ERROR');
+        callbackURL: getRedirectUrl(),
+      });
+      return unwrap(result, 'GOOGLE_SIGNIN_ERROR');
+    } catch (err) {
+      rethrow(err, 'GOOGLE_SIGNIN_ERROR');
     }
   },
 
-  // Sign out
   async signOut() {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw new AuthError(error.message, 'SIGNOUT_ERROR');
-    } catch (error) {
-      throw new AuthError(error.message, 'SIGNOUT_ERROR');
+      const result = await authClient.signOut();
+      return unwrap(result, 'SIGNOUT_ERROR');
+    } catch (err) {
+      rethrow(err, 'SIGNOUT_ERROR');
     }
   },
 
-  // Reset password
   async resetPassword(email) {
     try {
-      const redirectTo = getRedirectUrl();
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo
+      const result = await authClient.forgetPassword({
+        email,
+        redirectTo: getRedirectUrl(),
       });
-      if (error) throw new AuthError(error.message, 'RESET_PASSWORD_ERROR');
-      return data;
-    } catch (error) {
-      throw new AuthError(error.message, 'RESET_PASSWORD_ERROR');
+      return unwrap(result, 'RESET_PASSWORD_ERROR');
+    } catch (err) {
+      rethrow(err, 'RESET_PASSWORD_ERROR');
     }
   },
 
-  // Delete user account
-  async deleteUser() {
+  /**
+   * Mobile deep-link OAuth callback. Better Auth handles OAuth via its server-side
+   * callback URL, so on web there is nothing to do here. Native handling is wired
+   * in a later sprint when the Capacitor deep-link flow is reworked.
+   */
+  async handleAuthCallback(_url) {
+    return null;
+  },
+
+  /**
+   * Subscribe to session changes. Better Auth's React `useSession()` is the
+   * preferred path (used by `useAuthHook`); this shim only exists so legacy
+   * non-React callers keep compiling. Returns the Supabase-shaped subscription
+   * object the old API exposed.
+   */
+  onAuthStateChange(_callback) {
+    return { data: { subscription: { unsubscribe: () => {} } } };
+  },
+
+  /**
+   * Loads `user_preferences` for the given user. The table is added in Sprint 12;
+   * until then this resolves to null so consumers handle "no prefs yet" gracefully.
+   */
+  async getUserPreferences(_userId) {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new AuthError('No user found', 'DELETE_USER_ERROR');
-      
-      const { error } = await supabase.auth.admin.deleteUser(user.id, false);
-      if (error) throw new AuthError(error.message, 'DELETE_USER_ERROR');
-    } catch (error) {
-      throw new AuthError(error.message, 'DELETE_USER_ERROR');
+      const { data } = await apiClient.get('/users/me/preferences');
+      return data?.data ?? null;
+    } catch (err) {
+      if (err?.response?.status === 404) return null;
+      return null;
     }
   },
-
-  // Subscribe to auth state changes
-  onAuthStateChange(callback) {
-    return supabase.auth.onAuthStateChange(callback);
-  },
-
-  async getUserPreferences(userId) {
-    const { data, error } = await supabase
-      .from('user_preferences')
-      .select('*')
-      .eq('user_id', userId)
-      .single();
-
-    if (error) throw error;
-    return data;
-  }
-}; 
+};

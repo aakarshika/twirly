@@ -1,96 +1,56 @@
 import { useState, useEffect } from 'react';
+import { authClient } from '../lib/authClient';
 import { authService } from '../services/authService';
 
 export const useAuthHook = () => {
-  const [user, setUser] = useState(null);
+  const sessionState = authClient.useSession();
+  const session = sessionState?.data ?? null;
+  const sessionLoading = sessionState?.isPending ?? false;
+  const sessionError = sessionState?.error ?? null;
+
+  const user = session?.user ?? null;
+
   const [userPreferences, setUserPreferences] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Get initial session
-    const initializeAuth = async () => {
-      try {
-        const session = await authService.getSession();
-        setUser(session?.user ?? null);
-      } catch (error) {
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initializeAuth();
-
-    // Listen for auth changes
-    const { data: { subscription } } = authService.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+    if (sessionError) setError(sessionError.message ?? String(sessionError));
+  }, [sessionError]);
 
   useEffect(() => {
-    const fetchUserPreferences = async () => {
-      if (!user) return;
-      const userPreferences = await authService.getUserPreferences(user?.id);
-      setUserPreferences(userPreferences);
+    let cancelled = false;
+    const load = async () => {
+      if (!user?.id) {
+        setUserPreferences(null);
+        return;
+      }
+      const prefs = await authService.getUserPreferences(user.id);
+      if (!cancelled) setUserPreferences(prefs);
     };
-    fetchUserPreferences();
-  }, [user]);
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id]);
 
-  const signUp = async (email, password) => {
+  const wrap = (fn) => async (...args) => {
     try {
       setError(null);
-      const data = await authService.signUp(email, password);
-      return data;
-    } catch (error) {
-      setError(error.message);
-      throw error;
-    }
-  };
-
-  const signIn = async (email, password) => {
-    try {
-      setError(null);
-      const data = await authService.signIn(email, password);
-      return data;
-    } catch (error) {
-      setError(error.message);
-      throw error;
-    }
-  };
-
-  const signInWithGoogle = async () => {
-    try {
-      setError(null);
-      const data = await authService.signInWithGoogle();
-      return data;
-    } catch (error) {
-      setError(error.message);
-      throw error;
-    }
-  };
-
-  const signOut = async () => {
-    try {
-      setError(null);
-      await authService.signOut();
-    } catch (error) {
-      setError(error.message);
-      throw error;
+      return await fn(...args);
+    } catch (err) {
+      setError(err.message);
+      throw err;
     }
   };
 
   return {
     user,
     userPreferences,
-    loading,
+    loading: sessionLoading,
     error,
-    signUp,
-    signIn,
-    signInWithGoogle,
-    signOut,
+    signUp: wrap(authService.signUp.bind(authService)),
+    signIn: wrap(authService.signIn.bind(authService)),
+    signInWithGoogle: wrap(authService.signInWithGoogle.bind(authService)),
+    signOut: wrap(authService.signOut.bind(authService)),
   };
-}; 
+};
