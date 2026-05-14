@@ -5,7 +5,7 @@ import {
     findRunnerUp,
     countTotalVotes,
     calculateProcessedItems,
-} from '../../services/comparisonService';
+} from '../../services/comparisonResults';
 import Avatar from '../../components/common/Avatar';
 import { getPublicUrl } from '../../lib/utils';
 import { useNavigate } from 'react-router-dom';

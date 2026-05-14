@@ -177,8 +177,16 @@ export const useComparisonSets = paramId => {
           ),
         );
 
+        // Normalize: the two endpoints return different field names
+        // (category_id/category_name vs id/name). Map both to { id, name } so
+        // downstream consumers see a single shape.
         setAllCategories([
-          ...userCategoryPreferences.map(item => ({ ...item, userCat: true })),
+          ...userCategoryPreferences.map(item => ({
+            ...item,
+            id: item.category_id,
+            name: item.category_name,
+            userCat: true,
+          })),
           ...filtered.map(cat => ({ ...cat, userCat: false })),
         ]);
       } catch (err) {

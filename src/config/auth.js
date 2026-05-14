@@ -5,7 +5,7 @@ export const isNativePlatform = () => Capacitor.isNativePlatform();
 export const getPlatform = () => Capacitor.getPlatform();
 
 const REDIRECT_URLS = {
-  web: import.meta.env.VITE_BASE_URL ? import.meta.env.VITE_BASE_URL+'/auth/callback' : 'http://localhost:3000/auth/callback',
+  web: import.meta.env.VITE_BASE_URL ? import.meta.env.VITE_BASE_URL+'/auth/callback' : 'http://localhost:5734/auth/callback',
   ios: import.meta.env.VITE_IOS_REDIRECT_URL ? import.meta.env.VITE_IOS_REDIRECT_URL+'/auth/callback' : 'twirly://auth/callback',
   android: import.meta.env.VITE_ANDROID_REDIRECT_URL ? import.meta.env.VITE_ANDROID_REDIRECT_URL+'/auth/callback' : 'twirly://auth/callback',
 };

@@ -16,6 +16,7 @@
     "web:preview": "vite preview",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"src/**/*.{js,jsx}\"",
+    "seed": "node --env-file=server/.env devSeedScripts/seed.js",
     "cap:sync": "npx cap sync",
     "xcode:clean": "cd ios/App && xcodebuild clean && cd ../..",
     "ios:clean": "npm run xcode:clean && npm run web:build && npx cap sync ios",

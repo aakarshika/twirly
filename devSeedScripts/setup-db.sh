@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# server/scripts/setup-db.sh
+# devSeedScripts/setup-db.sh
 # Apply static SQL objects (views, functions) to the database.
 # Idempotent — safe to re-run.
 #
 # Usage:
-#   DATABASE_URL=postgresql://... bash server/scripts/setup-db.sh
+#   DATABASE_URL=postgresql://... bash devSeedScripts/setup-db.sh
 
 set -euo pipefail
 

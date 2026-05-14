@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAuth } from '../../contexts/AuthContext';
-import { userService } from '../../services/userService';
+import { userPreferences } from '../../services/userPreferences';
 import { useEffect } from 'react';
 import { useLoading } from '../../contexts/LoadingContext';
 
@@ -57,9 +57,9 @@ const OnboardingFlow = () => {
   const fetchPreferences = async () => {
     setLoading('global', true, 'Loading preferences...');
     try {
-      const prefs = await userService.getUserPreferences(user.id);
-      const notif = await userService.getUserNotificationSettings(user.id);
-      const cats = await userService.getUserCategoryPreferences(user.id);
+      const prefs = await userPreferences.getUserPreferences(user.id);
+      const notif = await userPreferences.getUserNotificationSettings(user.id);
+      const cats = await userPreferences.getUserCategoryPreferences(user.id);
       setPreferences(prefs);
       setNotificationPreferences(notif);
       setCategoryPreferences(cats);
@@ -96,7 +96,7 @@ const OnboardingFlow = () => {
   }, [onboardingComplete, navigate]);
 
   const fetchAllCategories = async () => {
-    const cats = await userService.getAllCategories();
+    const cats = await userPreferences.getAllCategories();
     setAllCategories(cats);
   };
 
@@ -147,7 +147,7 @@ const OnboardingFlow = () => {
     }
 
     try {
-      const isAvailable = await userService.checkUsernameAvailability(username);
+      const isAvailable = await userPreferences.checkUsernameAvailability(username);
       if (!isAvailable) {
         setUsernameError('Username is already taken');
         return false;
@@ -182,7 +182,7 @@ const OnboardingFlow = () => {
   const handleComplete = async () => {
     setLoading('global', true, 'Saving preferences...');
     try {
-      await userService.saveUserPreferences(user.id, {
+      await userPreferences.saveUserPreferences(user.id, {
         display_name: username,
         id: preferences?.id || null,
         categories: selectedCategories,

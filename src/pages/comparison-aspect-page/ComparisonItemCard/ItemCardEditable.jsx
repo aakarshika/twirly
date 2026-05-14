@@ -153,7 +153,7 @@ const ItemCardEditable = ({
 
       const form = new FormData();
       form.append('file', file);
-      const { data } = await apiClient.post('/uploads?bucket=product-pics', form, {
+      const { data } = await apiClient.post('/api/uploads?bucket=product-pics', form, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 

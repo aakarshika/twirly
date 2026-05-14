@@ -15,8 +15,7 @@ function rethrow(err, code) {
   throw new AuthError(err?.message || 'Auth error', code);
 }
 
-// Better Auth returns { data, error } from each call. Unwrap to the same shape
-// callers used to get from Supabase: { user, session }.
+// Better Auth returns { data, error } from each call. Unwrap to { user, session }.
 function unwrap(result, code) {
   if (result?.error) throw new AuthError(result.error.message, code);
   return result?.data ?? null;
@@ -107,23 +106,9 @@ export const authService = {
     return null;
   },
 
-  /**
-   * Subscribe to session changes. Better Auth's React `useSession()` is the
-   * preferred path (used by `useAuthHook`); this shim only exists so legacy
-   * non-React callers keep compiling. Returns the Supabase-shaped subscription
-   * object the old API exposed.
-   */
-  onAuthStateChange(_callback) {
-    return { data: { subscription: { unsubscribe: () => {} } } };
-  },
-
-  /**
-   * Loads `user_preferences` for the given user. The table is added in Sprint 12;
-   * until then this resolves to null so consumers handle "no prefs yet" gracefully.
-   */
-  async getUserPreferences(_userId) {
+  async getUserPreferences(userId) {
     try {
-      const { data } = await apiClient.get('/users/me/preferences');
+      const { data } = await apiClient.get(`/api/users/${userId}`);
       return data?.data ?? null;
     } catch (err) {
       if (err?.response?.status === 404) return null;

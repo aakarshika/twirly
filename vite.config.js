@@ -23,12 +23,12 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
-      port: 3000,
+      port: 5734,
       open: true,
       host: true,
       proxy: {
         '/api': {
-          target: 'http://localhost:4000',
+          target: 'http://localhost:8734',
           changeOrigin: true,
           secure: false,
         },

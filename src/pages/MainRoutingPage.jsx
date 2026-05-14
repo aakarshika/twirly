@@ -15,7 +15,7 @@ import Settings from './settings-page/Settings';
 import Landing from '../components/auth/Landing';
 import ForgotPassword from '../components/auth/ForgotPassword';
 import OnboardingFlow from './onboarding/OnboardingFlow';
-import { userService } from '../services/userService';
+import { userPreferences } from '../services/userPreferences';
 import SearchPage from './search/search-page/SearchPage';
 import UserProfile from './user-dashboard-page/UserProfile';
 import FeedbackModal from './feedback/FeedbackModal';
@@ -58,9 +58,9 @@ const ProtectedRoute = ({ children }) => {
       try {
         setLoading('onboarding', true, 'Checking onboarding status...');
         const [prefs, cats, notif] = await Promise.all([
-          userService.getUserPreferences(user.id),
-          userService.getUserCategoryPreferences(user.id),
-          userService.getUserNotificationSettings(user.id),
+          userPreferences.getUserPreferences(user.id),
+          userPreferences.getUserCategoryPreferences(user.id),
+          userPreferences.getUserNotificationSettings(user.id),
         ]);
 
         if (mounted) {

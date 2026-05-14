@@ -11,7 +11,7 @@ function toNotificationsArray(row) {
   ];
 }
 
-export const userService = {
+export const userPreferences = {
   async getUserPreferences(userId) {
     try {
       const { data } = await apiClient.get(`/api/users/${userId}`);
@@ -56,7 +56,6 @@ export const userService = {
 
   /**
    * Save display_name, category preferences, and notification settings.
-   * Mirrors the old Supabase multi-table write used by OnboardingFlow.
    */
   async saveUserPreferences(userId, preferences) {
     const ops = [];

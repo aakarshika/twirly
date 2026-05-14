@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { comparisonSetService } from '../services/comparisonSetService';
+import { comparisonComments } from '../services/comparisonComments';
 import { userActivityService, ACTIVITY_TYPES, ENTITY_TYPES } from '../services/userActivityService';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -18,7 +18,7 @@ export const useComments = setId => {
     if (!setId) return;
     try {
       setLoading(true);
-      const data = await comparisonSetService.fetchComments(setId, user?.id, page);
+      const data = await comparisonComments.fetchComments(setId, user?.id, page);
       setComments(prev => page === 1 ? data.comments : [...prev, ...data.comments]);
       setHasMore(data.hasMore);
     } catch (err) {
@@ -45,7 +45,7 @@ export const useComments = setId => {
   const handleSubmitComment = async text => {
     if (!text.trim() || !user?.id) return;
     try {
-      const comment = await comparisonSetService.postComment(setId, user.id, text);
+      const comment = await comparisonComments.postComment(setId, user.id, text);
       const enrichedComment = {
         ...comment,
         text: comment.content ?? text,
@@ -75,7 +75,7 @@ export const useComments = setId => {
     try {
       const comment = comments.find(c => c.id === commentId);
       const hasLiked = comment?.reactions?.some(r => r.user_id === user.id && r.reaction_type === 'like');
-      await comparisonSetService.toggleCommentLike(commentId, user.id, hasLiked);
+      await comparisonComments.toggleCommentLike(commentId, user.id, hasLiked);
       await userActivityService.logActivity({
         userId: user.id,
         activityType: hasLiked ? ACTIVITY_TYPES.UNLIKE_COMMENT : ACTIVITY_TYPES.LIKE_COMMENT,
@@ -103,7 +103,7 @@ export const useComments = setId => {
     try {
       const reply = comments.flatMap(c => c.replies || []).find(r => r.id === replyId);
       const hasLiked = reply?.reactions?.some(r => r.user_id === user.id && r.reaction_type === 'like');
-      await comparisonSetService.toggleReplyLike(replyId, user.id, hasLiked);
+      await comparisonComments.toggleReplyLike(replyId, user.id, hasLiked);
       await userActivityService.logActivity({
         userId: user.id,
         activityType: hasLiked ? ACTIVITY_TYPES.UNLIKE_REPLY : ACTIVITY_TYPES.LIKE_REPLY,
@@ -132,7 +132,7 @@ export const useComments = setId => {
   const handleReply = async (commentId, replyText) => {
     if (!replyText.trim() || !user?.id) return;
     try {
-      const newReply = await comparisonSetService.postReply(commentId, user.id, replyText);
+      const newReply = await comparisonComments.postReply(commentId, user.id, replyText);
       await userActivityService.logActivity({
         userId: user.id,
         activityType: ACTIVITY_TYPES.COMMENT_REPLY,

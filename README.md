@@ -23,65 +23,95 @@ Live at [twirlyapp.com](https://twirlyapp.com)
 
 | Layer | Technology |
 |---|---|
-| Frontend | React, JavaScript, Vite, TailwindCSS |
-| Backend / DB | Supabase (PostgreSQL + PLpgSQL) |
-| Auth | Supabase Auth (email/password, session management) |
-| Mobile | Capacitor (iOS + Android) |
-| Deployment | Vercel |
+| Frontend | React 18, Vite, TailwindCSS, React Router 7 |
+| Backend  | Node.js + Express 5 (ESM), Drizzle ORM |
+| Database | PostgreSQL 16 |
+| Auth     | Better Auth (email/password + Google OAuth) |
+| Mobile   | Capacitor (iOS + Android) |
 
-> The database layer carries significant business logic — stored procedures and functions handle voting integrity, comparison ranking, and real-time result computation directly in PLpgSQL. This keeps the client thin and prevents result manipulation from the frontend.
+The repo is split into two workspaces: the Vite React app at the root, and the Express API in `server/`. They run side-by-side in dev via `concurrently`.
 
 ---
 
 ## Architecture
 
-    src/
-    ├── components/     # Reusable UI — themed, responsive
-    ├── contexts/       # React Context: auth, theme
-    ├── hooks/          # Custom hooks for data fetching and state
-    ├── pages/          # Route-level components
-    ├── services/       # Supabase client calls, abstracted per domain
-    ├── utils/          # Shared helpers
-    └── lib/            # Third-party configs (Supabase client, etc.)
+    /
+    ├── src/                 # React frontend
+    │   ├── components/      # Reusable UI — themed, responsive
+    │   ├── contexts/        # Auth, Theme, Header, Feedback, Loading, …
+    │   ├── hooks/           # Custom hooks
+    │   ├── pages/           # Route-level components
+    │   ├── services/        # API wrappers (per domain) — components never call apiClient directly
+    │   ├── lib/             # apiClient (axios), authClient (Better Auth), helpers
+    │   └── utils/           # Shared utilities
+    │
+    └── server/              # Express API
+        └── src/
+            ├── app.js       # Router mount point — read this first
+            ├── features/    # Feature folders: routes / controller / queries / schema / tests
+            ├── middleware/  # requireAuth, requireOwner, requireAdmin, optionalAuth, validate
+            ├── db/          # Drizzle schema + migrations (auto-run on boot)
+            └── config/      # env (Zod-validated), auth, db, storage
 
-**Theming** — all colors are driven by a theme token system via React Context. Components never hardcode colors. Switching themes is a single state change that cascades across the entire UI.
+**Theming** — all colors are driven by a theme token system via `ThemeContext`. Components never hardcode colors. Adding a new theme is one token object; no component changes.
 
-**Auth** — Supabase session is managed globally via `AuthContext`. Protected routes wrap sensitive pages. All API calls go through the service layer, never directly from components.
+**Auth** — Better Auth on the server (Drizzle adapter, session cookies). Frontend reads session via `AuthContext`. All requests use `apiClient` (axios with `withCredentials: true`); Vite proxies `/api/*` to `localhost:8734` in dev.
 
-**DB logic in PLpgSQL** — voting integrity, deduplication, and ranking are handled at the database layer via stored procedures. A compromised frontend cannot skew results — the source of truth lives in the DB.
+**Error contract** — server always responds with `{ error: { message, code } }`; the `apiClient` interceptor surfaces those on the thrown error. Preserved on both sides.
 
 ---
 
 ## Local Setup
 
 ```bash
-# Install dependencies
+# Install dependencies (root and server)
 npm install
+npm --prefix server install
 
-# Copy and configure environment
-cp .env.example .env
-# Add your Supabase project URL and anon key
+# Local Postgres
+docker compose up -d
 
-# Start dev server
-npm run dev
+# Environment
+cp server/.env.example server/.env
+# Set DATABASE_URL, BETTER_AUTH_SECRET (32+ chars), BETTER_AUTH_URL
+
+# Start everything (Postgres :7432, vite :5734, server :8734) — kills existing ports first
+make dev
 ```
 
-For Supabase setup (tables, RLS policies, stored procedures): see `SUPABASE_SETUP.md`
+Migrations run automatically on server boot. To generate a new one after editing `server/src/db/schema/`:
 
-For deploying to iOS/Android via Capacitor: see `DEPLOYMENT.md`
+```bash
+npm --prefix server run db:generate
+npm --prefix server run db:studio   # optional GUI
+```
+
+---
+
+## Building & shipping
+
+```bash
+npm run web:build:prod    # production web build → dist/
+npm run ios:prod          # web build → cap sync ios → open Xcode
+npm run android:prod      # web build → cap sync android → open Android Studio
+```
+
+Build modes (`dev` / `stage` / `prod`) are Vite modes loaded by `loadEnv` and drive `VITE_*` env selection.
 
 ---
 
 ## Design decisions worth noting
 
-**Heavy DB logic in PLpgSQL** — voting integrity, deduplication, and ranking are handled at the database layer via stored procedures. This means a compromised or modified frontend cannot skew results — the source of truth lives in the DB.
+**Self-hosted backend.** Originally on Supabase; migrated to a self-hosted Express + Drizzle + Better Auth stack over the Sprint 1–15 effort tracked in `SPRINT_TRACKER.md`. The migration removed the parallel-Supabase path entirely — there is no fallback.
 
-**Theme system as first-class feature** — rather than a cosmetic toggle, the theme system is architecturally built in. Every UI component reads from the theme context. Adding a new theme means adding one token object — no component changes needed.
+**Feature-folder backend.** Each `server/src/features/<name>/` is self-contained: `routes.js` is mounted in `app.js`; `controller.js` handles requests; `queries.js` is the only layer touching the DB. Tests live next to the code they cover.
 
-**Capacitor for mobile** — same React codebase ships to web, iOS, and Android. Safe area insets and touch interactions are handled at the component level to ensure native feel across platforms.
+**Theme system as first-class feature.** Every UI component reads tokens from `ThemeContext`. Adding a new theme means adding one token object — no component changes needed.
+
+**Capacitor for mobile.** Same React codebase ships to web, iOS, and Android. Safe-area insets and touch interactions are handled at the component level.
 
 ---
 
 ## Status
 
-Live and deployed at [twirlyapp.com](https://twirlyapp.com). Beta testing in progress — see `BETA_TESTING.md` for the current testing scope and known issues.
+Live and deployed at [twirlyapp.com](https://twirlyapp.com). Progress is tracked in `SPRINT_TRACKER.md`; planning docs are `SPRINT_PLAN.md`, `REFACTOR_PLAN.md` (backend), and `UI_REDESIGN_PLAN.md` (frontend).

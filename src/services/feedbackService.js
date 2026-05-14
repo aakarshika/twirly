@@ -3,7 +3,7 @@ import { apiClient } from '../lib/apiClient';
 async function uploadImage(file, bucket = 'feedback-images') {
   const form = new FormData();
   form.append('file', file);
-  const { data } = await apiClient.post(`/uploads?bucket=${bucket}`, form, {
+  const { data } = await apiClient.post(`/api/uploads?bucket=${bucket}`, form, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
   return data.data.url;

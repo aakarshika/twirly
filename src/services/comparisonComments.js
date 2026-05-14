@@ -17,7 +17,7 @@ function transformComment(c) {
   };
 }
 
-export const comparisonSetService = {
+export const comparisonComments = {
   async fetchComments(setId, _userId, page = 1, pageSize = 3) {
     const { data } = await apiClient.get(`/api/comparisons/${setId}/comments`, {
       params: { page, pageSize },

@@ -58,7 +58,7 @@ const LanguageSettings = () => {
   };
 
   const _handleSave = () => {
-    // TODO: Implement save functionality with Supabase
+    // TODO: Implement save functionality
     // console.log('Saving language settings:', languageSettings);
   };
 

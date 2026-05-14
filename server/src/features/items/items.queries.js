@@ -54,7 +54,7 @@ export async function getItem(id) {
 
 /**
  * Average metrics from the item_metric_averages view.
- * Returns [] if the view doesn't exist yet (Supabase only).
+ * Returns [] if the view doesn't exist yet.
  */
 export async function getItemMetrics(id) {
   try {

@@ -24,7 +24,7 @@ const AccountSettings = () => {
   };
 
   const handleSave = () => {
-    // TODO: Implement save functionality with Supabase
+    // TODO: Implement save functionality
     setIsEditing(false);
   };
 

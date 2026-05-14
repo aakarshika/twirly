@@ -39,7 +39,7 @@ const ProfileSettings = () => {
         setLoading('global', true, 'Loading profile...');
         setError(null);
 
-        const { data } = await apiClient.get(`/users/${user.id}`);
+        const { data } = await apiClient.get(`/api/users/${user.id}`);
         const profile = data.data;
 
         if (profile?.profile_image_url) {
@@ -85,7 +85,7 @@ const ProfileSettings = () => {
     if (!validateUsernameInput(value)) return false;
 
     try {
-      const { data } = await apiClient.get('/users/check-username', { params: { username: value } });
+      const { data } = await apiClient.get('/api/users/check-username', { params: { username: value } });
       if (!data.data?.available) {
         setUsernameError('Username is already taken');
         return false;
@@ -133,7 +133,7 @@ const ProfileSettings = () => {
     try {
       const form = new FormData();
       form.append('file', file);
-      const { data: uploadData } = await apiClient.post('/uploads?bucket=profile-pics', form, {
+      const { data: uploadData } = await apiClient.post('/api/uploads?bucket=profile-pics', form, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
@@ -141,7 +141,7 @@ const ProfileSettings = () => {
       setProfileData(prev => ({ ...prev, profileImageUrl: url }));
       setAvatarPreview(url);
 
-      await apiClient.put('/users/me', { profile_image_url: url });
+      await apiClient.put('/api/users/me', { profile_image_url: url });
     } catch (err) {
       console.error('Error uploading profile picture:', err);
       setError(err.message);
@@ -151,7 +151,7 @@ const ProfileSettings = () => {
   const handleSave = async () => {
     try {
       setLoading('global', true, 'Saving profile...');
-      await apiClient.put('/users/me', {
+      await apiClient.put('/api/users/me', {
         username: profileData.username,
         display_name: profileData.display_name,
         bio: profileData.bio,
