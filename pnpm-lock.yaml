@@ -160,7 +160,7 @@ importers:
         specifier: ^5.0.8
         version: 5.4.21(@types/node@25.8.0)(terser@5.47.1)
 
-  server:
+  apps/api:
     dependencies:
       '@aws-sdk/client-s3':
         specifier: ^3.700.0

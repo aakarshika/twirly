@@ -3,7 +3,7 @@
 > Source of truth for the pnpm-workspaces migration. Tick boxes as work lands.
 >
 > Branch: `backend-add` (per project convention — sequential commits, single PR to `main`)
-> Last updated: 2026-05-14 (M1 complete)
+> Last updated: 2026-05-14 (M1 + M2 complete)
 > Status legend: `[ ]` not started · `[~]` in progress · `[x]` done · `[!]` blocked
 
 ## Goal
@@ -68,18 +68,19 @@ Goal: Switch from npm-with-`--prefix` to pnpm workspaces. `server/` stays in pla
 - [x] Lint green: `pnpm run lint` (root) and `pnpm --filter @twirly/api lint`
 - [x] Commit: `chore(repo): adopt pnpm workspaces (server/ stays in place)`
 
-### Sprint M2 — Move `server/` → `apps/api/`
+### Sprint M2 — Move `server/` → `apps/api/` ✅
 
-- [ ] `mkdir -p apps && git mv server apps/api`
-- [ ] Update `pnpm-workspace.yaml` to `packages: ["apps/*"]`
-- [ ] Update root script `seed`: `--env-file=server/.env` → `--env-file=apps/api/.env`
-- [ ] `pnpm install` to refresh symlinks
-- [ ] Smoke test: server starts, migrations apply, `:8734/api/health` responds
-- [ ] Smoke test: `pnpm --filter @twirly/api test` passes
-- [ ] Smoke test: `pnpm --filter @twirly/api exec drizzle-kit generate` works
-- [ ] Smoke test: `npm run seed` (against fresh DB) creates 6 personas
-- [ ] Lint green (both workspaces)
-- [ ] Commit: `chore(repo): move server/ to apps/api/`
+- [x] `mkdir -p apps && git mv server apps/api`
+- [x] Update `pnpm-workspace.yaml` to `packages: ["apps/*"]`
+- [x] Update root script `seed`: `--env-file=server/.env` → `--env-file=apps/api/.env`
+- [x] Update doc comment in `devSeedScripts/seed.js` to reference `apps/api/.env`
+- [x] `pnpm install` to refresh symlinks
+- [x] Smoke test: server starts, migrations apply, `:8734/api/health` returns 200 (proxy + direct)
+- [x] Smoke test: `pnpm --filter @twirly/api test` → 234/234 pass
+- [x] Smoke test: `pnpm exec drizzle-kit generate` loads from `apps/api/`
+- [ ] (Deferred to M6 acceptance gate) `pnpm run seed` against fresh DB — skipped to avoid mutating current DB state
+- [x] Lint green (both workspaces)
+- [x] Commit: `chore(repo): move server/ to apps/api/`
 
 ### Sprint M3 — Move frontend → `apps/web/` + Capacitor rewire
 

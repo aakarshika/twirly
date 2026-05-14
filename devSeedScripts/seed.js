@@ -17,8 +17,8 @@
  *
  * Requires:
  *   - Postgres running (docker compose up -d)
- *   - Server running (npm run dev:server)  — signup goes through Better Auth API
- *   - server/.env populated
+ *   - Server running (pnpm run dev:server)  — signup goes through Better Auth API
+ *   - apps/api/.env populated
  */
 
 import pg from 'pg';
