@@ -1,4 +1,7 @@
 {
+  "buildCommand": "pnpm --filter @twirly/web build:prod",
+  "outputDirectory": "apps/web/dist",
+  "installCommand": "pnpm install --frozen-lockfile",
   "rewrites": [
     {
       "source": "/.well-known/apple-app-site-association",

@@ -3,7 +3,7 @@
 > Source of truth for the pnpm-workspaces migration. Tick boxes as work lands.
 >
 > Branch: `backend-add` (per project convention — sequential commits, single PR to `main`)
-> Last updated: 2026-05-14 (M1 + M2 complete)
+> Last updated: 2026-05-14 (M1 + M2 + M3 complete)
 > Status legend: `[ ]` not started · `[~]` in progress · `[x]` done · `[!]` blocked
 
 ## Goal
@@ -82,22 +82,23 @@ Goal: Switch from npm-with-`--prefix` to pnpm workspaces. `server/` stays in pla
 - [x] Lint green (both workspaces)
 - [x] Commit: `chore(repo): move server/ to apps/api/`
 
-### Sprint M3 — Move frontend → `apps/web/` + Capacitor rewire
+### Sprint M3 — Move frontend → `apps/web/` + Capacitor rewire ✅
 
 Highest-risk sprint. One focused session.
 
-- [ ] `mkdir -p apps/web`
-- [ ] `git mv` each: `src/`, `index.html`, `public/`, `vite.config.js`, `tailwind.config.js`, `postcss.config.js`, `.eslintrc.cjs`, `.env`
-- [ ] Create `apps/web/package.json` with `"name": "@twirly/web"` + frontend deps only
-- [ ] Slim root `package.json` to orchestration scripts only (concurrently is the only devDep)
-- [ ] Update `capacitor.config.json`: `"webDir": "apps/web/dist"`
-- [ ] Update `vercel.json` (or Vercel dashboard rootDirectory)
-- [ ] `pnpm install`
-- [ ] Smoke test: `pnpm --filter @twirly/web dev` on `:5734`, alias imports resolve, Tailwind classes render
-- [ ] Smoke test: `pnpm --filter @twirly/web build` writes to `apps/web/dist/`
-- [ ] Smoke test: `make dev` brings up both servers; proxy `/api/*` works
-- [ ] Lint green (both workspaces)
-- [ ] Commit: `chore(repo): move frontend to apps/web/, slim root package.json`
+- [x] `mkdir -p apps/web`
+- [x] `git mv` each: `src/`, `index.html`, `public/`, `vite.config.js`, `tailwind.config.js`, `postcss.config.js`, `.eslintrc.cjs`; `mv .env` (untracked)
+- [x] Create `apps/web/package.json` with `"name": "@twirly/web"` + frontend deps
+- [x] Slim root `package.json` to orchestration scripts only (`concurrently` is the only devDep)
+- [x] **Add `.npmrc` with `public-hoist-pattern[]=@capacitor/*`** — required so the iOS Podfile's `../../node_modules/@capacitor/ios` walk still resolves to repo root once all `@capacitor/*` deps live in `apps/web/`. Also makes `npx cap` discoverable at root via hoisted `node_modules/.bin/cap`.
+- [x] Update `capacitor.config.json`: `"webDir": "apps/web/dist"`
+- [x] Update `vercel.json` — added `buildCommand`, `outputDirectory: apps/web/dist`, `installCommand: pnpm install --frozen-lockfile`
+- [x] `pnpm install`
+- [x] Smoke test: hoist verified — `node_modules/@capacitor/{android,app,browser,cli,core,ios,share,status-bar}` all present at repo root, plus `node_modules/.bin/cap`
+- [x] Smoke test: `pnpm --filter @twirly/web build` writes `apps/web/dist/index.html` (~7.9s)
+- [x] Smoke test: `make dev` brings up both servers; `/api/health` 200 via proxy; Vite serves `/src/index.jsx` and `/src/App.jsx` from `apps/web/src/`
+- [x] Lint green: `pnpm -r lint` covers both workspaces
+- [x] Commit: `chore(repo): move frontend to apps/web/, slim root package.json`
 
 ### Sprint M4 — Move `ios/` + `android/` → `native/`
 
