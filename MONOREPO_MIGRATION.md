@@ -3,7 +3,7 @@
 > Source of truth for the pnpm-workspaces migration. Tick boxes as work lands.
 >
 > Branch: `backend-add` (per project convention — sequential commits, single PR to `main`)
-> Last updated: 2026-05-14 (M1 + M2 + M3 complete)
+> Last updated: 2026-05-14 (M1 + M2 + M3 + M4 complete; native-side `pod install` / Xcode build / gradle sync deferred to user since macOS/Android dev tools aren't installed on this machine)
 > Status legend: `[ ]` not started · `[~]` in progress · `[x]` done · `[!]` blocked
 
 ## Goal
@@ -100,18 +100,20 @@ Highest-risk sprint. One focused session.
 - [x] Lint green: `pnpm -r lint` covers both workspaces
 - [x] Commit: `chore(repo): move frontend to apps/web/, slim root package.json`
 
-### Sprint M4 — Move `ios/` + `android/` → `native/`
+### Sprint M4 — Move `ios/` + `android/` → `native/` ✅
 
-- [ ] Update `capacitor.config.json` to add `ios.path: "native/ios"` and `android.path: "native/android"` BEFORE moving
-- [ ] `mkdir -p native && git mv ios native/ios && git mv android native/android`
-- [ ] Hand-edit `native/ios/App/Podfile`: bump every `../../node_modules/` → `../../../node_modules/` (1 require_relative + 6 pod paths)
-- [ ] `cd native/ios/App && pod install` (regenerates Podfile.lock)
-- [ ] `npx cap sync android` (regenerates `capacitor.settings.gradle` with correct depth)
-- [ ] Update root script `xcode:clean`: `cd ios/App` → `cd native/ios/App`
-- [ ] Smoke test: `npm run ios:dev` → Xcode opens, build succeeds
-- [ ] Smoke test: `npm run android:dev` → Android Studio opens, gradle sync succeeds
-- [ ] Lint green (both workspaces)
-- [ ] Commit: `chore(native): move ios/ and android/ under native/, repath Podfile`
+- [x] Update `capacitor.config.json`: add `ios.path: "native/ios"` and `android.path: "native/android"`
+- [x] `mkdir -p native && git mv ios native/ios && git mv android native/android`
+- [x] Hand-edit `native/ios/App/Podfile`: bump every `../../node_modules/` → `../../../node_modules/` (1 `require_relative` + 6 pod paths)
+- [x] Update root script `xcode:clean`: `cd ios/App` → `cd native/ios/App`
+- [x] **Discovered:** `cap sync` reads plugin declarations from the package.json adjacent to `capacitor.config.json` (root's, post-M3 slim). All `@capacitor/*` deps relocated from `apps/web/package.json` → root `package.json`. JS imports in apps/web still resolve via Node's parent-dir `node_modules` walk-up to the hoisted `<repo>/node_modules/@capacitor/*` symlinks.
+- [x] `npx cap sync android` → regenerates `native/android/capacitor.settings.gradle` with all 5 entries (`:capacitor-android` + `:capacitor-app` + `:capacitor-browser` + `:capacitor-share` + `:capacitor-status-bar`). Paths point at the real pnpm store location, which gradle follows correctly.
+- [x] `pnpm --filter @twirly/web build` → 7.07s, no resolution errors for `@capacitor/{core,status-bar,app,share}` imports
+- [ ] **Deferred** (requires CocoaPods + Xcode, not installed locally): `cd native/ios/App && pod install` to regenerate `Podfile.lock` with the corrected `../../../node_modules/` paths.
+- [ ] **Deferred** (requires Xcode): `pnpm run ios:dev` → Xcode opens, build succeeds.
+- [ ] **Deferred** (requires Android Studio + JDK): `pnpm run android:dev` → Android Studio opens, gradle sync succeeds.
+- [x] Lint green via `pnpm -r lint`; `make dev` healthy on `:5734` + `:8734`
+- [x] Commit: `chore(native): move ios/ and android/ under native/, repath Podfile`
 
 ### Sprint M5 — Introduce `packages/shared/`
 

@@ -24,14 +24,16 @@
     }
   },
   "ios": {
+    "path": "native/ios",
     "allowsLinkPreview": true,
     "scrollEnabled": true,
     "backgroundColor": "green",
     "limitsNavigationsToAppBoundDomains": true
   },
   "android": {
+    "path": "native/android",
     "allowMixedContent": false,
     "captureInput": true,
     "webContentsDebuggingEnabled": false
   }
-} 
+}

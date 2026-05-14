@@ -15,7 +15,7 @@
     "lint": "pnpm -r lint",
     "seed": "node --env-file=apps/api/.env devSeedScripts/seed.js",
     "cap:sync": "npx cap sync",
-    "xcode:clean": "cd ios/App && xcodebuild clean && cd ../..",
+    "xcode:clean": "cd native/ios/App && xcodebuild clean",
     "ios:clean": "pnpm run xcode:clean && pnpm run build && npx cap sync ios",
     "ios:open": "npx cap open ios",
     "ios:dev": "pnpm run xcode:clean && pnpm run build && npx cap sync ios && pnpm run ios:open",
@@ -24,6 +24,16 @@
     "android:dev": "pnpm run build && npx cap sync android && npx cap open android",
     "android:stage": "pnpm run build:stage && npx cap sync android && npx cap open android",
     "android:prod": "pnpm run build:prod && npx cap sync android && npx cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.2.0",
+    "@capacitor/app": "^7.0.1",
+    "@capacitor/browser": "^7.0.1",
+    "@capacitor/cli": "^7.2.0",
+    "@capacitor/core": "^7.2.0",
+    "@capacitor/ios": "^7.2.0",
+    "@capacitor/share": "^7.0.1",
+    "@capacitor/status-bar": "^7.0.1"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

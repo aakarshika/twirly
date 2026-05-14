@@ -7,6 +7,31 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@capacitor/android':
+        specifier: ^7.2.0
+        version: 7.6.5(@capacitor/core@7.6.5)
+      '@capacitor/app':
+        specifier: ^7.0.1
+        version: 7.1.2(@capacitor/core@7.6.5)
+      '@capacitor/browser':
+        specifier: ^7.0.1
+        version: 7.0.5(@capacitor/core@7.6.5)
+      '@capacitor/cli':
+        specifier: ^7.2.0
+        version: 7.6.5
+      '@capacitor/core':
+        specifier: ^7.2.0
+        version: 7.6.5
+      '@capacitor/ios':
+        specifier: ^7.2.0
+        version: 7.6.5(@capacitor/core@7.6.5)
+      '@capacitor/share':
+        specifier: ^7.0.1
+        version: 7.0.4(@capacitor/core@7.6.5)
+      '@capacitor/status-bar':
+        specifier: ^7.0.1
+        version: 7.0.6(@capacitor/core@7.6.5)
     devDependencies:
       concurrently:
         specifier: ^9.2.1
@@ -84,30 +109,6 @@ importers:
 
   apps/web:
     dependencies:
-      '@capacitor/android':
-        specifier: ^7.2.0
-        version: 7.6.5(@capacitor/core@7.6.5)
-      '@capacitor/app':
-        specifier: ^7.0.1
-        version: 7.1.2(@capacitor/core@7.6.5)
-      '@capacitor/browser':
-        specifier: ^7.0.1
-        version: 7.0.5(@capacitor/core@7.6.5)
-      '@capacitor/cli':
-        specifier: ^7.2.0
-        version: 7.6.5
-      '@capacitor/core':
-        specifier: ^7.2.0
-        version: 7.6.5
-      '@capacitor/ios':
-        specifier: ^7.2.0
-        version: 7.6.5(@capacitor/core@7.6.5)
-      '@capacitor/share':
-        specifier: ^7.0.1
-        version: 7.0.4(@capacitor/core@7.6.5)
-      '@capacitor/status-bar':
-        specifier: ^7.0.1
-        version: 7.0.6(@capacitor/core@7.6.5)
       '@heroicons/react':
         specifier: ^2.2.0
         version: 2.2.0(react@18.3.1)

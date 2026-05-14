@@ -13,14 +13,6 @@
     "format": "prettier --write \"src/**/*.{js,jsx}\""
   },
   "dependencies": {
-    "@capacitor/android": "^7.2.0",
-    "@capacitor/app": "^7.0.1",
-    "@capacitor/browser": "^7.0.1",
-    "@capacitor/cli": "^7.2.0",
-    "@capacitor/core": "^7.2.0",
-    "@capacitor/ios": "^7.2.0",
-    "@capacitor/share": "^7.0.1",
-    "@capacitor/status-bar": "^7.0.1",
     "@heroicons/react": "^2.2.0",
     "@sentry/react": "^9.17.0",
     "@sentry/tracing": "^7.120.3",
