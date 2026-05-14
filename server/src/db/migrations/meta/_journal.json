@@ -15,6 +15,13 @@
       "when": 1778762243282,
       "tag": "0001_trending_tables",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1778762605893,
+      "tag": "0002_moaning_unicorn",
+      "breakpoints": true
     }
   ]
 }

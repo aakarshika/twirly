@@ -3,7 +3,7 @@
 **Purpose:** Live progress board for the work described in `SPRINT_PLAN.md`. Agents update this file after every task. **This file — not chat memory — is the source of truth for "what's done."**
 
 **Last updated:** 2026-05-14
-**Current sprint:** Sprint 5 (Trending / Home Feed) — implementation complete; tests + manual smoke deferred per user direction.
+**Current sprint:** Sprint 6 (Read-only Utility Services) — implementation complete; tests passing; manual smoke deferred per user direction.
 
 **Branching strategy (revised 2026-05-14):** All sprint work lands on the `backend-add` branch as sequential commits. The original plan called for per-sprint branches; the user opted to consolidate to keep overhead down. Each sprint still gets its own commit(s) so history is clean, but there's a single eventual PR (or a small number of grouped PRs) rather than 15. Branch column below is now historical / informational.
 
@@ -239,23 +239,29 @@
 ## Sprint 6 — Read-only Utility Services
 
 **Branch:** `backend-add` (consolidated per revised strategy)
-**Status:** not started
+**Status:** implementation complete; 38 tests passing (10 files); manual smoke deferred per user direction
 
 ### Backend
-- [ ] `server/src/features/karma/` — `GET /api/karma?userId=` and `?userIds[]=`
-- [ ] `server/src/features/search/` — `GET /api/search?q=&type=&limit=`
-- [ ] `server/src/features/polls/` — `GET /api/polls?userId=` (auth)
+- [x] `server/src/db/schema/karma.js` — `user_activity_log` Drizzle schema
+- [x] `server/src/db/migrations/0002_moaning_unicorn.sql` — `user_activity_log` table + indexes + `karma_points` view (generated via `db:generate`, view appended manually)
+- [x] `server/src/features/karma/` — `GET /api/karma?userId=` and `?userIds[]=`
+- [x] `server/src/features/search/` — `GET /api/search?q=&type=sets|items|users|all&limit=` (ILIKE on real tables — no Supabase views needed)
+- [x] `server/src/features/polls/` — `GET /api/polls` (requireAuth; uses req.user.id)
+- [x] All three routers mounted in `app.js`
 
 ### Frontend
-- [ ] Rewrite `src/services/karmaService.js`
-- [ ] Rewrite `src/services/searchService.js`
-- [ ] Rewrite `src/services/polls.js`
-- [ ] Token migration on search-result surfaces
+- [x] Rewrite `src/services/karmaService.js` — apiClient
+- [x] Rewrite `src/services/searchService.js` — apiClient (dropped Supabase views; single `/api/search?type=all` call)
+- [x] Rewrite `src/services/polls.js` — apiClient (no userId param; auth session used server-side)
+- [x] Token migration on `SearchPage.jsx` — `currentTheme.colors.*` inline styles replaced with Tailwind semantic tokens; `useTheme` import removed
 
 ### Tests
-- [ ] Karma queries + controller — happy + error
-- [ ] Search queries + controller — happy + error
-- [ ] Polls queries + controller — happy + error
+- [x] `karma.queries.test.js` — 6 tests
+- [x] `karma.controller.test.js` — 4 tests
+- [x] `search.queries.test.js` — 6 tests
+- [x] `search.controller.test.js` — 5 tests
+- [x] `polls.queries.test.js` — 3 tests
+- [x] `polls.controller.test.js` — 2 tests
 
 ### Manual smoke
 - [ ] Karma badge renders correctly on a profile
@@ -267,7 +273,9 @@
 - [ ] Sprint commit landed on `backend-add`
 
 ### Carry-over
-- (none yet)
+- **`karma_points` view is empty until Sprint 13**: `user_activity_log` has no rows yet — karma endpoints return 0/empty correctly. Activity logging lands in Sprint 13.
+- **`polls.js` callers**: `getUserPolls` now takes no `userId` argument (session-based). No current callers in the app import it, so no breakage. Any new caller should omit the userId.
+- **Search type=all response shape**: returns `{ sets, items, users }` (nested). Callers expecting a flat array would break — but `SearchPage` and `SearchBar` both call `searchAll` which returns this shape, matching the old contract.
 
 ---
 
