@@ -33,11 +33,11 @@ Every sprint has the same shape so agents can pattern-match:
 - **E2E:** Out of scope for this plan. Add a Playwright pass later if needed.
 - **Type check + lint:** `npm run lint` (frontend) and `npm run lint --workspace=server` (once server exists) must be clean before DoD.
 
-### 0.3 Branching & shipping
-- One branch per sprint, named `sprint-NN-<slug>` (e.g., `sprint-04-chrome`).
-- PR title: `Sprint NN: <Goal>`. PR body includes the Manual Smoke Checklist with results.
-- Squash-merge into `main`. Tag the merge commit `sprint-NN`.
-- Do not bundle two sprints into one PR.
+### 0.3 Branching & shipping (revised 2026-05-14)
+- **Single working branch (`backend-add`)** carries all sprint work as sequential commits. The original "one branch per sprint" rule was dropped to keep solo-dev overhead down; live tracking already happens in `SPRINT_TRACKER.md`.
+- **One commit per sprint** (or per logical unit within a sprint). Commit subject: `Sprint NN: <goal>`. Commit body summarizes what landed.
+- **PRs are batched** rather than per-sprint. When the user decides to open a PR, group the sprint commits and squash- or merge-into-main as a unit. Tags (`sprint-NN`) may be applied to the relevant commit at that time.
+- The historical "Branch:" header in each sprint block of `SPRINT_TRACKER.md` is informational only.
 
 ### 0.4 Status conventions in the tracker
 - `[ ]` not started

@@ -3,7 +3,7 @@
 **Purpose:** Live progress board for the work described in `SPRINT_PLAN.md`. Agents update this file after every task. **This file — not chat memory — is the source of truth for "what's done."**
 
 **Last updated:** 2026-05-14
-**Current sprint:** Sprint 3 (UI Foundation — tokens, ThemeContext, theme-aware status bar, chrome sweep landed; tests + manual smoke pending per user direction to test after implementation)
+**Current sprint:** Sprint 4 (Chrome Redesign) — about to start. Sprints 1–3 implementation committed; tests + manual smoke deferred until end of redesign per user direction.
 
 **Branching strategy (revised 2026-05-14):** All sprint work lands on the `backend-add` branch as sequential commits. The original plan called for per-sprint branches; the user opted to consolidate to keep overhead down. Each sprint still gets its own commit(s) so history is clean, but there's a single eventual PR (or a small number of grouped PRs) rather than 15. Branch column below is now historical / informational.
 
@@ -17,15 +17,15 @@
 1. When starting a task: change `[ ]` → `[~]` and update **Last updated** at top.
 2. When finishing a task: change `[~]` → `[x]`.
 3. When blocked: change to `[!]` + add `— blocked: <reason>` on the same line.
-4. When a sprint's **Definition of Done** is fully ticked: set the sprint header to `✓ Sprint NN — <name> (merged YYYY-MM-DD)` and bump **Current sprint** at the top.
+4. When a sprint's **Definition of Done** is fully ticked: set the sprint header to `✓ Sprint NN — <name> (committed YYYY-MM-DD)` and bump **Current sprint** at the top. ("Merged" is reserved for the eventual PR merge to `main`, which happens once for the whole redesign rather than per sprint.)
 5. Anything discovered mid-sprint that doesn't fit: append to the sprint's **Carry-over** list, never silently expand scope.
 
 ---
 
-## Sprint 1 — Backend Foundation
+## ✓ Sprint 1 — Backend Foundation (committed 2026-05-14)
 
-**Branch:** `backend-add` (working branch; rename to `sprint-01-backend-foundation` at PR time if desired)
-**Status:** ✅ all in-scope items complete (local Postgres via Docker; legacy Supabase RLS step N/A)
+**Branch:** `backend-add` (all sprint work consolidated here per revised strategy)
+**Status:** ✅ all in-scope items complete; committed 2026-05-14 as `91884bc` (bundled with Sprint 2)
 
 ### Backend
 - [x] Root `package.json`: add `concurrently`; root `npm run dev` runs frontend + backend
@@ -57,7 +57,7 @@
 ### Definition of Done
 - [x] All smoke items checked
 - [x] `server/` lint clean
-- [ ] PR merged + tag `sprint-01`
+- [x] Committed on `backend-add` (commit `91884bc`, 2026-05-14, bundled with Sprint 2). PR/tag deferred per revised branching strategy.
 
 ### Carry-over
 - **Drizzle schema bootstrap (Sprint 2 prep)**: existing `src/server/sql/ddl/*` files cannot be applied to vanilla Postgres without rewrite — they reference `auth.users` / `auth.uid()` / `auth.role()`, declare RLS policies + an `on_auth_user_created` trigger, and contain bugs (forward ref to `comparison_sets`, duplicate `unique_reply_reaction` constraint, index on non-existent `items.category_id`). Decision: hand-write Drizzle schema per-feature as each sprint touches its tables. Better Auth's own 4 tables (`user`, `session`, `account`, `verification`) come up in Sprint 2.
@@ -66,10 +66,10 @@
 
 ---
 
-## Sprint 2 — Auth Migration (Better Auth)
+## ✓ Sprint 2 — Auth Migration (Better Auth) (committed 2026-05-14)
 
-**Branch:** `backend-add` (continued from Sprint 1 — single PR will ship both per decision 2026-05-14)
-**Status:** code complete; backend smoked end-to-end; in-browser UI smoke pending
+**Branch:** `backend-add` (bundled with Sprint 1)
+**Status:** code complete; backend smoked end-to-end; committed 2026-05-14 as `91884bc`; in-browser UI smoke pending per user direction to defer tests/smoke until end of redesign
 
 ### Backend
 - [x] `server/src/config/auth.js` — Better Auth + Drizzle adapter, email/password + Google (Google only registered when env credentials are present)
@@ -106,23 +106,23 @@
 
 ### Definition of Done
 - [x] Mapping migration committed; idempotent or clearly one-shot — N/A (no legacy data)
-- [ ] PR merged + tag `sprint-02` (single PR will tag both `sprint-01` and `sprint-02`)
-- [x] Supabase Auth still configured (rollback path) — `@supabase/supabase-js` still installed; `src/lib/supabase.js` untouched; non-auth services still use it. Removal deferred to Sprint 14 per plan.
+- [x] Committed on `backend-add` (commit `91884bc`, bundled with Sprint 1). PR/tag deferred per revised branching strategy.
+- [x] All Supabase Auth code paths removed from the frontend auth flow (`AuthContext`, `useAuthHook`, `authService`, `authClient`). Better Auth is now the sole auth runtime — no fallback or rollback path retained. The `@supabase/supabase-js` package is still installed because non-auth services call it directly; those usages are rewritten as each feature sprint touches its service, and the package + `src/lib/supabase.js` + `VITE_SUPABASE_*` env vars are terminally removed in Sprint 14.
 
 ### Carry-over
 - **Google OAuth credentials**: set `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` in `server/.env`, then re-run the Google sign-in smoke. Config branch in `auth.js` already gates the provider on these being present.
 - **Resend API key**: set `RESEND_API_KEY` + `EMAIL_FROM` in `server/.env` to send real reset-password emails. Without them, `src/lib/mailer.js` logs the would-be send via pino instead of crashing.
 - **Native deep-link OAuth callback**: the old `authService.handleAuthCallback(url)` (called from `MainRoutingPage.jsx:165`) is now a noop. Better Auth handles OAuth callbacks server-side; the Capacitor `appUrlOpen` path needs a fresh design when native auth UX is revisited. Track as a Sprint 12/15 follow-up.
 - **`user_preferences` table**: `authService.getUserPreferences()` currently returns `null` (hits a not-yet-existing `/users/me/preferences` route and swallows the 404). Real implementation lands in Sprint 12.
-- **`@supabase/supabase-js` version major bump**: leave for Sprint 14 cleanup.
+- **Dead test surface removed (2026-05-14)**: deleted orphaned `src/pages/TestPage.jsx` + `src/components/test/SupabaseTest.jsx` (no routes pointed at them; only kept Supabase alive in dead code).
 - **Frontend `better-auth` version**: installed `^1.6.11` on the frontend; server still on `^1.2.7`. Bumping the server to 1.6.x is a single-line change but out of scope here — file under Sprint 14 hardening unless a client/server protocol mismatch surfaces sooner.
 
 ---
 
 ## Sprint 3 — UI Foundation
 
-**Branch:** `sprint-03-ui-foundation`
-**Status:** implementation complete; tests + manual smoke pending
+**Branch:** `backend-add` (consolidated per revised strategy)
+**Status:** implementation complete; committed 2026-05-14 as `3858e92`; tests + manual smoke pending per user direction
 
 ### Frontend
 - [x] `tailwind.config.js` — semantic token palette (bg, surface, surface-elevated, text, text-muted, text-inverse, border, border-strong, primary, primary-fg, success, warning, danger, overlay) wired via `rgb(var(--token) / <alpha-value>)` so opacity utilities still work
@@ -145,8 +145,8 @@
 - [ ] Lighthouse contrast on Trending + Compare → pass
 
 ### Definition of Done
-- [ ] All smoke checked
-- [ ] PR merged + tag `sprint-03`
+- [x] Implementation committed on `backend-add` (commit `3858e92`, 2026-05-14)
+- [ ] All smoke checked — deferred per user direction to run tests after full redesign
 
 ### Carry-over
 - (none yet)
@@ -155,7 +155,7 @@
 
 ## Sprint 4 — Chrome Redesign
 
-**Branch:** `sprint-04-chrome`
+**Branch:** `backend-add` (consolidated per revised strategy)
 **Status:** not started
 
 ### Decisions to make at start
@@ -183,8 +183,9 @@
 - [ ] Every tab navigates to correct route; active indicator updates
 
 ### Definition of Done
-- [ ] PR includes decisions for the two open questions
-- [ ] PR merged + tag `sprint-04`
+- [x] Decisions on the two open questions recorded (see "Decisions to make at start" above)
+- [ ] All smoke checked
+- [ ] Sprint commit landed on `backend-add`
 
 ### Carry-over
 - (none yet)
@@ -193,7 +194,7 @@
 
 ## Sprint 5 — Trending / Home Feed
 
-**Branch:** `sprint-05-trending`
+**Branch:** `backend-add` (consolidated per revised strategy)
 **Status:** not started
 
 ### Backend
@@ -220,7 +221,7 @@
 - [ ] No `supabase.rpc` calls in network tab
 
 ### Definition of Done
-- [ ] PR merged + tag `sprint-05`
+- [ ] Sprint commit landed on `backend-add`
 
 ### Carry-over
 - (none yet)
@@ -229,7 +230,7 @@
 
 ## Sprint 6 — Read-only Utility Services
 
-**Branch:** `sprint-06-utilities`
+**Branch:** `backend-add` (consolidated per revised strategy)
 **Status:** not started
 
 ### Backend
@@ -255,7 +256,7 @@
 - [ ] No supabase calls for these surfaces
 
 ### Definition of Done
-- [ ] PR merged + tag `sprint-06`
+- [ ] Sprint commit landed on `backend-add`
 
 ### Carry-over
 - (none yet)
@@ -264,7 +265,7 @@
 
 ## Sprint 7 — Compare / Votes
 
-**Branch:** `sprint-07-votes`
+**Branch:** `backend-add` (consolidated per revised strategy)
 **Status:** not started
 
 ### Backend
@@ -293,7 +294,7 @@
 - [ ] All 3 themes render compare card correctly
 
 ### Definition of Done
-- [ ] PR merged + tag `sprint-07`
+- [ ] Sprint commit landed on `backend-add`
 
 ### Carry-over
 - (none yet)
@@ -302,7 +303,7 @@
 
 ## Sprint 8 — Comments & Reactions
 
-**Branch:** `sprint-08-comments`
+**Branch:** `backend-add` (consolidated per revised strategy)
 **Status:** not started
 
 ### Backend
@@ -327,7 +328,7 @@
 - [ ] Comments not hidden behind iOS home indicator
 
 ### Definition of Done
-- [ ] PR merged + tag `sprint-08`
+- [ ] Sprint commit landed on `backend-add`
 
 ### Carry-over
 - (none yet)
@@ -336,7 +337,7 @@
 
 ## Sprint 9 — Reviews & Item Metrics
 
-**Branch:** `sprint-09-reviews`
+**Branch:** `backend-add` (consolidated per revised strategy)
 **Status:** not started
 
 ### Backend
@@ -360,7 +361,7 @@
 - [ ] Double-like from same user → single row in `review_likes`
 
 ### Definition of Done
-- [ ] PR merged + tag `sprint-09`
+- [ ] Sprint commit landed on `backend-add`
 
 ### Carry-over
 - (none yet)
@@ -369,7 +370,7 @@
 
 ## Sprint 10 — Products & Categories
 
-**Branch:** `sprint-10-products`
+**Branch:** `backend-add` (consolidated per revised strategy)
 **Status:** not started
 
 ### Backend
@@ -395,7 +396,7 @@
 - [ ] Non-owner gets 403 on edit/delete
 
 ### Definition of Done
-- [ ] PR merged + tag `sprint-10`
+- [ ] Sprint commit landed on `backend-add`
 
 ### Carry-over
 - (none yet)
@@ -404,7 +405,7 @@
 
 ## Sprint 11 — Comparisons CRUD (HIGH RISK)
 
-**Branch:** `sprint-11-comparisons`
+**Branch:** `backend-add` (consolidated per revised strategy)
 **Status:** not started
 
 ### Prep
@@ -436,7 +437,7 @@
 - [ ] Get unpublished draft → returns it
 
 ### Definition of Done
-- [ ] PR merged + tag `sprint-11`
+- [ ] Sprint commit landed on `backend-add`
 
 ### Carry-over
 - (none yet)
@@ -445,7 +446,7 @@
 
 ## Sprint 12 — Users & Dashboard (HIGH RISK)
 
-**Branch:** `sprint-12-users-dashboard`
+**Branch:** `backend-add` (consolidated per revised strategy)
 **Status:** not started
 
 ### Prep
@@ -480,7 +481,7 @@
 - [ ] Delete throwaway account → all data removed, signed out
 
 ### Definition of Done
-- [ ] PR merged + tag `sprint-12`
+- [ ] Sprint commit landed on `backend-add`
 
 ### Carry-over
 - (none yet)
@@ -489,7 +490,7 @@
 
 ## Sprint 13 — Activity + Feedback + Uploads
 
-**Branch:** `sprint-13-activity-feedback-uploads`
+**Branch:** `backend-add` (consolidated per revised strategy)
 **Status:** not started
 
 ### Backend
@@ -516,7 +517,7 @@
 - [ ] Non-admin → 403 on admin routes
 
 ### Definition of Done
-- [ ] PR merged + tag `sprint-13`
+- [ ] Sprint commit landed on `backend-add`
 
 ### Carry-over
 - (none yet)
@@ -525,7 +526,7 @@
 
 ## Sprint 14 — Cleanup & Hardening
 
-**Branch:** `sprint-14-hardening`
+**Branch:** `backend-add` (consolidated per revised strategy)
 **Status:** not started
 
 ### Backend
@@ -555,7 +556,7 @@
 - [ ] Prod build serves frontend from Express correctly
 
 ### Definition of Done
-- [ ] PR merged + tag `sprint-14`
+- [ ] Sprint commit landed on `backend-add`
 
 ### Carry-over
 - (none yet)
@@ -564,7 +565,7 @@
 
 ## Sprint 15 — QA & Native Polish
 
-**Branch:** `sprint-15-qa`
+**Branch:** `backend-add` (consolidated per revised strategy)
 **Status:** not started
 
 ### Visual QA matrix (3 themes × 3 form factors × 3 platforms = 27 cells)
@@ -594,7 +595,7 @@
 ### Definition of Done
 - [ ] Matrix fully ticked
 - [ ] Any defects fixed in-sprint or filed as issues with severity
-- [ ] PR merged + tag `sprint-15`
+- [ ] Sprint commit landed on `backend-add`
 
 ### Carry-over
 - (none yet)
