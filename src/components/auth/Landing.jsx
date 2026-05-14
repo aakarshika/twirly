@@ -1,256 +1,153 @@
-import { useState, useEffect } from 'react';
-import { useNavigate, Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { useTheme } from '../../contexts/ThemeContext';
-import { User } from 'lucide-react';
+import { useState } from 'react';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useMediaQuery } from 'react-responsive';
+import { useAuth } from '../../contexts/AuthContext';
+import { themes } from '@styles/themes';
+import { PaperGrain } from '@components/riso';
 import { config } from '../../config';
-import { isNativePlatform } from '../../config/auth';
 import Login from './Login';
 import Signup from './Signup';
-import TwirlingTwirlyLogo from './TwirlingTwirlyLogo';
-// Mobile Landing Component
-const MobileLanding = ({ currentTheme, _handleSocialAuth, _loading, modalType, setModalType }) => {
-
-  const openModal = type => {
-    setModalType(type);
-  };
-  if (modalType === 'login') {
-    return <Login source="MOBILE" onGoToSignup={() => setModalType('signup')} onGoHome={() => setModalType(null)} />;
-  } else if (modalType === 'signup') {
-    return <Signup source="MOBILE" onGoToLogin={() => setModalType('login')} onGoHome={() => setModalType(null)} />;
-  }
-  return (
-    <div className="flex flex-col  mt-24">
-      {/* Environment Indicator */}
-      <div
-        className="absolute top-0 right-0 mt-12 mr-4 px-3 py-1 rounded-full text-sm font-medium"
-        style={{
-          backgroundColor: config.environment === 'development' ? '#4CAF50' :
-            config.environment === 'staging' ? '#FFA726' : '#F44336',
-          color: 'white',
-        }}
-      >
-        {config.environment.toUpperCase()}
-      </div>
-
-      <div className="flex flex-col px-6  items-center justify-between">
-        {/* Logo and Title */}
-        <div className="flex flex-col items-center space-y-6 mb-12">
-          <TwirlingTwirlyLogo />
-          <div className="text-center">
-            <h1 className="text-3xl font-bold" style={{ color: currentTheme.colors.text }}>
-              Welcome to Twirly
-            </h1>
-            <p className="text-lg mt-2" style={{ color: currentTheme.colors.text }}>
-              Your opinions matter here.
-            </p>
-          </div>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex flex-row w-full mt-24">
-          <button
-            onClick={() => openModal('login')}
-            className="w-full p-4 text-sm font-medium rounded-lg flex items-center justify-center gap-2"
-            style={{
-              color: currentTheme.colors.text,
-              backgroundColor: 'rgba(255, 255, 255, 0.8)',
-              border: `1px solid ${currentTheme.colors.border}`,
-            }}
-          >
-            <User className="w-4 h-4" />
-            Login
-          </button>
-          <button
-            onClick={() => openModal('signup')}
-            className="w-full p-4 text-sm font-medium rounded-lg flex items-center justify-center gap-2"
-            style={{
-              color: currentTheme.colors.text,
-              backgroundColor: 'rgba(255, 255, 255, 0.8)',
-              border: `1px solid ${currentTheme.colors.border}`,
-            }}
-          >
-            <User className="w-4 h-4" />
-            Sign Up
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// Web Landing Component
-const WebLanding = ({ currentTheme, _handleSocialAuth, _loading, modalType, setModalType }) => {
-  return (
-    <div className="flex items-center justify-center">
-      {/* Environment Indicator */}
-      <div
-        className="absolute top-4 right-4 px-3 py-1 rounded-full text-sm font-medium"
-        style={{
-          backgroundColor: config.environment === 'development' ? '#4CAF50' :
-            config.environment === 'staging' ? '#FFA726' : '#F44336',
-          color: 'white',
-        }}
-      >
-        {config.environment.toUpperCase()}
-      </div>
-
-      {/* Background decorative elements */}
-      <motion.div className="absolute inset-0 overflow-hidden pointer-events-none"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1 }}>
-        <motion.div className="absolute -top-40 -right-40 w-80 h-80 rounded-full opacity-20"
-          style={{ backgroundColor: 'rgba(205, 170, 240, 0.6)' }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1, scale: 1.2, x: 100, y: 100 }}
-          transition={{ duration: 4, delay: 0.5, ease: "easeInOut", repeat: Infinity, repeatType: "reverse" }}></motion.div>
-        <motion.div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full opacity-20"
-          style={{ backgroundColor: 'rgba(158, 158, 253, 0.5)' }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1, scale: 1.2, x: 100, y: 100 }}
-          transition={{ duration: 3, delay: 1.5, ease: "easeInOut", repeat: Infinity, repeatType: "loop" }}></motion.div>
-      </motion.div>
-
-      <div className="max-w-4xl w-full mx-auto px-8 flex items-center justify-between">
-        {/* Left side - Logo and Text */}
-        <div className="flex-1 space-y-8">
-          <div className="flex flex-col space-y-6">
-            <div className="w-full items-center justify-center">
-              <TwirlingTwirlyLogo />
-            </div>
-            <div className="w-full items-center justify-center">
-              <h1 className="text-5xl text-center font-bold" style={{ color: currentTheme.colors.text }}>
-                Welcome to Twirly
-              </h1>
-              <p className="text-xl mt-4 text-center" style={{ color: currentTheme.colors.text }}>
-                Your opinions matter here.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Right side - Action Buttons */}
-        <div className="flex-1 space-y-6 pl-12">
-          {modalType !== 'signup' ?
-            (<Login source="WEB" onGoToSignup={() => setModalType('signup')} onGoHome={() => setModalType(null)} />)
-            : (<Signup source="WEB" onGoToLogin={() => setModalType('login')} onGoHome={() => setModalType(null)} />)}
-        </div>
-      </div>
-    </div>
-  );
-};
 
 export default function Landing() {
-  const [modalType, setModalType] = useState(null);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const { user, signIn, signInWithGoogle, error: authError } = useAuth();
-  const { currentTheme } = useTheme();
-  const isMobile = useMediaQuery({ maxWidth: 767 });
+  const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+  const [view, setView] = useState('login');
+  const [mode, setMode] = useState('light');
+  const t = themes[mode];
 
-  // Get verification message from navigation state or URL parameters
+  if (user) return <Navigate to="/dashboard" replace />;
+
   const verificationMessage = location.state?.message;
-  const [verificationStatus, setVerificationStatus] = useState(null);
 
-  useEffect(() => {
-    // Check if we're coming back from email verification
-    const searchParams = new URLSearchParams(location.search);
-    const type = searchParams.get('type');
-    const token = searchParams.get('token');
-
-    if (type === 'signup' && token) {
-      setVerificationStatus('success');
-      // Clear the URL parameters without refreshing the page
-      window.history.replaceState({}, document.title, window.location.pathname);
-
-      // If we're in native app and have the email from state, try to auto-login
-      if (isNativePlatform() && location.state?.email) {
-        handleAutoLogin(location.state.email);
-        // console.log("handleAutoLogin", "location.state.email", location.state.email);
-      }
-    }
-  });
-
-  const handleAutoLogin = async email => {
-    // console.log("handleAutoLogin", "email", email, "handleeeeeee");
-    setLoading(true);
-    try {
-      // Try to sign in with the email from signup
-      await signIn(email, location.state?.password || '');
-      navigate('/dashboard');
-    } catch (error) {
-      console.error('Auto-login failed:', error);
-      // If auto-login fails, we'll just show the success message and let user login manually
-      setError('Please log in with your credentials');
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    if (user) {
-      navigate('/dashboard');
-    }
-  }, [user, navigate]);
-
-  if (user) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  const handleSocialAuth = async provider => {
-    setError('');
-    setLoading(true);
-    try {
-      if (provider === 'google') {
-        await signInWithGoogle();
-      } else {
-        throw new Error('Invalid provider');
-      }
-    } catch (error) {
-      setError(error.message || `Failed to sign in with ${provider}. Please try again.`);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const envColor = {
+    production: null,
+    staging: t.mustard,
+    development: t.blue,
+  }[config.environment] ?? t.blue;
 
   return (
-    <div className="">
-      {verificationStatus === 'success' && (
-        <div className="mt-4 p-4 rounded-lg bg-green-50 text-green-700 text-sm text-center">
-          Your email has been verified successfully! You can now log in.
+    <div
+      style={{ background: t.bg, color: t.ink, minHeight: '100vh', fontFamily: '"Fraunces", serif' }}
+      className="relative overflow-x-hidden"
+    >
+      <PaperGrain blend={t.blend} />
+
+      {/* Env badge — hidden in production */}
+      {config.environment !== 'production' && (
+        <div
+          className="absolute top-4 left-4 z-20 px-2 py-0.5 rounded-full"
+          style={{
+            background: envColor, color: '#fff',
+            fontFamily: '"Caveat", cursive', fontSize: 13,
+          }}
+        >
+          {config.environment}
         </div>
       )}
-      {verificationMessage && !verificationStatus && (
-        <div className="mt-4 p-4 rounded-lg bg-blue-50 text-blue-700 text-sm text-center">
-          {verificationMessage}
-        </div>
-      )}
-      {isMobile ? (
-        <MobileLanding
-          currentTheme={currentTheme}
-          handleSocialAuth={handleSocialAuth}
-          loading={loading}
-          modalType={modalType}
-          setModalType={setModalType}
-        />
-      ) : (
-        <WebLanding
-          currentTheme={currentTheme}
-          handleSocialAuth={handleSocialAuth}
-          loading={loading}
-          modalType={modalType}
-          setModalType={setModalType}
-        />
-      )}
-      {(error || authError) && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 px-4 py-2 rounded-lg text-sm text-white bg-red-500">
-          {error || authError}
-        </div>
-      )}
+
+      {/* Theme toggle */}
+      <button
+        onClick={() => setMode(m => (m === 'light' ? 'dark' : 'light'))}
+        className="absolute top-4 right-5 z-20"
+        style={{
+          background: 'none', border: 'none', cursor: 'pointer',
+          fontFamily: '"Caveat", cursive', fontSize: 15,
+          color: t.ink, opacity: 0.5,
+        }}
+      >
+        {mode === 'light' ? '◐ dark' : '◑ light'}
+      </button>
+
+      {/* Content */}
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-5 py-14">
+
+        {/* Brand mark */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          style={{ textAlign: 'center', marginBottom: 32 }}
+        >
+          <button
+            onClick={() => navigate('/')}
+            style={{
+              background: 'none', border: 'none', cursor: 'pointer',
+              fontFamily: '"DM Serif Display", serif', fontStyle: 'italic',
+              fontSize: 'clamp(36px, 8vw, 52px)', color: t.ink, lineHeight: 1,
+              padding: 0,
+            }}
+          >
+            twirly.
+          </button>
+          <p
+            style={{
+              fontFamily: '"Caveat", cursive', fontSize: 17,
+              color: t.ink, opacity: 0.5, margin: '4px 0 0',
+            }}
+          >
+            vote. argue. repeat.
+          </p>
+        </motion.div>
+
+        {/* Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          style={{
+            width: '100%', maxWidth: 400,
+            background: t.bgDeep,
+            border: `1.5px solid ${t.ink}18`,
+            borderRadius: 6,
+            padding: '28px 24px',
+          }}
+        >
+          {/* Tab switcher */}
+          <div style={{ display: 'flex', borderBottom: `1.5px solid ${t.ink}15`, marginBottom: 26 }}>
+            {[
+              { key: 'login', label: 'log in.' },
+              { key: 'signup', label: 'sign up.' },
+            ].map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => setView(key)}
+                style={{
+                  flex: 1, padding: '8px 0',
+                  background: 'none', border: 'none',
+                  borderBottom: view === key ? `2px solid ${t.red}` : '2px solid transparent',
+                  marginBottom: -1.5,
+                  fontFamily: '"DM Serif Display", serif', fontStyle: 'italic',
+                  fontSize: 18,
+                  color: view === key ? t.ink : `${t.ink}50`,
+                  cursor: 'pointer', transition: 'color 0.2s',
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {view === 'login'
+            ? <Login t={t} onSwitch={() => setView('signup')} />
+            : <Signup t={t} onSwitch={() => setView('login')} />
+          }
+        </motion.div>
+
+        {/* Verification message from email signup flow */}
+        {verificationMessage && (
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            style={{
+              marginTop: 20, fontFamily: '"Fraunces", serif', fontSize: 14,
+              color: t.blue, textAlign: 'center', maxWidth: 360,
+            }}
+          >
+            {verificationMessage}
+          </motion.p>
+        )}
+      </div>
     </div>
   );
 }

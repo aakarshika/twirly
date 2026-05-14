@@ -35,11 +35,17 @@ const ItemCell = ({ item }) => {
   );
 };
 
-const TrendingCard = ({ set }) => {
+const DEFAULT_ITEM_COUNT = 4;
+
+const TrendingCard = ({ set, itemCount = DEFAULT_ITEM_COUNT }) => {
   const navigate = useNavigate();
-  const items = (set.items || []).slice(0, 2);
+  const items = (set.items || []).slice(0, itemCount);
+  const n = items.length;
 
   const handleClick = () => navigate(`/compare/${set.set_id}`);
+
+  // 1 → single tile, 2 → 1×2, 3 → 1×3, 4 → 2×2, 5–6 → 2×3, 7+ → 2×4 etc.
+  const cols = n <= 1 ? 1 : n <= 3 ? n : n === 4 ? 2 : Math.ceil(n / 2);
 
   return (
     <button
@@ -47,14 +53,16 @@ const TrendingCard = ({ set }) => {
       onClick={handleClick}
       className="w-full text-left rounded-lg overflow-hidden bg-surface border border-border hover:border-primary/40 transition-all duration-150 active:scale-[0.98]"
     >
-      {/* A vs B items */}
-      <div className="grid grid-cols-2 h-32">
-        {items.length >= 2 ? (
+      <div
+        className="grid h-32"
+        style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+      >
+        {n > 0 ? (
           items.map(item => <ItemCell key={item.id} item={item} />)
         ) : (
           <div
-            className="col-span-2 flex items-center justify-center h-32"
-            style={{ backgroundColor: 'rgb(var(--surface-elevated))' }}
+            className="flex items-center justify-center h-32"
+            style={{ backgroundColor: 'rgb(var(--surface-elevated))', gridColumn: `1 / -1` }}
           >
             <span className="text-text-muted text-xs">No preview</span>
           </div>

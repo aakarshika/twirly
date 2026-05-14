@@ -1,87 +1,122 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { authService } from '../../services/authService';
+import { themes } from '@styles/themes';
+import { PaperGrain } from '@components/riso';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const t = themes['light'];
 
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
-    setSuccess(false);
+    if (!email) { setError('Email is required.'); return; }
     setLoading(true);
-
     try {
       await authService.resetPassword(email);
       setSuccess(true);
-    } catch (error) {
-      setError(error.message);
+    } catch (err) {
+      setError(err.message || 'Failed to send reset link. Try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  const inputStyle = {
+    width: '100%', boxSizing: 'border-box',
+    padding: '11px 14px',
+    background: t.bgDeep,
+    border: `1.5px solid ${t.ink}35`,
+    borderRadius: 3,
+    color: t.ink,
+    fontFamily: '"Fraunces", serif',
+    fontSize: 16,
+    outline: 'none',
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Reset your password
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Enter your email address and we&apos;ll send you a link to reset your password.
+    <div
+      style={{ background: t.bg, color: t.ink, minHeight: '100vh', fontFamily: '"Fraunces", serif' }}
+      className="relative overflow-x-hidden"
+    >
+      <PaperGrain blend={t.blend} />
+
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-5 py-14">
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          style={{ width: '100%', maxWidth: 400 }}
+        >
+          <Link
+            to="/landing"
+            style={{
+              fontFamily: '"Caveat", cursive', fontSize: 16,
+              color: t.blue, textDecoration: 'none', opacity: 0.7,
+              display: 'inline-block', marginBottom: 20,
+            }}
+          >
+            ← back to login
+          </Link>
+
+          <h1
+            style={{
+              fontFamily: '"DM Serif Display", serif', fontStyle: 'italic',
+              fontSize: 'clamp(28px, 6vw, 38px)', color: t.ink,
+              lineHeight: 1.05, marginBottom: 10,
+            }}
+          >
+            forgot your password?
+          </h1>
+          <p
+            style={{
+              fontFamily: '"Fraunces", serif', fontSize: 16,
+              color: t.ink, opacity: 0.6, marginBottom: 28,
+            }}
+          >
+            enter your email and we&apos;ll send a reset link.
           </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="email" className="sr-only">
-              Email address
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              className="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="Email address"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-            />
-          </div>
 
-          {error && (
-            <div className="text-red-500 text-sm text-center">{error}</div>
+          {success ? (
+            <p style={{ fontFamily: '"Fraunces", serif', fontSize: 16, color: t.blue }}>
+              check your inbox — reset link sent.
+            </p>
+          ) : (
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <input
+                type="email" value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                style={inputStyle}
+              />
+
+              {error && (
+                <p style={{ fontFamily: '"Fraunces", serif', fontSize: 14, color: t.red, margin: 0 }}>
+                  {error}
+                </p>
+              )}
+
+              <button
+                type="submit" disabled={loading}
+                style={{
+                  width: '100%', padding: 13,
+                  background: t.red, color: '#fff',
+                  border: 'none', borderRadius: 3,
+                  fontFamily: '"DM Serif Display", serif', fontStyle: 'italic', fontSize: 20,
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  opacity: loading ? 0.7 : 1,
+                }}
+              >
+                {loading ? 'sending…' : 'send reset link.'}
+              </button>
+            </form>
           )}
-
-          {success && (
-            <div className="text-green-500 text-sm text-center">
-              Password reset link has been sent to your email.
-            </div>
-          )}
-
-          <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? 'Sending...' : 'Send reset link'}
-            </button>
-          </div>
-
-          <div className="text-sm text-center">
-            <Link
-              to="/landing"
-              className="font-medium text-indigo-600 hover:text-indigo-500"
-            >
-              Back to login
-            </Link>
-          </div>
-        </form>
+        </motion.div>
       </div>
     </div>
   );

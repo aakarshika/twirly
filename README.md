@@ -1,8 +1,8 @@
 # Twirly
 
-**Pick a side. Make your case. See what everyone else thinks.**
+**Line them up. Let the crowd rank them.**
 
-Twirly is a comparison platform where users create head-to-head matchups between anything — products, ideas, opinions, places — and let the crowd decide. Less about being right, more about what people actually think.
+Twirly is a comparison platform where users put a set of things — products, ideas, opinions, places — side by side and let the crowd vote across all of them. Default set size is 4, and the format flexes to any N (2, 6, more). Less about being right, more about what people actually think.
 
 Live at [twirlyapp.com](https://twirlyapp.com)
 
@@ -10,7 +10,7 @@ Live at [twirlyapp.com](https://twirlyapp.com)
 
 ## What it does
 
-- **Create comparisons** — set up any A vs B matchup with context, images, and a framing argument
+- **Create comparisons** — line up a set of items (default 4, any N) with context, images, and a framing argument
 - **Vote and comment** — weigh in on comparisons, see live results, read what others think
 - **User profiles and dashboards** — track comparisons you've created, voted on, or followed
 - **Feedback system** — flag bad comparisons, suggest improvements

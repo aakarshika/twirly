@@ -167,7 +167,7 @@ Each phase is independently shippable and visible to users.
 **Behavior**
 - `Trending.jsx` no longer auto-redirects
 - Category filter chips at top (horizontal scroll, mobile-first)
-- Comparison preview card: A vs B images/labels, vote counts, creator avatar/name, category
+- Comparison preview card: N-item grid (default 4) with images/labels, vote counts, creator avatar/name, category
 - Pull-to-refresh
 - Empty / loading / error states
 - Card tap → `navigate('/compare/:id')` opens scroller starting at that comparison

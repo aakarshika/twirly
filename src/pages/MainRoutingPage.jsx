@@ -36,6 +36,7 @@ import { App } from '@capacitor/app';
 import { authService } from '../services/authService';
 import TikTokScroll from '../components/TikTokScroll';
 import ActivityPage from './activity-page/ActivityPage';
+import LandingPage from './landing/LandingPage';
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -151,6 +152,15 @@ const SwipeBackWrapper = ({ children }) => {
  */
 const PUBLIC_PATHS = ['/login', '/landing', '/signup', '/forgot-password', '/auth/v1/callback', '/auth/callback'];
 
+// At "/", logged-out visitors see the marketing landing; logged-in users go to the feed.
+// We keep the Trending protected behind the onboarding check via ProtectedRoute.
+const RootRoute = () => {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  if (!user) return <LandingPage />;
+  return <ProtectedRoute><Trending /></ProtectedRoute>;
+};
+
 const MainRoutingPage = () => {
   const { currentTheme } = useTheme();
   const { loading, user } = useAuth();
@@ -178,12 +188,16 @@ const MainRoutingPage = () => {
 
   const isPublicRoute = PUBLIC_PATHS.some(p => location.pathname.includes(p));
   const isComparePage = location.pathname.startsWith('/compare');
+  // Marketing landing renders at "/" for logged-out visitors and brings its own header.
+  const isMarketingLanding = location.pathname === '/' && !user;
+  const hideAppChrome = isPublicRoute || isMarketingLanding;
 
   // Top bar height: 56px mobile/tablet, 64px desktop (expressed via Tailwind)
   // SideNav offset: 256px (w-64) on desktop only
   const mainClassName = [
-    'flex-1 lg:pl-64',
-    !isPublicRoute && !isComparePage ? 'pt-14 lg:pt-16' : '',
+    'flex-1',
+    hideAppChrome ? '' : 'lg:pl-64',
+    !hideAppChrome && !isComparePage ? 'pt-14 lg:pt-16' : '',
   ].filter(Boolean).join(' ');
 
   if (isInitialLoad || (loading && user)) {
@@ -201,7 +215,7 @@ const MainRoutingPage = () => {
             <BackgroundImage />
 
             <div className="relative flex flex-col" style={{ zIndex: 10 }}>
-              {!isPublicRoute && <Header />}
+              {!hideAppChrome && <Header />}
 
               <main className={mainClassName}>
                 <SwipeBackWrapper>
@@ -215,7 +229,7 @@ const MainRoutingPage = () => {
                     {/* Protected */}
                     <Route path="/onboarding" element={<ProtectedRoute><OnboardingFlow /></ProtectedRoute>} />
                     <Route path="/search" element={<ProtectedRoute><SearchPage /></ProtectedRoute>} />
-                    <Route path="/" element={<ProtectedRoute><Trending /></ProtectedRoute>} />
+                    <Route path="/" element={<RootRoute />} />
                     <Route path="/error-test" element={<ProtectedRoute><ErrorTest /></ProtectedRoute>} />
 
                     {/* Beta */}
@@ -251,7 +265,7 @@ const MainRoutingPage = () => {
                 </SwipeBackWrapper>
               </main>
 
-              {!isPublicRoute && !isComparePage && <Footer />}
+              {!hideAppChrome && !isComparePage && <Footer />}
 
               <BetaTestingControls />
               {showPerformanceMonitor && <PerformanceMonitor isVisible={true} />}

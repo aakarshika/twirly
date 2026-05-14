@@ -41,7 +41,18 @@ export function createApp() {
   }));
   app.use(cors({ origin: env.FRONTEND_URL, credentials: true }));
   app.use(cookieParser());
-  app.use(pinoHttp({ logger }));
+  app.use(pinoHttp({
+    logger,
+    customLogLevel: (_req, res, err) => {
+      if (err || res.statusCode >= 500) return 'error';
+      if (res.statusCode >= 400) return 'warn';
+      return 'debug';
+    },
+    serializers: {
+      req: req => ({ id: req.id, method: req.method, url: req.url }),
+      res: res => ({ statusCode: res.statusCode }),
+    },
+  }));
 
   // Better Auth reads the raw request stream, so mount it BEFORE express.json().
   app.use('/api/auth', authRouter);
