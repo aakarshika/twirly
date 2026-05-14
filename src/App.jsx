@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
-import { ThemeProvider } from './contexts/ThemeContext';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { HeaderProvider } from './contexts/HeaderContext';
 import { FeedbackProvider } from './contexts/FeedbackContext';
 import { BetaTestingProvider } from './contexts/BetaTestingContext';
@@ -12,22 +12,26 @@ import MainRoutingPage from './pages/MainRoutingPage';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
 
-/**
- * Main App component that wraps the application with necessary providers and routing
- */
-const App = () => {
-  useEffect(() => {
-    if (Capacitor.isNativePlatform && Capacitor.getPlatform() !== 'web') {
-      StatusBar.setOverlaysWebView({ overlay: true });
-      StatusBar.setStyle({ style: Style.Light });
-    }
-  }, []);
+const NativeStatusBar = () => {
+  const { currentTheme } = useTheme();
 
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform || Capacitor.getPlatform() === 'web') return;
+    StatusBar.setOverlaysWebView({ overlay: true }).catch(() => {});
+    const style = currentTheme.statusBar === 'light' ? Style.Light : Style.Dark;
+    StatusBar.setStyle({ style }).catch(() => {});
+  }, [currentTheme.statusBar]);
+
+  return null;
+};
+
+const App = () => {
   return (
     <LoadingProvider>
-    <BrowserRouter>
-      <AuthProvider>
-        <ThemeProvider>
+      <BrowserRouter>
+        <AuthProvider>
+          <ThemeProvider>
+            <NativeStatusBar />
             <HeaderProvider>
               <FeedbackProvider>
                 <BetaTestingProvider>

@@ -824,53 +824,57 @@ const Header = () => {
         {/* Mobile Settings Drawer */}
         {isMobile && (
 
-          <div className="h-auto  rounded-t-sm bg-gray-100"
+          <div
+            className="h-auto rounded-t-sm bg-surface border-t border-border"
             style={{
               paddingBottom: 'calc(env(safe-area-inset-bottom))'
             }}
           >
-            <div className='w-full h-full max-w-3xl flex flex-row justify-between px-4 '>
-              <div className='flex p-4 bg-gray-100 '
-              style={{
-                fontWeight: location.pathname.includes('/compare') ? 'bold' : 'normal',
-                color: location.pathname.includes('/compare') ? 'var(--color-primary)' : 'var(--color-text)',
-              }}
-                onClick={() => {
-                  navigate('/');
-                  console.log('home button clicked');
+            <div className='w-full h-full max-w-3xl flex flex-row justify-between px-4'>
+              <button
+                type="button"
+                className='flex p-4 bg-transparent min-w-[44px] min-h-[44px] items-center justify-center'
+                style={{
+                  fontWeight: location.pathname.includes('/compare') ? 'bold' : 'normal',
+                  color: location.pathname.includes('/compare') ? 'rgb(var(--primary))' : 'rgb(var(--text))',
                 }}
+                onClick={() => navigate('/')}
               >
                 <Home size={20} />
-              </div>
-              <div className='flex p-4 bg-gray-100 ' style={{
-                fontWeight: location.pathname.includes('/search') ? 'bold' : 'normal',
-                color: location.pathname.includes('/search') ? 'var(--color-primary)' : 'var(--color-text)',
-              }}
-                onClick={() => {
-                  navigate('/search');
-                }}>
-                <Search size={20} />
-              </div>
-              <div className='flex p-4 bg-gray-100 ' style={{
-                fontWeight: location.pathname.includes('/new-comparison') ? 'bold' : 'normal',
-                color: location.pathname.includes('/new-comparison') ? 'var(--color-primary)' : 'var(--color-text)',
-              }}
-                onClick={() => {
-                  navigate('/new-comparison?load_draft=true');
-                }}>
-                <LucidePlus size={20} />
-              </div>
-
-              <div className='flex p-4 bg-gray-100 ' style={{
-                fontWeight: location.pathname.includes('/dashboard') ? 'bold' : 'normal',
-                color: location.pathname.includes('/dashboard') ? 'var(--color-primary)' : 'var(--color-text)',
-              }}
-                onClick={() => {
-                  navigate('/dashboard');
+              </button>
+              <button
+                type="button"
+                className='flex p-4 bg-transparent min-w-[44px] min-h-[44px] items-center justify-center'
+                style={{
+                  fontWeight: location.pathname.includes('/search') ? 'bold' : 'normal',
+                  color: location.pathname.includes('/search') ? 'rgb(var(--primary))' : 'rgb(var(--text))',
                 }}
+                onClick={() => navigate('/search')}
+              >
+                <Search size={20} />
+              </button>
+              <button
+                type="button"
+                className='flex p-4 bg-transparent min-w-[44px] min-h-[44px] items-center justify-center'
+                style={{
+                  fontWeight: location.pathname.includes('/new-comparison') ? 'bold' : 'normal',
+                  color: location.pathname.includes('/new-comparison') ? 'rgb(var(--primary))' : 'rgb(var(--text))',
+                }}
+                onClick={() => navigate('/new-comparison?load_draft=true')}
+              >
+                <LucidePlus size={20} />
+              </button>
+              <button
+                type="button"
+                className='flex p-4 bg-transparent min-w-[44px] min-h-[44px] items-center justify-center'
+                style={{
+                  fontWeight: location.pathname.includes('/dashboard') ? 'bold' : 'normal',
+                  color: location.pathname.includes('/dashboard') ? 'rgb(var(--primary))' : 'rgb(var(--text))',
+                }}
+                onClick={() => navigate('/dashboard')}
               >
                 <User size={20} />
-              </div>
+              </button>
             </div>
           </div>
         )}
