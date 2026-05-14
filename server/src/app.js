@@ -14,6 +14,8 @@ import { karmaRouter } from './features/karma/karma.routes.js';
 import { searchRouter } from './features/search/search.routes.js';
 import { pollsRouter } from './features/polls/polls.routes.js';
 import { votesRouter } from './features/votes/votes.routes.js';
+import { commentsRouter } from './features/comments/comments.routes.js';
+import { comparisonsRouter } from './features/comparisons/comparisons.routes.js';
 
 export function createApp() {
   const app = express();
@@ -36,6 +38,8 @@ export function createApp() {
   app.use('/api/search', searchRouter);
   app.use('/api/polls', pollsRouter);
   app.use('/api/votes', votesRouter);
+  app.use('/api/comments', commentsRouter);
+  app.use('/api/comparisons', comparisonsRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

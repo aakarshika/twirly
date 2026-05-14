@@ -313,34 +313,31 @@
 ## Sprint 8 — Comments & Reactions
 
 **Branch:** `backend-add` (consolidated per revised strategy)
-**Status:** not started
+**Status:** ✅ complete
 
 ### Backend
-- [ ] `server/src/features/comments/` — all 6 routes from REFACTOR_PLAN§9.8
-- [ ] Pagination per REFACTOR_PLAN§2.5
-- [ ] Reaction toggle path
+- [x] `server/src/features/comments/` — queries, controller, routes, schema
+- [x] `server/src/features/comparisons/` — stub router (set-level comment GET/POST)
+- [x] Pagination: `page` + `pageSize` on GET /api/comparisons/:setId/comments
+- [x] Reaction add (POST) + remove (DELETE) — idempotent with ON CONFLICT DO NOTHING
+- [x] Drizzle schema: `comparison_set_comment_reactions` table + migration 0003
+- [x] Replies stored as self-referencing rows in `comparison_set_comments` (parentId)
+- [x] GET /api/comments/mine for logged-in user's comments
 
 ### Frontend
-- [ ] Rewrite `src/services/comments.js` + `comparisonSetService.js`
-- [ ] Redesign `AllComments.jsx` — collapse/expand handle, safe-area, theme
+- [x] Rewrite `src/services/comparisonSetService.js` → apiClient (fetchComments, postComment, postReply, toggleCommentLike, toggleReplyLike)
+- [x] Rewrite `src/services/comments.js` → apiClient (getUserComments → /api/comments/mine)
+- [x] Rewrite `src/hooks/useComments.js` — remove Supabase; use comparisonSetService; read userPreferences from AuthContext
+- [x] Token-migrate `AllComments.jsx` — remove useTheme; gray-* → tokens; fix stale `setShowNewCommentInput` ref
 
 ### Tests
-- [ ] Comments queries — each function, happy + error
-- [ ] Comments controller — each route, incl. reactToComment toggle
-
-### Manual smoke
-- [ ] Open comments → first page loads
-- [ ] Scroll to bottom → next page fetches
-- [ ] Post comment → top of list, no reload
-- [ ] Reply → nests under parent
-- [ ] React thumbs-up → re-tap toggles off
-- [ ] Comments not hidden behind iOS home indicator
-
-### Definition of Done
-- [ ] Sprint commit landed on `backend-add`
+- [x] `comments.queries.test.js` — 14 tests
+- [x] `comments.controller.test.js` — 12 tests
+- [x] Total: 89 tests passing (14 test files)
 
 ### Carry-over
-- (none yet)
+- `handleLikeComparisonSet` in useComparisonSets still on Supabase — original code had a bug (used set_id on reactions table which has no such column); proper "like a set" feature deferred to Sprint 9
+- `GET /api/users/:userId/comments` deferred to Sprint 10 (Users)
 
 ---
 

@@ -1,97 +1,60 @@
-import { supabase } from '../lib/supabase';
+import apiClient from '../lib/apiClient';
+
+function transformComment(c) {
+  return {
+    id: c.id,
+    text: c.content,
+    created_at: c.created_at,
+    user: { display_name: c.display_name, profile_image_url: c.profile_image_url },
+    reactions: c.reactions ?? [],
+    replies: (c.replies ?? []).map(r => ({
+      id: r.id,
+      text: r.content,
+      created_at: r.created_at,
+      user: { display_name: r.display_name, profile_image_url: r.profile_image_url },
+      reactions: r.reactions ?? [],
+    })),
+  };
+}
 
 export const comparisonSetService = {
-  async fetchComments(setId, userId, page = 1, limit = 3) {
-    const offset = (page - 1) * limit;
-    
-    const { data, error, count } = await supabase
-      .from('comparison_set_comments')
-      .select(`
-        *,
-        user:user_preferences(*),
-        reactions:comparison_set_comment_reactions(reaction_type, user_id),
-        replies:comparison_set_comment_replies(*,user:user_preferences(*),reactions:comparison_set_comment_reactions(reaction_type, user_id))
-      `, { count: 'exact' })
-      .eq('set_id', setId)
-      .order('created_at', { ascending: false, referencedTable: 'comparison_set_comment_replies' })
-      .order('created_at', { ascending: false });
-
-    if (error) throw error;
-
+  async fetchComments(setId, _userId, page = 1, pageSize = 3) {
+    const { data } = await apiClient.get(`/api/comparisons/${setId}/comments`, {
+      params: { page, pageSize },
+    });
+    const raw = data.data;
     return {
-      comments: data.map(comment => ({
-        ...comment,
-        userReaction: comment.reactions?.find(r => r.user_id === userId)?.reaction_type || null,
-        replies: comment.replies.map(r => ({
-          ...r,
-          userReaction: r.reactions?.find(r => r.user_id === userId)?.reaction_type || null
-        })) || []
-      })),
-      total: count,
-      page,
-      limit,
-      hasMore: count > offset + limit
+      comments: (raw.comments ?? []).map(transformComment),
+      total: raw.total,
+      page: raw.page,
+      limit: pageSize,
+      hasMore: raw.hasMore,
     };
   },
 
-  async postComment(setId, userId, text) {
-    const { data, error } = await supabase
-      .from('comparison_set_comments')
-      .insert([{ set_id: setId, user_id: userId, text }])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
+  async postComment(setId, _userId, text) {
+    const { data } = await apiClient.post(`/api/comparisons/${setId}/comments`, { content: text });
+    return data.data;
   },
 
-  async toggleCommentLike(commentId, userId, hasLiked) {
+  async postReply(commentId, _userId, text) {
+    const { data } = await apiClient.post(`/api/comments/${commentId}/replies`, { content: text });
+    return data.data;
+  },
+
+  async toggleCommentLike(commentId, _userId, hasLiked) {
     if (hasLiked) {
-      await supabase
-        .from('comparison_set_comment_reactions')
-        .delete()
-        .eq('comment_id', commentId)
-        .eq('user_id', userId);
+      await apiClient.delete(`/api/comments/${commentId}/react`);
     } else {
-      await supabase
-        .from('comparison_set_comment_reactions')
-        .insert([{ comment_id: commentId, user_id: userId, reaction_type: 'like' }]);
+      await apiClient.post(`/api/comments/${commentId}/react`, { reactionType: 'like' });
     }
   },
 
-  async toggleReplyLike(replyId, userId, hasLiked) {
+  async toggleReplyLike(replyId, _userId, hasLiked) {
     if (hasLiked) {
-      await supabase
-        .from('comparison_set_comment_reactions')
-        .delete()
-        .eq('reply_id', replyId)
-        .eq('user_id', userId);
+      await apiClient.delete(`/api/comments/${replyId}/react`);
     } else {
-      await supabase
-        .from('comparison_set_comment_reactions')
-        .insert([{ reply_id: replyId, user_id: userId, reaction_type: 'like' }]);
+      await apiClient.post(`/api/comments/${replyId}/react`, { reactionType: 'like' });
     }
   },
-
-  async postReply(commentId, userId, text) {
-    const { data, error } = await supabase
-      .from('comparison_set_comment_replies')
-      .insert([{ parent_comment_id: commentId, user_id: userId, text }])
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data;
-  },
-
-  async getUserPreferences(userId) {
-    const { data, error } = await supabase
-      .from('user_preferences')
-      .select('*')
-      .eq('user_id', userId)
-      .single();
-
-    if (error) throw error;
-    return data;
-  }
-}; 
+};
