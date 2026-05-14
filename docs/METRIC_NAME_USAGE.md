@@ -1,7 +1,7 @@
 # Metric Name Usage Documentation
 
 ## Database Schema
-**Location**: `src/server/sql/ddl/tables/`
+**Location**: `apps/api/sql/ddl/tables/`
 - Used in `comparison-aspects-schema.sql` as VARCHAR(50)
 - Used in `review-schema.sql` for review metrics
 - Has unique constraint with set_id in comparison aspects

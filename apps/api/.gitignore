@@ -5,3 +5,7 @@ node_modules
 coverage
 dist
 uploads
+
+# Python compiled artifacts (from devSeedScripts legacy SQL helpers)
+__pycache__
+*.pyc

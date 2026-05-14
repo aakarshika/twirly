@@ -14,5 +14,5 @@ if [[ -z "${DATABASE_URL:-}" ]]; then
 fi
 
 # Placeholder — wired up in a later sprint once the fresh DB schema lands.
-# In future sprints this will apply the SQL files under src/server/sql/.
+# In future sprints this will apply the SQL files under apps/api/sql/.
 echo "setup-db.sh: nothing to apply yet (placeholder for future sprints)"

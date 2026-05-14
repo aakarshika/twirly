@@ -234,7 +234,7 @@ npx drizzle-kit migrate    # applies it to the DB
 
 ### 4.3 — Views (21 existing)
 
-Views are **not managed by Drizzle migrations** — they contain complex SQL (time-decay scoring, statistical aggregates) that must not be accidentally dropped or regenerated. They stay as the existing SQL files already in `src/server/sql/ddl/views/`.
+Views are **not managed by Drizzle migrations** — they contain complex SQL (time-decay scoring, statistical aggregates) that must not be accidentally dropped or regenerated. They stay as the existing SQL files already in `apps/api/sql/ddl/views/`.
 
 **Full list of existing views:**
 
@@ -303,13 +303,13 @@ export async function searchSets(q, limit) {
 
 **Recommendation:** Use Option B for views that are queried heavily (search, trending, karma). Use Option A for one-off or admin queries.
 
-The SQL view files already in `src/server/sql/ddl/views/` are the source of truth. When deploying to a new environment, run those files once against the DB before starting the server.
+The SQL view files already in `apps/api/sql/ddl/views/` are the source of truth. When deploying to a new environment, run those files once against the DB before starting the server.
 
 ---
 
 ### 4.4 — Stored Functions (10 existing)
 
-Called from query files via Drizzle's `sql` template tag. The SQL files stay as-is in `src/server/sql/ddl/functions/`.
+Called from query files via Drizzle's `sql` template tag. The SQL files stay as-is in `apps/api/sql/ddl/functions/`.
 
 **Function inventory and action required:**
 
@@ -579,8 +579,8 @@ When setting up a fresh database (staging, new dev machine), apply objects in th
 
 ```
 1. server/src/db/migrations/       ← Drizzle migration files (tables + Better Auth tables)
-2. src/server/sql/ddl/views/       ← Views (20 SQL files) — run each manually or via a script
-3. src/server/sql/ddl/functions/   ← Functions — run each manually (skip dropped auth functions)
+2. apps/api/sql/ddl/views/       ← Views (20 SQL files) — run each manually or via a script
+3. apps/api/sql/ddl/functions/   ← Functions — run each manually (skip dropped auth functions)
 4. Section 4.6 SQL above           ← Disable RLS on all tables
 5. Section 4.8 Step 3 + 4 SQL     ← Insert users + update FK constraints
 ```
@@ -851,7 +851,7 @@ Add C:\Program Files\PostgreSQL\16\bin to your PATH
 ```
 
 **Or: skip psql entirely and use the Supabase SQL Editor**
-Every SQL file in `src/server/sql/` can be copy-pasted into the **Supabase Dashboard → SQL Editor** and run directly in the browser. This works fine for one-off migrations and setup scripts. Use `psql` only when you want to automate it in a shell script.
+Every SQL file in `apps/api/sql/` can be copy-pasted into the **Supabase Dashboard → SQL Editor** and run directly in the browser. This works fine for one-off migrations and setup scripts. Use `psql` only when you want to automate it in a shell script.
 
 ---
 
@@ -938,7 +938,7 @@ This script applies all static SQL objects to the database. It's idempotent — 
 
 set -e  # exit on first error
 
-SQL_ROOT="$(dirname "$0")/../../src/server/sql/ddl"
+SQL_ROOT="$(dirname "$0")/../../apps/api/sql/ddl"
 
 echo "→ Disabling RLS..."
 psql "$DATABASE_URL" -f "$(dirname "$0")/disable-rls.sql"

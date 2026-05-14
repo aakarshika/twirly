@@ -1,7 +1,7 @@
 # Set Name Usage Documentation
 
 ## Database Schema
-**Location**: `src/server/sql/ddl/tables/`
+**Location**: `apps/api/sql/ddl/tables/`
 - Used in comparison sets table
 - Stored as VARCHAR field
 - Used for set identification and display
@@ -9,7 +9,7 @@
 ## Creation and Editing
 
 ### 1. Comparison Set Creation
-**Location**: `src/server/sql/generate-controllers/create_comparison_sets.py`
+**Location**: `apps/api/sql/generate-controllers/create_comparison_sets.py`
 - Template format: `"Category {category_id} Comparison Set {i+1}"`
 - Sanitized for SQL injection
 - Used in set creation queries
