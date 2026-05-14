@@ -32,4 +32,4 @@ kill-ports:
 # 3. Run vite + server in foreground via concurrently.
 dev: kill-ports
 	docker compose up -d --wait
-	npm run dev
+	pnpm run dev
