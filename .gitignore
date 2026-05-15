@@ -54,5 +54,6 @@ storybook-static
 .vercel
 .netlify
 .playwright-mcp/
+qa-screenshots/
 
 package-lock.json
