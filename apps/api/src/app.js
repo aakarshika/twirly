@@ -57,7 +57,7 @@ export function createApp() {
   }));
 
   // Swagger UI documentation.
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+  app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
     swaggerOptions: {
       persistAuthorization: true,
     },
