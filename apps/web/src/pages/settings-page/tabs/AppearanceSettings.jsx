@@ -1,304 +1,114 @@
-import React, { useState, useEffect } from 'react';
-import { useTheme } from '../../../contexts/ThemeContext';
-import { Palette, Layout, Save, Pencil } from 'lucide-react';
-import Button from '../../../components/common/Button';
+import React from 'react';
+import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+import { themes as risoThemes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
+
+const ThemeCard = ({ themeKey, theme, active, t, onSelect }) => {
+  const cardBg     = `rgb(${theme.tokens.bg})`;
+  const cardInk    = `rgb(${theme.tokens.text})`;
+  const cardSurface = `rgb(${theme.tokens.surface})`;
+  const cardPrimary = `rgb(${theme.tokens.primary})`;
+
+  return (
+    <motion.button
+      type="button"
+      onClick={() => onSelect(themeKey)}
+      whileTap={{ scale: 0.95 }}
+      className="flex flex-col items-center gap-2 p-1 focus:outline-none"
+      style={{ minHeight: 44 }}
+    >
+      {/* Mini-page preview */}
+      <div
+        className="w-[88px] h-[72px] rounded-sm overflow-hidden"
+        style={{
+          background: cardBg,
+          border: active ? `2px solid ${t.red}` : `1px solid ${cardInk}22`,
+          boxShadow: active ? `0 0 0 3px ${t.red}28` : 'none',
+          transition: 'box-shadow 0.2s, border-color 0.2s',
+        }}
+      >
+        {/* Simulated header */}
+        <div
+          className="flex items-center gap-1 px-2"
+          style={{ height: 13, background: cardSurface, borderBottom: `1px solid ${cardInk}14` }}
+        >
+          <span style={{ width: 5, height: 5, borderRadius: '50%', background: cardPrimary, opacity: 0.7, flexShrink: 0, display: 'inline-block' }} />
+          <span style={{ flex: 1, height: 2, background: cardInk, opacity: 0.12, borderRadius: 1, display: 'inline-block' }} />
+        </div>
+
+        {/* Simulated content */}
+        <div className="p-2 flex flex-col gap-1.5">
+          <span style={{ display: 'block', height: 4, width: '72%', background: cardInk, opacity: 0.65, borderRadius: 1 }} />
+          <span style={{ display: 'block', height: 3, width: '90%', background: cardInk, opacity: 0.22, borderRadius: 1 }} />
+          <span style={{ display: 'block', height: 3, width: '62%', background: cardInk, opacity: 0.16, borderRadius: 1 }} />
+          <span style={{ display: 'block', height: 3, width: '40%', background: cardPrimary, opacity: 0.75, borderRadius: 1, marginTop: 2 }} />
+        </div>
+      </div>
+
+      {/* Label */}
+      <div className="flex items-center gap-1.5">
+        {active && (
+          <motion.span
+            layoutId="theme-active-dot"
+            style={{ width: 6, height: 6, borderRadius: '50%', background: t.red, flexShrink: 0, display: 'inline-block' }}
+          />
+        )}
+        <span style={{ fontFamily: '"Fraunces", serif', fontSize: 13, color: active ? t.ink : `${t.ink}60` }}>
+          {theme.name}
+        </span>
+      </div>
+    </motion.button>
+  );
+};
 
 const AppearanceSettings = () => {
-  const { currentTheme, changeTheme, themes } = useTheme();
-  const savedTheme = localStorage.getItem('theme');
-  // console.log(savedTheme);
-  const [appearanceSettings, setAppearanceSettings] = useState({
-    theme: savedTheme ? JSON.parse(savedTheme).name : currentTheme.name,
-    fontSize: 'medium',
-    layout: 'default',
-    animations: true,
-    reduceMotion: false,
-    highContrast: false,
-  });
+  const { themeId, changeTheme, themes } = useTheme();
+  const t = risoThemes[themeId] ?? risoThemes.light;
 
-  // Update appearanceSettings when currentTheme changes
-  useEffect(() => {
-    setAppearanceSettings(prev => ({
-      ...prev,
-      theme: currentTheme.name,
-    }));
-  }, [currentTheme]);
-
-  const handleThemeChange = theme => {
-    setAppearanceSettings(prev => ({
-      ...prev,
-      theme,
-    }));
-    changeTheme(theme);
-  };
-
-  const handleFontSizeChange = size => {
-    setAppearanceSettings(prev => ({
-      ...prev,
-      fontSize: size,
-    }));
-    // TODO: Implement font size change
-  };
-
-  const handleLayoutChange = layout => {
-    setAppearanceSettings(prev => ({
-      ...prev,
-      layout,
-    }));
-    // TODO: Implement layout change
-  };
-
-  const handleToggle = setting => {
-    setAppearanceSettings(prev => ({
-      ...prev,
-      [setting]: !prev[setting],
-    }));
-  };
-
-  const handleSave = () => {
-    // TODO: Implement save functionality
-    // console.log('Saving appearance settings:', appearanceSettings);
+  const handleSelect = key => {
+    if (key === themeId) return;
+    changeTheme(key);
+    toast.success(`${themes[key].name} theme applied`);
   };
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h2
-          className="text-md font-semibold"
-          style={{ color: currentTheme.colors.text }}
-        >
-          Appearance Settings
-        </h2>
-        <Button
-          onClick={handleSave}
-          className="flex items-center space-x-2"
-          style={{ backgroundColor: currentTheme.colors.primary }}
-        >
-          <Save size={16} />
-          <span>Save Changes</span>
-        </Button>
-      </div>
-
-      <div className="space-y-6">
-        {/* Theme Selection */}
-        <div
-          className="p-6 rounded-lg"
-          style={{
-            backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`,
-          }}
-        >
-          <h3
-            className="text-lg font-medium mb-4 flex items-center space-x-2"
-            style={{ color: currentTheme.colors.text }}
-          >
-            <Palette size={20} />
-            <span>Theme</span>
-          </h3>
-          <div className="grid grid-cols-3 gap-4">
-            {Object.entries(themes).map(([key, theme]) => (
-              <button
-                key={key}
-                onClick={() => handleThemeChange(key)}
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  currentTheme.name === theme.name ? 'bg-opacity-20' : 'hover:bg-opacity-5'
-                }`}
-                style={{
-                  backgroundColor: currentTheme.name === theme.name ? currentTheme.colors.primary : 'transparent',
-                  color: currentTheme.name === theme.name ? currentTheme.colors.background : currentTheme.colors.text,
-                }}
-              >
-                {theme.name}
-              </button>
-            ))}
-          </div>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      className="flex flex-col gap-5 max-w-lg"
+    >
+      <div
+        className="rounded-sm p-5 sm:p-6 flex flex-col gap-5"
+        style={{ background: t.bgDeep, border: `1px solid ${t.ink}0f` }}
+      >
+        <div>
+          <p style={{ fontFamily: '"Caveat", cursive', fontSize: 14, color: `${t.ink}50`, marginBottom: 2 }}>
+            theme
+          </p>
+          <h2 style={{ fontFamily: '"DM Serif Display", serif', fontStyle: 'italic', fontSize: 20, color: t.ink, lineHeight: 1.1 }}>
+            pick your paper.
+          </h2>
+          <p style={{ fontFamily: '"Caveat", cursive', fontSize: 14, color: `${t.ink}45`, marginTop: 4 }}>
+            changes everywhere, instantly
+          </p>
         </div>
 
-        {/* Font Size */}
-        <div
-          className="p-6 rounded-lg"
-          style={{
-            backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`,
-          }}
-        >
-          <h3
-            className="text-lg font-medium mb-4 flex items-center space-x-2"
-            style={{ color: currentTheme.colors.text }}
-          >
-            <Pencil size={20} />
-            <span>Font Size</span>
-            <span className="text-sm text-gray-500 pl-2">Coming soon...</span>
-          </h3>
-          <div className="flex items-center space-x-4">
-            {['small', 'medium', 'large'].map(size => (
-              <button
-                key={size}
-                onClick={() => handleFontSizeChange(size)}
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  appearanceSettings.fontSize === size ? 'bg-opacity-20' : 'hover:bg-opacity-5'
-                }`}
-                style={{
-                  backgroundColor: appearanceSettings.fontSize === size ? currentTheme.colors.primary : 'transparent',
-                  color: appearanceSettings.fontSize === size ? currentTheme.colors.background : currentTheme.colors.text,
-                }}
-              >
-                {size.charAt(0).toUpperCase() + size.slice(1)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Layout */}
-        <div
-          className="p-6 rounded-lg"
-          style={{
-            backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`,
-          }}
-        >
-          <h3
-            className="text-lg font-medium mb-4 flex items-center space-x-2"
-            style={{ color: currentTheme.colors.text }}
-          >
-            <Layout size={20} />
-            <span>Layout</span>
-            <span className="text-sm text-gray-500 pl-2">Coming soon...</span>
-            </h3>
-          <div className="flex items-center space-x-4">
-            {['default', 'compact', 'spacious'].map(layout => (
-              <button
-                key={layout}
-                onClick={() => handleLayoutChange(layout)}
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  appearanceSettings.layout === layout ? 'bg-opacity-20' : 'hover:bg-opacity-5'
-                }`}
-                style={{
-                  backgroundColor: appearanceSettings.layout === layout ? currentTheme.colors.primary : 'transparent',
-                  color: appearanceSettings.layout === layout ? currentTheme.colors.background : currentTheme.colors.text,
-                }}
-              >
-                {layout.charAt(0).toUpperCase() + layout.slice(1)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Accessibility */}
-        <div
-          className="p-6 rounded-lg"
-          style={{
-            backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`,
-          }}
-        >
-          <h3
-            className="text-lg font-medium mb-4"
-            style={{ color: currentTheme.colors.text }}
-          >
-            Accessibility
-            <span className="text-sm text-gray-500 pl-2">Coming soon...</span>
-          </h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <span style={{ color: currentTheme.colors.text }}>Animations</span>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={appearanceSettings.animations}
-                  onChange={() => handleToggle('animations')}
-                />
-                <div
-                  className="w-11 h-6 rounded-full peer"
-                  style={{
-                    backgroundColor: appearanceSettings.animations
-                      ? currentTheme.colors.primary
-                      : currentTheme.colors.border,
-                  }}
-                >
-                  <div
-                    className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{
-                      backgroundColor: currentTheme.colors.background,
-                      transform: appearanceSettings.animations
-                        ? 'translateX(5px)'
-                        : 'translateX(0)',
-                    }}
-                  />
-                </div>
-              </label>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <span style={{ color: currentTheme.colors.text }}>Reduce Motion</span>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={appearanceSettings.reduceMotion}
-                  onChange={() => handleToggle('reduceMotion')}
-                />
-                <div
-                  className="w-11 h-6 rounded-full peer"
-                  style={{
-                    backgroundColor: appearanceSettings.reduceMotion
-                      ? currentTheme.colors.primary
-                      : currentTheme.colors.border,
-                  }}
-                >
-                  <div
-                    className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{
-                      backgroundColor: currentTheme.colors.background,
-                      transform: appearanceSettings.reduceMotion
-                        ? 'translateX(5px)'
-                        : 'translateX(0)',
-                    }}
-                  />
-                </div>
-              </label>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <span style={{ color: currentTheme.colors.text }}>High Contrast</span>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={appearanceSettings.highContrast}
-                  onChange={() => handleToggle('highContrast')}
-                />
-                <div
-                  className="w-11 h-6 rounded-full peer"
-                  style={{
-                    backgroundColor: appearanceSettings.highContrast
-                      ? currentTheme.colors.primary
-                      : currentTheme.colors.border,
-                  }}
-                >
-                  <div
-                    className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{
-                      backgroundColor: currentTheme.colors.background,
-                      transform: appearanceSettings.highContrast
-                        ? 'translateX(5px)'
-                        : 'translateX(0)',
-                    }}
-                  />
-                </div>
-              </label>
-            </div>
-          </div>
+        <div className="flex gap-6 flex-wrap">
+          {Object.entries(themes).map(([key, theme]) => (
+            <ThemeCard
+              key={key}
+              themeKey={key}
+              theme={theme}
+              active={themeId === key}
+              t={t}
+              onSelect={handleSelect}
+            />
+          ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

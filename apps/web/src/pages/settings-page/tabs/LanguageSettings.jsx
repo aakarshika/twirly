@@ -1,287 +1,161 @@
 import React, { useState } from 'react';
-import { useTheme } from '../../../contexts/ThemeContext';
-import { Globe } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { themes as risoThemes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
+
+const STORAGE_KEY = 'twirly.locale';
+
+const LANGUAGES = [
+  { code: 'en', name: 'English',    available: true  },
+  { code: 'es', name: 'Español',    available: false },
+  { code: 'fr', name: 'Français',   available: false },
+  { code: 'de', name: 'Deutsch',    available: false },
+  { code: 'ja', name: '日本語',     available: false },
+  { code: 'zh', name: '中文',       available: false },
+];
+
+const TIMEZONES = [
+  { value: 'America/New_York',    label: 'Eastern (ET)'   },
+  { value: 'America/Chicago',     label: 'Central (CT)'   },
+  { value: 'America/Denver',      label: 'Mountain (MT)'  },
+  { value: 'America/Los_Angeles', label: 'Pacific (PT)'   },
+  { value: 'Europe/London',       label: 'London (GMT)'   },
+  { value: 'Europe/Paris',        label: 'Paris (CET)'    },
+  { value: 'Asia/Tokyo',          label: 'Tokyo (JST)'    },
+  { value: 'Asia/Kolkata',        label: 'India (IST)'    },
+  { value: 'Australia/Sydney',    label: 'Sydney (AEDT)'  },
+];
+
+const loadPrefs = () => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+};
+
+const browserTimezone = () => {
+  try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { return 'America/New_York'; }
+};
+
+const DEFAULTS = {
+  language: 'en',
+  timezone: browserTimezone(),
+};
+
+const Section = ({ title, eyebrow, children, t }) => (
+  <div
+    className="rounded-sm p-5 sm:p-6 flex flex-col gap-4"
+    style={{ background: t.bgDeep, border: `1px solid ${t.ink}0f` }}
+  >
+    <div>
+      {eyebrow && (
+        <p style={{ fontFamily: '"Caveat", cursive', fontSize: 14, color: `${t.ink}50`, marginBottom: 2 }}>
+          {eyebrow}
+        </p>
+      )}
+      <h2 style={{ fontFamily: '"DM Serif Display", serif', fontStyle: 'italic', fontSize: 20, color: t.ink, lineHeight: 1.1 }}>
+        {title}
+      </h2>
+    </div>
+    {children}
+  </div>
+);
 
 const LanguageSettings = () => {
-  const { currentTheme } = useTheme();
-  const [languageSettings, setLanguageSettings] = useState({
-    language: 'en',
-    region: 'US',
-    dateFormat: 'MM/DD/YYYY',
-    timeFormat: '12h',
-    timezone: 'America/New_York',
-    currency: 'USD',
-  });
+  const { themeId } = useTheme();
+  const t = risoThemes[themeId] ?? risoThemes.light;
 
-  const languages = [
-    { code: 'en', name: 'English' },
-    { code: 'es', name: 'Español' },
-    { code: 'fr', name: 'Français' },
-    { code: 'de', name: 'Deutsch' },
-    { code: 'ja', name: '日本語' },
-    { code: 'zh', name: '中文' },
-  ];
+  const [prefs, setPrefs] = useState(() => ({ ...DEFAULTS, ...loadPrefs() }));
 
-  const regions = [
-    { code: 'US', name: 'United States' },
-    { code: 'GB', name: 'United Kingdom' },
-    { code: 'CA', name: 'Canada' },
-    { code: 'AU', name: 'Australia' },
-    { code: 'DE', name: 'Germany' },
-    { code: 'JP', name: 'Japan' },
-  ];
-
-  const timezones = [
-    { value: 'America/New_York', label: 'Eastern Time (ET)' },
-    { value: 'America/Chicago', label: 'Central Time (CT)' },
-    { value: 'America/Denver', label: 'Mountain Time (MT)' },
-    { value: 'America/Los_Angeles', label: 'Pacific Time (PT)' },
-    { value: 'Europe/London', label: 'London (GMT)' },
-    { value: 'Europe/Paris', label: 'Paris (CET)' },
-    { value: 'Asia/Tokyo', label: 'Tokyo (JST)' },
-  ];
-
-  const currencies = [
-    { code: 'USD', symbol: '$', name: 'US Dollar' },
-    { code: 'EUR', symbol: '€', name: 'Euro' },
-    { code: 'GBP', symbol: '£', name: 'British Pound' },
-    { code: 'JPY', symbol: '¥', name: 'Japanese Yen' },
-    { code: 'CAD', symbol: 'C$', name: 'Canadian Dollar' },
-    { code: 'AUD', symbol: 'A$', name: 'Australian Dollar' },
-  ];
-
-  const handleSettingChange = (setting, value) => {
-    setLanguageSettings(prev => ({
-      ...prev,
-      [setting]: value,
-    }));
+  const save = next => {
+    setPrefs(next);
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch { /* noop */ }
   };
 
-  const _handleSave = () => {
-    // TODO: Implement save functionality
-    // console.log('Saving language settings:', languageSettings);
+  const selectLanguage = code => {
+    if (!LANGUAGES.find(l => l.code === code)?.available) return;
+    save({ ...prefs, language: code });
   };
+
+  const selectTimezone = e => save({ ...prefs, timezone: e.target.value });
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h2
-          className="text-md font-semibold"
-          style={{ color: currentTheme.colors.text }}
-        >
-          Language & Region
-        </h2>
-        {/* <Button
-          onClick={handleSave}
-          className="flex items-center space-x-2"
-          style={{ backgroundColor: currentTheme.colors.primary }}
-        >
-          <Save size={16} />
-          <span>Save Changes</span>
-        </Button> */}
-        <span className="text-sm text-gray-500 pl-2">Coming soon...</span>
-
-      </div>
-
-      <div className="space-y-6">
-        {/* Language Selection */}
-        <div
-          className="p-6 rounded-lg"
-          style={{
-            backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`,
-          }}
-        >
-          <h3
-            className="text-lg font-medium mb-4 flex items-center space-x-2"
-            style={{ color: currentTheme.colors.text }}
-          >
-            <Globe size={20} />
-            <span>Language</span>
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {languages.map(lang => (
-              <button
-                key={lang.code}
-                onClick={() => handleSettingChange('language', lang.code)}
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  languageSettings.language === lang.code ? 'bg-opacity-20' : 'hover:bg-opacity-5'
-                }`}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      className="flex flex-col gap-5 max-w-lg"
+    >
+      <Section title="language." eyebrow="display" t={t}>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {LANGUAGES.map(({ code, name, available }) => {
+            const active = prefs.language === code;
+            return (
+              <motion.button
+                key={code}
+                type="button"
+                onClick={() => selectLanguage(code)}
+                disabled={!available}
+                whileTap={available ? { scale: 0.96 } : {}}
+                className="flex flex-col items-start px-4 py-3 rounded-sm text-left"
                 style={{
-                  backgroundColor: languageSettings.language === lang.code ? currentTheme.colors.primary : 'transparent',
-                  color: languageSettings.language === lang.code ? currentTheme.colors.background : currentTheme.colors.text,
+                  fontFamily: '"Fraunces", serif',
+                  background: active ? t.bg : 'transparent',
+                  border: `1px solid ${active ? t.blue : `${t.ink}14`}`,
+                  opacity: available ? 1 : 0.38,
+                  cursor: available ? 'pointer' : 'not-allowed',
+                  transition: 'border-color 0.15s, background 0.15s',
+                  minHeight: 44,
                 }}
               >
-                <span className="text-xl font-semibold">{lang.name}</span>
-                <div><span className="text-sm">{lang.code.toUpperCase()}</span></div>
-              </button>
-            ))}
-          </div>
+                <span style={{ fontSize: 14, color: active ? t.ink : `${t.ink}70`, lineHeight: 1.2 }}>
+                  {name}
+                </span>
+                {!available && (
+                  <span style={{ fontFamily: '"Caveat", cursive', fontSize: 11, color: `${t.ink}40`, marginTop: 1 }}>
+                    soon
+                  </span>
+                )}
+              </motion.button>
+            );
+          })}
         </div>
+      </Section>
 
-        {/* Region Selection */}
-        <div
-          className="p-6 rounded-lg"
-          style={{
-            backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`,
-          }}
-        >
-          <h3
-            className="text-lg font-medium mb-4"
-            style={{ color: currentTheme.colors.text }}
-          >
-            Region
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {regions.map(region => (
-              <button
-                key={region.code}
-                onClick={() => handleSettingChange('region', region.code)}
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  languageSettings.region === region.code ? 'bg-opacity-20' : 'hover:bg-opacity-5'
-                }`}
-                style={{
-                  backgroundColor: languageSettings.region === region.code ? currentTheme.colors.primary : 'transparent',
-                  color: languageSettings.region === region.code ? currentTheme.colors.background : currentTheme.colors.text,
-                }}
-              >
-                <span className="text-xl font-semibold">{region.name}</span>
-                <div><span className="text-sm">{region.code}</span></div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Date & Time Format */}
-        <div
-          className="p-6 rounded-lg"
-          style={{
-            backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`,
-          }}
-        >
-          <h3
-            className="text-lg font-medium mb-4"
-            style={{ color: currentTheme.colors.text }}
-          >
-            Date & Time Format
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label
-                className="block text-sm font-medium mb-2"
-                style={{ color: currentTheme.colors.text }}
-              >
-                Date Format
-              </label>
-              <select
-                value={languageSettings.dateFormat}
-                onChange={e => handleSettingChange('dateFormat', e.target.value)}
-                className="w-full p-2 rounded"
-                style={{
-                  backgroundColor: currentTheme.colors.background,
-                  color: currentTheme.colors.text,
-                  border: `1px solid ${currentTheme.colors.border}`,
-                }}
-              >
-                <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                <option value="DD/MM/YYYY">DD/MM/YYYY</option>
-                <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-              </select>
-            </div>
-            <div>
-              <label
-                className="block text-sm font-medium mb-2"
-                style={{ color: currentTheme.colors.text }}
-              >
-                Time Format
-              </label>
-              <select
-                value={languageSettings.timeFormat}
-                onChange={e => handleSettingChange('timeFormat', e.target.value)}
-                className="w-full p-2 rounded"
-                style={{
-                  backgroundColor: currentTheme.colors.background,
-                  color: currentTheme.colors.text,
-                  border: `1px solid ${currentTheme.colors.border}`,
-                }}
-              >
-                <option value="12h">12-hour (1:30 PM)</option>
-                <option value="24h">24-hour (13:30)</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Timezone */}
-        <div
-          className="p-6 rounded-lg"
-          style={{
-            backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`,
-          }}
-        >
-          <h3
-            className="text-lg font-medium mb-4"
-            style={{ color: currentTheme.colors.text }}
-          >
-            Timezone
-          </h3>
+      <Section title="timezone." eyebrow="time display" t={t}>
+        <div className="flex flex-col gap-1.5">
+          <label style={{ fontFamily: '"Fraunces", serif', fontSize: 12, color: `${t.ink}60`, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+            Your timezone
+          </label>
           <select
-            value={languageSettings.timezone}
-            onChange={e => handleSettingChange('timezone', e.target.value)}
-            className="w-full p-2 rounded"
+            value={prefs.timezone}
+            onChange={selectTimezone}
+            className="w-full bg-transparent outline-none appearance-none"
             style={{
-              backgroundColor: currentTheme.colors.background,
-              color: currentTheme.colors.text,
-              border: `1px solid ${currentTheme.colors.border}`,
+              fontFamily: '"Fraunces", serif',
+              fontSize: 15,
+              color: t.ink,
+              borderBottom: `1px solid ${t.ink}35`,
+              paddingBottom: 6,
+              paddingTop: 2,
+              cursor: 'pointer',
             }}
           >
-            {timezones.map(tz => (
-              <option key={tz.value} value={tz.value}>
+            {TIMEZONES.map(tz => (
+              <option key={tz.value} value={tz.value} style={{ background: t.bg, color: t.ink }}>
                 {tz.label}
               </option>
             ))}
           </select>
         </div>
 
-        {/* Currency */}
-        <div
-          className="p-6 rounded-lg"
-          style={{
-            backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`,
-          }}
-        >
-          <h3
-            className="text-lg font-medium mb-4"
-            style={{ color: currentTheme.colors.text }}
-          >
-            Currency
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {currencies.map(currency => (
-              <button
-                key={currency.code}
-                onClick={() => handleSettingChange('currency', currency.code)}
-                className={`px-4 py-2 rounded-lg transition-colors ${
-                  languageSettings.currency === currency.code ? 'bg-opacity-20' : 'hover:bg-opacity-5'
-                }`}
-                style={{
-                  backgroundColor: languageSettings.currency === currency.code ? currentTheme.colors.primary : 'transparent',
-                  color: languageSettings.currency === currency.code ? currentTheme.colors.background : currentTheme.colors.text,
-                }}
-              >
-                <span className="text-xl font-semibold">{currency.symbol}</span>
-                <span className="text-sm">{currency.name}</span>
-                <span className="text-sm">{currency.code}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
+        <p style={{ fontFamily: '"Caveat", cursive', fontSize: 13, color: `${t.ink}42` }}>
+          saved locally — used for date display throughout the app
+        </p>
+      </Section>
+    </motion.div>
   );
 };
 

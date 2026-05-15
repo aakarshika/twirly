@@ -83,8 +83,15 @@ Migrations run automatically on server boot. To generate a new one after editing
 
 ```bash
 npm --prefix server run db:generate
-npm --prefix server run db:studio   # optional GUI
 ```
+
+**Browsing the database — Drizzle Studio:**
+
+```bash
+pnpm --filter @twirly/api run db:studio
+```
+
+Then open **[https://local.drizzle.studio](https://local.drizzle.studio)** — the studio proxies through Drizzle's relay to your local DB. It shows all tables, lets you filter/edit rows, and runs raw SQL.
 
 ---
 

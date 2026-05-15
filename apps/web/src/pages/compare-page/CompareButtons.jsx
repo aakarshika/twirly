@@ -1,89 +1,91 @@
-import { Heart, Share2Icon } from 'lucide-react';
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { Heart, Share2, Check } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
 import { Share } from '@capacitor/share';
-import { getCurrentUrl } from '../../lib/urlUtils';
+import { themes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
+import { getCurrentUrl } from '@utils/urlUtils';
 
 const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, _voteButtonClicked }) => {
+  const { themeId } = useTheme();
+  const t = themes[themeId] ?? themes.light;
   const hasLiked = setData.hasLiked;
-  const [showCopiedTooltip, setShowCopiedTooltip] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
-    // Get the current URL using our utility function
-    const currentUrl = getCurrentUrl();
-
+    const url = getCurrentUrl();
+    const sharePayload = { title: 'Check out this comparison!', text: 'Found this on Twirly.', url };
     try {
-      // Try Capacitor Share API first
-      await Share.share({
-        title: 'Check out this poll!',
-        text: 'I found this interesting comparison on Twirly.',
-        url: currentUrl,
-      });
-    } catch (error) {
-      console.error('Error sharing:', error);
-      // Fallback to Web Share API
+      await Share.share(sharePayload);
+    } catch {
       try {
         if (navigator.share) {
-          await navigator.share({
-            title: 'Check out this poll!',
-            text: 'I found this interesting comparison on Twirly.',
-            url: currentUrl,
-          });
+          await navigator.share(sharePayload);
         } else {
-          // Final fallback to clipboard
-          await navigator.clipboard.writeText(currentUrl);
-          setShowCopiedTooltip(true);
-          setTimeout(() => setShowCopiedTooltip(false), 2000);
+          await navigator.clipboard.writeText(url);
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
         }
-      } catch (fallbackError) {
-        console.error('Fallback sharing error:', fallbackError);
-        // Last resort fallback to clipboard
-        await navigator.clipboard.writeText(currentUrl);
-        setShowCopiedTooltip(true);
-        setTimeout(() => setShowCopiedTooltip(false), 2000);
+      } catch {
+        await navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
       }
     }
   };
 
+  const pillStyle = active => ({
+    display: 'flex',
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    borderRadius: 20,
+    padding: '8px 0',
+    cursor: 'pointer',
+    border: `1px solid ${active ? t.red : `${t.ink}20`}`,
+    background: active ? `${t.red}15` : t.bgDeep,
+    color: active ? t.red : t.ink,
+    fontFamily: '"Fraunces", serif',
+    fontSize: 14,
+  });
+
   return (
-    <div className="flex flex-col">
-      {setData.end_date && (<div className="flex flex-row font-normal text-text-muted justify-between mx-4">
-        <span className="text-sm font-normal">
-        <span className="font-normal">{totalVotes} Voters</span>
+    <div style={{ padding: '6px 12px 10px', background: t.bg }}>
+      <div className="flex justify-between mb-2">
+        <span style={{ fontFamily: '"Caveat", cursive', fontSize: 13, color: `${t.ink}65` }}>
+          {totalVotes} {totalVotes === 1 ? 'vote' : 'votes'}
         </span>
-        <span className="text-sm font-normal">{'Ends in '}
-          <span className="text-sm font-normal">
-            {formatDistanceToNow(setData.end_date, { addSuffix: false })}</span></span>
-      </div>)}
-      <div className="flex text-sm flex-row justify-between gap-2 p-2 bg-bg">
-        <div className="flex rounded-full px-4 py-2 bg-surface gap-2"
-          onClick={() => handleLikeComparisonSet(setData.id)}
-          style={{ cursor: 'pointer' }}
-        >
-          <span className="inline-block mr-2">
-            <Heart size={20}
-              className={hasLiked ? 'text-primary' : 'text-text-muted'}
-              fill={hasLiked ? 'color-mix(in srgb, var(--color-primary) 50%, transparent)' : 'none'}
-            />
+        {setData.end_date && (
+          <span style={{ fontFamily: '"Caveat", cursive', fontSize: 13, color: `${t.ink}50` }}>
+            ends {formatDistanceToNow(new Date(setData.end_date), { addSuffix: true })}
           </span>
-          <span className="font-semibold">{setData.likeCount} Likes</span>
-        </div>
-        <div className="relative">
-          <div className="flex rounded-full px-4 py-2 bg-surface gap-2"
-            onClick={handleShare}
-            style={{ cursor: 'pointer' }}
-          >
-            <span className="inline-block mr-2">
-              <Share2Icon className="text-text-muted" size={20} />
-            </span>
-            <span className="font-semibold">Share</span>
-          </div>
-          {showCopiedTooltip && (
-            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-overlay text-text-inverse text-sm rounded-lg">
-              Link copied to clipboard!
-            </div>
-          )}
-        </div>
+        )}
+      </div>
+
+      <div className="flex gap-2">
+        <button onClick={() => handleLikeComparisonSet(setData.id)} style={pillStyle(hasLiked)}>
+          <motion.span animate={{ scale: hasLiked ? [1, 1.35, 1] : 1 }} transition={{ duration: 0.25 }}>
+            <Heart size={16} fill={hasLiked ? t.red : 'none'} stroke={hasLiked ? t.red : 'currentColor'} />
+          </motion.span>
+          <span>{setData.likeCount ?? 0}</span>
+        </button>
+
+        <button onClick={handleShare} style={{ ...pillStyle(false), position: 'relative' }}>
+          <AnimatePresence mode="wait" initial={false}>
+            {copied ? (
+              <motion.span key="check" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
+                <Check size={16} style={{ color: t.blue }} />
+              </motion.span>
+            ) : (
+              <motion.span key="share" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <Share2 size={16} />
+              </motion.span>
+            )}
+          </AnimatePresence>
+          <span>{copied ? 'copied' : 'share'}</span>
+        </button>
       </div>
     </div>
   );

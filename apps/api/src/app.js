@@ -4,10 +4,12 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import pinoHttp from 'pino-http';
 import path from 'path';
+import swaggerUi from 'swagger-ui-express';
 
 import { env } from './config/env.js';
 import { logger } from './lib/logger.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
+import { swaggerSpec } from './config/swagger.js';
 import { healthRouter } from './features/health/health.routes.js';
 import { authRouter } from './features/auth/auth.routes.js';
 import { trendingRouter, setsRouter } from './features/trending/trending.routes.js';
@@ -51,6 +53,13 @@ export function createApp() {
     serializers: {
       req: req => ({ id: req.id, method: req.method, url: req.url }),
       res: res => ({ statusCode: res.statusCode }),
+    },
+  }));
+
+  // Swagger UI documentation.
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+    swaggerOptions: {
+      persistAuthorization: true,
     },
   }));
 

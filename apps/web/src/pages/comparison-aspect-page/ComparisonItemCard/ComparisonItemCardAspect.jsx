@@ -3,7 +3,6 @@ import VotedCard from './VotedCard';
 import NotVotedCard from './NotVotedCard';
 import VotingAnimation from './VotingAnimation/VotingAnimation';
 import { useComparisonItemCardAspect } from '../../../hooks/useComparisonItemCardAspect';
-import './ComparisonItemCard.css';
 
 const ComparisonItemCardAspect = ({
   item,

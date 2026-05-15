@@ -1,24 +1,26 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence, useAnimation } from 'framer-motion';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useComparisonSets } from '../hooks/useComparisonSets';
-import ComparisonCard from '../pages/compare-page/ComparisonCard';
 import { Home, TrendingUp } from 'lucide-react';
-import { splitAndJoin } from '../lib/utils';
+import { themes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
+import { useComparisonSets } from '@hooks/useComparisonSets';
+import { splitAndJoin } from '@utils/utils';
+import ComparisonCard from '../pages/compare-page/ComparisonCard';
 
 const TikTokScroll = () => {
   const { id: currentId } = useParams();
   const navigate = useNavigate();
-  const [isDragging, setIsDragging] = useState(false);
-  const [isHorizontalDrag, setIsHorizontalDrag] = useState(false);
-  const [hasUserInteracted, setHasUserInteracted] = useState(true);
-  const containerRef = useRef(null);
-  const lastScrollTime = useRef(Date.now());
-  const controls = useAnimation();
-  const [_dragX, setDragX] = useState(0);
-  const [dragY, setDragY] = useState(0);
+  const { themeId } = useTheme();
+  const t = themes[themeId] ?? themes.light;
+
   const [currentSelectedTag, setCurrentSelectedTag] = useState('user_home_feed_91819');
   const [isCommentsCollapsed, setIsCommentsCollapsed] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const scrollRef = useRef(null);
+  const cardRefs = useRef([]);
+  const activeTagRef = useRef(null);
+  const hasInitiallyScrolled = useRef(false);
 
   const {
     comparisonSets,
@@ -34,206 +36,188 @@ const TikTokScroll = () => {
     handleLikeComparisonSet,
   } = useComparisonSets(parseInt(currentId) || 0);
 
-  const selectedTagRef = useRef(null);
-
-  useEffect(() => { window.scrollTo(0, 0); }, []);
-
+  // Scroll to the card matching the URL param on first load
   useEffect(() => {
-    if (selectedTagRef.current) {
-      selectedTagRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    if (hasInitiallyScrolled.current || comparisonSets.length === 0 || currentIndex <= 0) return;
+    const el = cardRefs.current[currentIndex];
+    if (el) {
+      el.scrollIntoView({ behavior: 'instant', block: 'start' });
+      hasInitiallyScrolled.current = true;
     }
+  }, [comparisonSets, currentIndex]);
+
+  // IntersectionObserver — detect which card is snapped into view
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        for (const entry of entries) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.55) {
+            const idx = Number(entry.target.dataset.cardIndex);
+            setActiveIndex(idx);
+            setCurrentIndex(idx);
+            setIsCommentsCollapsed(true);
+            const set = comparisonSets[idx];
+            if (set) navigate(`/compare/${set.id}`, { replace: true });
+          }
+        }
+      },
+      { threshold: 0.55 },
+    );
+    cardRefs.current.filter(Boolean).forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, [comparisonSets, navigate, setCurrentIndex]);
+
+  // Auto-advance 2.5 s after voting (cleanup cancels if user scrolls away first)
+  const activeHasVoted = comparisonSets[activeIndex]?.hasVoted ?? false;
+  useEffect(() => {
+    if (!activeHasVoted) return;
+    const timer = setTimeout(() => {
+      cardRefs.current[activeIndex + 1]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, [activeHasVoted, activeIndex]);
+
+  // Keep the active category chip scrolled into view
+  useEffect(() => {
+    activeTagRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
   }, [currentSelectedTag]);
 
-  useEffect(() => {
-    setIsCommentsCollapsed(true);
-    if (currentIndex === 0 || currentIndex === -1) {
-      setDragX(0);
-      setIsHorizontalDrag(false);
-      setIsDragging(false);
-    }
-    if (currentIndex >= 0 && comparisonSets[currentIndex]) {
-      navigate(`/compare/${comparisonSets[currentIndex].id}`, { replace: true });
-    }
-  }, [currentIndex, comparisonSets]);
-
-  useEffect(() => {
-    if (comparisonSets[currentIndex]?.hasVoted && !hasUserInteracted) {
-      const timer = setTimeout(goToNextSet, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [comparisonSets[currentIndex]?.hasVoted, hasUserInteracted]);
-
-  useEffect(() => {
-    if (currentSelectedTag) loadNewBatchByCategory(currentSelectedTag);
-  }, [currentSelectedTag]);
-
-  const goToNextSet = () => {
-    if (currentIndex < comparisonSets.length - 1) setCurrentIndex(currentIndex + 1);
-  };
-
-  const goToPreviousSet = () => {
-    if (currentIndex > 0) { setCurrentIndex(currentIndex - 1); setHasUserInteracted(true); }
-  };
-
-  const loadNewBatchByCategory = tag => {
+  const handleTagChange = tag => {
     const cat = allCategories.find(c => c.name.toLowerCase().trim() === tag.toLowerCase().trim());
     setCategoryId(cat?.userCat ? cat?.id : null);
     setCategoryIds(cat && !cat.userCat ? cat?.included_categories : null);
     setSelectedTag(tag);
+    setCurrentSelectedTag(tag);
   };
 
-  const handleDragStart = (event, info) => {
-    setIsDragging(true);
-    setIsHorizontalDrag(Math.abs(info.offset.x) > Math.abs(info.offset.y));
-  };
+  const chipStyle = active => ({
+    display: 'flex',
+    alignItems: 'center',
+    gap: 4,
+    fontFamily: '"Caveat", cursive',
+    fontSize: 14,
+    color: active ? t.bg : t.ink,
+    background: active ? t.ink : 'transparent',
+    border: `1px solid ${active ? t.ink : `${t.ink}22`}`,
+    borderRadius: 20,
+    padding: '4px 12px',
+    whiteSpace: 'nowrap',
+    cursor: 'pointer',
+    flexShrink: 0,
+    transition: 'background 0.15s, color 0.15s',
+  });
 
-  const handleDrag = (event, info) => {
-    if (isHorizontalDrag) { setDragX(info.offset.x); setDragY(0); }
-    else { setDragY(info.offset.y); setDragX(0); }
-  };
-
-  const handleDragEnd = (event, info) => {
-    const now = Date.now();
-    if (now - lastScrollTime.current < 300) return;
-    lastScrollTime.current = now;
-    if (!isCommentsCollapsed) return;
-
-    if (isHorizontalDrag) {
-      const hThreshold = 50;
-      if (Math.abs(info.offset.x) > hThreshold || Math.abs(info.velocity.x) > 500) {
-        const list = ['user_home_feed_91819', 'trending', ...allCategories.map(c => c.name)];
-        if (info.offset.x > 0 && currentSelectedTag !== 'user_home_feed_91819') prevTag(list);
-        else if (info.offset.x < 0 && currentSelectedTag !== list[list.length - 1]) nextTag(list);
-      }
-      setDragX(0); setIsHorizontalDrag(false); setIsDragging(false);
-    } else {
-      const threshold = window.innerHeight * 0.3;
-      if (Math.abs(info.offset.y) > threshold || Math.abs(info.velocity.y) > 500) {
-        if (info.offset.y > 0) goToPreviousSet();
-        else goToNextSet();
-      }
-      setIsDragging(false); setDragY(0);
-    }
-  };
-
-  const prevTag = list => {
-    const idx = list.indexOf(currentSelectedTag);
-    if (idx > 0) setCurrentSelectedTag(list[idx - 1]);
-  };
-
-  const nextTag = list => {
-    const idx = list.indexOf(currentSelectedTag);
-    if (idx < list.length - 1) setCurrentSelectedTag(list[idx + 1]);
-  };
-
-  const renderSet = (setData, index) => (
-    <motion.div
-      key={`set-${setData.id}-${index}`}
-      className="w-full flex rounded-lg bg-bg shadow-lg"
-      style={{ position: 'absolute', height: '100%', width: '100%' }}
-      initial={false}
-      animate={{
-        y: (index - currentIndex) * (window.innerHeight - 90) + dragY,
-        opacity: isDragging && isHorizontalDrag ? 0 : 1,
-        scale: isDragging && !isHorizontalDrag && currentIndex === index ? 0.95 : 1,
-      }}
-      transition={{ type: 'linear', duration: 0.3 }}
-    >
-      <ComparisonCard
-        setData={setData}
-        isActive={index === currentIndex}
-        isCommentsCollapsed={isCommentsCollapsed}
-        setIsCommentsCollapsed={setIsCommentsCollapsed}
-        isDragging={isDragging}
-        currentIndex={currentIndex}
-        index={index}
-        handleVote={handleVote}
-        handleReset={handleReset}
-        handleLikeComparisonSet={handleLikeComparisonSet}
-        users={[]}
-        userPreferences={userPreferences}
-        setHasUserInteracted={setHasUserInteracted}
-      />
-    </motion.div>
-  );
+  const SYSTEM_TAGS = [
+    { id: 'user_home_feed_91819', label: 'Feed', icon: <Home size={13} /> },
+    { id: 'trending',             label: 'Trending', icon: <TrendingUp size={13} /> },
+  ];
 
   return (
-    <div className="h-screen w-full overflow-hidden flex flex-col justify-between">
-      {/* Category tag bar */}
+    <div
+      style={{
+        height: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        background: t.bg,
+        overflow: 'hidden',
+      }}
+    >
+      {/* Category chip bar */}
       <div
-        className="h-auto rounded-t-sm bg-surface"
-        style={{ paddingTop: 'calc(env(safe-area-inset-top))' }}
+        style={{
+          flexShrink: 0,
+          background: t.bg,
+          borderBottom: `1px solid ${t.ink}12`,
+          paddingTop: 'env(safe-area-inset-top)',
+        }}
       >
-        <div className="w-full overflow-x-auto scrollbar-hide">
-          <div className="flex flex-row min-w-max px-2">
-            <div
-              ref={currentSelectedTag === 'user_home_feed_91819' ? selectedTagRef : null}
-              className={`flex flex-row p-2 items-center gap-1 cursor-pointer ${currentSelectedTag === 'user_home_feed_91819' ? 'font-semibold text-primary' : 'text-text-muted'}`}
-              onClick={() => setCurrentSelectedTag('user_home_feed_91819')}
+        <div
+          className="flex gap-2 px-3 py-2 overflow-x-auto"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
+          {SYSTEM_TAGS.map(({ id, label, icon }) => (
+            <button
+              key={id}
+              ref={currentSelectedTag === id ? activeTagRef : null}
+              onClick={() => handleTagChange(id)}
+              style={chipStyle(currentSelectedTag === id)}
             >
-              <Home className="inline-block" size={14} /><span>Feed</span>
-            </div>
-            <div
-              ref={currentSelectedTag === 'trending' ? selectedTagRef : null}
-              className={`flex flex-row p-2 gap-1 items-center cursor-pointer ${currentSelectedTag === 'trending' ? 'font-semibold text-primary' : 'text-text-muted'}`}
-              onClick={() => setCurrentSelectedTag('trending')}
+              {icon}
+              {label}
+            </button>
+          ))}
+
+          {allCategories.filter(c => c.userCat).slice(0, 3).map(cat => (
+            <button
+              key={cat.name}
+              ref={currentSelectedTag === cat.name ? activeTagRef : null}
+              onClick={() => handleTagChange(cat.name)}
+              style={chipStyle(currentSelectedTag === cat.name)}
             >
-              <TrendingUp className="inline-block" size={16} /><span>Trending</span>
-            </div>
-            {allCategories.filter(c => c.userCat).slice(0, 3).map(category => (
-              <div
-                key={category.name}
-                ref={currentSelectedTag === category.name ? selectedTagRef : null}
-                className={`flex flex-row p-2 gap-1 cursor-pointer ${currentSelectedTag === category.name ? 'font-semibold text-primary' : 'text-text-muted'}`}
-                onClick={() => setCurrentSelectedTag(category.name)}
-              >
-                <span className="whitespace-nowrap">{category.name}</span>
-              </div>
-            ))}
-            {allCategories.filter(c => !c.userCat).map(category => (
-              <div
-                key={category.name}
-                ref={currentSelectedTag === category.name ? selectedTagRef : null}
-                className={`flex flex-row p-2 gap-1 cursor-pointer ${currentSelectedTag === category.name ? 'text-primary' : 'text-text-muted'}`}
-                onClick={() => setCurrentSelectedTag(category.name)}
-              >
-                <span className="whitespace-nowrap">{splitAndJoin(category.name)}</span>
-              </div>
-            ))}
-          </div>
+              {cat.name}
+            </button>
+          ))}
+
+          {allCategories.filter(c => !c.userCat).map(cat => (
+            <button
+              key={cat.name}
+              ref={currentSelectedTag === cat.name ? activeTagRef : null}
+              onClick={() => handleTagChange(cat.name)}
+              style={chipStyle(currentSelectedTag === cat.name)}
+            >
+              {splitAndJoin(cat.name)}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Scroll container */}
+      {/* CSS scroll-snap container */}
       <div
-        className="h-full w-full overflow-hidden"
-        style={{ paddingBottom: 'calc(42px + env(safe-area-inset-bottom))' }}
+        ref={scrollRef}
+        style={{
+          flex: 1,
+          overflowY: isCommentsCollapsed ? 'scroll' : 'hidden',
+          scrollSnapType: isCommentsCollapsed ? 'y mandatory' : 'none',
+          paddingBottom: 'env(safe-area-inset-bottom)',
+        }}
       >
-        <motion.div
-          ref={containerRef}
-          className="h-full w-full flex items-center justify-center rounded-lg"
-          drag={isCommentsCollapsed}
-          dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
-          dragDirectionLock
-          onDragStart={handleDragStart}
-          onDrag={handleDrag}
-          onDragEnd={handleDragEnd}
-          animate={controls}
-          style={{ position: 'relative', height: '100%', width: '100%', overflow: 'hidden' }}
-        >
-          <AnimatePresence>
-            {comparisonSets.length > 0
-              ? comparisonSets.map((item, index) => renderSet(item, index))
-              : (
-                <div className="flex flex-col items-center justify-center h-full w-full">
-                  <p className="text-text-muted text-center">
-                    No comparisons for this category yet.<br />Add some?
-                  </p>
-                </div>
-              )
-            }
-          </AnimatePresence>
-        </motion.div>
+        {comparisonSets.length === 0 ? (
+          <div
+            className="flex items-center justify-center"
+            style={{ height: '100%' }}
+          >
+            <p style={{
+              fontFamily: '"Fraunces", serif',
+              fontSize: 15,
+              color: t.ink,
+              opacity: 0.4,
+              textAlign: 'center',
+            }}>
+              No comparisons here yet.
+            </p>
+          </div>
+        ) : (
+          comparisonSets.map((set, i) => (
+            <div
+              key={set.id}
+              ref={el => { cardRefs.current[i] = el; }}
+              data-card-index={i}
+              style={{ scrollSnapAlign: 'start', height: '100%', flexShrink: 0 }}
+            >
+              <ComparisonCard
+                setData={set}
+                isActive={i === activeIndex}
+                isCommentsCollapsed={isCommentsCollapsed}
+                setIsCommentsCollapsed={setIsCommentsCollapsed}
+                handleVote={handleVote}
+                handleReset={handleReset}
+                handleLikeComparisonSet={handleLikeComparisonSet}
+                userPreferences={userPreferences}
+                setHasUserInteracted={() => {}}
+              />
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

@@ -1,209 +1,56 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import {
-  Star,
-  Heart,
-  Circle,
-  Square,
-  Triangle,
-  Sparkles,
-  Moon,
-  Sun,
-} from 'lucide-react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { Star, Heart, Sparkles, Moon, Sun, Circle } from 'lucide-react';
+import { themes as risoThemes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
+
+// [Icon, left%, top%, rotateDeg, delayS]
+const ICONS = [
+  [Star,     5,  8,  15, 0.0],
+  [Heart,   18, 22,  -8, 0.3],
+  [Sparkles,32,  5,  20, 0.6],
+  [Circle,  50, 12, -15, 0.2],
+  [Moon,    68,  6,  10, 0.5],
+  [Sun,     82, 18,  -5, 0.1],
+  [Star,    92,  9,  12, 0.4],
+  [Heart,    8, 55, -12, 0.7],
+  [Sparkles,25, 72,  18, 0.2],
+  [Circle,  44, 60,  -8, 0.8],
+  [Moon,    60, 78,  14, 0.3],
+  [Sun,     78, 65,  -3, 0.6],
+  [Star,    90, 55,  16, 0.1],
+  [Heart,   15, 88,  -6, 0.5],
+  [Sparkles,55, 90,  22, 0.9],
+  [Circle,  38, 38,  -4, 0.4],
+  [Moon,    72, 42,   8, 0.7],
+];
+
 const BackgroundImage = () => {
-  // Array of icons to display
-  const icons = [
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Circle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Square, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Triangle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sparkles, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Moon, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sun, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Circle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Square, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sparkles, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Moon, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sun, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Circle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Square, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Triangle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sparkles, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Moon, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sun, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Circle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Square, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Triangle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sparkles, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Moon, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sun, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Circle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Square, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sparkles, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Moon, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sun, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Circle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Square, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Triangle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sparkles, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Moon, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sun, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Circle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Square, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Triangle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sparkles, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Moon, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sun, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Circle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Square, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Triangle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sparkles, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Moon, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sun, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Circle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Square, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Triangle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sparkles, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Moon, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sun, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Circle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Square, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Triangle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sparkles, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Moon, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sun, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Circle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Square, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Triangle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sparkles, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Moon, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sun, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Circle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Square, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Triangle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sparkles, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Moon, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sun, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Circle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Square, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Star, color: 'rgba(234, 234, 234, 0.6)' },
-    { Icon: Heart, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Triangle, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sparkles, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Moon, color: 'rgba(230, 230, 230, 0.6)' },
-    { Icon: Sun, color: 'rgba(230, 230, 230, 0.6)' },
-  ];
-
-  const { currentTheme } = useTheme();
-  // Calculate grid positions
-  const generateGridIcons = () => {
-    const numCols = 8; // Number of columns in the grid
-    const numRows = Math.ceil(icons.length / numCols); // Calculate rows needed
-
-    return icons.map(({ Icon, color }, index) => {
-      const col = index % numCols;
-      const row = Math.floor(index / numCols);
-
-      // Calculate position with some padding
-      const x = (col * (100 / (numCols - 1)) + (5 * (row%2 == 1))); // Distribute across width
-      const y = (row * (100 / (numRows - 1)) + (5 * (col%2 == 0))); // Distribute across height
-
-      // Vary the size slightly for visual interest
-      const size = Math.random() * 15 + 25; // Sizes: 20, 30, or 40
-
-      // Alternate rotation directions for visual interest
-      const rotation = (index % 2 === 0 ? 15 : -15);
-
-      return (
-        <motion.div
-          key={index}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: ['Light', 'Sunset', 'Ocean', 'Forest'].includes(currentTheme.name) ? 1 : 0.1 }}
-          transition={{
-            duration: 2,
-            delay: Math.random() * 2,
-            repeat: Infinity,
-            repeatType: "reverse",
-          }}
-          style={{
-            position: 'absolute',
-            left: `${x}%`,
-            top: `${y}%`,
-            transform: `rotate(${rotation}deg)`,
-            color: color,
-          }}
-        >
-          <Icon size={size} />
-        </motion.div>
-      );
-    });
-  };
+  const { themeId } = useTheme();
+  const t = risoThemes[themeId] ?? risoThemes.light;
 
   return (
     <div
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background:   ['Light', 'Sunset', 'Ocean', 'Forest'].includes(currentTheme.name) ?
-        'linear-gradient(135deg,rgb(255, 255, 255) 0%,rgb(236, 246, 255) 50%,rgb(230, 251, 250) 100%)'
-        : 'linear-gradient(135deg,rgb(47, 47, 81) 0%,rgb(26, 50, 89) 50%,rgb(86, 53, 127) 100%)',
-        overflow: 'hidden',
-        zIndex: 0, // Ensure background stays behind all content
-      }}
+      className="fixed inset-0 overflow-hidden pointer-events-none"
+      style={{ zIndex: 0 }}
+      aria-hidden
     >
-      {generateGridIcons()}
+      <div
+        className="absolute inset-0"
+        style={{ background: `linear-gradient(135deg, ${t.bg} 0%, ${t.bgDeep} 100%)` }}
+      />
+      {ICONS.map(([Icon, left, top, rotate, delay], i) => (
+        <motion.div
+          key={i}
+          className="absolute"
+          style={{ left: `${left}%`, top: `${top}%`, transform: `rotate(${rotate}deg)`, color: t.ink }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: [0.08, 0.18, 0.08] }}
+          transition={{ duration: 4, delay, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <Icon size={28} />
+        </motion.div>
+      ))}
     </div>
   );
 };

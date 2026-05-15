@@ -17,3 +17,11 @@ export const getUserComments = async (_userId, page = 1, limit = 10) => {
     hasMore: raw.hasMore,
   };
 };
+
+export const reactToComment = async (commentId, reactionType) => {
+  await apiClient.post(`/api/comments/${commentId}/react`, { reactionType });
+};
+
+export const unreactToComment = async commentId => {
+  await apiClient.delete(`/api/comments/${commentId}/react`);
+};

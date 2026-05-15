@@ -59,3 +59,8 @@ export const getUnpublishedComparison = async () => {
 export const deleteComparisonSet = async setId => {
   await apiClient.delete(`/api/comparisons/${setId}`);
 };
+
+export const getSetAspects = async setId => {
+  const { data } = await apiClient.get(`/api/sets/${setId}/aspects`);
+  return data.data ?? [];
+};

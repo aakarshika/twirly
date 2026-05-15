@@ -1,114 +1,112 @@
-import React, { useEffect, useState } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
-import { SparklesIcon } from '@heroicons/react/24/solid';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { BarChart2, TrendingUp } from 'lucide-react';
+import { themes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
 
-const QuickStats = ({ comparisonSets, _reviews, item }) => {
-  const { currentTheme } = useTheme();
-  const [animatedComparisons, setAnimatedComparisons] = useState(0);
-  const [animatedWinRate, setAnimatedWinRate] = useState(0);
+const EASE = [0.16, 1, 0.3, 1];
 
-  const _totalVotes = comparisonSets.reduce((sum, set) => sum + (set.itemVotes || 0), 0);
-  const winRate = comparisonSets.length > 0
-    ? Math.round((comparisonSets.filter(set => (set.itemVotes || 0) > (set.totalVotes || 0) / 2).length / comparisonSets.length) * 100)
+const countUp = (target, setter) => {
+  const steps = 40;
+  const stepMs = 800 / steps;
+  let step = 0;
+  const id = setInterval(() => {
+    step++;
+    setter(Math.round(target * (step / steps)));
+    if (step >= steps) clearInterval(id);
+  }, stepMs);
+  return () => clearInterval(id);
+};
+
+const QuickStats = ({ comparisonSets, item }) => {
+  const { themeId } = useTheme();
+  const t = themes[themeId] ?? themes.light;
+
+  const totalComparisons = comparisonSets.length;
+  const winRate = totalComparisons > 0
+    ? Math.round(
+        (comparisonSets.filter(s => (s.itemVotes ?? 0) > (s.totalVotes ?? 0) / 2).length
+          / totalComparisons) * 100,
+      )
     : 0;
 
+  const [dispComparisons, setDispComparisons] = useState(0);
+  const [dispWinRate, setDispWinRate] = useState(0);
+
   useEffect(() => {
-    const duration = 1500;
-    const steps = 60;
-    const stepDuration = duration / steps;
-
-    let currentStep = 0;
-    const interval = setInterval(() => {
-      currentStep++;
-      const progress = currentStep / steps;
-
-      setAnimatedComparisons(Math.round(comparisonSets.length * progress));
-      setAnimatedWinRate(Math.round(winRate * progress));
-
-      if (currentStep >= steps) clearInterval(interval);
-    }, stepDuration);
-
-    return () => clearInterval(interval);
-  }, [comparisonSets.length, winRate]);
+    const c1 = countUp(totalComparisons, setDispComparisons);
+    const c2 = countUp(winRate, setDispWinRate);
+    return () => { c1(); c2(); };
+  }, [totalComparisons, winRate]);
 
   return (
-    <div className="relative min-h-[300px] p-8 overflow-hidden">
-      {/* Background decorative elements */}
-
-      {/* Main content */}
-      <div className="relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col items-center mb-8"
-        >
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            className="text-4xl font-bold mb-2 bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 bg-clip-text text-transparent"
-          >
-            {item.name}
-          </motion.div>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Comparisons Card */}
-
-          {/* Win Rate Card */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            whileHover={{ scale: 1.02, rotate: -1 }}
-            className="relative p-6 rounded-2xl backdrop-blur-md hover:shadow-2xl transition-all duration-300"
-            style={{ backgroundColor: currentTheme.colors.card + '80' }}
-          >
-            <motion.div
-              animate={{
-                y: [0, -10, 0],
-                rotate: [0, 5, 0],
-              }}
-              transition={{
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              className="absolute -top-4 -left-4 w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 flex items-center justify-center"
-            >
-              <SparklesIcon className="w-6 h-6 text-white" />
-            </motion.div>
-
-            <div className="flex items-center justify-center space-x-4">
-              <div>
-                <p className="text-lg font-medium mb-1" style={{ color: currentTheme.colors.textSecondary }}>
-                  Win Rate 💪
-                </p>
-                <motion.p
-                  initial={{ scale: 0.5 }}
-                  animate={{ scale: 1 }}
-                  className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-teal-500 bg-clip-text text-transparent"
-                >
-                  {animatedWinRate}%
-                </motion.p>
-              </div>
-            </div>
-            <div className="flex flex-row items-center justify-between">
-                <p className="text-md font-semibold mb-1" style={{ color: currentTheme.colors.textSecondary }}>
-                  Comparisons
-                </p>
-                <motion.p
-                  initial={{ scale: 0.5 }}
-                  animate={{ scale: 1 }}
-                  className="text-md font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent"
-                >
-                  {animatedComparisons}
-                </motion.p>
-              </div>
-          </motion.div>
-        </div>
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: EASE }}
+      className="flex flex-wrap gap-3"
+    >
+      <div style={{
+        background: t.bgDeep,
+        border: `2px solid ${t.red}`,
+        borderRadius: 8,
+        padding: '14px 20px',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 4,
+        minWidth: 110,
+      }}>
+        <BarChart2 size={15} style={{ color: t.red }} />
+        <p style={{ fontFamily: '"DM Serif Display", serif', fontStyle: 'italic', fontSize: 30, lineHeight: 1, color: t.ink, margin: 0 }}>
+          {dispComparisons}
+        </p>
+        <p style={{ fontFamily: '"Caveat", cursive', fontSize: 14, color: t.ink, opacity: 0.6, margin: 0 }}>
+          comparisons
+        </p>
       </div>
-    </div>
+
+      {totalComparisons > 0 && (
+        <div style={{
+          background: t.bgDeep,
+          border: `2px solid ${t.blue}`,
+          borderRadius: 8,
+          padding: '14px 20px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 4,
+          minWidth: 110,
+        }}>
+          <TrendingUp size={15} style={{ color: t.blue }} />
+          <p style={{ fontFamily: '"DM Serif Display", serif', fontStyle: 'italic', fontSize: 30, lineHeight: 1, color: t.ink, margin: 0 }}>
+            {dispWinRate}%
+          </p>
+          <p style={{ fontFamily: '"Caveat", cursive', fontSize: 14, color: t.ink, opacity: 0.6, margin: 0 }}>
+            win rate
+          </p>
+        </div>
+      )}
+
+      {item?.category_name && (
+        <div style={{
+          background: t.bgDeep,
+          border: `1px solid ${t.ink}15`,
+          borderRadius: 8,
+          padding: '14px 20px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'flex-end',
+          gap: 4,
+          minWidth: 110,
+        }}>
+          <p style={{ fontFamily: '"DM Serif Display", serif', fontStyle: 'italic', fontSize: 18, lineHeight: 1.2, color: t.ink, margin: 0 }}>
+            {item.category_name}
+          </p>
+          <p style={{ fontFamily: '"Caveat", cursive', fontSize: 14, color: t.ink, opacity: 0.6, margin: 0 }}>
+            category
+          </p>
+        </div>
+      )}
+    </motion.div>
   );
 };
 

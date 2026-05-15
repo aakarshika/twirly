@@ -1,156 +1,208 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../../contexts/AuthContext';
-import apiClient from '../../../lib/apiClient';
+import { useState, useEffect } from 'react';
 import { Heart, MessageSquare } from 'lucide-react';
-import Button from '../../../components/common/Button';
-import Avatar from '../../../components/common/Avatar';
+import { formatDistanceToNow } from 'date-fns';
+import { motion } from 'framer-motion';
+import { themes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
+import { useAuth } from '@contexts/AuthContext';
+import { getItemComments } from '@services/items';
+import { reactToComment, unreactToComment } from '@services/comments';
+import Avatar from '@components/common/Avatar';
+import Button from '@components/common/Button';
 
-const CommentAppearancesTab = ({ comparisonSets, item }) => {
+const PAGE_SIZE = 10;
+
+const CommentAppearancesTab = ({ item }) => {
+  const { themeId } = useTheme();
+  const t = themes[themeId] ?? themes.light;
   const { user } = useAuth();
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
 
   useEffect(() => {
-    if (comparisonSets?.length > 0) {
-      fetchComments();
-    }
-  }, [comparisonSets]);
-  // console.log("comparisonSets",comparisonSets);
-  // console.log("item",item);
-
-  const fetchComments = async () => {
     if (!item?.id) return;
+    let cancelled = false;
+    const fetch = async () => {
+      try {
+        setLoading(true);
+        const { comments: fetched, hasMore: more } = await getItemComments(item.id, 1, PAGE_SIZE);
+        if (!cancelled) {
+          setComments(fetched);
+          setHasMore(more);
+          setCurrentPage(1);
+        }
+      } catch (err) {
+        if (!cancelled) setError(err.message ?? 'Failed to load comments.');
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+    fetch();
+    return () => { cancelled = true; };
+  }, [item?.id]);
+
+  const loadMore = async () => {
+    if (!hasMore || loading || !item?.id) return;
+    const next = currentPage + 1;
     try {
       setLoading(true);
-      const pageSize = 10;
-      const { data: resp } = await apiClient.get(`/api/items/${item.id}/comments`, {
-        params: { page, pageSize },
-      });
-      const { comments: newComments, total } = resp.data;
-
-      setComments(prev => page === 1 ? newComments : [...prev, ...newComments]);
-      setHasMore(total > page * pageSize);
+      const { comments: fetched, hasMore: more } = await getItemComments(item.id, next, PAGE_SIZE);
+      setComments(prev => [...prev, ...fetched]);
+      setHasMore(more);
+      setCurrentPage(next);
     } catch (err) {
-      setError(err.response?.data?.error?.message ?? err.message);
+      setError(err.message ?? 'Failed to load more.');
     } finally {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    fetchComments();
-  }, []);
 
-  const loadMore = async () => {
-    if (!hasMore || loading) return;
-    setPage(prev => prev + 1);
-    await fetchComments();
-  };
-
-  const handleLikeComment = async commentId => {
+  const handleLike = async commentId => {
     const comment = comments.find(c => c.id === commentId);
     if (!comment) return;
-    const alreadyLiked = comment.reactions?.some(r => r.user_id === user?.id && r.reaction_type === 'like');
+    const alreadyLiked = comment.reactions?.some(
+      r => r.user_id === user?.id && r.reaction_type === 'like',
+    );
+    setComments(prev => prev.map(c =>
+      c.id === commentId
+        ? {
+            ...c,
+            reactions: alreadyLiked
+              ? (c.reactions ?? []).filter(r => !(r.user_id === user?.id && r.reaction_type === 'like'))
+              : [...(c.reactions ?? []), { user_id: user?.id, reaction_type: 'like' }],
+          }
+        : c,
+    ));
     try {
       if (alreadyLiked) {
-        await apiClient.delete(`/api/comments/${commentId}/react`);
-        setComments(prev => prev.map(c => c.id === commentId
-          ? { ...c, reactions: (c.reactions ?? []).filter(r => !(r.user_id === user?.id && r.reaction_type === 'like')) }
-          : c,
-        ));
+        await unreactToComment(commentId);
       } else {
-        await apiClient.post(`/api/comments/${commentId}/react`, { reactionType: 'like' });
-        setComments(prev => prev.map(c => c.id === commentId
-          ? { ...c, reactions: [...(c.reactions ?? []), { user_id: user?.id, reaction_type: 'like' }] }
-          : c,
-        ));
+        await reactToComment(commentId, 'like');
       }
-    } catch (err) {
-      console.error('Failed to toggle comment like:', err);
+    } catch {
+      setComments(prev => prev.map(c =>
+        c.id === commentId
+          ? {
+              ...c,
+              reactions: alreadyLiked
+                ? [...(c.reactions ?? []), { user_id: user?.id, reaction_type: 'like' }]
+                : (c.reactions ?? []).filter(r => !(r.user_id === user?.id && r.reaction_type === 'like')),
+            }
+          : c,
+      ));
     }
   };
 
-  if (loading && page === 1) {
+  if (loading && currentPage === 1) {
     return (
-      <div className="p-4">
-        <div className="animate-pulse space-y-4">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg" />
-          ))}
-        </div>
+      <div className="space-y-3 pt-2">
+        {[0, 1, 2].map(i => (
+          <motion.div
+            key={i}
+            animate={{ opacity: [0.5, 0.8, 0.5] }}
+            transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut', delay: i * 0.15 }}
+            style={{
+              background: t.bgDeep,
+              border: `1px solid ${t.ink}12`,
+              borderRadius: 10,
+              height: 76,
+            }}
+          />
+        ))}
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 text-red-500">
-        Error loading comments: {error}
-      </div>
+      <p style={{ fontFamily: '"Fraunces", serif', fontSize: 14, color: t.red, padding: '16px 0' }}>
+        {error}
+      </p>
     );
   }
 
   if (comments.length === 0) {
     return (
-      <div className="p-4 text-center text-gray-500">
-        No comments found for this item in any comparison sets.
+      <div style={{ padding: '40px 0', textAlign: 'center' }}>
+        <p style={{ fontFamily: '"Caveat", cursive', fontSize: 22, color: t.ink, opacity: 0.45, marginBottom: 8 }}>
+          no mentions yet.
+        </p>
+        <p style={{ fontFamily: '"Fraunces", serif', fontSize: 14, color: t.ink, opacity: 0.4 }}>
+          Comments from comparisons featuring this item appear here.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      {comments.map(comment => (
-        <div key={comment.id} className="rounded-lg p-4 shadow">
-          <div className="flex items-start justify-between">
-            <div className="flex items-center space-x-2">
+    <div className="space-y-3">
+      {comments.map(comment => {
+        const liked = comment.reactions?.some(
+          r => r.user_id === user?.id && r.reaction_type === 'like',
+        );
+        return (
+          <div
+            key={comment.id}
+            style={{
+              background: t.bgDeep,
+              border: `1px solid ${t.ink}14`,
+              borderRadius: 10,
+              padding: '12px 14px',
+            }}
+          >
+            <div className="flex items-start gap-3">
               <Avatar
                 profileImageUrl={comment.profile_image_url}
-                displayName={comment.display_name}
-                size={'sm'}
+                displayName={comment.display_name ?? 'Anonymous'}
+                size="xs"
               />
-              <div>
-                <p className="font-medium text-gray-900 dark:text-gray-100">
-                  {comment.display_name || 'Anonymous'}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span style={{ fontFamily: '"Fraunces", serif', fontSize: 13, fontWeight: 600, color: t.ink }}>
+                    {comment.display_name ?? 'Anonymous'}
+                  </span>
+                  {comment.set_name && (
+                    <span style={{ fontFamily: '"Caveat", cursive', fontSize: 12, color: t.blue }}>
+                      in &ldquo;{comment.set_name}&rdquo;
+                    </span>
+                  )}
+                  <span style={{ fontFamily: '"Caveat", cursive', fontSize: 11, color: `${t.ink}50` }}>
+                    {formatDistanceToNow(new Date(comment.created_at ?? new Date()), { addSuffix: true })}
+                  </span>
+                </div>
+                <p style={{ fontFamily: '"Fraunces", serif', fontSize: 13, color: t.ink, opacity: 0.85, marginTop: 4, lineHeight: 1.45 }}>
+                  {comment.content}
                 </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  @ &apos;{comment.set_name}&apos;
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => handleLikeComment(comment.id)}
-                className={`flex items-center space-x-1 ${
-                  comment.reactions?.some(r => r.user_id === user?.id && r.reaction_type === 'like')
-                    ? 'text-red-500'
-                    : 'text-gray-500 hover:text-red-500'
-                }`}
-              >
-                <Heart size={16} />
-                <span>{comment.reactions?.length || 0}</span>
-              </button>
-              <div className="flex items-center space-x-1 text-gray-500">
-                <MessageSquare size={16} />
-                <span>{comment.replies?.length || 0}</span>
+                <div className="flex items-center gap-4 mt-2">
+                  <button
+                    type="button"
+                    onClick={() => handleLike(comment.id)}
+                    className="flex items-center gap-1"
+                    style={{ fontFamily: '"Fraunces", serif', fontSize: 12, color: liked ? t.red : `${t.ink}60` }}
+                  >
+                    <Heart size={12} fill={liked ? t.red : 'none'} stroke={liked ? t.red : 'currentColor'} />
+                    {comment.reactions?.length ?? 0}
+                  </button>
+                  <span
+                    className="flex items-center gap-1"
+                    style={{ fontFamily: '"Fraunces", serif', fontSize: 12, color: `${t.ink}50` }}
+                  >
+                    <MessageSquare size={12} />
+                    {comment.replies?.length ?? 0}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-          <p className="mt-2 text-gray-700 dark:text-gray-300" style={{ textAlign: 'start' }}>
-            {comment.content}
-          </p>
-        </div>
-      ))}
+        );
+      })}
       {hasMore && (
-        <div className="text-center">
-          <Button
-            onClick={loadMore}
-            disabled={loading}
-            className="mt-4"
-          >
-            {loading ? 'Loading stuff...' : 'Load More'}
+        <div className="text-center pt-2">
+          <Button onClick={loadMore} disabled={loading} variant="secondary" size="sm">
+            {loading ? 'Loading…' : 'Load more'}
           </Button>
         </div>
       )}

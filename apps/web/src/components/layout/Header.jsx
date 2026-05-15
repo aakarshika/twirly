@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { useHeader } from '../../contexts/HeaderContext';
-import { getUserProfile } from '../../services/users';
+import { useAuth } from '@contexts/AuthContext';
+import { useHeader } from '@contexts/HeaderContext';
+import { getUserProfile } from '@services/users';
 import TopBar from './TopBar';
 import BottomTabs from './BottomTabs';
 import SideNav from './SideNav';
@@ -19,11 +19,7 @@ const Header = () => {
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    if (location.pathname.startsWith('/settings')) {
-      setSettingsExpanded(true);
-    } else {
-      setSettingsExpanded(false);
-    }
+    setSettingsExpanded(location.pathname.startsWith('/settings'));
   }, [location.pathname]);
 
   useEffect(() => {
@@ -33,17 +29,16 @@ const Header = () => {
       .catch(err => console.error('Header: failed to load profile', err));
   }, [user?.id]);
 
-  // Hide/show header on scroll
+  // Detect scroll direction; show bar when scrolling up or near the top.
   useEffect(() => {
-    let ticking = false;
     let lastScrollY = window.scrollY;
+    let ticking = false;
 
-    const handleScroll = () => {
+    const onScroll = () => {
       if (ticking) return;
       window.requestAnimationFrame(() => {
         const currentScrollY = window.scrollY;
-        const delta = currentScrollY - lastScrollY;
-        if (Math.abs(delta) > 10 && !isDrawerOpen) {
+        if (Math.abs(currentScrollY - lastScrollY) > 10 && !isDrawerOpen) {
           setIsHeaderVisible(currentScrollY < lastScrollY || currentScrollY < 10);
           lastScrollY = currentScrollY;
         }
@@ -52,8 +47,8 @@ const Header = () => {
       ticking = true;
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, [setIsHeaderVisible, isDrawerOpen]);
 
   const handleLogout = async () => {
@@ -70,17 +65,15 @@ const Header = () => {
       <TopBar
         onMenuClick={() => setIsDrawerOpen(v => !v)}
         isDrawerOpen={isDrawerOpen}
+        userData={userData}
       />
-
       <BottomTabs />
-
       {user && (
         <SideNav
           userData={userData}
           onLogout={handleLogout}
         />
       )}
-
       {user && (
         <MobileDrawer
           isOpen={isDrawerOpen}

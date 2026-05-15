@@ -1,172 +1,175 @@
-import React, { useState } from 'react';
-import { useTheme } from '../../../../contexts/ThemeContext';
-import { useAuth } from '../../../../contexts/AuthContext';
-import { Trash2, Settings } from 'lucide-react';
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Trash2, Settings, MessageSquare, ThumbsUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { getPublicUrlItems } from '../../../../lib/utils';
+import { themes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
+import { useAuth } from '@contexts/AuthContext';
+import { getPublicUrlItems } from '@utils/utils';
 
-const ComparisonItem = ({ item, user, _getVoteCount, _getCommentCount }) => {
-  const itemImage = item.image_url && item.image_url.startsWith('http') ? item.image_url : getPublicUrlItems(item.image_url);
-  const { currentTheme } = useTheme();
-  const [imageError, setImageError] = useState(false);
+const EASE = [0.16, 1, 0.3, 1];
+
+const ItemThumb = ({ item, t }) => {
+  const [imgErr, setImgErr] = useState(false);
+  const src = item.image_url?.startsWith('http')
+    ? item.image_url
+    : getPublicUrlItems(item.image_url);
 
   return (
-    <div
-      className="flex items-center space-x-3 p-3 rounded-lg"
-      style={{
-        backgroundColor: currentTheme.colors.background,
-        border: `1px solid ${currentTheme.colors.border}`,
-      }}
-    >
-      <div className="relative">
-        {itemImage && !imageError && (<img
-          src={itemImage}
+    <div style={{ position: 'relative', aspectRatio: '1', overflow: 'hidden', borderRadius: 4 }}>
+      {src && !imgErr ? (
+        <img
+          src={src}
           alt={item.name}
-          className="w-24 h-24 object-cover"
-          onError={e => {
-            e.target.style.display = 'none';
-            e.target.nextSibling.style.display = 'flex';
-            setImageError(true);
-          }}
-        />)}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center space-x-2">
-
-          <div
-            className="w-4 h-4 object-cover"
-            style={{ backgroundColor: item.item_color_string }}
-          >
-          </div>
-          <p
-            className="text-sm font-medium truncate"
-            style={{ color: currentTheme.colors.text }}
-          >
-            {item?.name || 'Unnamed Item'}
-          </p>
-          {user && item?.user_id === user.id && (
-            <span
-              className="text-xs px-2 py-0.5 rounded"
-              style={{
-                backgroundColor: currentTheme.colors.primary + '20',
-                color: currentTheme.colors.primary,
-              }}
-            >
-              Your Product
-            </span>
-          )}
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          onError={() => setImgErr(true)}
+        />
+      ) : (
+        <div style={{
+          width: '100%',
+          height: '100%',
+          background: item.item_color_string || t.bgDeep,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}>
+          <span style={{
+            fontFamily: '"DM Serif Display", serif',
+            fontStyle: 'italic',
+            fontSize: 14,
+            color: t.ink,
+            opacity: 0.5,
+          }}>
+            {item.name?.charAt(0) ?? '?'}
+          </span>
         </div>
-        <div className="text-sm text-gray-500">
-          {item.description}
-        </div>
-        <div className="flex items-center space-x-2 mt-1">
-          {item?.price && (
-            <span
-              className="text-xs px-2 py-0.5 rounded"
-              style={{
-                backgroundColor: currentTheme.colors.background,
-                color: currentTheme.colors.textSecondary,
-              }}
-            >
-              ${item.price.toFixed(2)}
-            </span>
-          )}
-        </div>
-      </div>
+      )}
     </div>
   );
 };
 
 const ComparisonCard = ({ comparison, onDelete, isPublic }) => {
-  const { currentTheme } = useTheme();
+  const { themeId } = useTheme();
+  const t = themes[themeId] ?? themes.light;
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const getVoteCount = itemId => {
-    if (!comparison?.votes) return 0;
-    return comparison.votes.filter(vote => vote.item_id === itemId).length;
-  };
-
-  const getCommentCount = () => {
-    if (!comparison?.comparison_set_comments) return 0;
-    return comparison.comparison_set_comments.length;
-  };
-
-  const handleComparisonClick = comparison => {
-    navigate(`/compare/${comparison.id}`);
-  };
-
-  // Define the number of placeholders needed
-  const _placeholdersNeeded = 3 - (comparison?.items?.length || 0);
+  const items = comparison?.items ?? [];
+  const totalVotes = comparison?.votes?.length ?? 0;
+  const totalComments = comparison?.comparison_set_comments?.length ?? 0;
 
   return (
-    <div
-      className="rounded-lg overflow-hidden flex flex-col"
+    <motion.div
+      whileHover={{ y: -2 }}
+      transition={{ duration: 0.2, ease: EASE }}
+      onClick={() => navigate(`/compare/${comparison.id}`)}
       style={{
-        backgroundColor: currentTheme.colors.card,
-        border: `1px solid ${currentTheme.colors.border}`,
-        color: currentTheme.colors.text,
+        background: t.bgDeep,
+        border: `1px solid ${t.ink}18`,
+        borderRadius: 8,
+        overflow: 'hidden',
+        cursor: 'pointer',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
-      <div className="p-4 flex-grow">
-        <div className="flex justify-between items-start mb-4"
-      onClick={() => handleComparisonClick(comparison)}>
-          <h3
-            className="font-medium text-lg"
-            style={{ color: currentTheme.colors.text }}
-          >
-            {comparison?.name || 'Unnamed Comparison'}
+      {/* Header row */}
+      <div style={{ padding: '14px 16px 10px', borderBottom: `1px solid ${t.ink}10` }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 8 }}>
+          <h3 style={{
+            fontFamily: '"DM Serif Display", serif',
+            fontStyle: 'italic',
+            fontSize: 18,
+            color: t.ink,
+            lineHeight: 1.2,
+            flex: 1,
+            margin: 0,
+          }}>
+            {comparison?.name || 'Untitled comparison'}
           </h3>
-          <div className="flex items-center space-x-2">
-            {comparison?.is_published ? (
-              <span className="text-xs px-2 py-0.5 rounded" style={{ backgroundColor: currentTheme.colors.primary, color: currentTheme.colors.buttonText }}>
-                Published
-              </span>
-            ) : (
-              <span className="text-xs px-2 py-0.5 rounded bg-amber-500" style={{ color: currentTheme.colors.buttonText }}>
-                Unpublished
-              </span>
-            )}
-          </div>
-          {(!isPublic && <div className="flex space-x-2">
-            <button
-              onClick={e => {
-                e.stopPropagation();
-                navigate(`/edit-comparison/${comparison.id}`);
-              }}
-              className="p-2 rounded-full hover:bg-gray-700 z-10"
-              title="Edit Metrics"
-            >
-              <Settings size={18} style={{ color: currentTheme.colors.textSecondary }} />
-            </button>
-            <button
-              onClick={e => {
-                e.stopPropagation();
-                onDelete(comparison.id);
-              }}
-              className="p-2 rounded-full hover:bg-gray-700 z-10"
-              title="Delete Comparison"
-            >
-              <Trash2 size={18} style={{ color: currentTheme.colors.error }} />
-            </button>
-          </div>)}
-        </div>
-
-        <div className="space-y-3">
-          {comparison?.items?.map(setItem => {
-            // console.log(setItem, comparison.id + "_" + setItem.item_id);
-            return (
-            <ComparisonItem
-              key={comparison.id + "_" + setItem.id}
-              item={setItem.item}
-              user={user}
-              getVoteCount={getVoteCount}
-              getCommentCount={getCommentCount}
-            />
-          );})}
+          <span style={{
+            fontFamily: '"Caveat", cursive',
+            fontSize: 12,
+            color: comparison?.is_published ? t.blue : t.mustard,
+            border: `1px solid ${comparison?.is_published ? t.blue : t.mustard}60`,
+            borderRadius: 4,
+            padding: '1px 7px',
+            flexShrink: 0,
+            lineHeight: 1.6,
+          }}>
+            {comparison?.is_published ? 'live' : 'draft'}
+          </span>
         </div>
       </div>
-    </div>
+
+      {/* 2×2 item thumbnail grid */}
+      {items.length > 0 && (
+        <div style={{
+          padding: '10px 16px',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: 6,
+        }}>
+          {items.slice(0, 4).map(setItem => (
+            <ItemThumb key={setItem.id} item={setItem.item} t={t} />
+          ))}
+        </div>
+      )}
+
+      {/* Footer: vote / comment counts + actions */}
+      <div style={{
+        padding: '8px 16px 12px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: 'auto',
+      }}>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <span style={{
+            display: 'flex', alignItems: 'center', gap: 4,
+            fontFamily: '"Caveat", cursive', fontSize: 14,
+            color: t.ink, opacity: 0.55,
+          }}>
+            <ThumbsUp size={13} /> {totalVotes}
+          </span>
+          <span style={{
+            display: 'flex', alignItems: 'center', gap: 4,
+            fontFamily: '"Caveat", cursive', fontSize: 14,
+            color: t.ink, opacity: 0.55,
+          }}>
+            <MessageSquare size={13} /> {totalComments}
+          </span>
+        </div>
+
+        {!isPublic && user && (
+          <div
+            style={{ display: 'flex', gap: 2 }}
+            onClick={e => e.stopPropagation()}
+          >
+            <button
+              onClick={() => navigate(`/edit-comparison/${comparison.id}`)}
+              style={{
+                padding: 5, border: 'none', background: 'transparent',
+                cursor: 'pointer', color: t.ink, opacity: 0.45,
+              }}
+              title="Edit"
+            >
+              <Settings size={15} />
+            </button>
+            <button
+              onClick={() => onDelete(comparison.id)}
+              style={{
+                padding: 5, border: 'none', background: 'transparent',
+                cursor: 'pointer', color: t.red,
+              }}
+              title="Delete"
+            >
+              <Trash2 size={15} />
+            </button>
+          </div>
+        )}
+      </div>
+    </motion.div>
   );
 };
 

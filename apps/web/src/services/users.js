@@ -26,6 +26,13 @@ export const getUserProfile = async userId => {
   };
 };
 
+export const getUserProfileByUsername = async username => {
+  const { data: lookup } = await apiClient.get(`/api/users/by-username/${encodeURIComponent(username)}`);
+  const base = lookup.data;
+  if (!base) return null;
+  return getUserProfile(base.user_id);
+};
+
 export const updateUserProfile = async profileData => {
   const { data } = await apiClient.put('/api/users/me', {
     displayName:     profileData.display_name ?? profileData.displayName,
@@ -34,4 +41,13 @@ export const updateUserProfile = async profileData => {
     bio:             profileData.bio,
   });
   return data.data;
+};
+
+export const uploadProfilePic = async file => {
+  const form = new FormData();
+  form.append('file', file);
+  const { data } = await apiClient.post('/api/uploads?bucket=profile-pics', form, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return data.data.url;
 };

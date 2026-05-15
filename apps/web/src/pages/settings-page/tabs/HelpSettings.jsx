@@ -1,325 +1,189 @@
-import React, { useState } from 'react';
-import { useTheme } from '../../../contexts/ThemeContext';
-import { HelpCircle, Mail, MessageSquare, BookOpen, Save, Search } from 'lucide-react';
-import Button from '../../../components/common/Button';
+import React, { useState, useMemo } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ChevronDown, Mail, Search } from 'lucide-react';
+import { themes as risoThemes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
 
-const HelpSettings = () => {
-  const { currentTheme } = useTheme();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [helpSettings, setHelpSettings] = useState({
-    contactPreferences: {
-      email: true,
-      inApp: true,
-      phone: false,
-    },
-    helpTopics: [
-      {
-        id: '1',
-        title: 'Getting Started',
-        description: 'Learn the basics of using our platform',
-        icon: <BookOpen size={20} />,
-      },
-      {
-        id: '2',
-        title: 'Account Management',
-        description: 'Manage your account settings and preferences',
-        icon: <HelpCircle size={20} />,
-      },
-      {
-        id: '3',
-        title: 'Billing & Subscriptions',
-        description: 'Information about payments and subscriptions',
-        icon: <HelpCircle size={20} />,
-      },
-      {
-        id: '4',
-        title: 'Privacy & Security',
-        description: 'Learn about our security measures and privacy policy',
-        icon: <HelpCircle size={20} />,
-      },
-    ],
-    faqs: [
-      {
-        id: '1',
-        question: 'How do I change my password?',
-        answer: 'You can change your password in the Security Settings section.',
-      },
-      {
-        id: '2',
-        question: 'How do I update my billing information?',
-        answer: 'You can update your billing information in the Billing Settings section.',
-      },
-      {
-        id: '3',
-        question: 'How do I contact support?',
-        answer: 'You can contact support through the Help Center or by emailing support@example.com.',
-      },
-    ],
-  });
+const FAQS = [
+  {
+    q: 'How do I create a comparison?',
+    a: 'Tap the "+" icon in the bottom nav (mobile) or "Create" in the sidebar (desktop). Add up to 4 items, pick a category, write a title, and publish. Others can vote and comment immediately.',
+  },
+  {
+    q: 'How does voting work?',
+    a: 'On any comparison, tap the item you think wins. Your vote is recorded instantly. You can change it anytime — we track your latest pick, not your history.',
+  },
+  {
+    q: 'How do I change my username?',
+    a: 'Go to Settings → Account. Your username must be lowercase letters, numbers, and underscores only — no spaces. We check availability in real time.',
+  },
+  {
+    q: 'How do I update my profile picture?',
+    a: 'Go to Settings → Profile and tap the camera button on your avatar. We accept jpg, png, and gif. The upload goes directly to our storage — no third-party hosts.',
+  },
+  {
+    q: 'How do I change my password?',
+    a: 'Go to Settings → Security. You\'ll need your current password to set a new one. Passwords must be at least 8 characters. If you signed up via Google, password change isn\'t available.',
+  },
+  {
+    q: 'Can I delete my account?',
+    a: 'Account deletion is coming soon. Until then, email us and we\'ll handle it manually within 48 hours.',
+  },
+  {
+    q: 'Why can\'t I see my vote on a comparison?',
+    a: 'Votes update in real time on the comparison page. If you don\'t see yours, try refreshing. If the issue persists, the comparison may have been deleted by its author.',
+  },
+  {
+    q: 'How do I report a comparison or comment?',
+    a: 'Long-press (mobile) or right-click (desktop) any comparison or comment to access the report option. We review all reports manually.',
+  },
+];
 
-  const handleContactPreferenceToggle = preference => {
-    setHelpSettings(prev => ({
-      ...prev,
-      contactPreferences: {
-        ...prev.contactPreferences,
-        [preference]: !prev.contactPreferences[preference],
-      },
-    }));
-  };
-
-  const handleSearch = e => {
-    e.preventDefault();
-    // TODO: Implement search functionality
-    // console.log('Searching for:', searchQuery);
-  };
-
-  const handleSave = () => {
-    // TODO: Implement save functionality
-    // console.log('Saving help settings:', helpSettings);
-  };
+const FaqItem = ({ faq, t }) => {
+  const [open, setOpen] = useState(false);
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h2
-          className="text-md font-semibold"
-          style={{ color: currentTheme.colors.text }}
+    <div style={{ borderBottom: `1px solid ${t.ink}0e` }}>
+      <button
+        type="button"
+        onClick={() => setOpen(v => !v)}
+        className="flex items-start justify-between gap-3 w-full text-left py-4"
+        style={{ minHeight: 44 }}
+      >
+        <span style={{ fontFamily: '"Fraunces", serif', fontSize: 14, color: t.ink, lineHeight: 1.4, flex: 1 }}>
+          {faq.q}
+        </span>
+        <motion.span
+          animate={{ rotate: open ? 180 : 0 }}
+          transition={{ duration: 0.2 }}
+          style={{ display: 'flex', flexShrink: 0, marginTop: 2 }}
         >
-          Help & Support
-        </h2>
-        <Button
-          onClick={handleSave}
-          className="flex items-center space-x-2"
-          style={{ backgroundColor: currentTheme.colors.primary }}
-        >
-          <Save size={16} />
-          <span>Save Changes</span>
-        </Button>
-      </div>
+          <ChevronDown size={15} style={{ color: `${t.ink}55` }} />
+        </motion.span>
+      </button>
 
-      <div className="space-y-6">
-        {/* Search Bar */}
-        <div
-          className="p-6 rounded-lg"
-          style={{
-            backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`,
-          }}
-        >
-          <form onSubmit={handleSearch} className="relative">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              placeholder="Search for help..."
-              className="w-full p-4 pl-12 rounded-lg"
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            className="overflow-hidden"
+          >
+            <p
               style={{
-                backgroundColor: currentTheme.colors.background,
-                color: currentTheme.colors.text,
-                border: `1px solid ${currentTheme.colors.border}`,
+                fontFamily: '"Fraunces", serif',
+                fontSize: 14,
+                color: t.ink,
+                opacity: 0.72,
+                lineHeight: 1.6,
+                paddingBottom: 16,
               }}
-            />
-            <Search
-              size={20}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2"
-              style={{ color: currentTheme.colors.text }}
-            />
-          </form>
-        </div>
+            >
+              {faq.a}
+            </p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
 
-        {/* Help Topics */}
-        <div
-          className="p-6 rounded-lg"
-          style={{
-            backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`,
-          }}
-        >
-          <h3
-            className="text-lg font-medium mb-4"
-            style={{ color: currentTheme.colors.text }}
-          >
-            Help Topics
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {helpSettings.helpTopics.map(topic => (
-              <div
-                key={topic.id}
-                className="p-4 rounded-lg cursor-pointer hover:bg-opacity-5"
-                style={{
-                  backgroundColor: currentTheme.colors.background,
-                  border: `1px solid ${currentTheme.colors.border}`,
-                }}
-              >
-                <div className="flex items-center space-x-3">
-                  {topic.icon}
-                  <div>
-                    <h4 className="font-medium" style={{ color: currentTheme.colors.text }}>
-                      {topic.title}
-                    </h4>
-                    <p className="text-sm" style={{ color: currentTheme.colors.text }}>
-                      {topic.description}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+const HelpSettings = () => {
+  const { themeId } = useTheme();
+  const t = risoThemes[themeId] ?? risoThemes.light;
+  const [query, setQuery] = useState('');
 
-        {/* FAQs */}
-        <div
-          className="p-6 rounded-lg"
-          style={{
-            backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`,
-          }}
-        >
-          <h3
-            className="text-lg font-medium mb-4"
-            style={{ color: currentTheme.colors.text }}
-          >
-            Frequently Asked Questions
-          </h3>
-          <div className="space-y-4">
-            {helpSettings.faqs.map(faq => (
-              <div
-                key={faq.id}
-                className="p-4 rounded-lg"
-                style={{
-                  backgroundColor: currentTheme.colors.background,
-                  border: `1px solid ${currentTheme.colors.border}`,
-                }}
-              >
-                <h4 className="font-medium mb-2" style={{ color: currentTheme.colors.text }}>
-                  {faq.question}
-                </h4>
-                <p className="text-sm" style={{ color: currentTheme.colors.text }}>
-                  {faq.answer}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (!q) return FAQS;
+    return FAQS.filter(f =>
+      f.q.toLowerCase().includes(q) || f.a.toLowerCase().includes(q),
+    );
+  }, [query]);
 
-        {/* Contact Preferences */}
-        <div
-          className="p-6 rounded-lg"
-          style={{
-            backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`,
-          }}
-        >
-          <h3
-            className="text-lg font-medium mb-4 flex items-center space-x-2"
-            style={{ color: currentTheme.colors.text }}
-          >
-            <MessageSquare size={20} />
-            <span>Contact Preferences</span>
-          </h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <Mail size={16} />
-                <span style={{ color: currentTheme.colors.text }}>Email Support</span>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={helpSettings.contactPreferences.email}
-                  onChange={() => handleContactPreferenceToggle('email')}
-                />
-                <div
-                  className="w-11 h-6 rounded-full peer"
-                  style={{
-                    backgroundColor: helpSettings.contactPreferences.email
-                      ? currentTheme.colors.primary
-                      : currentTheme.colors.border,
-                  }}
-                >
-                  <div
-                    className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{
-                      backgroundColor: currentTheme.colors.background,
-                      transform: helpSettings.contactPreferences.email
-                        ? 'translateX(5px)'
-                        : 'translateX(0)',
-                    }}
-                  />
-                </div>
-              </label>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <MessageSquare size={16} />
-                <span style={{ color: currentTheme.colors.text }}>In-App Support</span>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={helpSettings.contactPreferences.inApp}
-                  onChange={() => handleContactPreferenceToggle('inApp')}
-                />
-                <div
-                  className="w-11 h-6 rounded-full peer"
-                  style={{
-                    backgroundColor: helpSettings.contactPreferences.inApp
-                      ? currentTheme.colors.primary
-                      : currentTheme.colors.border,
-                  }}
-                >
-                  <div
-                    className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{
-                      backgroundColor: currentTheme.colors.background,
-                      transform: helpSettings.contactPreferences.inApp
-                        ? 'translateX(5px)'
-                        : 'translateX(0)',
-                    }}
-                  />
-                </div>
-              </label>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <HelpCircle size={16} />
-                <span style={{ color: currentTheme.colors.text }}>Phone Support</span>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="sr-only peer"
-                  checked={helpSettings.contactPreferences.phone}
-                  onChange={() => handleContactPreferenceToggle('phone')}
-                />
-                <div
-                  className="w-11 h-6 rounded-full peer"
-                  style={{
-                    backgroundColor: helpSettings.contactPreferences.phone
-                      ? currentTheme.colors.primary
-                      : currentTheme.colors.border,
-                  }}
-                >
-                  <div
-                    className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full transition-transform"
-                    style={{
-                      backgroundColor: currentTheme.colors.background,
-                      transform: helpSettings.contactPreferences.phone
-                        ? 'translateX(5px)'
-                        : 'translateX(0)',
-                    }}
-                  />
-                </div>
-              </label>
-            </div>
-          </div>
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      className="flex flex-col gap-5 max-w-lg"
+    >
+      {/* Search */}
+      <div
+        className="rounded-sm p-5 sm:p-6"
+        style={{ background: t.bgDeep, border: `1px solid ${t.ink}0f` }}
+      >
+        <div className="flex items-center gap-2.5">
+          <Search size={15} style={{ color: `${t.ink}50`, flexShrink: 0 }} />
+          <input
+            type="search"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            placeholder="search the FAQ…"
+            className="flex-1 bg-transparent outline-none"
+            style={{
+              fontFamily: '"Fraunces", serif',
+              fontSize: 15,
+              color: t.ink,
+            }}
+          />
         </div>
       </div>
-    </div>
+
+      {/* FAQ */}
+      <div
+        className="rounded-sm px-5 sm:px-6 pt-2"
+        style={{ background: t.bgDeep, border: `1px solid ${t.ink}0f` }}
+      >
+        <div className="pb-1">
+          <p style={{ fontFamily: '"Caveat", cursive', fontSize: 14, color: `${t.ink}50`, marginBottom: 2 }}>
+            faq
+          </p>
+          <h2 style={{ fontFamily: '"DM Serif Display", serif', fontStyle: 'italic', fontSize: 20, color: t.ink, lineHeight: 1.1 }}>
+            {query.trim() ? `results for "${query.trim()}"` : 'common questions.'}
+          </h2>
+        </div>
+
+        {filtered.length > 0 ? (
+          filtered.map(faq => <FaqItem key={faq.q} faq={faq} t={t} />)
+        ) : (
+          <p
+            style={{
+              fontFamily: '"Caveat", cursive',
+              fontSize: 16,
+              color: `${t.ink}45`,
+              paddingTop: 12,
+              paddingBottom: 20,
+            }}
+          >
+            nothing matched — try different words
+          </p>
+        )}
+      </div>
+
+      {/* Contact */}
+      <div
+        className="rounded-sm p-5 sm:p-6 flex flex-col gap-2"
+        style={{ background: t.bgDeep, border: `1px solid ${t.ink}0f` }}
+      >
+        <p style={{ fontFamily: '"Caveat", cursive', fontSize: 14, color: `${t.ink}50` }}>
+          still stuck?
+        </p>
+        <h2 style={{ fontFamily: '"DM Serif Display", serif', fontStyle: 'italic', fontSize: 20, color: t.ink, lineHeight: 1.1 }}>
+          reach us.
+        </h2>
+        <a
+          href="mailto:hello@twirly.app"
+          className="flex items-center gap-2 mt-1"
+          style={{ fontFamily: '"Fraunces", serif', fontSize: 14, color: t.blue, textDecoration: 'none', minHeight: 44, alignSelf: 'flex-start' }}
+        >
+          <Mail size={14} />
+          hello@twirly.app
+        </a>
+      </div>
+    </motion.div>
   );
 };
 

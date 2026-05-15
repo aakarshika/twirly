@@ -1,25 +1,31 @@
 import React from 'react';
+
 const LoadingOrError = ({ type, error }) => {
-  if (type == "loading") {
+  if (type === 'loading') {
     return (
       <div className="p-4">
-        <div className="animate-pulse space-y-4">
+        <div className="space-y-4">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+            <div
+              key={i}
+              className="h-20 rounded-lg animate-pulse"
+              style={{ backgroundColor: 'var(--color-surface)' }}
+            />
           ))}
         </div>
       </div>
     );
   }
 
-  if (type == "error") {
+  if (type === 'error') {
     return (
-      <div className="p-4 text-red-500">
-        Error loading. {error}
+      <div className="p-4 text-sm" style={{ color: 'var(--color-danger)' }}>
+        {error ?? 'Something went wrong.'}
       </div>
     );
   }
-  return <div>Hmm...</div>;
+
+  return null;
 };
 
 export default LoadingOrError;

@@ -1,35 +1,42 @@
 import React from 'react';
+import { motion } from 'framer-motion';
+import { MessageSquare } from 'lucide-react';
+import { themes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
 import { useFeedback } from '../../contexts/FeedbackContext';
-import { useTheme } from '../../contexts/ThemeContext';
 
 const FloatingFeedbackButton = () => {
   const { openFeedbackModal } = useFeedback();
-  const { currentTheme } = useTheme();
+  const { themeId } = useTheme();
+  const t = themes[themeId];
 
   return (
-    <button
+    <motion.button
+      drag
+      dragMomentum={false}
+      whileDrag={{ scale: 1.08 }}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.96 }}
       onClick={openFeedbackModal}
-      className="fixed bottom-6 right-6 z-50 p-4 rounded-full shadow-lg hover:shadow-xl transition-all duration-200"
+      className="fixed bottom-6 right-6 z-50"
       style={{
-        backgroundColor: currentTheme.colors.primary,
-        color: currentTheme.colors.background,
+        width: 52,
+        height: 52,
+        borderRadius: '50%',
+        background: t.ink,
+        color: t.bg,
+        border: 'none',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        cursor: 'grab',
+        touchAction: 'none',
+        boxShadow: `0 4px 20px ${t.ink}45`,
       }}
+      aria-label="Send feedback"
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="h-6 w-6"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
-        />
-      </svg>
-    </button>
+      <MessageSquare size={21} strokeWidth={1.8} />
+    </motion.button>
   );
 };
 

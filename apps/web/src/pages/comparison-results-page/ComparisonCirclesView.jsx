@@ -1,178 +1,141 @@
 import React, { useState, useEffect } from 'react';
-import ComparisonCircle from './ComparisonCircle';
-import {
-    findWinner,
-    findRunnerUp,
-    countTotalVotes,
-    calculateProcessedItems,
-} from '../../services/comparisonResults';
-import Avatar from '../../components/common/Avatar';
-import { getPublicUrl } from '../../lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';
+import { themes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
+import { findWinner, findRunnerUp, countTotalVotes, calculateProcessedItems } from '../../services/comparisonResults';
+import Avatar from '../../components/common/Avatar';
+import { getPublicUrl } from '../../lib/utils';
+import ComparisonCircle from './ComparisonCircle';
 
-const List = ({ displayItems, isMobile, winner, runnerUp, comparison, totalVotes, celebratingResults, userVotedAll }) => {
-    const [displayItemssss, setDisplayItemssss] = useState(displayItems && displayItems.length > 0 ? displayItems.slice(0, 1) : []);
-    const [winnerAnnouncement, setWinnerAnnouncement] = useState(false);
-    const [runnerUpAnnouncement, setRunnerUpAnnouncement] = useState(false);
-    useEffect(() => {
-        if(celebratingResults) {
-            setWinnerAnnouncement(true);
-            setDisplayItemssss(displayItems && displayItems.length > 0 ? displayItems.slice(0, 1) : []);
-            setTimeout(() => {
-                setDisplayItemssss(displayItems.slice(1, 2));
-                setWinnerAnnouncement(false);
-                setRunnerUpAnnouncement(true);
-            }, 3000);
-            setTimeout(() => {
-                setDisplayItemssss(displayItems);
-                setRunnerUpAnnouncement(false);
-            }, 6000);
-        } else {
-            setDisplayItemssss(displayItems);
-        }
-    }, [celebratingResults]);
-    return (
-        <div>
-
-      <div className="p-3">
-        <div>
-          <div className={`grid ${displayItemssss.length === 1 ? 'grid-cols-1' :
-            displayItemssss.length === 2 ? 'grid-cols-2' :
-              displayItemssss.length % 3 === 0 ? 'grid-cols-3' :
-                'grid-cols-2'
-            }`}
-            style={{
-              gap: '1vh',
-            }}
-          >
-            {winnerAnnouncement && (
-            <div className="flex flex-col items-center justify-center">
-                <div className="rounded-full bg-amber-200 p-2 px-4">
-                        <div className="text-lg text-text-muted font-bold">
-                            And the WINNER is...
-                        </div>
-                    </div>
-                </div>
-            )}
-            {runnerUpAnnouncement && (
-                <div className="flex flex-col items-center justify-center">
-                    <div className="rounded-full bg-amber-200 p-2 px-4">
-                        <div className="text-lg text-text-muted font-bold">
-                            RUNNER CUP goes to...
-                        </div>
-                    </div>
-                </div>
-            )}
-            {displayItemssss.map((item, i) => (
-              <div key={item.id} className="">
-
-                <ComparisonCircle
-                                item={item}
-                                index={i}
-                                isMobile={isMobile}
-                                comparison={comparison}
-                                winner={winner}
-                                runnerUp={runnerUp}
-                                totalVotes={totalVotes}
-                                userVotedAll={userVotedAll}
-                            />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-        </div>
-    );
-};
+const AnnouncementBanner = ({ text, t }) => (
+  <motion.div
+    initial={{ opacity: 0, y: -8 }}
+    animate={{ opacity: 1, y: 0 }}
+    exit={{ opacity: 0, y: -8 }}
+    transition={{ duration: 0.3 }}
+    className="flex justify-center pb-3"
+  >
+    <span
+      className="px-5 py-2 rounded-sm"
+      style={{
+        background: t.mustard,
+        fontFamily: '"DM Serif Display", serif',
+        fontStyle: 'italic',
+        fontSize: 17,
+        color: t.ink,
+      }}
+    >
+      {text}
+    </span>
+  </motion.div>
+);
 
 const ComparisonCirclesView = ({ items, comparisonMetrics, comparison, userVotedAll, celebratingResults }) => {
-    const displayItems = calculateProcessedItems(items, comparisonMetrics);
-    const navigate = useNavigate();
-    const winner = userVotedAll ? findWinner(displayItems) : null;
-    const runnerUp = userVotedAll ? findRunnerUp(displayItems) : null;
-    const totalVotes = userVotedAll ? countTotalVotes(comparisonMetrics) : null;
-    const [, setScale] = useState(1);
-    const [lastScrollY, setLastScrollY] = useState(0);
-    // Add scroll event listener for scaling
-    useEffect(() => {
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-            // Calculate scale based on scroll position
-            const newScale = Math.max(0.8, 1 - (currentScrollY * 0.001)); // Scale between 0.8 and 1
-            setScale(newScale);
-            setLastScrollY(currentScrollY);
-        };
+  const navigate = useNavigate();
+  const { themeId } = useTheme();
+  const t = themes[themeId] ?? themes.light;
 
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [lastScrollY]);
+  const displayItems = calculateProcessedItems(items, comparisonMetrics);
+  const winner = userVotedAll ? findWinner(displayItems) : null;
+  const runnerUp = userVotedAll ? findRunnerUp(displayItems) : null;
+  const totalVotes = userVotedAll ? countTotalVotes(comparisonMetrics) : null;
 
-    return (
-        <div className="w-full">
-            <div className="">
-                <div className="flex flex-col">
-                    {!userVotedAll && (
-                        <div className="text-center text-sm text-text-muted">
-                            Vote all to view results
-                        </div>
-                    )}
-                    {/* Desktop Layout */}
-                    <div className="hidden sm:block">
-                        <List
-                            displayItems={displayItems}
-                            winner={winner}
-                            runnerUp={runnerUp}
-                            isMobile={false}
-                            comparison={comparison}
-                            totalVotes={totalVotes}
-                            userVotedAll={userVotedAll}
-                            celebratingResults={celebratingResults}
-                        />
-                    </div>
+  const [revealPhase, setRevealPhase] = useState(celebratingResults ? 'winner' : 'all');
 
-                    {/* Mobile Layout */}
-                    <div className="sm:hidden">
-                        <List
-                            displayItems={displayItems}
-                            winner={winner}
-                            runnerUp={runnerUp}
-                            isMobile={true}
-                            comparison={comparison}
-                            totalVotes={totalVotes}
-                            userVotedAll={userVotedAll}
-                            celebratingResults={celebratingResults}
-                        />
-                    </div>
-                </div>
+  useEffect(() => {
+    if (celebratingResults) {
+      setRevealPhase('winner');
+      const t1 = setTimeout(() => setRevealPhase('runnerUp'), 3000);
+      const t2 = setTimeout(() => setRevealPhase('all'), 6000);
+      return () => { clearTimeout(t1); clearTimeout(t2); };
+    } else {
+      setRevealPhase('all');
+    }
+  }, [celebratingResults]);
 
-                <div className="flex items-center gap-3 mb-4 pl-4">
-                    <Avatar
-                        profileImageUrl={comparison.user?.profile_image_url ? getPublicUrl(comparison.user?.profile_image_url) : null}
-                        displayName={comparison.user?.display_name}
-                        username={comparison.user?.username}
-                        size="sm"
-                        isEditable={false}
-                    />
-                    <div className="flex flex-col" onClick={() => navigate(`/user/${comparison.user?.display_name}`)}>
-                        <span className="text-sm text-text-muted">
-                            Created by <span className="font-medium text-text">{comparison.user?.display_name || 'Anonymous'}</span>
-                        </span>
-                        <span className="text-xs text-text-muted">
-                            {formatDistanceToNow(comparison.created_at && new Date(comparison.created_at))}
-                        </span>
-                    </div>
-                </div>
+  const revealedItems =
+    revealPhase === 'winner'   ? displayItems.slice(0, 1) :
+    revealPhase === 'runnerUp' ? displayItems.slice(1, 2) :
+    displayItems;
 
-                {/* Creator Info */}
-                {/* <div className='flex flex-row items-center justify-start'>
-                <h4 className='text-md text-gray-500 p-2 w-full' style={{backgroundColor: changeColorAlpha(currentTheme.colors.background, 0.2)}}>
-                    Results
-                </h4>
-                </div> */}
-            </div>
+  const gridCols =
+    revealedItems.length === 1               ? 'grid-cols-1' :
+    revealedItems.length === 2               ? 'grid-cols-2' :
+    revealedItems.length % 3 === 0           ? 'grid-cols-3' : 'grid-cols-2';
+
+  return (
+    <div className="w-full flex flex-col">
+      {!userVotedAll && (
+        <p className="text-center py-3" style={{ fontFamily: '"Caveat", cursive', fontSize: 15, color: `${t.ink}55` }}>
+          vote on all aspects to reveal results
+        </p>
+      )}
+
+      <div className="p-3">
+        <AnimatePresence mode="wait">
+          {revealPhase === 'winner' && (
+            <AnnouncementBanner key="winner-banner" text="and the winner is…" t={t} />
+          )}
+          {revealPhase === 'runnerUp' && (
+            <AnnouncementBanner key="runner-banner" text="runner-up goes to…" t={t} />
+          )}
+        </AnimatePresence>
+
+        <div className={`grid ${gridCols} gap-2`}>
+          {revealedItems.map((item, i) => (
+            <motion.div
+              key={item.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <ComparisonCircle
+                item={item}
+                index={i}
+                comparison={comparison}
+                winner={winner}
+                runnerUp={runnerUp}
+                totalVotes={totalVotes}
+                userVotedAll={userVotedAll}
+              />
+            </motion.div>
+          ))}
         </div>
-    );
+      </div>
+
+      {/* Creator info */}
+      {comparison.user && (
+        <div className="flex items-center gap-3 px-4 pb-4 pt-1">
+          <Avatar
+            profileImageUrl={comparison.user.profile_image_url ? getPublicUrl(comparison.user.profile_image_url) : null}
+            displayName={comparison.user.display_name}
+            username={comparison.user.username}
+            size="sm"
+            isEditable={false}
+          />
+          <button
+            type="button"
+            className="flex flex-col text-left"
+            onClick={() => navigate(`/user/${comparison.user.display_name}`)}
+          >
+            <span style={{ fontFamily: '"Fraunces", serif', fontSize: 13, color: `${t.ink}70` }}>
+              created by{' '}
+              <span style={{ color: t.ink, fontWeight: 600 }}>
+                {comparison.user.display_name || 'Anonymous'}
+              </span>
+            </span>
+            {comparison.created_at && (
+              <span style={{ fontFamily: '"Caveat", cursive', fontSize: 12, color: `${t.ink}50` }}>
+                {formatDistanceToNow(new Date(comparison.created_at), { addSuffix: true })}
+              </span>
+            )}
+          </button>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default ComparisonCirclesView;

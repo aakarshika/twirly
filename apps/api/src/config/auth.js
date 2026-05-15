@@ -23,6 +23,20 @@ export const auth = betterAuth({
     generateId: () => randomUUID(),
   },
 
+  // Relax rate limits in non-production so the dev seed script can create all
+  // 6 personas in one run without hitting Better Auth's default special rules
+  // (which cap /sign-up and /sign-in at 3 req / 10 s regardless of the global max).
+  rateLimit: process.env.NODE_ENV !== 'production'
+    ? {
+        window: 60,
+        max: 100,
+        customRules: {
+          '/sign-up/*': false,
+          '/sign-in/*': false,
+        },
+      }
+    : undefined,
+
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url }) => {

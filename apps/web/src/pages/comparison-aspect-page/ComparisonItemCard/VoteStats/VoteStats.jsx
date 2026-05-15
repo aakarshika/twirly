@@ -1,28 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import './VoteStats.css';
 import { Target } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useTheme } from '../../../../contexts/ThemeContext';
-import { splitAndJoin } from '../../../../lib/utils';
-import { SHOW_RESULTS_DURATION } from '../../../../lib/constants';
+import { themes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
+import { splitAndJoin } from '@utils/utils';
+import { SHOW_RESULTS_DURATION } from '@utils/constants';
 
-const VoteStats = ({ votes, totalVotes, color, _isVotedItem, leadingMetrics, userVotedAll }) => {
-  const { currentTheme } = useTheme();
+const VoteStats = ({ votes, totalVotes, color, leadingMetrics, userVotedAll }) => {
+  const { themeId } = useTheme();
+  const t = themes[themeId] ?? themes.light;
   const percentage = totalVotes > 0 && votes > 0 ? (votes / totalVotes) * 100 : 0;
   const [displayPercentage, setDisplayPercentage] = useState(0);
 
   useEffect(() => {
     let animationFrame;
     const startTime = performance.now();
-    const duration = (SHOW_RESULTS_DURATION-1.5) * 1000; // Convert seconds to milliseconds
+    const duration = (SHOW_RESULTS_DURATION - 1.5) * 1000;
 
     const animate = currentTime => {
       const elapsed = currentTime - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      const currentValue = progress * percentage;
-
-      setDisplayPercentage(currentValue);
-
+      setDisplayPercentage(progress * percentage);
       if (progress < 1) {
         animationFrame = requestAnimationFrame(animate);
       } else {
@@ -31,52 +29,43 @@ const VoteStats = ({ votes, totalVotes, color, _isVotedItem, leadingMetrics, use
     };
 
     animationFrame = requestAnimationFrame(animate);
-
-    return () => {
-      if (animationFrame) {
-        cancelAnimationFrame(animationFrame);
-      }
-    };
+    return () => { if (animationFrame) cancelAnimationFrame(animationFrame); };
   }, [percentage]);
 
+  if (!userVotedAll) return null;
+
   return (
-    <div className="flex flex-col vote-stats-container">
-      {((userVotedAll) && <div className="flex flex-row gap-1 w-full items-center">
-        <span className="text-2xl text-right">
+    <div className="flex flex-col gap-1 w-full">
+      <div className="flex items-center gap-1.5 w-full">
+        <span
+          style={{ fontFamily: '"Fraunces", serif', fontSize: 14, color, fontWeight: 600, minWidth: 34, textAlign: 'right' }}
+        >
           {Math.round(displayPercentage)}%
         </span>
-        <div className="vote-progress w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+        <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: `${t.ink}25` }}>
           <div
-            className="progress-bar h-full"
-            style={{
-              width: `${displayPercentage}%`,
-              backgroundColor: color,
-              minWidth: '3px',
-              transition: 'none',
-            }}
+            className="h-full rounded-full"
+            style={{ width: `${displayPercentage}%`, background: color, minWidth: 3 }}
           />
         </div>
-      </div>)}
-      {/* Leading Metrics */}
-      {userVotedAll && leadingMetrics && leadingMetrics.length > 0 && (
-        <div className="">
-          <motion.div
-            key={'icon-target'}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-          >
-            <span style={{ color: currentTheme.colors.secondary }}>
-              <Target className="w-4 h-4 inline-block mr-1" />
-              <span className="text-sm font-normal">Won{' '}</span>
-              {leadingMetrics.map((metric, index) => (
-                <span className="text-sm font-semibold" key={metric.metric_name}>
-                  {splitAndJoin(metric.metric_name)}{index < leadingMetrics.length - 1 ? ', ' : ''}
-                </span>
-              ))}
-            </span>
-          </motion.div>
-        </div>
+      </div>
+
+      {leadingMetrics?.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="flex items-start gap-1 flex-wrap"
+        >
+          <Target size={11} style={{ color: t.mustard, flexShrink: 0, marginTop: 2 }} />
+          <span style={{ fontFamily: '"Caveat", cursive', fontSize: 12, color: t.mustard, lineHeight: 1.3 }}>
+            {leadingMetrics.map((m, i) => (
+              <span key={m.metric_name}>
+                {splitAndJoin(m.metric_name)}{i < leadingMetrics.length - 1 ? ', ' : ''}
+              </span>
+            ))}
+          </span>
+        </motion.div>
       )}
     </div>
   );

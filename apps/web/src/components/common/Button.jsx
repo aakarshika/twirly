@@ -1,21 +1,14 @@
-// File: src/components/common/Button.jsx
-
 import React from 'react';
+import { cn } from '@utils/utils';
+import { themes as risoThemes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
 
-/**
- * A reusable Button component with various style variants
- *
- * @param {Object} props - Component props
- * @param {React.ReactNode} props.children - Button content
- * @param {string} props.variant - Button style variant: 'primary', 'secondary', 'outline', or 'ghost'
- * @param {string} props.size - Button size: 'sm', 'md', or 'lg'
- * @param {boolean} props.disabled - Whether the button is disabled
- * @param {boolean} props.fullWidth - Whether the button should take full width
- * @param {function} props.onClick - Click handler function
- * @param {React.ReactNode} props.leftIcon - Optional icon to display before children
- * @param {React.ReactNode} props.rightIcon - Optional icon to display after children
- * @param {string} props.className - Additional CSS classes
- */
+const sizeClasses = {
+  sm: 'px-3 py-1 text-sm min-h-[32px]',
+  md: 'px-4 py-2 min-h-[40px]',
+  lg: 'px-6 py-3 text-lg min-h-[48px]',
+};
+
 const Button = ({
   children,
   variant = 'primary',
@@ -28,47 +21,34 @@ const Button = ({
   className = '',
   ...rest
 }) => {
-  // Base classes that all buttons share
-  const baseClasses = 'font-medium transition-all rounded flex items-center justify-center gap-2';
+  const { themeId } = useTheme();
+  const t = risoThemes[themeId] ?? risoThemes.light;
 
-  // Size classes
-  const sizeClasses = {
-    sm: 'px-3 py-1 text-sm',
-    md: 'px-4 py-2',
-    lg: 'px-6 py-3 text-lg',
-  };
-
-  // Variant classes
-  const variantClasses = {
-    primary: 'bg-white text-black hover:bg-gray-100 disabled:bg-gray-300 disabled:text-gray-600',
-    secondary: 'bg-gray-800 text-white hover:bg-gray-700 disabled:bg-gray-900 disabled:text-gray-500',
-    outline: 'border border-gray-700 text-white hover:bg-gray-900 disabled:border-gray-800 disabled:text-gray-600',
-    ghost: 'text-gray-300 hover:text-white hover:bg-gray-900 disabled:text-gray-700',
-  };
-
-  // Width classes
-  const widthClasses = fullWidth ? 'w-full' : '';
-
-  // Combine all classes
-  const buttonClasses = `
-    ${baseClasses} 
-    ${sizeClasses[size]} 
-    ${variantClasses[variant]} 
-    ${widthClasses}
-    ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'} 
-    ${className}
-  `;
+  const variantStyle = {
+    primary:   { background: t.ink,         color: t.bg,  border: 'none' },
+    secondary: { background: t.bgDeep,      color: t.ink, border: `1px solid ${t.ink}30` },
+    ghost:     { background: 'transparent', color: t.ink, border: 'none' },
+    danger:    { background: t.red,         color: t.bg,  border: 'none' },
+  }[variant] ?? { background: t.ink, color: t.bg, border: 'none' };
 
   return (
     <button
-      className={buttonClasses}
+      className={cn(
+        'inline-flex items-center justify-center gap-2 font-medium rounded transition-opacity',
+        'font-[\'Fraunces\',serif]',
+        sizeClasses[size] ?? sizeClasses.md,
+        fullWidth && 'w-full',
+        disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer',
+        className,
+      )}
+      style={variantStyle}
       disabled={disabled}
       onClick={onClick}
       {...rest}
     >
-      {leftIcon && <span className="button-icon">{leftIcon}</span>}
+      {leftIcon && <span>{leftIcon}</span>}
       {children}
-      {rightIcon && <span className="button-icon">{rightIcon}</span>}
+      {rightIcon && <span>{rightIcon}</span>}
     </button>
   );
 };

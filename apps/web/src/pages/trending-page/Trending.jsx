@@ -1,97 +1,132 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { PlusCircle, RefreshCw } from 'lucide-react';
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { themes } from '@styles/themes';
+import { PaperGrain } from '@components/riso';
+import { useTheme } from '@contexts/ThemeContext';
 import { useTrending } from '../../contexts/TrendingContext';
 import TrendingCard from '../../components/common/common-cards/TrendingCard';
 import PullToRefresh from '../../components/common/PullToRefresh';
 
-const SkeletonCard = () => (
-  <div className="rounded-lg overflow-hidden bg-surface border border-border animate-pulse">
-    <div className="h-32 bg-surface-elevated" />
-    <div className="px-3 pt-2 pb-3 space-y-2">
-      <div className="h-3 bg-surface-elevated rounded w-3/4" />
-      <div className="h-2.5 bg-surface-elevated rounded w-1/3" />
-      <div className="h-2 bg-surface-elevated rounded w-1/2 mt-3" />
+const PAGE_SIZE = 20;
+const EASE = [0.16, 1, 0.3, 1];
+
+const SkeletonCard = ({ t }) => (
+  <motion.div
+    animate={{ opacity: [0.5, 0.85, 0.5] }}
+    transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+    style={{ background: t.bgDeep, borderRadius: 8, overflow: 'hidden' }}
+  >
+    <div style={{ height: 128, background: `color-mix(in srgb, ${t.ink} 10%, transparent)` }} />
+    <div className="p-3 space-y-2">
+      <div style={{ height: 12, width: '70%', background: `color-mix(in srgb, ${t.ink} 8%, transparent)`, borderRadius: 4 }} />
+      <div style={{ height: 10, width: '38%', background: `color-mix(in srgb, ${t.ink} 6%, transparent)`, borderRadius: 4 }} />
     </div>
+  </motion.div>
+);
+
+const SkeletonGrid = ({ t }) => (
+  <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 pt-3">
+    {Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} t={t} />)}
   </div>
 );
 
-const EmptyState = ({ onCreateClick }) => (
-  <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-    <div
-      className="w-16 h-16 rounded-full flex items-center justify-center mb-4"
-      style={{ backgroundColor: 'rgb(var(--surface-elevated))' }}
+const EmptyState = ({ t, onCreateClick }) => (
+  <div className="flex flex-col items-center justify-center py-20 text-center">
+    <p
+      style={{ fontFamily: '"Caveat", cursive', fontSize: 26, color: t.ink, opacity: 0.6 }}
+      className="mb-2"
     >
-      <PlusCircle size={28} style={{ color: 'rgb(var(--primary))' }} />
-    </div>
-    <p className="font-semibold text-text mb-1">No comparisons yet</p>
-    <p className="text-sm text-text-muted mb-6">Be the first to spark a debate!</p>
+      nothing here yet.
+    </p>
+    <p
+      style={{ fontFamily: '"Fraunces", serif', fontSize: 15, color: t.ink, opacity: 0.55, maxWidth: 280 }}
+      className="mb-7"
+    >
+      Be the first to spark a debate.
+    </p>
     <button
       type="button"
       onClick={onCreateClick}
-      className="px-5 py-2 rounded-md text-sm font-medium transition-all hover:opacity-90"
-      style={{ backgroundColor: 'rgb(var(--primary))', color: 'rgb(var(--primary-fg))' }}
+      className="flex items-center gap-2 px-6 py-3 rounded-full transition-opacity hover:opacity-75 active:opacity-60"
+      style={{
+        fontFamily: '"Fraunces", serif',
+        fontSize: 14,
+        fontWeight: 600,
+        background: t.ink,
+        color: t.bg,
+        border: `2px solid ${t.ink}`,
+        minHeight: 44,
+      }}
     >
-      Create a comparison
+      <PlusCircle size={15} aria-hidden />
+      create a comparison
     </button>
   </div>
 );
 
-const ErrorState = ({ onRetry }) => (
-  <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
-    <p className="text-danger font-medium mb-2">Failed to load comparisons</p>
+const ErrorState = ({ t, onRetry }) => (
+  <div className="flex flex-col items-center justify-center py-20 text-center">
+    <p
+      style={{ fontFamily: '"Caveat", cursive', fontSize: 24, color: t.red, opacity: 0.85 }}
+      className="mb-3"
+    >
+      something went wrong.
+    </p>
     <button
       type="button"
       onClick={onRetry}
-      className="flex items-center gap-1.5 text-sm text-text-muted hover:text-text transition-colors"
+      className="flex items-center gap-1.5 transition-opacity hover:opacity-70 active:opacity-50"
+      style={{ fontFamily: '"Fraunces", serif', fontSize: 14, color: t.ink, opacity: 0.65 }}
     >
-      <RefreshCw size={14} />
-      Try again
+      <RefreshCw size={14} aria-hidden />
+      try again
     </button>
   </div>
 );
 
-const CategoryChips = ({ categories, selected, onSelect }) => (
-  <div className="flex gap-2 overflow-x-auto scrollbar-hide px-4 py-3">
-    <button
-      type="button"
-      onClick={() => onSelect(null)}
-      className="shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors"
-      style={{
-        backgroundColor: selected === null ? 'rgb(var(--primary))' : 'rgb(var(--surface-elevated))',
-        color: selected === null ? 'rgb(var(--primary-fg))' : 'rgb(var(--text-muted))',
-      }}
-    >
-      All
-    </button>
-    {categories.map(({ id, name }) => (
-      <button
-        key={id}
-        type="button"
-        onClick={() => onSelect(id)}
-        className="shrink-0 px-3 py-1 rounded-full text-xs font-medium transition-colors"
-        style={{
-          backgroundColor: selected === id ? 'rgb(var(--primary))' : 'rgb(var(--surface-elevated))',
-          color: selected === id ? 'rgb(var(--primary-fg))' : 'rgb(var(--text-muted))',
-        }}
-      >
-        {name}
-      </button>
-    ))}
+const CategoryChips = ({ t, categories, selected, onSelect }) => (
+  <div className="flex gap-2 overflow-x-auto px-5 sm:px-10 py-3">
+    {[{ id: null, name: 'All' }, ...categories].map(({ id, name }) => {
+      const active = selected === id;
+      return (
+        <button
+          key={id ?? '__all__'}
+          type="button"
+          onClick={() => onSelect(id)}
+          className="shrink-0 px-4 py-1.5 rounded-full transition-opacity hover:opacity-80 active:opacity-60"
+          style={{
+            fontFamily: '"Fraunces", serif',
+            fontSize: 13,
+            fontWeight: active ? 600 : 400,
+            background: active ? t.ink : t.bgDeep,
+            color: active ? t.bg : t.ink,
+            border: `1.5px solid ${active ? t.ink : 'transparent'}`,
+            minHeight: 32,
+          }}
+        >
+          {name}
+        </button>
+      );
+    })}
   </div>
 );
 
 const Trending = () => {
-  const { sets, loading, error, fetchTrending, fetchFiltered } = useTrending();
   const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const { themeId } = useTheme();
+  const t = themes[themeId] ?? themes.light;
+  const { sets, loading, error, fetchTrending, fetchFiltered } = useTrending();
 
-  // Initial fetch
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [limit, setLimit] = useState(PAGE_SIZE);
+
   useEffect(() => {
-    fetchTrending();
+    fetchTrending({ limit: PAGE_SIZE });
   }, [fetchTrending]);
 
-  // Derive unique categories from loaded sets
   const categories = useMemo(() => {
     const seen = new Map();
     for (const s of sets) {
@@ -102,65 +137,158 @@ const Trending = () => {
     return [...seen.values()];
   }, [sets]);
 
-  // Filtered view (client-side when we have data; server-side re-fetch when switching to a new category)
-  const visibleSets = useMemo(() => {
-    if (selectedCategory === null) return sets;
-    return sets.filter(s => s.category_id === selectedCategory);
-  }, [sets, selectedCategory]);
+  const visibleSets = useMemo(
+    () => (selectedCategory === null ? sets : sets.filter(s => s.category_id === selectedCategory)),
+    [sets, selectedCategory],
+  );
 
-  const handleCategorySelect = async id => {
+  const hasMore = !loading && visibleSets.length > 0 && visibleSets.length >= limit;
+
+  const handleCategorySelect = id => {
     setSelectedCategory(id);
-    if (id === null) {
-      fetchTrending();
-    } else {
-      fetchFiltered({ categoryId: id });
-    }
+    setLimit(PAGE_SIZE);
+    if (id === null) fetchTrending({ limit: PAGE_SIZE });
+    else fetchFiltered({ categoryId: id, limit: PAGE_SIZE });
   };
 
   const handleRefresh = async () => {
-    if (selectedCategory === null) {
-      await fetchTrending();
-    } else {
-      await fetchFiltered({ categoryId: selectedCategory });
-    }
+    setLimit(PAGE_SIZE);
+    if (selectedCategory === null) await fetchTrending({ limit: PAGE_SIZE });
+    else await fetchFiltered({ categoryId: selectedCategory, limit: PAGE_SIZE });
+  };
+
+  const fetchMore = () => {
+    if (loading) return;
+    const next = limit + PAGE_SIZE;
+    setLimit(next);
+    if (selectedCategory === null) fetchTrending({ limit: next });
+    else fetchFiltered({ categoryId: selectedCategory, limit: next });
   };
 
   return (
-    <PullToRefresh onRefresh={handleRefresh}>
-      <div className="min-h-screen">
-        {/* Category filter chips */}
-        {(categories.length > 0 || loading) && (
+    <div
+      style={{ background: t.bg, color: t.ink, minHeight: '100vh', fontFamily: '"Fraunces", serif' }}
+      className="relative overflow-x-hidden"
+    >
+      <PaperGrain blend={t.blend} />
+
+      <div className="relative z-10 max-w-screen-xl mx-auto">
+
+        {/* Page header */}
+        <div className="flex items-end justify-between px-5 sm:px-10 pt-6 pb-1">
+          <div>
+            <p style={{ fontFamily: '"Caveat", cursive', fontSize: 17, color: t.ink, opacity: 0.58 }}>
+              vote. argue. repeat.
+            </p>
+            <h1
+              style={{
+                fontFamily: '"DM Serif Display", serif',
+                fontStyle: 'italic',
+                fontSize: 'clamp(28px, 6vw, 44px)',
+                lineHeight: 1.0,
+                color: t.ink,
+                margin: 0,
+              }}
+            >
+              what&apos;s trending.
+            </h1>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => navigate('/new-comparison')}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full transition-opacity hover:opacity-75 active:opacity-55 mb-1"
+            style={{
+              fontFamily: '"Fraunces", serif',
+              fontSize: 13,
+              fontWeight: 500,
+              background: t.red,
+              color: '#fff',
+              minHeight: 36,
+            }}
+            aria-label="Create a comparison"
+          >
+            <PlusCircle size={14} aria-hidden />
+            create
+          </button>
+        </div>
+
+        {/* Category filter */}
+        {categories.length > 0 && (
           <CategoryChips
+            t={t}
             categories={categories}
             selected={selectedCategory}
             onSelect={handleCategorySelect}
           />
         )}
 
-        {/* Content */}
-        {loading && sets.length === 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 px-4 pb-4">
-            {Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} />)}
-          </div>
-        ) : error ? (
-          <ErrorState onRetry={handleRefresh} />
-        ) : visibleSets.length === 0 ? (
-          <EmptyState onCreateClick={() => navigate('/new-comparison?load_draft=true')} />
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 px-4 pb-4">
-            {visibleSets.map(set => (
-              <TrendingCard key={set.set_id} set={set} />
-            ))}
-            {/* Subtle loading indicator when refreshing with existing data */}
+        {/* Feed */}
+        <PullToRefresh onRefresh={handleRefresh}>
+          <div className="px-5 sm:px-10 pb-10 pt-2">
+            {loading && sets.length === 0 ? (
+              <SkeletonGrid t={t} />
+            ) : error ? (
+              <ErrorState t={t} onRetry={handleRefresh} />
+            ) : visibleSets.length === 0 ? (
+              <EmptyState t={t} onCreateClick={() => navigate('/new-comparison?load_draft=true')} />
+            ) : (
+              <InfiniteScroll
+                dataLength={visibleSets.length}
+                next={fetchMore}
+                hasMore={hasMore}
+                loader={
+                  <div className="flex justify-center py-6">
+                    <RefreshCw
+                      size={18}
+                      className="animate-spin"
+                      style={{ color: t.ink, opacity: 0.4 }}
+                      aria-label="Loading more"
+                    />
+                  </div>
+                }
+                endMessage={
+                  visibleSets.length > PAGE_SIZE && (
+                    <p
+                      className="text-center py-8"
+                      style={{ fontFamily: '"Caveat", cursive', fontSize: 18, color: t.ink, opacity: 0.4 }}
+                    >
+                      you&apos;ve seen it all.
+                    </p>
+                  )
+                }
+                style={{ overflow: 'visible' }}
+              >
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+                  {visibleSets.map((set, i) => (
+                    <motion.div
+                      key={set.set_id}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.45, delay: Math.min(i * 0.04, 0.32), ease: EASE }}
+                    >
+                      <TrendingCard set={set} />
+                    </motion.div>
+                  ))}
+                </div>
+              </InfiniteScroll>
+            )}
+
+            {/* Refresh spinner when reloading with existing data */}
             {loading && sets.length > 0 && (
-              <div className="col-span-full flex justify-center py-4">
-                <RefreshCw size={18} className="animate-spin text-text-muted" />
+              <div className="flex justify-center py-4">
+                <RefreshCw
+                  size={16}
+                  className="animate-spin"
+                  style={{ color: t.ink, opacity: 0.35 }}
+                  aria-hidden
+                />
               </div>
             )}
           </div>
-        )}
+        </PullToRefresh>
       </div>
-    </PullToRefresh>
+    </div>
   );
 };
 

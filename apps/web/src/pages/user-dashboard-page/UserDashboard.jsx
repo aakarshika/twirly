@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
+import { motion } from 'framer-motion';
+import { themes } from '@styles/themes';
+import { PaperGrain } from '@components/riso';
+import { useTheme } from '@contexts/ThemeContext';
+import { useAuth } from '@contexts/AuthContext';
+import { getUserProfile } from '@services/users';
+import { useDataFetching } from '@hooks/useDataFetching';
+import PullToRefresh from '@components/common/PullToRefresh';
 import ProfileHeader from './dashboard/ProfileHeader';
 import ContentTabs from './dashboard/ContentTabs';
-import { getUserProfile } from '../../services/users';
-import { useAuth } from '../../contexts/AuthContext';
 import FirstTimeDashboard from './dashboard/FirstTimeDashboard';
-import { useDataFetching } from '../../hooks/useDataFetching';
-import PullToRefresh from '../../components/common/PullToRefresh';
-import { motion } from 'framer-motion';
 
 const UserDashboard = () => {
-  const { currentTheme } = useTheme();
+  const { themeId } = useTheme();
+  const t = themes[themeId] ?? themes.light;
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
   const [userData, setUserData] = useState(null);
@@ -20,12 +23,9 @@ const UserDashboard = () => {
     'userDashboard',
     async () => {
       if (!user) return;
-
       const userProfile = await getUserProfile(user.id);
       setUserData(userProfile);
-
-      const isFirstTime = !localStorage.getItem('dashboard_tour_completed');
-      setShowFirstTimeDashboard(isFirstTime);
+      setShowFirstTimeDashboard(!localStorage.getItem('dashboard_tour_completed'));
     },
     [user],
     {
@@ -36,51 +36,41 @@ const UserDashboard = () => {
     },
   );
 
-  const handleRefresh = async () => {
-    await fetchData();
-  };
-
-  const handleTourComplete = () => {
-    localStorage.setItem('dashboard_tour_completed', 'true');
-    setShowFirstTimeDashboard(false);
-  };
-
-  if (isLoading) {
-    return null; // Loading screen is now handled by LoadingContext
-  }
-
-  if (error) {
-    return null; // Error screen is now handled by LoadingContext
-  }
+  if (isLoading || error) return null;
 
   if (!userData) {
     return (
       <div
-        className="min-h-screen p-4 md:p-8 lg:p-32 flex flex-col items-center justify-center overflow-x-hidden"
-        style={{ backgroundColor: currentTheme.colors.background }}
+        style={{ background: t.bg, color: t.ink, minHeight: '100vh' }}
+        className="flex items-center justify-center"
       >
-        <div className="text-center">
-          <p>No user data found</p>
-        </div>
+        <p style={{ fontFamily: '"Fraunces", serif', fontSize: 16, opacity: 0.5 }}>No user data found.</p>
       </div>
     );
   }
 
   return (
-    <PullToRefresh onRefresh={handleRefresh}>
-      <motion.div
-        className=""
-        style={{
-          color: currentTheme.colors.text,
-        }}
-      >
-        {showFirstTimeDashboard && (
-          <FirstTimeDashboard onComplete={handleTourComplete} />
-        )}
-        <main className="w-full" style={{ paddingTop: '20px', backgroundColor: currentTheme.colors.background + '20' }}>
-          <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+    <div
+      style={{ background: t.bg, color: t.ink, minHeight: '100vh', fontFamily: '"Fraunces", serif' }}
+      className="relative overflow-x-hidden"
+    >
+      <PaperGrain blend={t.blend} />
+      <PullToRefresh onRefresh={fetchData}>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.4 }}
+          className="relative z-10"
+        >
+          {showFirstTimeDashboard && (
+            <FirstTimeDashboard onComplete={() => {
+              localStorage.setItem('dashboard_tour_completed', 'true');
+              setShowFirstTimeDashboard(false);
+            }} />
+          )}
+          <main className="max-w-screen-xl mx-auto px-5 sm:px-10 pt-6 pb-16">
             <ProfileHeader userData={userData} isPublic={false} />
-            <div className="md:mt-4 lg:mt-8">
+            <div className="mt-6">
               <ContentTabs
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
@@ -89,10 +79,10 @@ const UserDashboard = () => {
                 isPublic={false}
               />
             </div>
-          </div>
-        </main>
-      </motion.div>
-    </PullToRefresh>
+          </main>
+        </motion.div>
+      </PullToRefresh>
+    </div>
   );
 };
 

@@ -1,13 +1,18 @@
 import React from 'react';
-import { Circle, Heart, MessageSquare } from 'lucide-react';
-import { getPublicUrl } from '../../../lib/utils';
-import { renderTextWithMentions } from '../../../lib/commentUtils';
+import { Heart, MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import Avatar from '../Avatar';
 import { formatDistanceToNow } from 'date-fns';
-import { useTheme } from '../../../contexts/ThemeContext';
+import { themes as risoThemes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
+import Avatar from '@components/common/Avatar';
+import { getPublicUrl } from '@utils/utils';
+import { renderTextWithMentions } from '@utils/commentUtils';
+import './Reply.css';
 
-const CommentHeader = ({ onLike, isReplySectionExpanded, replyClicked,
+const CommentHeader = ({
+  onLike,
+  isReplySectionExpanded,
+  replyClicked,
   items,
   type,
   profile_image_url,
@@ -22,75 +27,100 @@ const CommentHeader = ({ onLike, isReplySectionExpanded, replyClicked,
   numReplies,
 }) => {
   const navigate = useNavigate();
-  const { currentTheme } = useTheme();
-  const itemColorCoding = items?.map(item => {
-    return {
-      id: item.items ? item.items.id : item.id,
-      item_color_string: item.items ? item.items.item_color_string : item.item_color_string,
-    };
-  }) || [];
-  const display_name_clipped = display_name ? display_name.slice(0, 25) : 'Anonymous';
+  const { themeId } = useTheme();
+  const t = risoThemes[themeId] ?? risoThemes.light;
+
+  const itemColorCoding = (items || []).map(item => ({
+    id: item.items ? item.items.id : item.id,
+    item_color_string: item.items ? item.items.item_color_string : item.item_color_string,
+  }));
+
+  const displayNameClipped = display_name ? display_name.slice(0, 25) : 'Anonymous';
 
   return (
     <div className="flex flex-col w-full">
-      <div className="flex items-start gap-1">
-        <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <div style={{ scale: '0.9' }}>
-            <Avatar
-              profileImageUrl={profile_image_url ? getPublicUrl(profile_image_url) : null}
-              displayName={display_name_clipped}
-              size="sm"
-            />
-            </div>
-          <div className="flex flex-row items-center gap-1">
-            <span
-              className="text-sm font-medium cursor-pointer hover:underline text-left"
-              style={{ color: currentTheme.colors.text }}
-              onClick={() => navigate(`/user/${display_name}`)}
-            >
-              {display_name_clipped || 'Anonymous'}
-            </span>
-            <Circle className="w-1 h-1 text-gray-400 ml-4" fill="lightgray" />
-            <span className="text-xs text-gray-400 text-left">
-              {formatDistanceToNow(new Date(created_at ? created_at : new Date()) )}
-            </span>
-          </div>
-          </div>
+      <div className="flex items-start gap-2">
+        <Avatar
+          profileImageUrl={profile_image_url ? getPublicUrl(profile_image_url) : null}
+          displayName={displayNameClipped}
+          size="xs"
+        />
 
-          {text && (<p className="text-sm mt-1 text-gray-700 dark:text-gray-300 text-left">
-            <span dangerouslySetInnerHTML={{ __html: renderTextWithMentions(text, itemColorCoding) }} />
-          </p>)}
-
-          { (type === 'Reply' || type === 'LastReply') && (<div className="flex items-center gap-4 mt-2 mb-4 ">
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
-              onClick={() => onLike(objectId, type)}
-              className={`flex items-center gap-1.5 text-xs ${userReaction === 'like' ? 'text-amber-400' : 'text-gray-500 hover:text-amber-400'}`}
+              type="button"
+              onClick={() => navigate(`/user/${display_name}`)}
+              style={{ fontFamily: '"Fraunces", serif', fontSize: 13, color: t.ink, fontWeight: 600 }}
+              className="hover:opacity-70 transition-opacity"
             >
-              <Heart className={`w-3.5 h-3.5 ${userReaction === 'like' ? 'fill-current' : ''}`} />
-              {reactions ? reactions.length : 0}
+              {displayNameClipped}
             </button>
+            <span
+              style={{ fontFamily: '"Caveat", cursive', fontSize: 12, color: t.ink, opacity: 0.4 }}
+            >
+              {formatDistanceToNow(new Date(created_at ?? new Date()), { addSuffix: true })}
+            </span>
+          </div>
 
-            {type === 'Reply' && (
-              <button
-                onClick={replyClicked}
-                className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-amber-400"
-              >
-                <MessageSquare className="w-3.5 h-3.5" />
-                {isReplySectionExpanded ? 'Hide Replies' : numReplies > 0 ? `${numReplies} ${numReplies > 1 ? 'Replies' : 'Reply'}` : 'Reply'}
-              </button>
-            )}
+          {text && (
+            <p
+              className="mt-1 text-sm leading-snug"
+              style={{ fontFamily: '"Fraunces", serif', color: t.ink, opacity: 0.85 }}
+            >
+              <span dangerouslySetInnerHTML={{ __html: renderTextWithMentions(text, itemColorCoding) }} />
+            </p>
+          )}
 
-            {type === 'LastReply' && (
+          {(type === 'Reply' || type === 'LastReply') && (
+            <div className="flex items-center gap-4 mt-2 mb-3">
               <button
-                onClick={replyClicked}
-                className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-amber-400"
+                type="button"
+                onClick={() => onLike(objectId, type)}
+                className="flex items-center gap-1"
+                style={{
+                  fontFamily: '"Fraunces", serif',
+                  fontSize: 12,
+                  color: userReaction === 'like' ? t.red : `${t.ink}60`,
+                }}
               >
-                <MessageSquare className="w-3.5 h-3.5" />
-                @Reply
+                <Heart
+                  size={13}
+                  fill={userReaction === 'like' ? t.red : 'none'}
+                  stroke={userReaction === 'like' ? t.red : 'currentColor'}
+                />
+                {reactions ? reactions.length : 0}
               </button>
-            )}
-          </div>)}
+
+              {type === 'Reply' && (
+                <button
+                  type="button"
+                  onClick={replyClicked}
+                  className="flex items-center gap-1"
+                  style={{ fontFamily: '"Fraunces", serif', fontSize: 12, color: `${t.ink}60` }}
+                >
+                  <MessageSquare size={13} />
+                  {isReplySectionExpanded
+                    ? 'Hide replies'
+                    : numReplies > 0
+                    ? `${numReplies} ${numReplies === 1 ? 'reply' : 'replies'}`
+                    : 'Reply'}
+                </button>
+              )}
+
+              {type === 'LastReply' && (
+                <button
+                  type="button"
+                  onClick={replyClicked}
+                  className="flex items-center gap-1"
+                  style={{ fontFamily: '"Fraunces", serif', fontSize: 12, color: `${t.ink}60` }}
+                >
+                  <MessageSquare size={13} />
+                  Reply
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>

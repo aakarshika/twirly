@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Check, Circle, Pencil, Upload, X, Plus, Search } from 'lucide-react';
 import { HexColorPicker } from 'react-colorful';
 import './ComparisonItemCard.css';
+import { themes } from '@styles/themes';
 import { useTheme } from '../../../contexts/ThemeContext';
 import { useAuth } from '../../../contexts/AuthContext';
 import { apiClient } from '../../../lib/apiClient';
@@ -14,7 +15,8 @@ const ItemCardEditable = ({
   onSave,
   onCancel,
 }) => {
-  const { currentTheme } = useTheme();
+  const { themeId } = useTheme();
+  const t = themes[themeId] ?? themes.light;
   const { user } = useAuth();
   const fileInputRef = useRef(null);
   const colorInputRef = useRef(null);
@@ -398,8 +400,8 @@ const ItemCardEditable = ({
           <div
             className="flex flex-wrap gap-2 p-2 rounded border"
             style={{
-              backgroundColor: currentTheme.colors.background,
-              border: `1px solid ${currentTheme.colors.border}`,
+              backgroundColor: t.bgDeep,
+              border: `1px solid ${t.ink}25`,
             }}
           >
 
@@ -432,8 +434,8 @@ const ItemCardEditable = ({
             <div
               className="absolute z-20 w-full mt-1 rounded-lg shadow-2xl border"
               style={{
-                background: currentTheme.colors.cardBackground || '#fff',
-                border: `2px solid ${currentTheme.colors.primary}`,
+                background: t.bgDeep,
+                border: `2px solid ${t.red}`,
                 boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.18)',
               }}
             >
@@ -446,16 +448,16 @@ const ItemCardEditable = ({
                     placeholder="Search categories..."
                     className="w-full p-2 pl-8 rounded border"
                     style={{
-                      backgroundColor: currentTheme.colors.background,
-                      color: currentTheme.colors.text,
-                      border: `1px solid ${currentTheme.colors.border}`,
+                      backgroundColor: t.bg,
+                      color: t.ink,
+                      border: `1px solid ${t.ink}25`,
                     }}
                     autoFocus
                   />
                   <Search
                     size={16}
                     className="absolute left-2 top-2.5"
-                    style={{ color: currentTheme.colors.textSecondary }}
+                    style={{ color: `${t.ink}55` }}
                   />
                 </div>
                 <div className="mt-2 max-h-48 overflow-y-auto">
@@ -473,7 +475,7 @@ const ItemCardEditable = ({
                       key={category.id}
                       onClick={() => handleCategorySelect(category)}
                       className="p-2 hover:bg-blue-50 dark:hover:bg-blue-900 cursor-pointer rounded"
-                      style={{ color: currentTheme.colors.text }}
+                      style={{ color: t.ink }}
                     >
                       {category.name}
                     </div>
@@ -500,7 +502,7 @@ const ItemCardEditable = ({
           className="px-4 py-2 rounded-lg text-white font-semibold shadow flex items-center gap-2"
           onClick={handleSave}
           style={{
-            backgroundColor: currentTheme.colors.primary,
+            backgroundColor: t.red,
             opacity: loading ? 0.7 : 1,
             cursor: loading ? 'not-allowed' : 'pointer',
           }}

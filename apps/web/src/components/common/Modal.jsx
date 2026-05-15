@@ -1,21 +1,16 @@
-// File: src/components/common/Modal.jsx
-
 import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
+import { themes as risoThemes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
 
-/**
- * A reusable modal component
- *
- * @param {Object} props - Component props
- * @param {boolean} props.isOpen - Whether the modal is visible
- * @param {function} props.onClose - Function to call when closing the modal
- * @param {React.ReactNode} props.children - Modal content
- * @param {string} props.title - Modal title
- * @param {string} props.size - Modal size: 'sm', 'md', 'lg', or 'xl'
- * @param {boolean} props.showCloseButton - Whether to show the close button
- * @param {boolean} props.closeOnOutsideClick - Whether clicking outside closes the modal
- * @param {string} props.className - Additional CSS classes for the modal content
- */
+const sizeClasses = {
+  sm:   'max-w-sm',
+  md:   'max-w-lg',
+  lg:   'max-w-2xl',
+  xl:   'max-w-4xl',
+  full: 'max-w-full mx-4',
+};
+
 const Modal = ({
   isOpen,
   onClose,
@@ -27,63 +22,59 @@ const Modal = ({
   className = '',
 }) => {
   const modalRef = useRef(null);
+  const { themeId } = useTheme();
+  const t = risoThemes[themeId] ?? risoThemes.light;
 
-  // Handle escape key press
   useEffect(() => {
-    const handleEscKey = event => {
-      if (event.key === 'Escape' && isOpen) {
-        onClose();
-      }
-    };
-
-    document.addEventListener('keydown', handleEscKey);
-
-    // Prevent body scrolling when modal is open
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    }
-
+    if (!isOpen) return undefined;
+    const handleEsc = e => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', handleEsc);
+    document.body.style.overflow = 'hidden';
+    modalRef.current?.focus();
     return () => {
-      document.removeEventListener('keydown', handleEscKey);
-      document.body.style.overflow = 'visible';
+      document.removeEventListener('keydown', handleEsc);
+      document.body.style.overflow = '';
     };
   }, [isOpen, onClose]);
 
-  // Close when clicking outside the modal
-  const handleOutsideClick = e => {
-    if (closeOnOutsideClick && modalRef.current && !modalRef.current.contains(e.target)) {
-      onClose();
-    }
-  };
-
-  // Size classes
-  const sizeClasses = {
-    sm: 'max-w-sm',
-    md: 'max-w-lg',
-    lg: 'max-w-2xl',
-    xl: 'max-w-4xl',
-    full: 'max-w-full mx-4',
+  const handleBackdropClick = e => {
+    if (closeOnOutsideClick && e.target === e.currentTarget) onClose();
   };
 
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50"
-      onClick={handleOutsideClick}
+      className="fixed inset-0 flex items-center justify-center p-4 z-50"
+      style={{ backgroundColor: 'rgba(0,0,0,0.55)' }}
+      onClick={handleBackdropClick}
     >
       <div
         ref={modalRef}
-        className={`bg-gray-900 border border-gray-800 rounded-lg ${sizeClasses[size]} w-full max-h-[90vh] overflow-y-auto ${className}`}
+        tabIndex={-1}
+        className={`${sizeClasses[size] ?? sizeClasses.md} w-full max-h-[90vh] overflow-y-auto rounded-lg outline-none ${className}`}
+        style={{
+          backgroundColor: t.bg,
+          border: `1px solid ${t.ink}20`,
+          color: t.ink,
+          fontFamily: '"Fraunces", serif',
+        }}
       >
         {(title || showCloseButton) && (
-          <div className="border-b border-gray-800 px-6 py-4 flex items-center justify-between">
-            {title && <h3 className="text-xl font-bold">{title}</h3>}
-
+          <div
+            className="flex items-center justify-between px-6 py-4"
+            style={{ borderBottom: `1px solid ${t.ink}18` }}
+          >
+            {title && (
+              <h3 style={{ fontFamily: '"DM Serif Display", serif', fontStyle: 'italic', color: t.ink, fontSize: 20 }}>
+                {title}
+              </h3>
+            )}
             {showCloseButton && (
               <button
                 onClick={onClose}
-                className="p-1 rounded-full hover:bg-gray-800 transition-colors"
+                className="p-1 rounded-full transition-opacity hover:opacity-60 cursor-pointer"
+                style={{ color: t.ink }}
                 aria-label="Close"
               >
                 <X size={20} />
@@ -91,10 +82,7 @@ const Modal = ({
             )}
           </div>
         )}
-
-        <div className="p-6">
-          {children}
-        </div>
+        <div className="p-6">{children}</div>
       </div>
     </div>
   );

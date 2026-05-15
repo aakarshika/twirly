@@ -1,16 +1,67 @@
 import React, { useState } from 'react';
-import CommentForm from '../../components/common/comments/CommentForm';
-import { useComments } from '../../hooks/useComments';
-import LoadingOrError from '../../components/common/LoadingOrError';
-import { useAuth } from '../../contexts/AuthContext';
-import Avatar from '../../components/common/Avatar';
+import { motion } from 'framer-motion';
 import { Heart, MessageSquare } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
-import { renderTextWithMentions } from '../../lib/commentUtils';
 import { useNavigate } from 'react-router-dom';
+import { themes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
+import { useAuth } from '@contexts/AuthContext';
+import { useComments } from '../../hooks/useComments';
+import CommentForm from '../../components/common/comments/CommentForm';
+import Avatar from '../../components/common/Avatar';
 import { getPublicUrl } from '../../lib/utils';
+import { renderTextWithMentions } from '../../lib/commentUtils';
 
-const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, userPreferences }) => {
+const isLiked = (reactions, userId) =>
+  reactions?.some(r => r.user_id === userId && r.reaction_type === 'like');
+
+const getLikeCount = reactions =>
+  reactions?.filter(r => r.reaction_type === 'like').length ?? 0;
+
+const Reply = ({ reply, onLikeReply, userId, items, t }) => {
+  const navigate = useNavigate();
+  return (
+    <div
+      className="rounded-sm p-2"
+      style={{ background: t.bg, border: `1px solid ${t.ink}0c` }}
+    >
+      <button
+        type="button"
+        className="flex items-center gap-2"
+        onClick={() => navigate(`/user/${reply.user?.display_name}`)}
+      >
+        <Avatar
+          size="xs"
+          profileImageUrl={getPublicUrl(reply.user?.profile_image_url)}
+          displayName={reply.user?.display_name}
+        />
+        <span style={{ fontFamily: '"Fraunces", serif', fontSize: 12, color: t.ink, fontWeight: 600 }}>
+          {reply.user?.display_name}
+        </span>
+      </button>
+      <p
+        className="ml-6 mt-1 text-left"
+        style={{ fontFamily: '"Fraunces", serif', fontSize: 13, color: t.ink }}
+        dangerouslySetInnerHTML={{ __html: renderTextWithMentions(reply.text, items) }}
+      />
+      <div className="ml-6 flex items-center gap-3 mt-2">
+        <button
+          type="button"
+          className="flex items-center gap-1"
+          onClick={() => onLikeReply(reply.id)}
+          style={{ color: isLiked(reply.reactions, userId) ? t.red : `${t.ink}50` }}
+        >
+          <Heart size={13} fill={isLiked(reply.reactions, userId) ? 'currentColor' : 'none'} />
+          <span style={{ fontFamily: '"Caveat", cursive', fontSize: 12 }}>
+            {getLikeCount(reply.reactions)}
+          </span>
+        </button>
+      </div>
+    </div>
+  );
+};
+
+const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, userPreferences, t }) => {
   const [showReplies, setShowReplies] = useState(false);
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [replyText, setReplyText] = useState('');
@@ -25,51 +76,61 @@ const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, u
     }
   };
 
-  const isLiked = reactions =>
-    reactions?.some(r => r.user_id === user?.id && r.reaction_type === 'like');
-
-  const getLikeCount = reactions =>
-    reactions?.filter(r => r.reaction_type === 'like').length || 0;
-
   return (
-    <div className="bg-surface rounded-lg p-3 shadow-sm">
-      <div className="flex items-center gap-2" onClick={() => navigate(`/user/${comment.user?.display_name}`)}>
+    <div
+      className="rounded-sm p-3"
+      style={{ background: t.bgDeep, border: `1px solid ${t.ink}0e` }}
+    >
+      <button
+        type="button"
+        className="flex items-center gap-2"
+        onClick={() => navigate(`/user/${comment.user?.display_name}`)}
+      >
         <Avatar
           size="sm"
-          className="w-4 h-4"
           profileImageUrl={getPublicUrl(comment.user?.profile_image_url)}
           displayName={comment.user?.display_name}
         />
-        <span className="font-semibold text-xs">{comment.user?.display_name}</span>
-        <span className="text-xs text-text-muted text-left">
+        <span style={{ fontFamily: '"Fraunces", serif', fontSize: 12, color: t.ink, fontWeight: 600 }}>
+          {comment.user?.display_name}
+        </span>
+        <span style={{ fontFamily: '"Caveat", cursive', fontSize: 12, color: `${t.ink}55` }}>
           {formatDistanceToNow(new Date(comment.created_at ?? new Date()))}
         </span>
-      </div>
-      <div className="ml-6 text-sm mt-1">
-        <p className="text-sm mt-1 text-text text-left">
-          <span dangerouslySetInnerHTML={{ __html: renderTextWithMentions(comment.text, items) }} />
-        </p>
-      </div>
+      </button>
+
+      <p
+        className="ml-6 mt-1 text-left"
+        style={{ fontFamily: '"Fraunces", serif', fontSize: 13, color: t.ink }}
+        dangerouslySetInnerHTML={{ __html: renderTextWithMentions(comment.text, items) }}
+      />
+
       <div className="ml-6 flex items-center gap-4 mt-2">
         <button
+          type="button"
+          className="flex items-center gap-1"
           onClick={() => onLikeComment(comment.id)}
-          className={`flex items-center gap-1 ${isLiked(comment.reactions) ? 'text-primary' : 'text-text-muted hover:text-primary'}`}
+          style={{ color: isLiked(comment.reactions, user?.id) ? t.red : `${t.ink}50` }}
         >
-          <Heart className={`w-4 h-4 inline-block ${isLiked(comment.reactions) ? 'fill-current' : ''}`} />
-          <span className="text-xs">{getLikeCount(comment.reactions)}</span>
+          <Heart size={13} fill={isLiked(comment.reactions, user?.id) ? 'currentColor' : 'none'} />
+          <span style={{ fontFamily: '"Caveat", cursive', fontSize: 12 }}>
+            {getLikeCount(comment.reactions)}
+          </span>
         </button>
         <button
-          onClick={() => setShowReplyInput(!showReplyInput)}
-          className="text-text-muted hover:text-primary text-xs"
+          type="button"
+          onClick={() => setShowReplyInput(v => !v)}
+          style={{ color: `${t.ink}50` }}
         >
-          <MessageSquare className="w-4 h-4 inline-block" />
+          <MessageSquare size={13} />
         </button>
         {comment.replies?.length > 0 && (
           <button
-            onClick={() => setShowReplies(!showReplies)}
-            className="text-text-muted hover:text-primary text-xs"
+            type="button"
+            onClick={() => setShowReplies(v => !v)}
+            style={{ fontFamily: '"Caveat", cursive', fontSize: 12, color: `${t.ink}55` }}
           >
-            {showReplies ? 'Hide Replies' : `Show ${comment.replies.length} Replies`}
+            {showReplies ? 'hide replies' : `${comment.replies.length} replies`}
           </button>
         )}
       </div>
@@ -89,33 +150,16 @@ const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, u
       )}
 
       {showReplies && comment.replies?.length > 0 && (
-        <div className="ml-6 mt-3 space-y-3">
+        <div className="ml-6 mt-3 flex flex-col gap-2">
           {comment.replies.map(reply => (
-            <div key={reply.id} className="bg-bg rounded-lg p-2">
-              <div className="flex items-center gap-2" onClick={() => navigate(`/user/${reply.user?.display_name}`)}>
-                <Avatar
-                  size="xs"
-                  className="w-4 h-4"
-                  profileImageUrl={getPublicUrl(reply.user?.profile_image_url)}
-                  displayName={reply.user?.display_name}
-                />
-                <span className="font-semibold text-xs">{reply.user?.display_name}</span>
-              </div>
-              <div className="ml-6 text-sm mt-1">
-                <p className="text-sm mt-1 text-text text-left">
-                  <span dangerouslySetInnerHTML={{ __html: renderTextWithMentions(reply.text, items) }} />
-                </p>
-              </div>
-              <div className="ml-6 flex items-center gap-4 mt-2">
-                <button
-                  onClick={() => onLikeReply(reply.id)}
-                  className={`flex items-center gap-1 ${isLiked(reply.reactions) ? 'text-primary' : 'text-text-muted hover:text-primary'}`}
-                >
-                  <Heart className={`w-4 h-4 inline-block ${isLiked(reply.reactions) ? 'fill-current' : ''}`} />
-                  <span className="text-xs">{getLikeCount(reply.reactions)}</span>
-                </button>
-              </div>
-            </div>
+            <Reply
+              key={reply.id}
+              reply={reply}
+              onLikeReply={onLikeReply}
+              userId={user?.id}
+              items={items}
+              t={t}
+            />
           ))}
         </div>
       )}
@@ -123,61 +167,70 @@ const Comment = ({ comment, onReply, onLikeComment, onLikeReply, users, items, u
   );
 };
 
-const TopComment = ({ setCommentsCollapsed, comments, items, userPreferences }) => {
-  if (!comments.length) return (
-    <div className="p-3 pb-8">
-      <div className="flex items-center gap-2 mb-2">
-        <span className="font-normal text-sm text-text">
-          Comments <span className="text-text-muted text-sm">{comments.length}</span>
+const TopComment = ({ setCommentsCollapsed, comments, items, userPreferences, t }) => {
+  if (!comments.length) {
+    return (
+      <div className="p-3 pb-8">
+        <span style={{ fontFamily: '"Fraunces", serif', fontSize: 13, color: `${t.ink}60` }}>
+          Comments <span style={{ color: `${t.ink}40` }}>0</span>
         </span>
-      </div>
-      <div className="rounded-lg bg-surface text-text-muted p-3" onClick={() => setCommentsCollapsed(false)}>
-        <div className="flex items-center gap-2">
+        <button
+          type="button"
+          className="flex items-center gap-2 w-full mt-2 rounded-sm p-3 text-left"
+          style={{ background: t.bgDeep, border: `1px solid ${t.ink}0e` }}
+          onClick={() => setCommentsCollapsed(false)}
+        >
           <Avatar
             size="sm"
-            className="w-4 h-4"
             profileImageUrl={getPublicUrl(userPreferences?.profile_image_url)}
             displayName={userPreferences?.display_name}
           />
-          <span className="font-semibold text-xs">{userPreferences?.display_name}</span>
-        </div>
-        <div className="ml-6 text-sm mt-1">Be the first to comment...</div>
+          <span style={{ fontFamily: '"Fraunces", serif', fontSize: 13, color: `${t.ink}50` }}>
+            be the first to comment…
+          </span>
+        </button>
       </div>
-    </div>
-  );
+    );
+  }
 
   const topComment = comments[0];
   return (
-    <div className="p-3 min-h-36">
-      <div className="flex items-center gap-2 mb-2">
-        <span className="font-normal text-sm text-text">
-          Comments <span className="text-text-muted text-sm">{comments.length}</span>
-        </span>
-      </div>
-      <div className="rounded-lg bg-surface p-3" onClick={() => setCommentsCollapsed(false)}>
+    <div className="p-3" style={{ minHeight: 144 }}>
+      <span style={{ fontFamily: '"Fraunces", serif', fontSize: 13, color: `${t.ink}60` }}>
+        Comments <span style={{ color: `${t.ink}40` }}>{comments.length}</span>
+      </span>
+      <button
+        type="button"
+        className="w-full mt-2 rounded-sm p-3 text-left"
+        style={{ background: t.bgDeep, border: `1px solid ${t.ink}0e` }}
+        onClick={() => setCommentsCollapsed(false)}
+      >
         <div className="flex items-center gap-2">
           <Avatar
             size="xs"
-            className="w-4 h-4"
             profileImageUrl={getPublicUrl(topComment.user?.profile_image_url)}
             displayName={topComment.user?.display_name}
           />
-          <span className="font-semibold text-xs">{topComment.user?.display_name}</span>
-          <span className="text-xs text-text-muted text-left">
+          <span style={{ fontFamily: '"Fraunces", serif', fontSize: 12, color: t.ink, fontWeight: 600 }}>
+            {topComment.user?.display_name}
+          </span>
+          <span style={{ fontFamily: '"Caveat", cursive', fontSize: 12, color: `${t.ink}55` }}>
             {formatDistanceToNow(new Date(topComment.created_at ?? new Date()))}
           </span>
         </div>
-        <div className="ml-6 text-sm mt-1">
-          <p className="text-sm mt-1 text-text text-left">
-            <span dangerouslySetInnerHTML={{ __html: renderTextWithMentions(topComment.text, items) }} />
-          </p>
-        </div>
-      </div>
+        <p
+          className="ml-6 mt-1 text-left"
+          style={{ fontFamily: '"Fraunces", serif', fontSize: 13, color: t.ink }}
+          dangerouslySetInnerHTML={{ __html: renderTextWithMentions(topComment.text, items) }}
+        />
+      </button>
     </div>
   );
 };
 
 const AllComments = ({ commentsCollapsed, setCommentsCollapsed, setId, items, users, userPreferences }) => {
+  const { themeId } = useTheme();
+  const t = themes[themeId] ?? themes.light;
   const [newComment, setNewComment] = useState('');
   const {
     comments,
@@ -190,11 +243,29 @@ const AllComments = ({ commentsCollapsed, setCommentsCollapsed, setId, items, us
   } = useComments(setId);
 
   if (loading || !items || items.length === 0) {
-    return <LoadingOrError type="loading" />;
+    return (
+      <div className="flex flex-col gap-3 p-3">
+        {[0, 1, 2].map(i => (
+          <motion.div
+            key={i}
+            className="rounded-sm"
+            style={{ height: 72, background: t.bgDeep }}
+            animate={{ opacity: [0.3, 0.6, 0.3] }}
+            transition={{ duration: 1.6, repeat: Infinity, delay: i * 0.18 }}
+          />
+        ))}
+      </div>
+    );
   }
 
   if (error) {
-    return <LoadingOrError type="error" />;
+    return (
+      <div className="rounded-sm p-4 m-3" style={{ background: t.bgDeep, border: `1px solid ${t.red}40` }}>
+        <p style={{ fontFamily: '"Fraunces", serif', fontSize: 13, color: t.red }}>
+          {error}
+        </p>
+      </div>
+    );
   }
 
   if (commentsCollapsed) {
@@ -204,21 +275,32 @@ const AllComments = ({ commentsCollapsed, setCommentsCollapsed, setId, items, us
         comments={comments}
         items={items}
         userPreferences={userPreferences}
+        t={t}
       />
     );
   }
 
   return (
     <div className="min-h-full">
-      <div className="sticky top-0 flex w-full items-center justify-between px-4 py-1 z-20 bg-bg">
-        <span className="font-normal text-sm text-text">
-          Comments <span className="text-text-muted text-sm">{comments.length}</span>
+      <div
+        className="sticky top-0 flex w-full items-center justify-between px-4 py-2 z-20"
+        style={{ background: t.bg, borderBottom: `1px solid ${t.ink}0c` }}
+      >
+        <span style={{ fontFamily: '"Fraunces", serif', fontSize: 13, color: `${t.ink}70` }}>
+          Comments{' '}
+          <span style={{ color: `${t.ink}45` }}>{comments.length}</span>
         </span>
-        <button onClick={() => setCommentsCollapsed(true)} className="ml-auto text-2xl">×</button>
+        <button
+          type="button"
+          onClick={() => setCommentsCollapsed(true)}
+          style={{ fontFamily: '"DM Serif Display", serif', fontSize: 22, color: `${t.ink}60`, lineHeight: 1 }}
+        >
+          ×
+        </button>
       </div>
 
-      <div className="space-y-3 p-3 pb-32">
-        <div className="rounded-lg p-3 shadow-sm">
+      <div className="flex flex-col gap-3 p-3 pb-32">
+        <div className="rounded-sm p-3" style={{ background: t.bgDeep, border: `1px solid ${t.ink}0e` }}>
           <CommentForm
             newComment={newComment}
             setNewComment={setNewComment}
@@ -242,10 +324,17 @@ const AllComments = ({ commentsCollapsed, setCommentsCollapsed, setId, items, us
             users={users}
             items={items}
             userPreferences={userPreferences}
+            t={t}
           />
         ))}
       </div>
-      <div className="flex justify-center items-center h-10 mb-10 text-text-muted">. . .</div>
+
+      <p
+        className="flex justify-center items-center h-10 mb-10"
+        style={{ fontFamily: '"Caveat", cursive', fontSize: 14, color: `${t.ink}40` }}
+      >
+        all caught up
+      </p>
     </div>
   );
 };

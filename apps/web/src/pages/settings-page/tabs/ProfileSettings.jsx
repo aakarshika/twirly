@@ -1,359 +1,279 @@
-import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../../contexts/AuthContext';
-import { apiClient } from '../../../lib/apiClient';
-import { useTheme } from '../../../contexts/ThemeContext';
-import { User, Mail, Phone, Save, Twitter, Instagram, Facebook } from 'lucide-react';
-import Button from '../../../components/common/Button';
-import Avatar from '../../../components/common/Avatar';
-import { useLoading } from '../../../contexts/LoadingContext';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { toast } from 'sonner';
+import { Camera } from 'lucide-react';
+import { themes as risoThemes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
+import { useAuth } from '@contexts/AuthContext';
+import Avatar from '@components/common/Avatar';
+import { getUserProfile, updateUserProfile, uploadProfilePic } from '@services/users';
+import { userPreferences } from '@services/userPreferences';
+
+const Field = ({ label, error, children }) => {
+  const { themeId } = useTheme();
+  const t = risoThemes[themeId] ?? risoThemes.light;
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label style={{ fontFamily: '"Fraunces", serif', fontSize: 12, color: `${t.ink}60`, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+        {label}
+      </label>
+      {children}
+      <AnimatePresence>
+        {error && (
+          <motion.p
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            style={{ fontFamily: '"Caveat", cursive', fontSize: 13, color: t.red }}
+          >
+            {error}
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+const underlineInput = (t, error, disabled) => ({
+  fontFamily: '"Fraunces", serif',
+  fontSize: 15,
+  color: disabled ? `${t.ink}55` : t.ink,
+  background: 'transparent',
+  outline: 'none',
+  width: '100%',
+  borderBottom: `1px solid ${error ? t.red : disabled ? `${t.ink}18` : `${t.ink}35`}`,
+  paddingBottom: 6,
+  paddingTop: 2,
+  resize: 'none',
+  cursor: disabled ? 'default' : 'text',
+});
+
+const Section = ({ title, eyebrow, children }) => {
+  const { themeId } = useTheme();
+  const t = risoThemes[themeId] ?? risoThemes.light;
+  return (
+    <div
+      className="rounded-sm p-5 sm:p-6 flex flex-col gap-5"
+      style={{ background: t.bgDeep, border: `1px solid ${t.ink}0f` }}
+    >
+      {(title || eyebrow) && (
+        <div>
+          {eyebrow && (
+            <p style={{ fontFamily: '"Caveat", cursive', fontSize: 14, color: `${t.ink}50`, marginBottom: 2 }}>
+              {eyebrow}
+            </p>
+          )}
+          {title && (
+            <h2 style={{ fontFamily: '"DM Serif Display", serif', fontStyle: 'italic', fontSize: 20, color: t.ink, lineHeight: 1.1 }}>
+              {title}
+            </h2>
+          )}
+        </div>
+      )}
+      {children}
+    </div>
+  );
+};
 
 const ProfileSettings = () => {
+  const { themeId } = useTheme();
+  const t = risoThemes[themeId] ?? risoThemes.light;
   const { user } = useAuth();
-  const { currentTheme } = useTheme();
-  const { setLoading, setError: setGlobalError } = useLoading();
-  const [profileData, setProfileData] = useState({
-    username: '',
-    display_name: '',
-    bio: '',
-    email: '',
-    profileImageUrl: '',
-    phone: '',
-    location: '',
-    website: '',
-    socialLinks: {
-      twitter: '',
-      github: '',
-      linkedin: '',
-    },
-  });
-  const [error, setError] = useState(null);
-  const [isEditing, setIsEditing] = useState(true);
-  const [avatarPreview, setAvatarPreview] = useState('');
-  const [usernameError, setUsernameError] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const [displayName, setDisplayName] = useState('');
+  const [bio, setBio] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
+  const [displayNameError, setDisplayNameError] = useState('');
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const fetchProfileData = async () => {
-      if (!user) return;
-
-      try {
-        setLoading('global', true, 'Loading profile...');
-        setError(null);
-
-        const { data } = await apiClient.get(`/api/users/${user.id}`);
-        const profile = data.data;
-
-        if (profile?.profile_image_url) {
-          setAvatarPreview(profile.profile_image_url);
-          setProfileData(prev => ({ ...prev, profileImageUrl: profile.profile_image_url }));
-        }
-
-        setProfileData(prev => ({ ...prev, ...profile }));
-      } catch (err) {
-        console.error('Error fetching profile data:', err);
-        setError(err.message);
-        setGlobalError('global', err.message, () => window.location.reload());
-      } finally {
-        setLoading('global', false);
+    if (!user) return;
+    getUserProfile(user.id).then(data => {
+      if (data?.profile) {
+        setDisplayName(data.profile.display_name ?? '');
+        setBio(data.profile.bio ?? '');
+        setAvatarUrl(data.profile.profile_image_url ?? '');
       }
-    };
-
-    fetchProfileData();
+      setLoaded(true);
+    });
   }, [user]);
 
-  const validateUsernameInput = value => {
-    if (!value) {
-      setUsernameError('Username is required');
-      return false;
-    }
-    if (value.length < 3) {
-      setUsernameError('Username must be at least 3 characters long');
-      return false;
-    }
-    if (!/^[a-z0-9_]+$/.test(value)) {
-      setUsernameError('Username can only contain lowercase letters, numbers, and underscores');
-      return false;
-    }
-    if (value.includes(' ')) {
-      setUsernameError('Username cannot contain spaces');
-      return false;
-    }
-    setUsernameError('');
-    return true;
+  const validateDisplayName = value => {
+    if (!value) return 'Display name is required';
+    if (value.length < 2) return 'At least 2 characters';
+    if (value.length > 32) return 'Max 32 characters';
+    return '';
   };
 
-  const validateUsername = async value => {
-    if (!validateUsernameInput(value)) return false;
+  const handleDisplayNameChange = async e => {
+    const val = e.target.value.toLowerCase().replace(/\s/g, '');
+    setDisplayName(val);
+    const err = validateDisplayName(val);
+    setDisplayNameError(err);
 
-    try {
-      const { data } = await apiClient.get('/api/users/check-username', { params: { username: value } });
-      if (!data.data?.available) {
-        setUsernameError('Username is already taken');
-        return false;
-      }
-      return true;
-    } catch (error) {
-      console.error('Error checking username availability:', error);
-      setUsernameError('Error checking username availability');
-      return false;
+    if (!err && val.length >= 3) {
+      const available = await userPreferences.checkUsernameAvailability(val).catch(() => true);
+      if (!available) setDisplayNameError('Already taken');
     }
   };
 
-  const handleInputChange = async e => {
-    const { name, value } = e.target;
-
-    if (name === 'display_name') {
-      const lowercaseValue = value.toLowerCase().replace(/ /g, '');
-      setProfileData(prev => ({
-        ...prev,
-        [name]: lowercaseValue,
-      }));
-      await validateUsername(lowercaseValue);
-    } else {
-      setProfileData(prev => ({
-        ...prev,
-        [name]: value,
-      }));
-    }
-  };
-
-  const _handleSocialLinkChange = (platform, value) => {
-    setProfileData(prev => ({
-      ...prev,
-      socialLinks: {
-        ...prev.socialLinks,
-        [platform]: value,
-      },
-    }));
-  };
+  const handleAvatarClick = () => fileInputRef.current?.click();
 
   const handleAvatarChange = async e => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
 
+    setUploadingAvatar(true);
     try {
-      const form = new FormData();
-      form.append('file', file);
-      const { data: uploadData } = await apiClient.post('/api/uploads?bucket=profile-pics', form, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-
-      const url = uploadData.data.url;
-      setProfileData(prev => ({ ...prev, profileImageUrl: url }));
-      setAvatarPreview(url);
-
-      await apiClient.put('/api/users/me', { profile_image_url: url });
-    } catch (err) {
-      console.error('Error uploading profile picture:', err);
-      setError(err.message);
+      const url = await uploadProfilePic(file);
+      setAvatarUrl(url);
+      await updateUserProfile({ profile_image_url: url });
+      toast.success('Profile picture updated');
+    } catch {
+      toast.error('Upload failed — try again');
+    } finally {
+      setUploadingAvatar(false);
+      e.target.value = '';
     }
   };
 
   const handleSave = async () => {
+    const err = validateDisplayName(displayName);
+    if (err) { setDisplayNameError(err); return; }
+
+    setSaving(true);
     try {
-      setLoading('global', true, 'Saving profile...');
-      await apiClient.put('/api/users/me', {
-        username: profileData.username,
-        display_name: profileData.display_name,
-        bio: profileData.bio,
-        profile_image_url: profileData.profileImageUrl,
-      });
-      setIsEditing(false);
-    } catch (err) {
-      if (err.code === '409' || err.response?.status === 409) {
-        setUsernameError('Username already taken');
-      } else {
-        console.error('Error saving profile:', err);
-        setError(err.message);
-        setGlobalError('global', err.message, () => window.location.reload());
-      }
+      await updateUserProfile({ display_name: displayName, bio, profile_image_url: avatarUrl });
+      toast.success('Profile saved');
+    } catch {
+      toast.error('Failed to save — try again');
     } finally {
-      setLoading('global', false);
+      setSaving(false);
     }
   };
 
-  if (error) {
-    return null; // Error screen is now handled by LoadingContext
+  if (!loaded) {
+    return (
+      <p style={{ fontFamily: '"Caveat", cursive', fontSize: 16, color: `${t.ink}45` }}>
+        loading…
+      </p>
+    );
   }
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-center justify-between">
-        <h2
-          className="text-md font-semibold"
-          style={{ color: currentTheme.colors.text }}
-        >
-          Profile Settings
-        </h2>
-        <Button
-          onClick={isEditing ? handleSave : () => setIsEditing(true)}
-          className="flex items-center space-x-2"
-          style={{ backgroundColor: currentTheme.colors.primary }}
-        >
-          <Save size={16} />
-          <span>{isEditing ? 'Save Changes' : 'Edit Profile'}</span>
-        </Button>
-      </div>
-
-      <div className="space-y-6">
-        {/* Avatar Section */}
-        <div
-          className="p-6 rounded-lg"
-          style={{
-            backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`,
-          }}
-        >
-          <div className="flex items-center space-x-6">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      className="flex flex-col gap-5 max-w-lg"
+    >
+      {/* Avatar */}
+      <Section title="your face." eyebrow="photo">
+        <div className="flex items-center gap-5">
+          <div className="relative shrink-0">
             <Avatar
-              profileImageUrl={avatarPreview}
-              displayName={profileData.display_name}
-              username={profileData.username}
-              isEditable={isEditing}
-              onAvatarChange={handleAvatarChange}
+              profileImageUrl={avatarUrl}
+              displayName={displayName}
+              username={user?.name}
+              size="lg"
             />
-            <div>
-              <h3
-                className="text-lg font-medium"
-                style={{ color: currentTheme.colors.text }}
-              >
-                Profile Picture
-              </h3>
-              <p
-                className="text-sm"
-                style={{ color: currentTheme.colors.text }}
-              >
-                Upload a new profile picture
-              </p>
-            </div>
+            <button
+              type="button"
+              aria-label="Change profile picture"
+              onClick={handleAvatarClick}
+              disabled={uploadingAvatar}
+              className="absolute -bottom-1 -right-1 flex items-center justify-center rounded-full"
+              style={{
+                width: 30,
+                height: 30,
+                background: t.red,
+                color: '#fff',
+                border: `2px solid ${t.bg}`,
+                cursor: uploadingAvatar ? 'wait' : 'pointer',
+              }}
+            >
+              <Camera size={13} />
+            </button>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={handleAvatarChange}
+            />
+          </div>
+
+          <div>
+            <p style={{ fontFamily: '"Fraunces", serif', fontSize: 14, color: t.ink, opacity: 0.75, lineHeight: 1.5 }}>
+              {uploadingAvatar ? 'uploading…' : 'tap to change your photo. jpg, png, or gif.'}
+            </p>
+            <p style={{ fontFamily: '"Caveat", cursive', fontSize: 13, color: `${t.ink}45`, marginTop: 2 }}>
+              shown on your comparisons + profile
+            </p>
           </div>
         </div>
+      </Section>
 
-        {/* Basic Information */}
-        <div
-          className="p-6 rounded-lg"
-          style={{
-            backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`,
-          }}
-        >
-          <h3
-            className="text-lg font-medium mb-4"
-            style={{ color: currentTheme.colors.text }}
-          >
-            Who are you?
-          </h3>
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <User size={20} style={{ color: currentTheme.colors.text }} />
-              <input
-                type="text"
-                name="display_name"
-                value={profileData.display_name}
-                onChange={handleInputChange}
-                placeholder="Username.. What others will see"
-                readOnly={!isEditing}
-                className="flex-1 p-2 rounded-lg"
-                style={{
-                  backgroundColor: currentTheme.colors.background,
-                  color: currentTheme.colors.text,
-                  border: `1px solid ${usernameError ? currentTheme.colors.error : currentTheme.colors.border}`,
-                }}
-              />
-            </div>
-            {usernameError && (
-              <p className="text-sm text-red-500 mt-1">{usernameError}</p>
-            )}
-            <div className="flex items-center space-x-3">
-              <Mail size={20} style={{ color: currentTheme.colors.text }} />
-              <input
-                type="email"
-                name="email"
-                value={user.email}
-                readOnly
-                placeholder="Email"
-                className="flex-1 p-2 rounded-lg"
-                style={{
-                  backgroundColor: currentTheme.colors.background,
-                  color: currentTheme.colors.text,
-                  border: `1px solid transparent`,
-                }}
-              />
-            </div>
-            <div className="flex items-center space-x-3">
-              <Phone size={20} style={{ color: currentTheme.colors.text }} />
-              <input
-                type="tel"
-                name="phone"
-                value={profileData.phone}
-                onChange={handleInputChange}
-                placeholder="Phone Number"
-                readOnly
-                className="flex-1 p-2 rounded-lg"
-                style={{
-                  backgroundColor: currentTheme.colors.background,
-                  color: currentTheme.colors.text,
-                  border: `1px solid transparent`,
-                }}
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Bio Section */}
-        <div
-          className="p-6 rounded-lg"
-          style={{
-            backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`,
-          }}
-        >
-          <h3
-            className="text-lg font-medium mb-4"
-            style={{ color: currentTheme.colors.text }}
-          >
-            What are you?
-          </h3>
-          <textarea
-            name="bio"
-            onChange={handleInputChange}
-            placeholder="Tell us about yourself..."
-            readOnly={!isEditing}
-            value={profileData.bio}
-            rows="4"
-            className="w-full p-2 rounded-lg"
-            style={{
-              backgroundColor: currentTheme.colors.background,
-              color: currentTheme.colors.text,
-              border: `1px solid ${currentTheme.colors.border}`,
-            }}
+      {/* Info */}
+      <Section title="about you." eyebrow="profile">
+        <Field label="Display name" error={displayNameError}>
+          <input
+            type="text"
+            value={displayName}
+            onChange={handleDisplayNameChange}
+            placeholder="how_you_sign_off"
+            style={underlineInput(t, displayNameError, false)}
           />
-        </div>
+        </Field>
 
-        {/* Social Links */}
-        <div
-          className="p-6 rounded-lg"
-          style={{
-            backgroundColor: currentTheme.colors.background,
-            border: `1px solid ${currentTheme.colors.border}`,
-          }}
-        >
-          <h3
-            className="text-lg font-medium mb-4"
-            style={{ color: currentTheme.colors.text }}
+        <Field label="Email" error="">
+          <input
+            type="email"
+            value={user?.email ?? ''}
+            disabled
+            style={underlineInput(t, '', true)}
+          />
+        </Field>
+
+        <Field label="Bio" error="">
+          <textarea
+            value={bio}
+            onChange={e => setBio(e.target.value)}
+            placeholder="what are you into?"
+            rows={3}
+            maxLength={160}
+            style={underlineInput(t, '', false)}
+          />
+          <p style={{ fontFamily: '"Caveat", cursive', fontSize: 12, color: `${t.ink}38`, textAlign: 'right', marginTop: 2 }}>
+            {bio.length}/160
+          </p>
+        </Field>
+
+        <div className="flex justify-end pt-1">
+          <motion.button
+            type="button"
+            onClick={handleSave}
+            disabled={saving || !!displayNameError}
+            whileTap={{ scale: 0.96 }}
+            className="px-5 py-2.5 rounded-sm"
+            style={{
+              fontFamily: '"Fraunces", serif',
+              fontSize: 14,
+              background: saving || displayNameError ? `${t.ink}15` : t.red,
+              color: saving || displayNameError ? `${t.ink}45` : '#fff',
+              minHeight: 44,
+              cursor: saving || displayNameError ? 'not-allowed' : 'pointer',
+              transition: 'background 0.15s',
+            }}
           >
-            Social Links
-          </h3>
-
-          <div className="space-y-4 ml-4">
-            <div className="flex items-center space-x-3">
-              <Twitter size={30} style={{ color: currentTheme.colors.text }} />
-              <Instagram size={30} style={{ color: currentTheme.colors.text }} />
-              <Facebook size={30} style={{ color: currentTheme.colors.text }} />
-            </div>
-          </div>
+            {saving ? 'saving…' : 'save profile'}
+          </motion.button>
         </div>
-      </div>
-    </div>
+      </Section>
+    </motion.div>
   );
 };
 

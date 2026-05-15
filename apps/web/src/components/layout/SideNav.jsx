@@ -1,66 +1,70 @@
 import React, { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, Search, PlusCircle, Bell, User, Settings, ChevronRight, ChevronUp } from 'lucide-react';
-import Avatar from '../common/Avatar';
-import { getPublicUrl } from '../../lib/utils';
-import { formatDate } from 'date-fns';
+import {
+  Bell, ChevronRight, CreditCard, Globe, HelpCircle,
+  Home, Lock, LogOut, Palette, PlusCircle, Search,
+  Settings, User,
+} from 'lucide-react';
+import { format } from 'date-fns';
+import { themes as risoThemes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
+import Avatar from '@components/common/Avatar';
+import { getPublicUrl } from '@utils/utils';
 
 const NAV_ITEMS = [
-  { id: 'home', label: 'Home', icon: Home, path: '/', match: p => p === '/' },
-  { id: 'search', label: 'Search', icon: Search, path: '/search', match: p => p.startsWith('/search') },
-  { id: 'create', label: 'Create Comparison', icon: PlusCircle, path: '/new-comparison?load_draft=true', match: p => p.startsWith('/new-comparison') },
-  { id: 'activity', label: 'Activity', icon: Bell, path: '/activity', match: p => p.startsWith('/activity') },
-  { id: 'profile', label: 'Profile', icon: User, path: '/dashboard', match: p => p.startsWith('/dashboard') },
+  { id: 'home',     label: 'Home',     icon: Home,       path: '/',                              match: p => p === '/' },
+  { id: 'search',   label: 'Search',   icon: Search,     path: '/search',                        match: p => p.startsWith('/search') },
+  { id: 'create',   label: 'Create',   icon: PlusCircle, path: '/new-comparison?load_draft=true', match: p => p.startsWith('/new-comparison') || p.startsWith('/edit-comparison') },
+  { id: 'activity', label: 'Activity', icon: Bell,       path: '/activity',                      match: p => p.startsWith('/activity') },
+  { id: 'profile',  label: 'Profile',  icon: User,       path: '/dashboard',                     match: p => p.startsWith('/dashboard') },
 ];
 
-const SETTINGS_TABS = [
-  { id: 'profile', label: 'Profile', icon: '👤' },
-  { id: 'appearance', label: 'Appearance', icon: '🎨' },
-  { id: 'billing', label: 'Billing', icon: '💳' },
-  { id: 'security', label: 'Security', icon: '🔒' },
-  { id: 'language', label: 'Language', icon: '🌐' },
-  { id: 'help', label: 'Help', icon: '❓' },
+const SETTINGS_ITEMS = [
+  { id: 'profile',    label: 'Profile',    icon: User },
+  { id: 'appearance', label: 'Appearance', icon: Palette },
+  { id: 'billing',    label: 'Billing',    icon: CreditCard },
+  { id: 'security',   label: 'Security',   icon: Lock },
+  { id: 'language',   label: 'Language',   icon: Globe },
+  { id: 'help',       label: 'Help',       icon: HelpCircle },
 ];
 
-const BETA_TABS = [
-  { id: 'feedback', label: 'Beta Feedback', icon: '💬' },
-  { id: 'analytics', label: 'Analytics', icon: '📈' },
+const BETA_ITEMS = [
+  { id: 'feedback',    label: 'Beta Feedback', path: '/beta/feedback' },
+  { id: 'analytics',   label: 'Analytics',     path: '/beta/analytics' },
+  { id: 'performance', label: 'Performance',   path: '/beta/performance' },
 ];
 
 const SideNav = ({ userData, onLogout }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { themeId } = useTheme();
+  const t = risoThemes[themeId] ?? risoThemes.light;
+
   const [settingsExpanded, setSettingsExpanded] = useState(
     location.pathname.startsWith('/settings'),
   );
 
   const profile = userData?.profile;
 
-  const navItemStyle = active => ({
-    color: active ? 'rgb(var(--primary-fg))' : 'rgb(var(--text))',
-    backgroundColor: active ? 'rgb(var(--primary))' : 'transparent',
-  });
-
   return (
     <aside
       aria-label="Site navigation"
-      className="fixed left-0 top-0 bottom-0 hidden lg:flex flex-col z-40 w-64 overflow-y-auto scrollbar-hide"
+      className="fixed left-0 top-0 bottom-0 hidden lg:flex flex-col z-40 w-64 overflow-y-auto"
       style={{
-        paddingTop: '64px',
-        borderRight: '1px solid rgb(var(--border))',
-        backgroundColor: 'rgb(var(--surface))',
+        paddingTop: 64,
+        borderRight: `1px solid ${t.ink}18`,
+        background: t.bg,
       }}
     >
       {/* Profile card */}
       {profile && (
-        <div
-          role="button"
-          tabIndex={0}
+        <button
+          type="button"
           aria-label="Go to your profile"
-          className="px-4 py-5 border-b cursor-pointer"
-          style={{ borderColor: 'rgb(var(--border))' }}
           onClick={() => navigate('/dashboard')}
-          onKeyDown={e => e.key === 'Enter' || e.key === ' ' ? navigate('/dashboard') : undefined}
+          className="w-full text-left px-5 py-4"
+          style={{ borderBottom: `1px solid ${t.ink}12` }}
         >
           <div className="flex items-center gap-3">
             <Avatar
@@ -68,26 +72,25 @@ const SideNav = ({ userData, onLogout }) => {
               displayName={profile.display_name}
               username={profile.username}
               size="sm"
-              onAvatarChange={() => {}}
             />
             <div className="min-w-0">
               <p
-                className="font-semibold text-sm truncate"
-                style={{ color: 'rgb(var(--text))' }}
+                className="truncate"
+                style={{ fontFamily: '"DM Serif Display", serif', fontStyle: 'italic', fontSize: 15, color: t.ink }}
               >
-                @{profile.display_name || profile.username || 'You'}
+                {profile.display_name || profile.username || 'You'}
               </p>
               {profile.created_at && (
                 <p
-                  className="text-xs truncate"
-                  style={{ color: 'rgb(var(--text-muted))' }}
+                  className="truncate"
+                  style={{ fontFamily: '"Caveat", cursive', fontSize: 13, color: t.ink, opacity: 0.45 }}
                 >
-                  Since {formatDate(profile.created_at, 'MMM yyyy')}
+                  since {format(new Date(profile.created_at), 'MMM yyyy')}
                 </p>
               )}
             </div>
           </div>
-        </div>
+        </button>
       )}
 
       {/* Main nav */}
@@ -95,90 +98,129 @@ const SideNav = ({ userData, onLogout }) => {
         {NAV_ITEMS.map(({ id, label, icon: Icon, path, match }) => {
           const active = match(location.pathname);
           return (
-            <button
+            <motion.button
               key={id}
               type="button"
               aria-current={active ? 'page' : undefined}
               onClick={() => navigate(path)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm font-medium w-full text-left transition-colors hover:bg-surface-elevated"
-              style={navItemStyle(active)}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+              className="relative flex items-center gap-3 px-4 py-2.5 rounded-sm w-full text-left"
+              style={{
+                fontFamily: '"Fraunces", serif',
+                fontSize: 14,
+                color: active ? t.ink : `${t.ink}80`,
+                background: active ? t.bgDeep : 'transparent',
+              }}
             >
-              <Icon size={18} strokeWidth={active ? 2.5 : 1.75} />
+              {active && (
+                <motion.span
+                  layoutId="sidenav-active-bar"
+                  className="absolute left-0 top-2 bottom-2 rounded-r-full"
+                  style={{ width: 3, backgroundColor: t.red }}
+                  transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                />
+              )}
+              <Icon size={17} strokeWidth={active ? 2.5 : 1.75} />
               {label}
-            </button>
+            </motion.button>
           );
         })}
 
-        {/* Settings expandable */}
+        {/* Settings — expandable */}
         <div>
           <button
             type="button"
             aria-expanded={settingsExpanded}
-            aria-controls="sidenav-settings-submenu"
+            aria-controls="sidenav-settings"
             onClick={() => setSettingsExpanded(v => !v)}
-            className="flex items-center justify-between gap-3 px-3 py-2.5 rounded-md text-sm font-medium w-full text-left transition-colors hover:bg-surface-elevated"
-            style={{ color: 'rgb(var(--text))' }}
+            className="flex items-center justify-between gap-3 px-4 py-2.5 rounded-sm w-full text-left"
+            style={{ fontFamily: '"Fraunces", serif', fontSize: 14, color: `${t.ink}80` }}
           >
             <span className="flex items-center gap-3">
-              <Settings size={18} strokeWidth={1.75} />
+              <Settings size={17} strokeWidth={1.75} />
               Account
             </span>
-            {settingsExpanded ? <ChevronUp size={14} /> : <ChevronRight size={14} />}
+            <motion.span
+              animate={{ rotate: settingsExpanded ? 90 : 0 }}
+              transition={{ duration: 0.2 }}
+              style={{ display: 'flex' }}
+            >
+              <ChevronRight size={13} />
+            </motion.span>
           </button>
 
-          {settingsExpanded && (
-            <div id="sidenav-settings-submenu" className="ml-7 mt-0.5 flex flex-col gap-0.5">
-              {SETTINGS_TABS.map(({ id, label, icon }) => {
-                const active = location.pathname === `/settings/${id}`;
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => navigate(`/settings/${id}`)}
-                    className="flex items-center gap-2 px-3 py-2 rounded-md text-sm w-full text-left transition-colors hover:bg-surface-elevated"
-                    style={navItemStyle(active)}
-                  >
-                    <span>{icon}</span>
-                    {label}
-                  </button>
-                );
-              })}
-              <button
-                type="button"
-                onClick={onLogout}
-                className="flex items-center gap-2 px-3 py-2 rounded-md text-sm w-full text-left transition-colors hover:bg-surface-elevated"
-                style={{ color: 'rgb(var(--text))' }}
+          <AnimatePresence initial={false}>
+            {settingsExpanded && (
+              <motion.div
+                id="sidenav-settings"
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+                className="overflow-hidden ml-6 mt-0.5 flex flex-col gap-0.5"
               >
-                <span>🚪</span>
-                Logout
-              </button>
-            </div>
-          )}
+                {SETTINGS_ITEMS.map(({ id, label, icon: Icon }) => {
+                  const active = location.pathname === `/settings/${id}`;
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => navigate(`/settings/${id}`)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-sm w-full text-left"
+                      style={{
+                        fontFamily: '"Fraunces", serif',
+                        fontSize: 13,
+                        color: active ? t.ink : `${t.ink}75`,
+                        background: active ? t.bgDeep : 'transparent',
+                      }}
+                    >
+                      <Icon size={14} strokeWidth={active ? 2.5 : 1.75} />
+                      {label}
+                    </button>
+                  );
+                })}
+                <button
+                  type="button"
+                  onClick={onLogout}
+                  className="flex items-center gap-2.5 px-3 py-2 rounded-sm w-full text-left"
+                  style={{ fontFamily: '"Fraunces", serif', fontSize: 13, color: t.red, opacity: 0.8 }}
+                >
+                  <LogOut size={14} strokeWidth={1.75} />
+                  Log out
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </nav>
 
       {/* Beta section */}
       <div
-        className="px-3 py-3 border-t"
-        style={{ borderColor: 'rgb(var(--border))' }}
+        className="px-3 py-4"
+        style={{ borderTop: `1px solid ${t.ink}12` }}
       >
         <p
-          className="px-3 mb-1 text-[11px] font-semibold uppercase tracking-wider"
-          style={{ color: 'rgb(var(--text-muted))' }}
+          className="px-4 mb-2"
+          style={{ fontFamily: '"Caveat", cursive', fontSize: 12, color: t.ink, opacity: 0.38, letterSpacing: '0.08em', textTransform: 'uppercase' }}
         >
           Beta
         </p>
-        {BETA_TABS.map(({ id, label, icon }) => {
-          const active = location.pathname === `/beta/${id}`;
+        {BETA_ITEMS.map(({ id, label, path }) => {
+          const active = location.pathname.startsWith(path);
           return (
             <button
               key={id}
               type="button"
-              onClick={() => navigate(`/beta/${id}`)}
-              className="flex items-center gap-2 px-3 py-2 rounded-md text-sm w-full text-left transition-colors hover:bg-surface-elevated"
-              style={navItemStyle(active)}
+              onClick={() => navigate(path)}
+              className="flex items-center px-4 py-2 rounded-sm w-full text-left"
+              style={{
+                fontFamily: '"Fraunces", serif',
+                fontSize: 13,
+                color: active ? t.ink : `${t.ink}60`,
+                background: active ? t.bgDeep : 'transparent',
+              }}
             >
-              <span>{icon}</span>
               {label}
             </button>
           );

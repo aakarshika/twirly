@@ -1,74 +1,87 @@
-import { useTheme } from '../../../../contexts/ThemeContext';
+import { motion } from 'framer-motion';
+import { Heart } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { themes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
 
-const ReviewCard = ({ review }) => {
-  const { currentTheme } = useTheme();
+const EASE = [0.16, 1, 0.3, 1];
+
+const ReviewCard = ({ review, index }) => {
+  const { themeId } = useTheme();
+  const t = themes[themeId] ?? themes.light;
+
+  const timeAgo = review.created_at
+    ? formatDistanceToNow(new Date(review.created_at), { addSuffix: true })
+    : null;
 
   return (
-    <div
-      className="rounded-lg overflow-hidden"
-      style={{ backgroundColor: currentTheme.colors.cardBackground }}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, delay: (index ?? 0) * 0.05, ease: EASE }}
+      style={{
+        background: t.bgDeep,
+        border: `1px solid ${t.ink}15`,
+        borderRadius: 8,
+        padding: '14px 16px',
+      }}
     >
-      <div className="p-4">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h3
-              className="font-semibold text-lg"
-              style={{ color: currentTheme.colors.text }}
-            >
-              {review.productName}
-            </h3>
-            <p
-              className="text-sm"
-              style={{ color: currentTheme.colors.textSecondary }}
-            >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 }}>
+        <div>
+          <h3 style={{
+            fontFamily: '"DM Serif Display", serif',
+            fontStyle: 'italic',
+            fontSize: 17,
+            color: t.ink,
+            margin: 0,
+            lineHeight: 1.2,
+          }}>
+            {review.productName}
+          </h3>
+          {review.category && (
+            <span style={{
+              fontFamily: '"Caveat", cursive',
+              fontSize: 13,
+              color: t.ink,
+              opacity: 0.5,
+            }}>
               {review.category}
-            </p>
-          </div>
-          <div className="flex items-center space-x-2">
-            <span
-              className="text-sm font-medium"
-              style={{ color: currentTheme.colors.text }}
-            >
-              {review.rating.toFixed(1)}/5
             </span>
-            <span className="text-yellow-500">★</span>
-          </div>
+          )}
         </div>
-
-        <p
-          className="mb-4"
-          style={{ color: currentTheme.colors.text }}
-        >
-          {review.text}
-        </p>
-
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <span
-              className="text-sm"
-              style={{ color: currentTheme.colors.textSecondary }}
-            >
-              {review.likes} likes
-            </span>
-            <span
-              className="text-sm"
-              style={{ color: currentTheme.colors.textSecondary }}
-            >
-              {formatDistanceToNow(new Date(review.created_at))}
-            </span>
-          </div>
-          <div className="flex space-x-2">
-            <button className="p-2 rounded-full hover:bg-gray-100">
-              <span className="text-sm">✏️</span>
-            </button>
-            <button className="p-2 rounded-full hover:bg-gray-100">
-              <span className="text-sm">🗑️</span>
-            </button>
-          </div>
-        </div>
+        {review.likes > 0 && (
+          <span style={{
+            display: 'flex', alignItems: 'center', gap: 4,
+            fontFamily: '"Caveat", cursive', fontSize: 13,
+            color: t.red, opacity: 0.8, flexShrink: 0,
+          }}>
+            <Heart size={13} fill={t.red} /> {review.likes}
+          </span>
+        )}
       </div>
-    </div>
+
+      <p style={{
+        fontFamily: '"Fraunces", serif',
+        fontSize: 14,
+        color: t.ink,
+        lineHeight: 1.55,
+        margin: 0,
+        marginBottom: timeAgo ? 8 : 0,
+      }}>
+        {review.text}
+      </p>
+
+      {timeAgo && (
+        <span style={{
+          fontFamily: '"Caveat", cursive',
+          fontSize: 13,
+          color: t.ink,
+          opacity: 0.45,
+        }}>
+          {timeAgo}
+        </span>
+      )}
+    </motion.div>
   );
 };
 

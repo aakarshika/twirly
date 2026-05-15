@@ -1,68 +1,67 @@
-import React, { useState } from 'react';
-import { useTheme } from '../../../../contexts/ThemeContext';
+import { useState } from 'react';
+import { Plus } from 'lucide-react';
+import { themes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
 import ProductList from '../ProductList';
-
 import ItemCardEditable from '../../../comparison-aspect-page/ComparisonItemCard/ItemCardEditable';
 
 const ProductsTab = ({ userId, isPublic }) => {
-  const { currentTheme } = useTheme();
+  const { themeId } = useTheme();
+  const t = themes[themeId] ?? themes.light;
   const [products, setProducts] = useState([]);
-  const [addProductModalOpen, setAddProductModalOpen] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
 
-  const handleProductUpdate = updatedProduct => {
-    // console.log('updatedProduct', updatedProduct);
-    setProducts(products.map(product =>
-      product.id === updatedProduct.id ? updatedProduct : product,
-    ));
-    // console.log('products', products);
-  };
+  const handleUpdate = updated =>
+    setProducts(prev => prev.map(p => (p.id === updated.id ? updated : p)));
 
-  const handleProductDelete = productId => {
-    // console.log('productId', productId);
-    setProducts(products.filter(product => product.id !== productId));
-    // console.log('products', products);
-  };
+  const handleDelete = id =>
+    setProducts(prev => prev.filter(p => p.id !== id));
 
   return (
-    <div
-      className="rounded-lg"
-      style={{ backgroundColor: currentTheme.colors.cardBackground }}
-    >
-      <div className="flex justify-between items-center mb-6"
-          style={{ color: currentTheme.colors.text,backgroundColor: currentTheme.colors.cardBackground }}>
-
-        {(!isPublic && <button
-          onClick={() => {
-            setAddProductModalOpen(true);
-          }}
-          className="px-4 py-2 rounded-lg font-medium"
-          style={{
-            backgroundColor: currentTheme.colors.primary,
-            color: currentTheme.colors.buttonText,
-          }}
-        >
-          Add Product
-        </button>)}
-      </div>
+    <div className="pt-4">
+      {!isPublic && (
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={() => setAddOpen(true)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              fontFamily: '"Fraunces", serif',
+              fontSize: 14,
+              background: t.ink,
+              color: t.bg,
+              border: 'none',
+              borderRadius: 6,
+              padding: '8px 16px',
+              cursor: 'pointer',
+            }}
+          >
+            <Plus size={15} />
+            add item
+          </button>
+        </div>
+      )}
 
       <ProductList
         products={products}
         setProducts={setProducts}
         userId={userId}
         isPublic={isPublic}
-        onUpdate={handleProductUpdate}
-        onDelete={handleProductDelete}
+        onUpdate={handleUpdate}
+        onDelete={handleDelete}
       />
 
-      {addProductModalOpen &&
-      <ItemCardEditable
-        item={{}}
-        onSave={item => {
-          setProducts([item, ...products]);
-          setAddProductModalOpen(false);
-        }}
-        onCancel={() => setAddProductModalOpen(false)}
-      />}
+      {addOpen && (
+        <ItemCardEditable
+          item={{}}
+          onSave={item => {
+            setProducts(prev => [item, ...prev]);
+            setAddOpen(false);
+          }}
+          onCancel={() => setAddOpen(false)}
+        />
+      )}
     </div>
   );
 };

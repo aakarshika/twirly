@@ -1,14 +1,33 @@
 import React, { useState } from 'react';
-import { Heart, Info } from 'lucide-react';
-import VoteStats from './VoteStats/VoteStats';
-import { useVotedCard } from '../../../hooks/useVotedCard';
-import './ComparisonItemCard.css';
-import { changeColorAlpha, darkenColor } from '../../../lib/utils';
-import { useNavigate } from 'react-router-dom';
-import Modal from '../../../components/common/Modal';
-import { useTheme } from '../../../contexts/ThemeContext';
+import { Heart, Info, Trophy, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Trophy, CupSoda } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { themes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
+import { useVotedCard } from '@hooks/useVotedCard';
+import { changeColorAlpha, darkenColor } from '@utils/utils';
+import VoteStats from './VoteStats/VoteStats';
+import Modal from '../../../components/common/Modal';
+
+const WinnerBadge = ({ type, onToggle, expanded }) => (
+  <motion.div
+    animate={{ scale: [1, 1.06, 1], y: [0, -3, 0] }}
+    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+    className="cursor-pointer p-1 flex flex-col items-center"
+    onClick={onToggle}
+  >
+    {type === 'winner' ? (
+      <Trophy size={20} color="rgb(237,193,21)" fill="rgb(244,213,90)" />
+    ) : (
+      <Star size={17} color="rgb(70,137,243)" fill="rgb(137,179,246)" />
+    )}
+    {expanded && (
+      <span style={{ fontFamily: '"Caveat", cursive', fontSize: 10, color: 'rgba(255,255,255,0.85)', marginTop: 1 }}>
+        {type === 'winner' ? 'winner' : 'runner-up'}
+      </span>
+    )}
+  </motion.div>
+);
 
 const VotedCard = ({
   item,
@@ -20,267 +39,146 @@ const VotedCard = ({
   runnerUp,
 }) => {
   const navigate = useNavigate();
-  const { currentTheme } = useTheme();
+  const { themeId } = useTheme();
+  const t = themes[themeId] ?? themes.light;
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const {
-    titleRef,
-    itemImage,
-    color,
-  } = useVotedCard({
+  const [expandedBadge, setExpandedBadge] = useState(null);
+
+  const { titleRef, itemImage, color } = useVotedCard({
     item,
     handleRevertClick,
     totalVotes,
     isVotedItem,
   });
 
-  const handleItemClick = _e => {
-    navigate(`/item/${item.id}`);
-  };
+  const isWinner = winner?.id === item.id;
+  const isRunnerUp = runnerUp?.id === item.id;
+  const badgeType = isWinner ? 'winner' : isRunnerUp ? 'runner-up' : null;
 
-  const handleInfoClick = e => {
-    e.stopPropagation();
-    setIsModalOpen(true);
-  };
-  const [expandedType, setExpandedType] = useState(null);
-  const badgeClasses = {
-      container: "rounded-full z-10",
-      badge: " gap-1.5 rounded-full p-1 rounded-full items-center justify-center",
-      icon: "w-14 h-14",
-      text: "text-xs font-semibold",
-      sparkles: "w-3 h-3",
-  } ;
+  const toggleBadge = () => setExpandedBadge(prev => (prev ? null : badgeType));
+
   return (
-    <div className={`flex flex-col bg-white w-full rounded-lg ${isVotedItem ? 'voted-card-border' : ''}`} >
-      <div
-        className={`comparison-item-card rounded-lg `}
-        style={{
-          aspectRatio: '1/1',
-          height: itemImage ? '25vh': '20vh' ,
-          backgroundImage: isVotedItem ? `linear-gradient(to bottom, ${color}, ${changeColorAlpha(color, 0.8)} , ${changeColorAlpha(color, 0.2)}` : `linear-gradient(to bottom, ${changeColorAlpha(color, 0.2)}, ${changeColorAlpha(color, 0.2)} , ${changeColorAlpha(color, 0.2)}`,
-        }}
-      >
-        <div className="card-container">
-          <div className="image-container">
-            {itemImage ? (
-              <img
-                src={itemImage}
-                alt={item.name}
-                className="item-image"
-                loading="lazy"
-              />
-            ) : (
-              <div
-                className="flex h-full justify-center flex-col items-center p-3"
-              >
-                <div className="flex justify-center items-center">
-                  <h3 ref={titleRef} className="text-center" style={{ color: darkenColor(color, 70) }}>{item.name}</h3>
+    <div
+      className="relative w-full overflow-hidden rounded-sm"
+      style={{
+        aspectRatio: '1/1',
+        border: isVotedItem ? `2px solid ${t.red}` : `1px solid ${t.ink}18`,
+        background: itemImage ? 'transparent' : changeColorAlpha(color, 0.15),
+      }}
+    >
+      {/* Image */}
+      {itemImage && (
+        <img
+          src={itemImage}
+          alt={item.name}
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
+        />
+      )}
 
-                {/* Status Badge - Winner or Runner Up */}
-                {(winner?.id === item.id || runnerUp?.id === item.id) && (
-                    <motion.div
-                        className={badgeClasses.container}
-                        initial={{ scale: 0.8, y: -10 }}
-                        animate={{
-                            scale: [1, 1.05, 1],
-                            y: [0, -5, 0],
-                        }}
-                        transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                        }}
-                    >
-                        <motion.div
-                            style={{
-                                backgroundSize: '200% 100%',
-                            }}
-                        >
-                            {winner?.id === item.id ? (
-                                <>
-                                    <motion.div
-                                        animate={{
-                                            rotate: [0, 10, 0, -10, 0],
-                                            scale: [1, 1.1, 1],
-                                        }}
-                                        className="p-2"
-                                    >
-                                        <Trophy onClick={() => setExpandedType("Winner")} className={`${badgeClasses.icon} items-center justify-center`} color = "rgb(237, 193, 21)" fill = "rgb(244, 213, 90)" />
-                                        {expandedType === "Winner" && (
-                                            <div className="flex flex-col items-center justify-center text-center text-black">
-                                                <h4 className="text-xs font-semibold">Winning <br></br>Cup</h4>
-                                            </div>
-                                        )}
-                                    </motion.div>
-                                </>
-                            ) : (
-                                <>
-                                    <motion.div
-                                        animate={{
-                                            rotate: [0, 5, 0, -5, 0],
-                                            scale: [1, 1.05, 1],
-                                        }}
-                                        className="p-2"
-                                    >
-                                        <CupSoda onClick={() => setExpandedType("Runner Up")} className={`${badgeClasses.icon}`} color = "rgb(70, 137, 243)" fill = "rgb(137, 179, 246)"  />
-                                        {expandedType === "Runner Up" && (
-                                            <div className="flex flex-col items-center justify-center text-center text-black">
-                                                <h4 className="text-xs font-semibold">Runner <br></br>Cup</h4>
-                                            </div>
-                                        )}
-                                    </motion.div>
-                                </>
-                            )}
-                        </motion.div>
-                    </motion.div>
-                )}
-                </div>
-                <div className="p-2 w-full" style={{ color: darkenColor(color, 80) }}>
-                  <VoteStats
-                    votes={item.voteCount}
-                    totalVotes={totalVotes}
-                    color={color}
-                    isVotedItem={isVotedItem}
-                    leadingMetrics={item.leadingMetrics}
-                    userVotedAll={userVotedAll}
-                  />
-                </div>
-              </div>
+      {/* Voted glow pulse */}
+      {isVotedItem && (
+        <motion.div
+          className="absolute inset-0 pointer-events-none"
+          animate={{ opacity: [0.05, 0.14, 0.05] }}
+          transition={{ duration: 2.5, repeat: Infinity }}
+          style={{ background: t.red }}
+        />
+      )}
+
+      {/* No-image: centered name + stats */}
+      {!itemImage && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center p-3 gap-2">
+          <div className="flex items-center gap-1.5">
+            <p
+              ref={titleRef}
+              className="text-center"
+              style={{ fontFamily: '"DM Serif Display", serif', fontStyle: 'italic', fontSize: 16, color: darkenColor(color, 70), lineHeight: 1.2 }}
+            >
+              {item.name}
+            </p>
+            {badgeType && (
+              <WinnerBadge type={badgeType} onToggle={toggleBadge} expanded={expandedBadge === badgeType} />
             )}
           </div>
-
-          {itemImage && (
-            <div
-              className="bottom-0 left-0 right-0 p-4 content-overlay"
-              style={{ color: darkenColor(color, 50) }}
-            >
-              <h3 className="item-name">{item.name}</h3>
-
-              {(winner?.id === item.id || runnerUp?.id === item.id) && (
-                    <motion.div
-                        className={badgeClasses.container}
-                        initial={{ scale: 0.8, y: -10 }}
-                        animate={{
-                            scale: [1, 1.05, 1],
-                            y: [0, -5, 0],
-                        }}
-                        transition={{
-                            duration: 2,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                        }}
-                    >
-                        <motion.div
-                            style={{
-                                backgroundSize: '200% 100%',
-                            }}
-                        >
-                            {winner?.id === item.id ? (
-                                <>
-                                    <motion.div
-                                        animate={{
-                                            rotate: [0, 10, 0, -10, 0],
-                                            scale: [1, 1.1, 1],
-                                        }}
-                                        className="p-2"
-                                    >
-                                        <Trophy onClick={() => setExpandedType("Winner")} className={`${badgeClasses.icon} items-center justify-center`} color = "rgb(237, 193, 21)" fill = "rgb(244, 213, 90)" />
-                                        {expandedType === "Winner" && (
-                                            <div className="flex flex-col items-center justify-center text-center text-black">
-                                                <h4 className="text-xs font-semibold">Winning <br></br>Cup</h4>
-                                            </div>
-                                        )}
-                                    </motion.div>
-                                </>
-                            ) : (
-                                <>
-                                    <motion.div
-                                        animate={{
-                                            rotate: [0, 5, 0, -5, 0],
-                                            scale: [1, 1.05, 1],
-                                        }}
-                                        className="p-2"
-                                    >
-                                        <CupSoda onClick={() => setExpandedType("Runner Up")} className={`${badgeClasses.icon}`} color = "rgb(70, 137, 243)" fill = "rgb(137, 179, 246)"  />
-                                        {expandedType === "Runner Up" && (
-                                            <div className="flex flex-col items-center justify-center text-center text-black">
-                                                <h4 className="text-xs font-semibold">Runner <br></br>Cup</h4>
-                                            </div>
-                                        )}
-                                    </motion.div>
-                                </>
-                            )}
-                        </motion.div>
-                    </motion.div>
-                )}
-              <div
-                className="flex items-center gap-2"
-              >
-                <VoteStats
-                  votes={item.voteCount}
-                  totalVotes={totalVotes}
-                  color={color}
-                  isVotedItem={isVotedItem}
-                  leadingMetrics={item.leadingMetrics}
-                  userVotedAll={userVotedAll}
-                />
-              </div>
-            </div>
-          )}
-
-          <div className="absolute top-0 right-0 z-20">
-            {isVotedItem && (
-              <button
-                className="you-voted-badge"
-                onClick={handleRevertClick}
-                type="button"
-              >
-                <Heart size={24} fill={'red'} />
-              </button>
-            )}
-          </div>
-
-          <div className="absolute bottom-2 right-2 z-20">
-            <button
-              className="p-2 rounded-full hover:bg-black/10 transition-colors"
-              onClick={handleInfoClick}
-              style={{
-                color: darkenColor(color, 50),
-                backgroundColor: 'rgba(255, 255, 255, 0.8)',
-              }}
-            >
-              <Info size={20} />
-            </button>
-          </div>
+          <VoteStats
+            votes={item.voteCount}
+            totalVotes={totalVotes}
+            color={color}
+            isVotedItem={isVotedItem}
+            leadingMetrics={item.leadingMetrics}
+            userVotedAll={userVotedAll}
+          />
         </div>
-      </div>
+      )}
+
+      {/* Image overlay: name + stats + badge */}
+      {itemImage && (
+        <div
+          className="absolute bottom-0 left-0 right-0 px-3 py-2"
+          style={{ background: `linear-gradient(to top, ${changeColorAlpha(color, 0.88)} 0%, transparent 100%)` }}
+        >
+          <div className="flex items-end justify-between gap-1">
+            <p
+              ref={titleRef}
+              style={{ fontFamily: '"Fraunces", serif', fontSize: 13, fontWeight: 600, color: '#fff', lineHeight: 1.2, display: '-webkit-box', WebkitLineClamp: 1, WebkitBoxOrient: 'vertical', overflow: 'hidden', flex: 1 }}
+            >
+              {item.name}
+            </p>
+            {badgeType && (
+              <WinnerBadge type={badgeType} onToggle={toggleBadge} expanded={expandedBadge === badgeType} />
+            )}
+          </div>
+          <VoteStats
+            votes={item.voteCount}
+            totalVotes={totalVotes}
+            color={color}
+            isVotedItem={isVotedItem}
+            leadingMetrics={item.leadingMetrics}
+            userVotedAll={userVotedAll}
+          />
+        </div>
+      )}
+
+      {/* Revert vote */}
+      {isVotedItem && (
+        <button
+          type="button"
+          onClick={handleRevertClick}
+          className="absolute top-2 right-2 rounded-full flex items-center justify-center"
+          style={{ width: 32, height: 32, background: 'rgba(255,255,255,0.88)', minHeight: 32 }}
+        >
+          <Heart size={14} fill={t.red} stroke={t.red} />
+        </button>
+      )}
+
+      {/* Info → modal */}
+      <button
+        type="button"
+        className="absolute bottom-2 right-2 rounded-full flex items-center justify-center"
+        onClick={e => { e.stopPropagation(); setIsModalOpen(true); }}
+        style={{ width: 28, height: 28, background: 'rgba(255,255,255,0.8)' }}
+      >
+        <Info size={13} style={{ color: darkenColor(color, 50) }} />
+      </button>
 
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={item.name}
         size="md"
-        className="absolute justify-center items-center bg-white dark:bg-gray-900 text-black dark:text-white"
       >
-        <div className="space-y-4">
+        <div className="flex flex-col gap-4 items-center">
           {itemImage && (
-            <div className="aspect-square rounded-lg overflow-hidden">
-              <img
-                src={itemImage}
-                alt={item.name}
-                className="w-32 h-32 object-cover"
-              />
-            </div>
+            <img src={itemImage} alt={item.name} className="w-24 h-24 rounded-sm object-cover" />
           )}
-
-          <div className="flex justify-center">
-            <button
-              onClick={handleItemClick}
-              className="px-4 py-2 rounded-lg font-medium text-white hover:opacity-90 transition-opacity"
-              style={{ backgroundColor: currentTheme.colors.primary }}
-            >
-              Go to Item Page
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => navigate(`/item/${item.id}`)}
+            style={{ padding: '10px 24px', background: t.red, color: '#fff', fontFamily: '"Fraunces", serif', fontSize: 14, borderRadius: 2, minHeight: 44 }}
+          >
+            go to item page
+          </button>
         </div>
       </Modal>
     </div>

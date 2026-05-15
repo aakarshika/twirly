@@ -4,35 +4,23 @@ const ErrorScreen = ({
   message = 'Something went wrong',
   onRetry,
   showRetryButton = true,
-}) => {
-  return (
-    <div
-      className="fixed inset-0 flex items-center justify-center transition-all duration-300 ease-in-out"
-      style={{
-        zIndex: 9999, // Ensure it's above everything
-      }}
-    >
-      <div className="text-center animate-fade-in">
-        <p
-          className="text-red-500 mb-4 text-md text-gray-500"
+}) => (
+  <div className="fixed inset-0 flex items-center justify-center z-[9999]">
+    <div className="text-center px-6">
+      <p className="mb-6 text-base" style={{ color: 'var(--color-text)' }}>
+        {message}
+      </p>
+      {showRetryButton && onRetry && (
+        <button
+          onClick={onRetry}
+          className="px-5 py-2 rounded font-medium transition-opacity hover:opacity-80 cursor-pointer"
+          style={{ backgroundColor: 'var(--color-primary)', color: 'var(--color-background)' }}
         >
-          {message}
-        </p>
-        {showRetryButton && onRetry && (
-          <button
-            onClick={onRetry}
-            className="font-semibold text-gray-500 transition-all duration-200 hover:scale-105"
-            style={{
-              backgroundColor: 'var(--color-primary)',
-              color: 'var(--color-text)',
-            }}
-          >
-            Try Again
-          </button>
-        )}
-      </div>
+          Try Again
+        </button>
+      )}
     </div>
-  );
-};
+  </div>
+);
 
 export default ErrorScreen;

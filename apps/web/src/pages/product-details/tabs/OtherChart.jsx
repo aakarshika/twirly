@@ -1,273 +1,48 @@
-import React, { useEffect } from 'react';
-import {
-  Chart as ChartJS,
-  RadialLinearScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip,
-  Legend,
-  CategoryScale,
-  BarElement,
-  ArcElement,
-} from 'chart.js';
-import { Bar, Bubble, Line, Pie, PolarArea, Radar } from 'react-chartjs-2';
+import { BarChart, Bar, XAxis, YAxis, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { themes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
 
-ChartJS.register(
-  RadialLinearScale,
-  LinearScale,
-  CategoryScale,
-  BarElement,
-  ArcElement,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip,
-  Legend,
-);
+const ACCENT_KEYS = ['red', 'blue', 'purple', 'mustard'];
 
-const OtherChart = ({ data, selectedChart }) => {
-  useEffect(() => {
-    return () => {
-      const chartInstance = ChartJS.getChart('chartCanvasId');
-      if (chartInstance) {
-        chartInstance.destroy();
-      }
-    };
-  }, [data]);
+const OtherChart = ({ allitems = [], totalVotes = 0 }) => {
+  const { themeId } = useTheme();
+  const t = themes[themeId] ?? themes.light;
 
-  if (!data || !data[0]) return null;
-
-  const { aspects, items } = data[0];
-  const chartDataRadar = {
-    labels: aspects.map(aspect => (aspect.name).split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')),
-    datasets: items.map(item => ({
-      label: item.name,
-      data: aspects.map(aspect => item.metrics[aspect.name]),
-      backgroundColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 0.2)`,
-      borderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
-      borderWidth: 2,
-      pointBackgroundColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
-    })),
-  };
-
-  const chartDataLine = {
-    labels: aspects.map(aspect => (aspect.name).split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')),
-    datasets: items.map(item => ({
-      label: item.name,
-      data: aspects.map(aspect => item.metrics[aspect.name]),
-      borderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
-      borderWidth: 2,
-      fill: false,
-      tension: 0.4,
-    })),
-  };
-
-  const chartDataBar = {
-    labels: aspects.map(aspect => (aspect.name).split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')),
-    datasets: items.map(item => ({
-      label: item.name,
-      data: aspects.map(aspect => item.metrics[aspect.name]),
-      backgroundColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 0.2)`,
-      borderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
-      borderWidth: 2,
-      fill: false,
-      tension: 0.4,
-    })),
-  };
-
-  const chartDataPie = {
-    labels: aspects.map(aspect => (aspect.name).split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')),
-    datasets: items.map(item => ({
-      label: item.name,
-      data: aspects.map(aspect => item.metrics[aspect.name]),
-      backgroundColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 0.2)`,
-      borderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
-      borderWidth: 2,
-      fill: false,
-      tension: 0.4,
-    })),
-  };
-
-  const chartDataBubble = {
-    labels: aspects.map(aspect => (aspect.name).split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')),
-    datasets: items.map(item => {
-
-      const xValues = aspects.map(aspect => item.metrics[aspect.name]?.x || 0);
-      const yValues = aspects.map(aspect => item.metrics[aspect.name]?.y || 0);
-      const rValues = aspects.map(aspect => item.metrics[aspect.name]?.r || 0);
-
-      const xMin = Math.min(...xValues);
-      const xMax = Math.max(...xValues);
-      const yMin = Math.min(...yValues);
-      const yMax = Math.max(...yValues);
-      const rMin = Math.min(...rValues);
-      const rMax = Math.max(...rValues);
-
-      const normalizedData = aspects.map(aspect => ({
-        x: (item.metrics[aspect.name]?.x - xMin) / (xMax - xMin) || 0,
-        y: (item.metrics[aspect.name]?.y - yMin) / (yMax - yMin) || 0,
-        r: ((item.metrics[aspect.name]?.r - rMin) / (rMax - rMin) || 0) * 20, // Scale radius for visibility
-      }));
-
-      return {
-        label: item.name,
-        data: normalizedData,
-        backgroundColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 0.2)`,
-        borderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
-        borderWidth: 2,
-        fill: false,
-        tension: 0.4,
-      };
-    }),
-  };
-
-  const chartDataPolar = {
-    labels: aspects.map(aspect => (aspect.name).split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')),
-    datasets: items.map(item => ({
-      label: item.name,
-      data: aspects.map(aspect => item.metrics[aspect.name]),
-      backgroundColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 0.2)`,
-      borderColor: item.item_color_string.substring(0,item.item_color_string.length-1) +`, 1)`,
-      borderWidth: 2,
-      fill: false,
-      tension: 0.4,
-    })),
-  };
-
-  const optionsRadar = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      r: {
-        angleLines: {
-          display: true,
-        },
-        suggestedMin: 0,
-        suggestedMax: 100,
-        ticks: {
-          display: false,
-        },
-      },
-    },
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: data[0].setTitle,
-      },
-    },
-  };
-
-  const optionsLine = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
-  };
-
-  const optionsBar = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-    },
-  };
-
-  const optionsPie = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: data[0].setTitle,
-      },
-      tooltip: {
-        callbacks: {
-          label: function(tooltipItem) {
-            const label = tooltipItem.label || '';
-            return `${label}`;
-          },
-        },
-      },
-    },
-  };
-
-  const optionsBubble = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        beginAtZero: true,
-      },
-      y: {
-        beginAtZero: true,
-      },
-    },
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: data[0].setTitle,
-      },
-    },
-  };
-
-  const optionsPolar = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      r: {
-        angleLines: {
-          display: true,
-        },
-        suggestedMin: 0,
-        suggestedMax: 100,
-        ticks: {
-          display: false,
-        },
-      },
-    },
-    plugins: {
-      legend: {
-        position: 'top',
-      },
-      title: {
-        display: true,
-        text: data[0].setTitle,
-      },
-    },
-  };
+  const data = allitems.map((si, i) => ({
+    name: si.items?.name ?? `Item ${i + 1}`,
+    pct: totalVotes > 0
+      ? Math.round((si.items?.votes?.length ?? 0) / totalVotes * 100)
+      : 0,
+    fill: t[ACCENT_KEYS[i % ACCENT_KEYS.length]],
+  }));
 
   return (
-    <div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="h-[300px]">
-          {selectedChart === 'radar' && <Radar data={chartDataRadar} options={optionsRadar} />}
-          {selectedChart === 'line' && <Line data={chartDataLine} options={optionsLine} />}
-          {selectedChart === 'bar' && <Bar data={chartDataBar} options={optionsBar} />}
-          {selectedChart === 'pie' && <Pie data={chartDataPie} options={optionsPie} />}
-          {selectedChart === 'bubble' && <Bubble data={chartDataBubble} options={optionsBubble} />}
-          {selectedChart === 'polar' && <PolarArea data={chartDataPolar} options={optionsPolar} />}
-        </div>
-      </div>
-    </div>
+    <ResponsiveContainer width="100%" height={data.length * 36 + 16}>
+      <BarChart data={data} layout="vertical" margin={{ left: 0, right: 8, top: 0, bottom: 0 }}>
+        <XAxis type="number" domain={[0, 100]} hide />
+        <YAxis
+          type="category"
+          dataKey="name"
+          width={96}
+          tick={{ fontFamily: '"Fraunces", serif', fontSize: 12, fill: t.ink }}
+          axisLine={false}
+          tickLine={false}
+        />
+        <Tooltip
+          formatter={v => [`${v}%`, 'vote share']}
+          contentStyle={{
+            fontFamily: '"Fraunces", serif',
+            fontSize: 12,
+            background: t.bg,
+            border: `1px solid ${t.ink}25`,
+            borderRadius: 6,
+          }}
+        />
+        <Bar dataKey="pct" radius={3}>
+          {data.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
+        </Bar>
+      </BarChart>
+    </ResponsiveContainer>
   );
 };
 

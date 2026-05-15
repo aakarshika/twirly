@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { useTheme } from '../../contexts/ThemeContext';
 import { MessageSquareMore, X } from 'lucide-react';
-import Button from '../../components/common/Button';
+import { themes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
 import CommentForm from '../../components/common/comments/CommentForm';
 import Comment from '../../components/common/comments/Comment';
 import LoadingOrError from '../../components/common/LoadingOrError';
 import { useComparisonSetAspectsComments } from '../../hooks/useComparisonSetAspectsComments';
-import { changeColorAlpha } from '../../lib/utils';
 
-const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, _aspectSet, _handleLikeComparisonAspectSet }) => {
-  const { currentTheme } = useTheme();
+const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, _aspectSet }) => {
+  const { themeId } = useTheme();
+  const t = themes[themeId] ?? themes.light;
   const [newComment, setNewComment] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -33,57 +33,69 @@ const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, _aspectSet, _
     setNewComment('');
   };
 
-  if (loading) {
-    return <LoadingOrError type="loading" />;
-  }
-
-  if (error) {
-    return <LoadingOrError type="error" />;
-  }
+  if (loading) return <LoadingOrError type="loading" />;
+  if (error) return <LoadingOrError type="error" />;
 
   if (!isExpanded) {
     return (
-      <div className="cursor-pointer" onClick={() => setIsExpanded(true)} style={{ opacity: 0.8, backgroundColor: changeColorAlpha(currentTheme.colors.background, 0.5) }}>
-        <div className="rounded-lg p-1 hover:bg-gray-100 transition-colors">
+      <button
+        type="button"
+        className="w-full text-left rounded-sm p-3"
+        onClick={() => setIsExpanded(true)}
+        style={{ background: `${t.bg}cc`, border: `1px solid ${t.ink}0e`, minHeight: 44 }}
+      >
+        <div className="flex items-center gap-2 mb-2">
+          <MessageSquareMore size={14} style={{ color: t.red }} />
+          <span style={{ fontFamily: '"Fraunces", serif', fontSize: 13, color: `${t.ink}70` }}>
+            comments
+          </span>
+          <span style={{ fontFamily: '"Caveat", cursive', fontSize: 13, color: t.red }}>
+            {comments.length}
+          </span>
+        </div>
 
-        <div className="flex flex-row items-start justify-start">
-      <h4 className="text-md text-gray-500 items-center">
-        <span style={{ color: currentTheme.colors.primary }}><MessageSquareMore  className="w-5 h-5 inline-block" /> </span> Comments <span className="text-gray-500 text-xs ml-2" style={{ color: currentTheme.colors.primary }}>{comments.length}</span>
-        </h4>
-        </div>
-          {comments.length > 0 ? (
-            <Comment
-              comment={comments[0]}
-              onLike={handleLikeComment}
-              onToggleVisibility={() => {}}
-              isVisible={true}
-              items={items}
-              users={users}
-              handleReply={handleReply}
-              userPreferences={userPreferences}
-            />
-          ) : (
-            <div className="text-gray-500 text-sm italic">No comments yet. Click to add one.</div>
-          )}
-        </div>
-      </div>
+        {comments.length > 0 ? (
+          <Comment
+            comment={comments[0]}
+            onLike={handleLikeComment}
+            onToggleVisibility={() => {}}
+            isVisible
+            items={items}
+            users={users}
+            handleReply={handleReply}
+            userPreferences={userPreferences}
+          />
+        ) : (
+          <p style={{ fontFamily: '"Caveat", cursive', fontSize: 14, color: `${t.ink}45` }}>
+            no comments yet — tap to add one
+          </p>
+        )}
+      </button>
     );
   }
 
   return (
-    <div className="relative">
-      <button
-        onClick={() => setIsExpanded(false)}
-        className="absolute top-0 right-0 p-2 hover:bg-gray-100 rounded-full"
-      >
-        <X size={20} />
-      </button>
-
-      <div className="flex flex-row items-start justify-start">
-      <h4 className="text-md font-medium text-gray-600 mb-2  items-center">
-      <span style={{ color: currentTheme.colors.primary }}><MessageSquareMore size={14} className="mr-1 inline-block" /> </span> Comments <span className="text-gray-500 text-xs ml-2" style={{ color: currentTheme.colors.primary }}>{comments.length}</span>
-      </h4>
+    <div className="relative flex flex-col gap-3">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <MessageSquareMore size={14} style={{ color: t.red }} />
+          <span style={{ fontFamily: '"Fraunces", serif', fontSize: 13, color: `${t.ink}70` }}>
+            comments
+          </span>
+          <span style={{ fontFamily: '"Caveat", cursive', fontSize: 13, color: t.red }}>
+            {comments.length}
+          </span>
         </div>
+        <button
+          type="button"
+          onClick={() => setIsExpanded(false)}
+          className="p-2 rounded-full"
+          style={{ minHeight: 36, minWidth: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+        >
+          <X size={16} style={{ color: `${t.ink}70` }} />
+        </button>
+      </div>
+
       <CommentForm
         newComment={newComment}
         setNewComment={setNewComment}
@@ -94,40 +106,44 @@ const ComparisonSetAspectsCommentsSection = ({ aspectSetId, items, _aspectSet, _
         type="Comment"
       />
 
-      <div className="mt-4">
-        {comments.map(comment => {
-          const toggleVisibility = () => {
-            setCommentVisibility(prev => ({
-              ...prev,
-              [comment.id]: !prev[comment.id],
-            }));
-          };
-          return (
-            <div key={comment.id} className="mb-4">
-              <Comment
-                comment={comment}
-                onLike={handleLikeComment}
-                onToggleVisibility={toggleVisibility}
-                isVisible={commentVisibility[comment.id]}
-                items={items}
-                users={users}
-                handleReply={handleReply}
-                userPreferences={userPreferences}
-              />
-            </div>
-          );
-        })}
+      <div className="flex flex-col gap-4">
+        {comments.map(comment => (
+          <Comment
+            key={comment.id}
+            comment={comment}
+            onLike={handleLikeComment}
+            onToggleVisibility={() =>
+              setCommentVisibility(prev => ({ ...prev, [comment.id]: !prev[comment.id] }))
+            }
+            isVisible={commentVisibility[comment.id]}
+            items={items}
+            users={users}
+            handleReply={handleReply}
+            userPreferences={userPreferences}
+          />
+        ))}
       </div>
 
       {hasMore && (
-        <div className="flex justify-center mt-4">
-          <Button
+        <div className="flex justify-center">
+          <button
+            type="button"
             onClick={loadMore}
             disabled={loading}
-            className="px-6 py-2 bg-amber-400 text-black font-medium rounded-md hover:bg-amber-300 transition-colors"
+            style={{
+              padding: '10px 24px',
+              background: t.mustard,
+              color: t.ink,
+              fontFamily: '"Fraunces", serif',
+              fontSize: 14,
+              borderRadius: 2,
+              minHeight: 44,
+              opacity: loading ? 0.6 : 1,
+              cursor: loading ? 'not-allowed' : 'pointer',
+            }}
           >
-            {loading ? 'Loading comments...' : 'Load More'}
-          </Button>
+            {loading ? 'loading…' : 'load more'}
+          </button>
         </div>
       )}
     </div>

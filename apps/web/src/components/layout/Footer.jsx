@@ -1,21 +1,47 @@
-// File: src/components/layout/Footer.jsx
-
-import React from 'react';
+import { themes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
+  const { themeId } = useTheme();
+  const t = themes[themeId] ?? themes.light;
+  const year = new Date().getFullYear();
 
   return (
-    <footer className="flex flex-col items-center justify-center p-6 text-center text-sm mt-8 pb-28 lg:pb-8 text-text-muted">
-      <div className="max-w-6xl mx-auto">
-        <p>© {currentYear} TWIRLY. All rights reserved.</p>
+    <footer
+      className="lg:hidden px-5 pt-6 text-center"
+      style={{
+        borderTop: `1px solid ${t.ink}18`,
+        paddingBottom: 'calc(7rem + env(safe-area-inset-bottom, 0px))',
+        background: t.bg,
+      }}
+    >
+      <p
+        style={{ fontFamily: '"Caveat", cursive', fontSize: 18, color: t.ink, opacity: 0.45 }}
+        className="mb-3"
+      >
+        vote. argue. repeat.
+      </p>
 
-        <div className="mt-2 flex justify-center space-x-4 text-xs">
-          <a href="#" className="hover:text-text transition-colors">Privacy Policy</a>
-          <a href="#" className="hover:text-text transition-colors">Terms of Service</a>
-          <a href="#" className="hover:text-text transition-colors">Contact</a>
-        </div>
+      <div className="flex justify-center gap-5 mb-3">
+        {[
+          { label: 'Privacy', href: '#' },
+          { label: 'Terms', href: '#' },
+          { label: 'Contact', href: '#' },
+        ].map(({ label, href }) => (
+          <a
+            key={label}
+            href={href}
+            style={{ fontFamily: '"Fraunces", serif', fontSize: 12, color: t.ink, opacity: 0.5, textDecoration: 'none' }}
+            className="transition-opacity hover:opacity-80"
+          >
+            {label}
+          </a>
+        ))}
       </div>
+
+      <p style={{ fontFamily: '"Fraunces", serif', fontSize: 11, color: t.ink, opacity: 0.35 }}>
+        © {year} Twirly
+      </p>
     </footer>
   );
 };

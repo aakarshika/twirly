@@ -11,13 +11,14 @@
  *   sam@twirly.dev     — The Newbie       (1 vote, no comparisons — empty-state testing)
  *   riley@twirly.dev   — The Contrarian   (always votes for the underdog, owns 1)
  *
- * Run from repo root: npm run seed
+ * Run from repo root: pnpm run seed
  *
- * Idempotent. Existing rows are skipped, not duplicated.
+ * Idempotent — wipes previous persona data before rebuilding, so re-running
+ * always produces a clean, consistent state.
  *
  * Requires:
  *   - Postgres running (docker compose up -d)
- *   - Server running (pnpm run dev:server)  — signup goes through Better Auth API
+ *   - API running (pnpm run dev:api)  — signup goes through Better Auth API
  *   - apps/api/.env populated
  */
 
@@ -268,7 +269,7 @@ const VOTES = [
   // 4. Starbucks vs Dunkin' — TIE 2-2 (useful for testing tied-results UI)
   { set: "Starbucks vs Dunkin'", votes: [
     ['alex',   'Starbucks'],
-    ['jordan', "Dunkin'"],   // owner picks underdog
+    ['jordan', "Dunkin'"],
     ['marcus', 'Starbucks'],
     ['riley',  "Dunkin'"],
   ] },
@@ -362,13 +363,53 @@ const REVIEWS = [
 // DB helpers
 // ────────────────────────────────────────────────────────────────────────────
 
-async function ensureUserViaApi(persona) {
-  const existing = await q(`SELECT id FROM "user" WHERE email = $1`, [persona.email]);
-  if (existing.rows.length) {
-    console.log(`  exists: ${persona.email}`);
-    return existing.rows[0].id;
+/**
+ * Wipes all data owned by the persona emails so the seed is fully idempotent.
+ * Also clears any stale user_preferences rows that claim a persona username,
+ * so leftover test accounts (smoke@, seed@, etc.) don't cause conflicts.
+ * Deletes in dependency order; the final DELETE on "user" cascades to
+ * account, session, user_preferences, and user_notification_settings.
+ */
+async function wipePreviousPersonaData() {
+  const emails = PERSONAS.map(p => p.email);
+  const usernames = PERSONAS.map(p => p.username);
+
+  // Clear conflicting username claims from ANY user (not just persona emails)
+  const uPlaceholders = usernames.map((_, i) => `$${i + 1}`).join(', ');
+  await q(`DELETE FROM user_preferences WHERE username IN (${uPlaceholders})`, usernames);
+
+  // Get current user IDs for persona emails (if any)
+  const ePlaceholders = emails.map((_, i) => `$${i + 1}`).join(', ');
+  const { rows: existingUsers } = await q(
+    `SELECT id FROM "user" WHERE email IN (${ePlaceholders})`,
+    emails,
+  );
+  if (!existingUsers.length) {
+    console.log('  no previous persona users found');
+    return;
   }
 
+  const ids = existingUsers.map(r => r.id);
+  const idPlaceholders = ids.map((_, i) => `$${i + 1}`).join(', ');
+
+  // Delete app data in dependency order before removing the user rows
+  await q(`DELETE FROM votes                     WHERE user_id IN (${idPlaceholders})`, ids);
+  await q(`DELETE FROM reviews                   WHERE user_id IN (${idPlaceholders})`, ids);
+  await q(`DELETE FROM comparison_set_comments   WHERE user_id IN (${idPlaceholders})`, ids);
+  await q(`DELETE FROM comparison_sets           WHERE user_id IN (${idPlaceholders})`, ids);
+  await q(`DELETE FROM user_category_preferences WHERE user_id IN (${idPlaceholders})`, ids);
+  await q(`DELETE FROM user_notification_settings WHERE user_id IN (${idPlaceholders})`, ids);
+
+  // Deleting from "user" cascades to: account, session, user_preferences
+  await q(`DELETE FROM "user" WHERE id IN (${idPlaceholders})`, ids);
+
+  console.log(`  wiped ${ids.length} previous persona user(s)`);
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+async function createUserViaApi(persona) {
+  await sleep(1200); // avoid Better Auth rate-limit on rapid consecutive sign-ups
   const res = await fetch(`${API_BASE}/api/auth/sign-up/email`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Origin: 'http://localhost:5734' },
@@ -385,23 +426,29 @@ async function ensureUserViaApi(persona) {
   return userId;
 }
 
-async function upsertUserPreferences(userId, persona) {
+async function insertUserPreferences(userId, persona) {
   await q(
     `INSERT INTO user_preferences (user_id, display_name, username, bio, created_at, updated_at)
      VALUES ($1, $2, $3, $4, now(), now())
-     ON CONFLICT (user_id) DO UPDATE SET display_name = EXCLUDED.display_name, username = EXCLUDED.username, bio = EXCLUDED.bio`,
+     ON CONFLICT (user_id) DO UPDATE
+       SET display_name = EXCLUDED.display_name,
+           username     = EXCLUDED.username,
+           bio          = EXCLUDED.bio,
+           updated_at   = now()`,
     [userId, persona.displayName, persona.username, persona.bio],
   );
+
+  // user_notification_settings has no unique constraint on user_id — delete+insert.
+  // created_at is set 1 hour in the past so created_at !== updated_at, which the
+  // app uses to detect that the user has completed onboarding (they saved prefs).
+  await q(`DELETE FROM user_notification_settings WHERE user_id = $1`, [userId]);
   await q(
-    `INSERT INTO user_notification_settings (user_id, email_notifications, push_notifications, comment_notifications, marketing_emails, created_at, updated_at)
-     VALUES ($1, $2, $3, $4, $5, now() - interval '1 hour', now())
-     ON CONFLICT (user_id) DO UPDATE SET
-       email_notifications   = EXCLUDED.email_notifications,
-       push_notifications    = EXCLUDED.push_notifications,
-       comment_notifications = EXCLUDED.comment_notifications,
-       marketing_emails      = EXCLUDED.marketing_emails,
-       updated_at            = now()`,
-    [userId, persona.notifications.email, persona.notifications.push, persona.notifications.comment, persona.notifications.marketing],
+    `INSERT INTO user_notification_settings
+       (user_id, email_notifications, push_notifications, comment_notifications, marketing_emails,
+        created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, now() - interval '1 hour', now())`,
+    [userId, persona.notifications.email, persona.notifications.push,
+     persona.notifications.comment, persona.notifications.marketing],
   );
 }
 
@@ -489,8 +536,6 @@ async function seedComparisons(catIds, itemIds, userIds) {
   return setIds;
 }
 
-// Votes have no unique constraint in the schema, so we manually dedupe on
-// (user_id, set_id) — one vote per user per comparison.
 async function seedVotes(setIds, itemIds, userIds) {
   let inserted = 0;
   for (const { set, votes } of VOTES) {
@@ -515,10 +560,9 @@ async function seedVotes(setIds, itemIds, userIds) {
       inserted++;
     }
   }
-  console.log(`  inserted ${inserted} new votes`);
+  console.log(`  inserted ${inserted} votes`);
 }
 
-// Comments also have no natural unique constraint; dedupe on (user_id, set_id, content).
 async function seedComments(setIds, userIds) {
   let inserted = 0;
   for (const c of COMMENTS) {
@@ -539,7 +583,7 @@ async function seedComments(setIds, userIds) {
     );
     inserted++;
   }
-  console.log(`  inserted ${inserted} new comments`);
+  console.log(`  inserted ${inserted} comments`);
 }
 
 async function seedReviews(itemIds, userIds) {
@@ -562,7 +606,7 @@ async function seedReviews(itemIds, userIds) {
     );
     inserted++;
   }
-  console.log(`  inserted ${inserted} new reviews`);
+  console.log(`  inserted ${inserted} reviews`);
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -572,10 +616,13 @@ async function seedReviews(itemIds, userIds) {
 async function main() {
   console.log('\n🌱  Twirly seed starting…\n');
 
-  console.log('1. Personas (creating auth users via Better Auth API)');
+  console.log('0. Wiping previous persona data');
+  await wipePreviousPersonaData();
+
+  console.log('\n1. Personas (creating auth users via Better Auth API)');
   const userIds = {};
   for (const persona of PERSONAS) {
-    userIds[persona.key] = await ensureUserViaApi(persona);
+    userIds[persona.key] = await createUserViaApi(persona);
   }
 
   console.log('\n2. Categories');
@@ -584,9 +631,9 @@ async function main() {
 
   console.log('\n3. User preferences + notifications');
   for (const persona of PERSONAS) {
-    await upsertUserPreferences(userIds[persona.key], persona);
+    await insertUserPreferences(userIds[persona.key], persona);
   }
-  console.log(`  ${PERSONAS.length} persona preference rows synced`);
+  console.log(`  ${PERSONAS.length} persona preference rows written`);
 
   console.log('\n4. User category preferences');
   for (const persona of PERSONAS) {

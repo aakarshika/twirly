@@ -82,6 +82,15 @@ export const userPreferences = {
     await Promise.all(ops);
   },
 
+  async saveNotificationPrefs(settings) {
+    await apiClient.put('/api/users/me/notifications', {
+      emailNotifications:   settings.emailNotifications,
+      pushNotifications:    settings.pushNotifications,
+      commentNotifications: settings.commentNotifications,
+      marketingEmails:      settings.marketingEmails,
+    });
+  },
+
   async deleteUserPreferences(_userId) {
     await apiClient.delete('/api/users/me');
   },

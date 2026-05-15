@@ -1,18 +1,19 @@
 .highlighted-mention-user {
-  background-color: #f5feff; /* Light blue background */
-  color: #00796b; /* Dark teal text */
-  font-weight: bold; /* Bold text */
+  background-color: rgba(29, 78, 137, 0.1);
+  color: #1D4E89;
+  font-weight: 600;
   text-decoration: underline;
-  text-decoration-color: #69c3cf;
-  border-radius: 5px; /* Rounded corners */
-  padding: 2px 5px; /* Padding around the text */
+  text-decoration-color: rgba(29, 78, 137, 0.4);
+  border-radius: 3px;
+  padding: 1px 4px;
 }
+
 .highlighted-mention-product {
-  background-color: #fffaf5; /* Light blue background */
-  color: #974900; /* Dark teal text */
-  font-weight: bold; /* Bold text */
+  background-color: rgba(232, 184, 75, 0.2);
+  color: #8A5200;
+  font-weight: 600;
   text-decoration: underline;
-  text-decoration-color: #ecb683;
-  border-radius: 3px; /* Rounded corners */
-  padding: 2px 4px; /* Padding around the text */
+  text-decoration-color: rgba(232, 184, 75, 0.6);
+  border-radius: 3px;
+  padding: 1px 4px;
 }

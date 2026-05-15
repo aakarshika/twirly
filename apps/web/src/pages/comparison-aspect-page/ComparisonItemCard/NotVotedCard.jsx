@@ -1,59 +1,53 @@
 import React from 'react';
-import { useVotedCard } from '../../../hooks/useVotedCard';
-import './ComparisonItemCard.css';
+import { themes } from '@styles/themes';
+import { useTheme } from '@contexts/ThemeContext';
+import { useVotedCard } from '@hooks/useVotedCard';
 
-const NotVotedCard = ({
-  item,
-  newHeight = '20vh',
-}) => {
-  const {
-    titleRef,
-    itemImage,
-  } = useVotedCard({
-    item,
-  });
+const NotVotedCard = ({ item }) => {
+  const { themeId } = useTheme();
+  const t = themes[themeId] ?? themes.light;
+  const { titleRef, itemImage } = useVotedCard({ item });
 
   return (
     <div
-      className="comparison-item-card rounded-lg"
-      style={{
-        height: newHeight,
-        backgroundColor: 'rgba(255, 255, 255, 0.4)',
-      }}
+      className="relative w-full overflow-hidden rounded-sm"
+      style={{ aspectRatio: '1/1', background: t.bgDeep }}
     >
-      <div className="card-container">
-        <div className="image-container">
-          {itemImage ? (
-            <img
-              src={itemImage}
-              alt={item.name}
-              className="item-image"
-              loading="lazy"
-            />
-          ) : (
-            <div
-              className="text-fallback"
-              style={{
-                background: 'rgba(22, 22, 22, 0.5)',
-                color: '#fff',
-              }}
-            >
-              <div className="text-fallback-content flex items-center justify-center">
-                <h3 ref={titleRef} className="text-fallback-title text-center">{item.name}</h3>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {itemImage && (
+      {itemImage ? (
+        <>
+          <img
+            src={itemImage}
+            alt={item.name}
+            className="absolute inset-0 w-full h-full object-cover"
+            loading="lazy"
+          />
           <div
-            className=" p-4 content-overlay flex items-center justify-center"
-            style={{ backgroundColor: 'rgba(0, 0, 0, 0.4)' }}
+            className="absolute bottom-0 left-0 right-0 px-3 py-2"
+            style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)' }}
           >
-            <h3 className="item-name text-center text-white">{item.name}</h3>
+            <p
+              ref={titleRef}
+              className="text-sm leading-tight"
+              style={{ fontFamily: '"Fraunces", serif', color: '#fff', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+            >
+              {item.name}
+            </p>
           </div>
-        )}
-      </div>
+        </>
+      ) : (
+        <div
+          className="absolute inset-0 flex items-center justify-center p-4"
+          style={{ background: t.bgDeep }}
+        >
+          <p
+            ref={titleRef}
+            className="text-center"
+            style={{ fontFamily: '"DM Serif Display", serif', fontStyle: 'italic', fontSize: 18, color: t.ink, lineHeight: 1.2, display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}
+          >
+            {item.name}
+          </p>
+        </div>
+      )}
     </div>
   );
 };
