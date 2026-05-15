@@ -46,7 +46,6 @@ export const useComparisonSets = paramId => {
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [selectedTag, setSelectedTag] = useState('user_home_feed_91819');
   const [categoryId, setCategoryId] = useState(null);
-  const [_categoryIds, setCategoryIds] = useState(null);
   const isInitialLoad = useRef(true);
 
   const getPercentAndWinner = (items, totalVotes) => {
@@ -134,14 +133,19 @@ export const useComparisonSets = paramId => {
     load();
   }, [user, paramId]);
 
-  // Load more when approaching the end
+  // Load more when approaching the end — deduplicate to avoid repeat keys
   useEffect(() => {
     if (currentIndex === -1 || !user) return;
     if (currentIndex < comparisonSets.length - 2) return;
 
     const loadMore = async () => {
       const newSets = await fetchSets(buildFetchParams());
-      if (newSets.length > 0) setComparisonSets(prev => [...prev, ...newSets]);
+      if (newSets.length === 0) return;
+      setComparisonSets(prev => {
+        const seen = new Set(prev.map(s => s.id));
+        const unique = newSets.filter(s => !seen.has(s.id));
+        return unique.length > 0 ? [...prev, ...unique] : prev;
+      });
     };
     loadMore();
   }, [currentIndex, user]);
@@ -180,7 +184,8 @@ export const useComparisonSets = paramId => {
         // Normalize: the two endpoints return different field names
         // (category_id/category_name vs id/name). Map both to { id, name } so
         // downstream consumers see a single shape.
-        setAllCategories([
+        const seen = new Set();
+        const combined = [
           ...userCategoryPreferences.map(item => ({
             ...item,
             id: item.category_id,
@@ -188,7 +193,13 @@ export const useComparisonSets = paramId => {
             userCat: true,
           })),
           ...filtered.map(cat => ({ ...cat, userCat: false })),
-        ]);
+        ].filter(cat => {
+          const key = `${cat.userCat ? 'u' : 'g'}-${cat.id}`;
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        setAllCategories(combined);
       } catch (err) {
         console.error('Error fetching categories:', err);
       }
@@ -289,7 +300,6 @@ export const useComparisonSets = paramId => {
     handleReset,
     handleLikeComparisonSet,
     setCategoryId,
-    setCategoryIds,
     setSelectedTag,
     userPreferences,
     allCategories,

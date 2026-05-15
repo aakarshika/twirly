@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, MessageSquare } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useNavigate } from 'react-router-dom';
@@ -268,74 +268,89 @@ const AllComments = ({ commentsCollapsed, setCommentsCollapsed, setId, items, us
     );
   }
 
-  if (commentsCollapsed) {
-    return (
-      <TopComment
-        setCommentsCollapsed={setCommentsCollapsed}
-        comments={comments}
-        items={items}
-        userPreferences={userPreferences}
-        t={t}
-      />
-    );
-  }
-
   return (
-    <div className="min-h-full">
-      <div
-        className="sticky top-0 flex w-full items-center justify-between px-4 py-2 z-20"
-        style={{ background: t.bg, borderBottom: `1px solid ${t.ink}0c` }}
-      >
-        <span style={{ fontFamily: '"Fraunces", serif', fontSize: 13, color: `${t.ink}70` }}>
-          Comments{' '}
-          <span style={{ color: `${t.ink}45` }}>{comments.length}</span>
-        </span>
-        <button
-          type="button"
-          onClick={() => setCommentsCollapsed(true)}
-          style={{ fontFamily: '"DM Serif Display", serif', fontSize: 22, color: `${t.ink}60`, lineHeight: 1 }}
+    <AnimatePresence mode="wait" initial={false}>
+      {commentsCollapsed ? (
+        <motion.div
+          key="collapsed"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.12 }}
         >
-          ×
-        </button>
-      </div>
-
-      <div className="flex flex-col gap-3 p-3 pb-32">
-        <div className="rounded-sm p-3" style={{ background: t.bgDeep, border: `1px solid ${t.ink}0e` }}>
-          <CommentForm
-            newComment={newComment}
-            setNewComment={setNewComment}
-            handleSubmitComment={() => {
-              handleSubmitComment(newComment);
-              setNewComment('');
-            }}
-            type="Comment"
-            users={users}
-            items={items}
-            userPreferences={userPreferences}
-          />
-        </div>
-        {comments.map(comment => (
-          <Comment
-            key={comment.id}
-            comment={comment}
-            onReply={handleReply}
-            onLikeComment={handleLikeComment}
-            onLikeReply={handleLikeReply}
-            users={users}
+          <TopComment
+            setCommentsCollapsed={setCommentsCollapsed}
+            comments={comments}
             items={items}
             userPreferences={userPreferences}
             t={t}
           />
-        ))}
-      </div>
+        </motion.div>
+      ) : (
+        <motion.div
+          key="expanded"
+          className="min-h-full"
+          initial={{ y: 56, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 40, opacity: 0 }}
+          transition={{ type: 'spring', damping: 28, stiffness: 280, mass: 0.85 }}
+        >
+          <div
+            className="sticky top-0 flex w-full items-center justify-between px-4 py-2 z-20"
+            style={{ background: t.bg, borderBottom: `1px solid ${t.ink}0c` }}
+          >
+            <span style={{ fontFamily: '"Fraunces", serif', fontSize: 13, color: `${t.ink}70` }}>
+              Comments{' '}
+              <span style={{ color: `${t.ink}45` }}>{comments.length}</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => setCommentsCollapsed(true)}
+              style={{ fontFamily: '"DM Serif Display", serif', fontSize: 22, color: `${t.ink}60`, lineHeight: 1 }}
+            >
+              ×
+            </button>
+          </div>
 
-      <p
-        className="flex justify-center items-center h-10 mb-10"
-        style={{ fontFamily: '"Caveat", cursive', fontSize: 14, color: `${t.ink}40` }}
-      >
-        all caught up
-      </p>
-    </div>
+          <div className="flex flex-col gap-3 p-3 pb-32">
+            <div className="rounded-sm p-3" style={{ background: t.bgDeep, border: `1px solid ${t.ink}0e` }}>
+              <CommentForm
+                newComment={newComment}
+                setNewComment={setNewComment}
+                handleSubmitComment={() => {
+                  handleSubmitComment(newComment);
+                  setNewComment('');
+                }}
+                type="Comment"
+                users={users}
+                items={items}
+                userPreferences={userPreferences}
+              />
+            </div>
+            {comments.map(comment => (
+              <Comment
+                key={comment.id}
+                comment={comment}
+                onReply={handleReply}
+                onLikeComment={handleLikeComment}
+                onLikeReply={handleLikeReply}
+                users={users}
+                items={items}
+                userPreferences={userPreferences}
+                t={t}
+              />
+            ))}
+          </div>
+
+          <p
+            className="flex justify-center items-center h-10 mb-10"
+            style={{ fontFamily: '"Caveat", cursive', fontSize: 14, color: `${t.ink}40` }}
+          >
+            all caught up
+          </p>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 };
 

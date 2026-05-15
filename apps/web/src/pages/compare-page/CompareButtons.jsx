@@ -7,7 +7,7 @@ import { themes } from '@styles/themes';
 import { useTheme } from '@contexts/ThemeContext';
 import { getCurrentUrl } from '@utils/urlUtils';
 
-const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, _voteButtonClicked }) => {
+const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, onInteract }) => {
   const { themeId } = useTheme();
   const t = themes[themeId] ?? themes.light;
   const hasLiked = setData.hasLiked;
@@ -65,14 +65,14 @@ const CompareButtons = ({ totalVotes, setData, handleLikeComparisonSet, _voteBut
       </div>
 
       <div className="flex gap-2">
-        <button onClick={() => handleLikeComparisonSet(setData.id)} style={pillStyle(hasLiked)}>
+        <button onClick={() => { onInteract?.(); handleLikeComparisonSet(setData.id); }} style={pillStyle(hasLiked)}>
           <motion.span animate={{ scale: hasLiked ? [1, 1.35, 1] : 1 }} transition={{ duration: 0.25 }}>
             <Heart size={16} fill={hasLiked ? t.red : 'none'} stroke={hasLiked ? t.red : 'currentColor'} />
           </motion.span>
           <span>{setData.likeCount ?? 0}</span>
         </button>
 
-        <button onClick={handleShare} style={{ ...pillStyle(false), position: 'relative' }}>
+        <button onClick={() => { onInteract?.(); handleShare(); }} style={{ ...pillStyle(false), position: 'relative' }}>
           <AnimatePresence mode="wait" initial={false}>
             {copied ? (
               <motion.span key="check" initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
